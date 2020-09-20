@@ -1,0 +1,14 @@
+set -e
+
+echo "\n ⏱  Uploading library to pypi..."
+
+pip install --upgrade twine
+
+twine check dist/*
+
+twine upload \
+	--username $TWINE_PROD_USERNAME \
+	--password $TWINE_PROD_PWD \
+	dist/*
+
+echo "\n 🎉  Done."

@@ -1,0 +1,14 @@
+set -e
+
+echo "\n ⏱  Uploading library to testpypi..."
+
+pip install --upgrade twine
+
+twine check dist/*
+
+twine upload \
+	--username $TWINE_TEST_USERNAME \
+	--password $TWINE_TEST_PWD \
+	--repository testpypi dist/*
+
+echo "\n 🚢  Done."

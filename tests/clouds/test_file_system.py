@@ -1,0 +1,118 @@
+#    Copyright 2020 Neal Lathia
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+import os
+import time
+from datetime import datetime
+from pathlib import Path
+
+import pytest
+
+import modelstore
+from modelstore.clouds.file_system import FileSystemStorage
+from modelstore.clouds.util.paths import (
+    get_archive_path,
+    get_domain_path,
+    get_metadata_path,
+)
+
+# pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
+
+
+@pytest.fixture
+def fs_model_store(tmp_path):
+    return FileSystemStorage(root_path=str(tmp_path))
+
+
+def test_name(fs_model_store):
+    assert fs_model_store.get_name() == "file_system"
+
+
+def test_validate(fs_model_store):
+    assert fs_model_store.validate()
+    assert not os.path.exists(fs_model_store.root_dir)
+
+
+def test_upload(fs_model_store, tmp_path):
+    source = os.path.join(tmp_path, "test-file.txt")
+    Path(source).touch()
+
+    model_path = os.path.join(
+        fs_model_store.root_dir,
+        get_archive_path("test-domain", "prefix", source),
+    )
+    rsp = fs_model_store.upload("test-domain", "prefix", source)
+    assert model_path == rsp["path"]
+    assert os.path.exists(model_path)
+
+
+def test_set_meta_data(fs_model_store):
+    for model in ["model-1", "model-2"]:
+        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+        meta_data = {"created": created, "model_id": model}
+        fs_model_store.set_meta_data("test-domain", model, meta_data)
+
+        # Expected files
+        meta_data_path = os.path.join(
+            fs_model_store.root_dir, get_metadata_path("test-domain", model),
+        )
+        assert os.path.exists(meta_data_path)
+        latest_version_path = os.path.join(
+            fs_model_store.root_dir, get_domain_path("test-domain")
+        )
+        assert os.path.exists(latest_version_path)
+
+
+def test_list_versions(fs_model_store):
+    domain = "test-domain"
+    for model in ["model-1", "model-2"]:
+        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+        meta_data = {
+            "model": {"domain": domain, "model_id": model,},
+            "meta": {"created": created,},
+            "modelstore": modelstore.__version__,
+        }
+        fs_model_store.set_meta_data(domain, model, meta_data)
+        time.sleep(1)
+    versions = fs_model_store.list_versions("test-domain")
+    assert len(versions) == 2
+    model_1_created = datetime.strptime(
+        versions[0]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
+    )
+    model_2_created = datetime.strptime(
+        versions[1]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
+    )
+    assert model_1_created > model_2_created
+
+
+def test_list_domains(fs_model_store):
+    model = "test-model"
+    for domain in ["domain-1", "domain-2"]:
+        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+        meta_data = {
+            "model": {"domain": domain, "model_id": model,},
+            "meta": {"created": created,},
+            "modelstore": modelstore.__version__,
+        }
+        fs_model_store.set_meta_data(domain, model, meta_data)
+        time.sleep(1)
+    versions = fs_model_store.list_domains()
+    assert len(versions) == 2
+    model_1_created = datetime.strptime(
+        versions[0]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
+    )
+    model_2_created = datetime.strptime(
+        versions[1]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
+    )
+    assert model_1_created > model_2_created

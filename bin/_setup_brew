@@ -1,0 +1,10 @@
+set -e
+
+echo "\n ⏱  Running brew update and installing libomp"
+brew update
+
+# To use xgboost
+# https://xgboost.readthedocs.io/en/latest/build.html#building-on-osx
+brew install libomp
+
+echo "\n ✅  Done."
