@@ -40,7 +40,7 @@ print(json.dumps(meta_data, indent=4))
 For more details, please refer to the documentation.
 
 
-## License
+## License
 
 Copyright 2020 Neal Lathia
 
