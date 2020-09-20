@@ -6,6 +6,9 @@ to your filesystem or a cloud storage provider (AWS or GCP).
 The library's `ModelStore` helps you to (a) version your mdoels, (b) store them in a structured way, and
 (c) collect meta data about the Python runtime that was used to train them.
 
+This library has been developed using Python `3.7.0` and is in pre-alpha. Please open an issue if you have
+any trouble!
+
 ## Installation
 
 ```python
