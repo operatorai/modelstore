@@ -2,10 +2,11 @@ import json
 import os
 
 import click
-import torch
-from sklearn.datasets import load_diabetes
-from sklearn.model_selection import train_test_split
-from torch import nn
+from transformers import (
+    AutoConfig,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+)
 
 from modelstore import ModelStore
 
@@ -28,36 +29,26 @@ def create_model_store(backend) -> ModelStore:
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
 
 
-class ExampleNet(nn.Module):
-    def __init__(self):
-        super(ExampleNet, self).__init__()
-        self.linear = nn.Linear(10, 1)
-
-    def forward(self, x):
-        return self.linear(x)
-
-
 def train():
-    diabetes = load_diabetes()
-    X_train, X_test, y_train, y_test = train_test_split(
-        diabetes.data, diabetes.target, test_size=0.1, random_state=13
+    model_name = "distilbert-base-cased"
+    config = AutoConfig.from_pretrained(
+        model_name, num_labels=2, finetuning_task="mnli",
+    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name, config=config,
     )
 
-    X_train = torch.from_numpy(X_train).float()
-    y_train = torch.from_numpy(y_train).float().view(-1, 1)
-
-    model = ExampleNet()
-    criterion = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters())
-
-    for epoch in range(5):
-        print(f"🤖  Training epoch: {epoch}...")
-        optimizer.zero_grad()
-        outputs = model(X_train)
-        loss = criterion(outputs, y_train)
-        loss.backward()
-        optimizer.step()
-    return model, optimizer
+    # Skipped for brevity!
+    # trainer = Trainer(
+    #     model=model,
+    #     args=training_args,
+    #     train_dataset=train_dataset,
+    #     eval_dataset=eval_dataset,
+    #     compute_metrics=build_compute_metrics_fn(data_args.task_name),
+    # )
+    # trainer.train()
+    return config, model, tokenizer
 
 
 @click.command()
@@ -66,24 +57,26 @@ def train():
     type=click.Choice(["filesystem", "gcloud", "aws"], case_sensitive=False),
 )
 def main(storage):
-    model_type = "pytorch"
+    model_type = "transformers"
+    model_domain = "example-distilbert-model"
 
     # Create a model store instance
     model_store = create_model_store(storage)
 
     # In this demo, we train a single layered net
     # using the sklearn.datasets.load_diabetes dataset
-    print(f"🤖  Training an {model_type} model...")
-    model, optim = train()
+    print(f"🤖  Creating a model using {model_type}...")
+    config, model, tokenizer = train()
 
     # Create an archive containing the trained model
     print("📦  Creating a model archive...")
-    archive = model_store.pytorch.create_archive(model=model, optimizer=optim)
+    archive = model_store.transformers.create_archive(
+        config=config, model=model, tokenizer=tokenizer,
+    )
 
     # Upload the archive to the model store
     # Model domains help you to group many models together
-    model_domain = "diabetes-boosting-demo"
-    print(f"⤴️  Uploading the archive to the {model_domain} domain.")
+    print(f"⤴️  Uploading the archive to the {storage} {model_domain} domain.")
     meta = model_store.upload(model_domain, archive)
 
     # Optional: the artifacts.tar.gz file is generated into the current
