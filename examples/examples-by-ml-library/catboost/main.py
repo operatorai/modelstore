@@ -4,7 +4,6 @@ import os
 import catboost as ctb
 import click
 from sklearn.datasets import load_diabetes
-from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 
 from modelstore import ModelStore

@@ -4,7 +4,6 @@ import os
 import click
 import torch
 from sklearn.datasets import load_diabetes
-from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from torch import nn
 
