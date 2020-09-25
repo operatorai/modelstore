@@ -58,7 +58,7 @@ def _save_transformers(
     tmp_dir: str,
     config: "transformers.PretrainedConfig",
     model: "transformers.PreTrainedModel",
-    token: "transformers.PreTrainedTokenizerBase",
+    tokenizer: "transformers.PreTrainedTokenizerBase",
 ) -> str:
     import transformers
 
@@ -66,14 +66,17 @@ def _save_transformers(
         raise TypeError("Config is not a transformers.PretrainedConfig!")
     if not isinstance(model, transformers.PreTrainedModel):
         raise TypeError("Model is not a transformers.PreTrainedModel!")
-    if token and not isinstance(token, transformers.PreTrainedTokenizerBase):
+    if tokenizer and not isinstance(
+        tokenizer, transformers.PreTrainedTokenizerBase
+    ):
         raise TypeError(
             "Tokenizer is not a transformers.PreTrainedTokenizerBase!"
         )
 
     model_dir = os.path.join(tmp_dir, "transformers")
+    model.save_pretrained(model_dir)
     if config is not None:
         config.save_pretrained(model_dir)
-    model.save_pretrained(model_dir)
-    token.save_pretrained(model_dir)
+    if tokenizer is not None:
+        tokenizer.save_pretrained(model_dir)
     return model_dir
