@@ -36,7 +36,9 @@ class FileSystemStorage(CloudStorage):
                 f'Warning: "{_ROOT}" is in the root path, and is a value'
                 + " that this library usually appends. Is this intended?"
             )
-        self.root_dir = os.path.join(root_path, _ROOT)
+        root_path = os.path.abspath(root_path)
+        self.root_dir = root_path
+        logger.info("Root is: %s", self.root_dir)
 
     @classmethod
     def get_name(cls):
