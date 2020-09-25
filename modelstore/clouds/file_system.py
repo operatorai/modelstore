@@ -38,7 +38,7 @@ class FileSystemStorage(CloudStorage):
             )
         root_path = os.path.abspath(root_path)
         self.root_dir = root_path
-        logger.info("Root is: %s", self.root_dir)
+        logger.debug("Root is: %s", self.root_dir)
 
     @classmethod
     def get_name(cls):
