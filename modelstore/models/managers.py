@@ -20,6 +20,7 @@ from modelstore.models.missingmanager import MissingDepManager
 from modelstore.models.modelmanager import ModelManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.sklearn import SKLearnManager
+from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.transformers import TransformersManager
 from modelstore.models.xgboost import XGBoostManager
 
@@ -29,6 +30,7 @@ ML_LIBRARIES = {
     "pytorch": PyTorchManager,  # Adding twice as this is a common typo
     "sklearn": SKLearnManager,
     "torch": PyTorchManager,
+    "tensorflow": TensorflowManager,
     "transformers": TransformersManager,
     "xgboost": XGBoostManager,
 }
