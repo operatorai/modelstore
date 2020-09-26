@@ -47,15 +47,23 @@ def save_dependencies(tmp_dir: str, deps: list) -> str:
 
 
 def save_model_type(tmp_dir, model_name: str) -> str:
-    model_type = {"model_type": model_name}
+    model_type = {"name": model_name}
     return save_json(tmp_dir, _MODEL_TYPE_FILE, model_type)
 
 
 def extract_dependencies(archive_path: str) -> dict:
+    return _extract_json(archive_path, _PYTHON_INFO_FILE)
+
+
+def extract_model_type(archive_path: str) -> dict:
+    return _extract_json(archive_path, _MODEL_TYPE_FILE)
+
+
+def _extract_json(archive_path: str, file_name: str) -> dict:
     if not archive_path.endswith(".tar.gz"):
         return {}
     with tarfile.open(archive_path, "r:gz") as tar:
-        deps_info = tar.extractfile(_PYTHON_INFO_FILE)
+        deps_info = tar.extractfile(file_name)
         if deps_info is not None:
             deps = deps_info.read()
             return json.loads(deps)

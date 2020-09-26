@@ -88,7 +88,11 @@ class ModelStore:
         location = self.storage.upload(domain, upload_time, archive_path)
 
         meta_data = {
-            "model": {"domain": domain, "model_id": model_id,},
+            "model": {
+                "domain": domain,
+                "model_id": model_id,
+                "type": dependencies.extract_model_type(archive_path),
+            },
             "storage": {"name": self.storage.get_name(), "location": location,},
             "meta": {
                 "runtime": f"python:{runtime.get_python_version()}",

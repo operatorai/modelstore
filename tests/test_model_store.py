@@ -110,7 +110,10 @@ def test_upload(mock_gcloud, tmp_path):
     keys = ["model", "storage", "meta"]
     assert all(k in meta_data for k in keys)
 
-    keys = ["runtime", "user"]
+    keys = ["domain", "model_id", "type"]
+    assert all(k in meta_data["model"] for k in keys)
+
+    keys = ["runtime", "user", "created", "dependencies"]
     assert all(k in meta_data["meta"] for k in keys)
 
     assert meta_data["storage"]["name"] == "google:cloud-storage"
