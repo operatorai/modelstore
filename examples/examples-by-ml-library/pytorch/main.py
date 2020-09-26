@@ -80,6 +80,9 @@ def main(storage):
     print("📦  Creating a model archive...")
     archive = model_store.pytorch.create_archive(model=model, optimizer=optim)
 
+    # Note: it also works with
+    # archive = model_store.torch.create_archive(model=model, optimizer=optim)
+
     # Upload the archive to the model store
     # Model domains help you to group many models together
     model_domain = "diabetes-boosting-demo"
