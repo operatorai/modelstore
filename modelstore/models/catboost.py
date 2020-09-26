@@ -45,6 +45,10 @@ class CatBoostManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the model's type """
+        return {"type": type(kwargs["model"]).__name__}
+
     def _get_functions(self, **kwargs) -> list:
         import catboost
 

@@ -45,6 +45,9 @@ class MissingDepManager(ModelManager):
     def _required_kwargs(self) -> list:
         return []
 
+    def model_info(self, **kwargs) -> dict:
+        return {}
+
     def create_archive(self, **kwargs) -> str:
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")

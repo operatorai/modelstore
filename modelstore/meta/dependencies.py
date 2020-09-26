@@ -46,9 +46,9 @@ def save_dependencies(tmp_dir: str, deps: list) -> str:
     return save_json(tmp_dir, _PYTHON_INFO_FILE, deps_info)
 
 
-def save_model_type(tmp_dir, model_name: str) -> str:
-    model_type = {"name": model_name}
-    return save_json(tmp_dir, _MODEL_TYPE_FILE, model_type)
+def save_model_info(tmp_dir, model_name: str, model_info: dict) -> str:
+    model_info["name"] = model_name
+    return save_json(tmp_dir, _MODEL_TYPE_FILE, model_info)
 
 
 def extract_dependencies(archive_path: str) -> dict:

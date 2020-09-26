@@ -29,6 +29,10 @@ class MockModelManager(ModelManager):
     def name(cls) -> str:
         return "mock"
 
+    def model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the model's type """
+        return {}
+
     @classmethod
     def required_dependencies(cls) -> list:
         return []

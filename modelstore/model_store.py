@@ -11,6 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import os
+import tarfile
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -123,10 +125,12 @@ class ModelStore:
     def download(
         self, local_path: str, domain: str, model_id: str = None
     ) -> str:
+        local_path = os.path.abspath(local_path)
         archive_path = self.storage.download(local_path, domain, model_id)
-        # with tarfile.open(archive_path, "r:gz") as tar:
-        #     tar.extractall(path)
-        return archive_path
+        with tarfile.open(archive_path, "r:gz") as tar:
+            tar.extractall(local_path)
+        os.remove(archive_path)
+        return local_path
 
 
 def _validate_domain(domain: str):

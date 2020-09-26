@@ -72,8 +72,9 @@ class FileSystemStorage(CloudStorage):
     def _pull(self, source: dict, destination: str) -> str:
         """ Pulls a model to a destination """
         path = _get_location(source)
+        file_name = os.path.split(path)[1]
         shutil.copy(path, destination)
-        return os.path.abspath(destination)
+        return os.path.join(os.path.abspath(destination), file_name)
 
     def upload(self, domain: str, prefix: str, local_path: str) -> dict:
         fs_path = get_archive_path(domain, prefix, local_path)
