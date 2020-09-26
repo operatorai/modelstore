@@ -106,10 +106,18 @@ class ModelStore:
         self.storage.set_meta_data(domain, model_id, meta_data)
         return meta_data
 
+    def list_domains(self) -> list:
+        """ Returns a list of dicts, containing info about all
+        of the domains """
+        return self.storage.list_domains()
+
     def list_versions(self, domain: str) -> list:
         """ Returns a list of dicts, containing info about all
         of the models that have been uploaded to a domain """
         return self.storage.list_versions(domain)
+
+    def download(self, local_path: str, domain: str, model_id: str = None):
+        return self.storage.get_model(local_path, domain, model_id)
 
 
 def _validate_domain(domain: str):

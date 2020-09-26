@@ -44,10 +44,6 @@ class GoogleCloudStorage(CloudStorage):
         self.bucket_name = bucket_name
         self.__client = client
 
-    @classmethod
-    def get_name(cls):
-        return "google:cloud-storage"
-
     @property
     def client(self) -> "storage.Client":
         try:
@@ -60,7 +56,13 @@ class GoogleCloudStorage(CloudStorage):
             )
             raise
 
+    @classmethod
+    def get_name(cls):
+        return "google:cloud-storage"
+
     def validate(self) -> bool:
+        """ Runs any required validation steps - e.g.,
+        checking that a cloud bucket exists"""
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
         for bucket in list(self.client.list_buckets(prefix=self.bucket_name)):
             if bucket.name == self.bucket_name:
@@ -72,6 +74,15 @@ class GoogleCloudStorage(CloudStorage):
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
         blob.upload_from_filename(source)
+        logger.debug("Finished: %s", destination)
+        return destination
+
+    def _pull(self, source: str, destination: str) -> str:
+        """ Pulls a model to a destination """
+        logger.info("Downloading from: %s...", source)
+        bucket = self.client.get_bucket(self.bucket_name)
+        blob = bucket.blob(source)
+        blob.download_to_filename(destination)
         logger.debug("Finished: %s", destination)
         return destination
 
@@ -94,3 +105,10 @@ class GoogleCloudStorage(CloudStorage):
             obj = blob.download_as_string()
             results.append(json.loads(obj))
         return sorted_by_created(results)
+
+    def _read_json_object(self, path: str) -> dict:
+        """ Returns a dictionary of the JSON stored in a given path """
+        bucket = self.client.get_bucket(self.bucket_name)
+        blob = bucket.blob(path)
+        obj = blob.download_as_string()
+        return obj

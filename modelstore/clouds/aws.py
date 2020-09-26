@@ -42,10 +42,6 @@ class AWSStorage(CloudStorage):
         self.region = region
         self.__client = None
 
-    @classmethod
-    def get_name(cls):
-        return "aws:s3"
-
     @property
     def client(self):
         try:
@@ -55,6 +51,10 @@ class AWSStorage(CloudStorage):
         except ClientError:
             logger.error("Unable to create s3 client!")
             raise
+
+    @classmethod
+    def get_name(cls):
+        return "aws:s3"
 
     def validate(self) -> bool:
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
@@ -68,6 +68,14 @@ class AWSStorage(CloudStorage):
 
     def _push(self, source: str, destination: str) -> str:
         logger.info("Uploading to: %s...", destination)
+        self.client.upload_file(source, self.bucket_name, destination)
+        logger.debug("Finished: %s", destination)
+        return destination
+
+    def _pull(self, source: str, destination: str) -> str:
+        """ Pulls a model to a destination """
+        logger.info("Downloading from: %s...", source)
+        self.client.download_file(self.bucket_name, source, destination)
         self.client.upload_file(source, self.bucket_name, destination)
         logger.debug("Finished: %s", destination)
         return destination
@@ -88,9 +96,12 @@ class AWSStorage(CloudStorage):
             if not version["Key"].endswith(".json"):
                 # @TODO tighter controls here
                 continue
-            obj = self.client.get_object(
-                Bucket=self.bucket_name, Key=version["Key"]
-            )
-            body = obj["Body"].read()
-            results.append(json.loads(body))
+            obj = self._read_json_object(version["Key"])
+            results.append(obj)
         return sorted_by_created(results)
+
+    def _read_json_object(self, path: str) -> dict:
+        """ Returns a dictionary of the JSON stored in a given path """
+        obj = self.client.get_object(Bucket=self.bucket_name, Key=path)
+        body = obj["Body"].read()
+        return json.loads(body)

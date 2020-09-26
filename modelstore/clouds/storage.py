@@ -55,12 +55,20 @@ class CloudStorage(ABC):
         """ Pushes a file to a destination """
 
     @abstractmethod
+    def _pull(self, source: str, destination: str) -> str:
+        """ Pulls a model to a destination """
+
+    @abstractmethod
     def upload(self, domain: str, prefix: str, local_path: str) -> dict:
         """ Uploads an archive to this type of storage"""
 
     @abstractmethod
     def _read_json_objects(self, path: str) -> list:
         """ Returns a list of all the JSON in a path """
+
+    @abstractmethod
+    def _read_json_object(self, path: str) -> dict:
+        """ Returns a dictionary of the JSON stored in a given path """
 
     def list_versions(self, domain: str) -> list:
         versions_for_domain = get_versions_path(domain)
@@ -80,3 +88,17 @@ class CloudStorage(ABC):
 
             self._push(version_path, get_metadata_path(domain, model_id))
             self._push(version_path, get_domain_path(domain))
+
+    def download(self, local_path: str, domain: str, model_id: str = None):
+        """ Downloads an artifacts archive for a given (domain, model_id) pair.
+        If no model_id is given, it defaults to the latest model in that
+        domain """
+        model_meta = None
+        if model_id is None:
+            model_domain = get_domain_path(domain)
+            model_meta = self._read_json_object(model_domain)
+            logger.info("Latest model is: %f", model_meta["model"]["model_id"])
+        else:
+            model_meta_path = get_metadata_path(domain, model_id)
+            model_meta = self._read_json_object(model_meta_path)
+        self._pull(model_meta["storage"]["location"], local_path)
