@@ -70,9 +70,13 @@ def main(model_type):
     print(f"🤖  Training a {model_type} model...")
     model = train(model_type)
 
-    # Create an archive containing the trained model
     print("📦  Creating a model archive...")
-    archive = model_store.sklearn.create_archive(model=model)
+    if model_type == "sklearn":
+        archive = model_store.sklearn.create_archive(model=model)
+    elif model_type == "xgboost":
+        archive = model_store.xgboost.create_archive(model=model)
+    else:
+        raise NotImplementedError(f"Not implemented for: {model_type}")
 
     # Upload the archive to the model store
     # The first string is the model's domain - which helps you to group
