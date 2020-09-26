@@ -29,3 +29,18 @@ this `Makefile` command:
 ```bash
 ❯ make test
 ```
+
+## Run the examples
+
+We have two types of examples:
+
+* `examples-by-ml-library`, which has 1 machine learning model library and writes to three different model stores (GCP, AWS, file system)
+* `examples-by-storage` which has 2 machine learning libraries (`sklearn` and `xgboost`) and writes to one type of model store
+
+To run a single example; for example, the `xgboost` one:
+
+```bash
+❯ cd examples/examples-by-ml-library/xgboost 
+❯ make pyenv # or make pyenv-local if you have made local changes to the modelstore library
+❯ make run # will run the Python script 3 times, with each model store type
+```
