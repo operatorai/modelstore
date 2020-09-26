@@ -94,6 +94,16 @@ def main(model_type):
     print(f"✅  Finished uploading the {model_type} model!")
     print(json.dumps(meta, indent=4))
 
+    # Download the model back!
+    target = f"downloaded-{model_type}-model"
+    os.makedirs(target, exist_ok=True)
+    model_path = model_store.download(
+        local_path=target,
+        domain=model_domain,
+        model_id=meta["model"]["model_id"],
+    )
+    print(f"⤵️  Downloaded the model back to {model_path}")
+
 
 if __name__ == "__main__":
     main()
