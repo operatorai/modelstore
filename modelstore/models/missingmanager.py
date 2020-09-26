@@ -43,4 +43,4 @@ class MissingDepManager(ModelManager):
     def create_archive(self, **kwargs) -> str:
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")
-        raise ModuleNotFoundError("Library is not installed")
+        raise ModuleNotFoundError(f"{self.library} is not installed")
