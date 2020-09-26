@@ -9,6 +9,7 @@ run catboost
 run keras
 run pytorch
 run sklearn
+run tensorflow
 run transformers
 run xgboost
 
