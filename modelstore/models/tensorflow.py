@@ -15,22 +15,19 @@
 import os
 from functools import partial
 
-from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
 
 
-class KerasManager(ModelManager):
+class TensorflowManager(ModelManager):
 
     """
-    Model persistence for Keras models:
-    https://keras.io/api/models/model_saving_apis/
-    https://keras.io/guides/serialization_and_saving/
+    Model persistence for tensoflow models:
+    https://www.tensorflow.org/tutorials/keras/save_and_load
     """
 
     @classmethod
     def required_dependencies(cls) -> list:
         return [
-            "keras",
             "h5py",
             "numpy",
             "scipy",
@@ -43,18 +40,20 @@ class KerasManager(ModelManager):
     def _get_functions(self, **kwargs) -> list:
         model = kwargs["model"]
         return [
+            partial(_save_weights, model=model),
             partial(_save_model, model=model),
-            partial(
-                save_json, file_name="model_config.json", data=model.to_json(),
-            ),
         ]
 
 
-def _save_model(tmp_dir: str, model: "keras.Model") -> str:
-    import keras
+def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
+    # https://www.tensorflow.org/api_docs/python/tf/keras/Model#save_weights
+    weights_path = os.path.join(tmp_dir, "checkpoint")
+    model.save_weights(weights_path)
+    return weights_path
 
-    if config and not isinstance(model, keras.Model):
-        raise TypeError("model is not a keras.Model!")
-    file_path = os.path.join(tmp_dir, "model")
-    model.save(file_path)
-    return file_path
+
+def _save_model(tmp_dir: str, model) -> str:
+    model_path = os.path.join(tmp_dir, "model")
+    os.makedirs(model_path)
+    model.save(model_path)
+    return model_path
