@@ -67,6 +67,12 @@ def test_name(tr_manager):
     assert tr_manager.name() == "transformers"
 
 
+def test_model_info(tr_manager):
+    exp = {}
+    res = tr_manager.model_info()
+    assert exp == res
+
+
 def test_required_kwargs(tr_manager):
     assert tr_manager._required_kwargs() == ["model", "tokenizer"]
 

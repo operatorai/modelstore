@@ -41,6 +41,12 @@ def test_name(sklearn_manager):
     assert sklearn_manager.name() == "sklearn"
 
 
+def test_model_info(sklearn_manager, sklearn_model):
+    exp = {"type": "GradientBoostingRegressor"}
+    res = sklearn_manager.model_info(model=sklearn_model)
+    assert exp == res
+
+
 def test_required_kwargs(sklearn_manager):
     assert sklearn_manager._required_kwargs() == ["model"]
 

@@ -43,6 +43,12 @@ def test_name(keras_manager):
     assert keras_manager.name() == "keras"
 
 
+def test_model_info(keras_manager):
+    exp = {}
+    res = keras_manager.model_info()
+    assert exp == res
+
+
 def test_required_kwargs(keras_manager):
     assert keras_manager._required_kwargs() == ["model"]
 

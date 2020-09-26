@@ -51,6 +51,12 @@ def test_name(tf_manager):
     assert tf_manager.name() == "tensorflow"
 
 
+def test_model_info(tf_manager):
+    exp = {}
+    res = tf_manager.model_info()
+    assert exp == res
+
+
 def test_required_kwargs(tf_manager):
     assert tf_manager._required_kwargs() == ["model"]
 

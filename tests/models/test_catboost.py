@@ -45,6 +45,12 @@ def test_name(catboost_manager):
     assert catboost_manager.name() == "catboost"
 
 
+def test_model_info(catboost_manager, catb_model):
+    exp = {"type": "CatBoostClassifier"}
+    res = catboost_manager.model_info(model=catb_model)
+    assert exp == res
+
+
 def test_required_kwargs(catboost_manager):
     assert catboost_manager._required_kwargs() == ["model"]
 
