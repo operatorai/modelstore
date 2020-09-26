@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json
+import os
 
 from modelstore.clouds.storage import CloudStorage
 from modelstore.clouds.util.paths import get_archive_path
@@ -75,6 +76,8 @@ class AWSStorage(CloudStorage):
     def _pull(self, source: dict, destination: str) -> str:
         """ Pulls a model to a destination """
         prefix = _get_location(self.bucket_name, source)
+        file_name = os.path.split(prefix)[1]
+        destination = os.path.join(destination, file_name)
         logger.info("Downloading from: %s...", prefix)
         self.client.download_file(self.bucket_name, prefix, destination)
         logger.debug("Finished: %s", destination)

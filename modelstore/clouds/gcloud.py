@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json
+import os
 
 from modelstore.clouds.storage import CloudStorage
 from modelstore.clouds.util.paths import get_archive_path
@@ -81,6 +82,8 @@ class GoogleCloudStorage(CloudStorage):
         """ Pulls a model to a destination """
         logger.info("Downloading from: %s...", source)
         prefix = _get_location(self.bucket_name, source)
+        file_name = os.path.split(prefix)[1]
+        destination = os.path.join(destination, file_name)
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(prefix)
         blob.download_to_filename(destination)
@@ -110,7 +113,7 @@ class GoogleCloudStorage(CloudStorage):
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(path)
         obj = blob.download_as_string()
-        return obj
+        return json.loads(obj)
 
 
 def _format_location(bucket_name: str, prefix: str) -> dict:
