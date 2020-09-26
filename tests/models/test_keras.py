@@ -25,7 +25,7 @@ from modelstore.models.keras import KerasManager, _save_model, save_json
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture()
+@pytest.fixture
 def keras_model():
     inputs = keras.Input(shape=(10,))
     outputs = keras.layers.Dense(1)(inputs)
@@ -34,14 +34,21 @@ def keras_model():
     return model
 
 
-def test_required_kwargs():
-    mngr = KerasManager()
-    assert mngr._required_kwargs() == ["model"]
+@pytest.fixture
+def keras_manager():
+    return KerasManager()
 
 
-def test_get_functions(keras_model):
-    mngr = KerasManager()
-    assert len(mngr._get_functions(model=keras_model)) == 2
+def test_name(keras_manager):
+    assert keras_manager.name() == "keras"
+
+
+def test_required_kwargs(keras_manager):
+    assert keras_manager._required_kwargs() == ["model"]
+
+
+def test_get_functions(keras_manager, keras_model):
+    assert len(keras_manager._get_functions(model=keras_model)) == 2
 
 
 def test_save_model(keras_model, tmp_path):

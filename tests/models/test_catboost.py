@@ -25,7 +25,7 @@ from modelstore.models import catboost
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture()
+@pytest.fixture
 def catb_model():
     model = ctb.CatBoostClassifier(loss_function="MultiClass")
     x = np.random.rand(10, 10)
@@ -39,6 +39,10 @@ def catb_model():
 @pytest.fixture
 def catboost_manager():
     return catboost.CatBoostManager()
+
+
+def test_name(catboost_manager):
+    assert catboost_manager.name() == "catboost"
 
 
 def test_required_kwargs(catboost_manager):

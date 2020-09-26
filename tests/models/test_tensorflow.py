@@ -42,14 +42,21 @@ def tf_model():
     return model
 
 
-def test_required_kwargs():
-    mngr = TensorflowManager()
-    assert mngr._required_kwargs() == ["model"]
+@pytest.fixture
+def tf_manager():
+    return TensorflowManager()
 
 
-def test_get_functions(tf_model):
-    mngr = TensorflowManager()
-    assert len(mngr._get_functions(model=tf_model)) == 2
+def test_name(tf_manager):
+    assert tf_manager.name() == "tensorflow"
+
+
+def test_required_kwargs(tf_manager):
+    assert tf_manager._required_kwargs() == ["model"]
+
+
+def test_get_functions(tf_manager, tf_model):
+    assert len(tf_manager._get_functions(model=tf_model)) == 2
 
 
 def test_save_model(tf_model, tmp_path):

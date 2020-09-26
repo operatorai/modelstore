@@ -28,6 +28,11 @@ class XGBoostManager(ModelManager):
     """
 
     @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "xgboost"
+
+    @classmethod
     def required_dependencies(cls) -> list:
         return ["xgboost"]
 

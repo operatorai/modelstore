@@ -30,6 +30,11 @@ class PyTorchManager(ModelManager):
     """
 
     @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "torch"
+
+    @classmethod
     def required_dependencies(cls) -> list:
         return ["torch"]
 

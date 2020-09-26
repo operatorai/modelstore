@@ -119,7 +119,10 @@ class ModelStore:
     def download(
         self, local_path: str, domain: str, model_id: str = None
     ) -> str:
-        return self.storage.get_model(local_path, domain, model_id)
+        archive_path = self.storage.download(local_path, domain, model_id)
+        # with tarfile.open(archive_path, "r:gz") as tar:
+        #     tar.extractall(path)
+        return archive_path
 
 
 def _validate_domain(domain: str):

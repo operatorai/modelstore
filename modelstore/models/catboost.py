@@ -34,6 +34,11 @@ class CatBoostManager(ModelManager):
     """
 
     @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "catboost"
+
+    @classmethod
     def required_dependencies(cls) -> list:
         return ["catboost", "onnxruntime"]
 

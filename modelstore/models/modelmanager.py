@@ -18,7 +18,7 @@ import tarfile
 import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 
-from modelstore.meta.dependencies import save_dependencies
+from modelstore.meta.dependencies import save_dependencies, save_model_type
 
 
 class ModelManager(ABC):
@@ -54,6 +54,12 @@ class ModelManager(ABC):
         and any other required data
         """
 
+    @classmethod
+    @abstractmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        raise NotImplementedError()
+
     @abstractmethod
     def _required_kwargs(self) -> list:
         """
@@ -72,7 +78,10 @@ class ModelManager(ABC):
         """ Returns a list of files created in tmp_dir that will form
         part of the artifacts archive.
         """
-        file_paths = [save_dependencies(tmp_dir, self._get_dependencies())]
+        file_paths = [
+            save_dependencies(tmp_dir, self._get_dependencies()),
+            save_model_type(tmp_dir, self.name()),
+        ]
         for func in self._get_functions(**kwargs):
             rsp = func(tmp_dir)
             if isinstance(rsp, list):

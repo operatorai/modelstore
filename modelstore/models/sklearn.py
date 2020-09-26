@@ -26,6 +26,11 @@ class SKLearnManager(ModelManager):
     """
 
     @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "sklearn"
+
+    @classmethod
     def required_dependencies(cls) -> list:
         return ["sklearn"]
 

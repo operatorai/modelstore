@@ -49,7 +49,7 @@ class ExampleNet(nn.Module):
         return x
 
 
-@pytest.fixture()
+@pytest.fixture
 def pytorch_model():
     return ExampleNet()
 
@@ -59,14 +59,23 @@ def pytorch_optim(pytorch_model):
     return optim.SGD(pytorch_model.parameters(), lr=0.001, momentum=0.9)
 
 
-def test_required_kwargs():
-    mngr = PyTorchManager()
-    assert mngr._required_kwargs() == ["model", "optimizer"]
+@pytest.fixture
+def torch_manager():
+    return PyTorchManager()
 
 
-def test_get_functions():
-    mngr = PyTorchManager()
-    assert len(mngr._get_functions(model="model", optimizer="optim")) == 2
+def test_name(torch_manager):
+    assert torch_manager.name() == "torch"
+
+
+def test_required_kwargs(torch_manager):
+    assert torch_manager._required_kwargs() == ["model", "optimizer"]
+
+
+def test_get_functions(torch_manager):
+    assert (
+        len(torch_manager._get_functions(model="model", optimizer="optim")) == 2
+    )
 
 
 def models_equal(model_a: nn.Module, module_b: nn.Module):

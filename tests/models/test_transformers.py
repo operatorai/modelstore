@@ -58,14 +58,24 @@ def model(model_name, model_config):
     )
 
 
-def test_required_kwargs():
-    mngr = TransformersManager()
-    assert mngr._required_kwargs() == ["model", "tokenizer"]
+@pytest.fixture
+def tr_manager():
+    return TransformersManager()
 
 
-def test_get_functions():
-    mngr = TransformersManager()
-    assert len(mngr._get_functions(config="c", model="m", tokenizer="t")) == 1
+def test_name(tr_manager):
+    assert tr_manager.name() == "transformers"
+
+
+def test_required_kwargs(tr_manager):
+    assert tr_manager._required_kwargs() == ["model", "tokenizer"]
+
+
+def test_get_functions(tr_manager):
+    assert (
+        len(tr_manager._get_functions(config="c", model="m", tokenizer="t"))
+        == 1
+    )
 
 
 def test_save_transformers(model_config, model, tokenizer, tmp_path):

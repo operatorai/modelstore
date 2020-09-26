@@ -26,6 +26,11 @@ class TensorflowManager(ModelManager):
     """
 
     @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "tensorflow"
+
+    @classmethod
     def required_dependencies(cls) -> list:
         return [
             "h5py",

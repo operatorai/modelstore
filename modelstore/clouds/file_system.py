@@ -73,7 +73,7 @@ class FileSystemStorage(CloudStorage):
         """ Pulls a model to a destination """
         path = _get_location(source)
         shutil.copy(path, destination)
-        return destination
+        return os.path.abspath(destination)
 
     def upload(self, domain: str, prefix: str, local_path: str) -> dict:
         fs_path = get_archive_path(domain, prefix, local_path)
@@ -90,15 +90,14 @@ class FileSystemStorage(CloudStorage):
                 # @TODO tighter controls
                 continue
             version_path = os.path.join(path, entry)
-            meta = self._read_json_object(version_path)
+            meta = _read_json_file(version_path)
             results.append(meta)
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
         """ Returns a dictionary of the JSON stored in a given path """
-        with open(path, "r") as lines:
-            meta = json.loads(lines.read())
-        return meta
+        path = self.relative_dir(path)
+        return _read_json_file(path)
 
     def relative_dir(self, file_path: str) -> str:
         paths = os.path.split(file_path)
@@ -114,3 +113,9 @@ def _format_location(archive_path: str) -> dict:
 
 def _get_location(meta: dict) -> str:
     return meta["path"]
+
+
+def _read_json_file(path: str) -> dict:
+    with open(path, "r") as lines:
+        meta = json.loads(lines.read())
+    return meta

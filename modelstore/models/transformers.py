@@ -26,8 +26,12 @@ class TransformersManager(ModelManager):
     Model persistence for Transformer models:
     https://huggingface.co/transformers/main_classes/model.html#transformers.TFPreTrainedModel.save_pretrained
     https://github.com/huggingface/transformers/blob/e50a931c118b9f55f77a743bf703f436bf7a7c29/src/transformers/modeling_utils.py#L676
-
     """
+
+    @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "transformers"
 
     @classmethod
     def required_dependencies(cls) -> list:

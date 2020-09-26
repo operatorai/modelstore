@@ -8,6 +8,7 @@ from modelstore.utils.log import logger
 
 # pylint: disable=broad-except
 _PYTHON_INFO_FILE = "python-info.json"
+_MODEL_TYPE_FILE = "model-info.json"
 
 
 def _get_version(modname: str) -> str:
@@ -43,6 +44,11 @@ def save_dependencies(tmp_dir: str, deps: list) -> str:
     deps_info = _get_dependency_versions(deps)
     deps_info = {k: v for k, v in deps_info.items() if v is not None}
     return save_json(tmp_dir, _PYTHON_INFO_FILE, deps_info)
+
+
+def save_model_type(tmp_dir, model_name: str) -> str:
+    model_type = {"model_type": model_name}
+    return save_json(tmp_dir, _MODEL_TYPE_FILE, model_type)
 
 
 def extract_dependencies(archive_path: str) -> dict:

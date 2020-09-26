@@ -26,6 +26,10 @@ from modelstore.models.modelmanager import ModelManager
 
 class MockModelManager(ModelManager):
     @classmethod
+    def name(cls) -> str:
+        return "mock"
+
+    @classmethod
     def required_dependencies(cls) -> list:
         return []
 
@@ -53,12 +57,15 @@ def mock_save_config(tmp_dir: str) -> str:
 
 def test_collect_files(tmp_path):
     mngr = MockModelManager()
-    exp = [
-        os.path.join(tmp_path, "python-info.json"),
-        os.path.join(tmp_path, "model.joblib"),
-        os.path.join(tmp_path, "config.json"),
-    ]
-    res = mngr._collect_files(tmp_path)
+    exp = sorted(
+        [
+            os.path.join(tmp_path, "model-info.json"),
+            os.path.join(tmp_path, "python-info.json"),
+            os.path.join(tmp_path, "model.joblib"),
+            os.path.join(tmp_path, "config.json"),
+        ]
+    )
+    res = sorted(mngr._collect_files(tmp_path))
     assert res == exp
 
 
@@ -79,11 +86,10 @@ def test_create_archive():
     mngr.create_archive(model="model", config="config")
     assert os.path.exists(target)
 
-    exp = [
-        "python-info.json",
-        "model.joblib",
-        "config.json",
-    ]
+    exp = sorted(
+        ["model-info.json", "python-info.json", "model.joblib", "config.json",]
+    )
     with tarfile.open(target) as tar:
-        files = [f.name for f in tar.getmembers()]
+        files = sorted([f.name for f in tar.getmembers()])
+        assert len(files) == len(exp)
         assert files == exp
