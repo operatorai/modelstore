@@ -30,7 +30,7 @@ def catb_model():
     model = ctb.CatBoostClassifier(loss_function="MultiClass")
     x = np.random.rand(10, 10)
     y = np.random.randint(0, 2, size=(10))
-    while np.unique(y) == 1:
+    while len(np.unique(y)) == 1:
         y = np.random.randint(0, 2, size=(10))
     model.fit(x, y)
     return model

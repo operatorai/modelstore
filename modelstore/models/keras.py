@@ -53,7 +53,7 @@ class KerasManager(ModelManager):
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:
     import keras
 
-    if config and not isinstance(model, keras.Model):
+    if model and not isinstance(model, keras.Model):
         raise TypeError("model is not a keras.Model!")
     file_path = os.path.join(tmp_dir, "model")
     model.save(file_path)

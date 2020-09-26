@@ -26,6 +26,8 @@ class MissingDepManager(ModelManager):
 
     def __init__(self, library: str):
         super().__init__()
+        if library == "pytorch":
+            library = "torch"
         self.library = library
 
     @classmethod

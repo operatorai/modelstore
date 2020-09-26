@@ -47,10 +47,6 @@ def validate_library_attributes(
         with pytest.raises(ModuleNotFoundError):
             mgr.create_archive(model="test")
 
-    # Libraries that have not been implemented (yet!)
-    for library in ["tensorflow"]:
-        assert not hasattr(store, library)
-
 
 @patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
 def test_from_gcloud(mock_gcloud):
