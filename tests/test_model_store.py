@@ -54,10 +54,12 @@ def validate_library_attributes(
 
 @patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
 def test_from_gcloud(mock_gcloud):
-    mock_gcloud("project-name", "gcs-bucket-name").validate.return_value = True
+    mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
+    mocked_gcloud.validate.return_value = True
+    mocked_gcloud.get_name.return_value = "google:cloud-storage"
 
     store = ModelStore.from_gcloud("project-name", "gcs-bucket-name")
-    assert store.storage._extract_mock_name() == "GoogleCloudStorage()"
+    assert store.storage.get_name() == "google:cloud-storage"
     validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
 
 
@@ -76,10 +78,12 @@ def only_sklearn(library):
 @patch("modelstore.model_store.get_manager", side_effect=only_sklearn)
 @patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
 def test_from_gcloud_only_sklearn(mock_gcloud, _):
-    mock_gcloud("project-name", "gcs-bucket-name").validate.return_value = True
+    mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
+    mocked_gcloud.validate.return_value = True
+    mocked_gcloud.get_name.return_value = "google:cloud-storage"
 
     store = ModelStore.from_gcloud("project-name", "gcs-bucket-name")
-    assert store.storage._extract_mock_name() == "GoogleCloudStorage()"
+    assert store.storage.get_name() == "google:cloud-storage"
 
     libraries = ML_LIBRARIES.copy()
     libraries.pop("sklearn")
@@ -90,13 +94,10 @@ def test_from_gcloud_only_sklearn(mock_gcloud, _):
 
 @patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
 def test_upload(mock_gcloud, tmp_path):
-    mock_gcloud("project-name", "gcs-bucket-name").validate.return_value = True
-    mock_gcloud(
-        "project-name", "gcs-bucket-name"
-    ).get_name.return_value = "name"
-    mock_gcloud("project-name", "gcs-bucket-name").upload.return_value = {
-        "bucket": "gcs-bucket-name"
-    }
+    mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
+    mocked_gcloud.validate.return_value = True
+    mocked_gcloud.get_name.return_value = "google:cloud-storage"
+    mocked_gcloud.upload.return_value = {"bucket": "gcs-bucket-name"}
     tmp_file = os.path.join(tmp_path, "test.txt")
     Path(tmp_file).touch()
 
@@ -116,7 +117,7 @@ def test_upload(mock_gcloud, tmp_path):
     keys = ["runtime", "user"]
     assert all(k in meta_data["meta"] for k in keys)
 
-    assert meta_data["storage"]["name"] == "name"
+    assert meta_data["storage"]["name"] == "google:cloud-storage"
     assert meta_data["storage"]["location"]["bucket"] == "gcs-bucket-name"
     assert meta_data["model"]["domain"] == "test-domain"
     try:

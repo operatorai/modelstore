@@ -5,7 +5,7 @@ VIRTUALENV_NAME=$(shell pwd | rev | cut -d '/' -f 1 | rev)-dev
 uninstall:
 	@./bin/_remove_pyenv
 
-install:
+install: uninstall
 	@./bin/_setup_brew
 	@./bin/_setup_pyenv $(VIRTUALENV_NAME)
 
