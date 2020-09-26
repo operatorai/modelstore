@@ -11,8 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from __future__ import annotations
-
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -40,7 +38,7 @@ class ModelStore:
     storage: CloudStorage
 
     @classmethod
-    def from_aws_s3(cls, bucket_name: str, region: str = None) -> ModelStore:
+    def from_aws_s3(cls, bucket_name: str, region: str = None) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an AWS s3
         bucket.
         
@@ -52,7 +50,7 @@ class ModelStore:
         )
 
     @classmethod
-    def from_gcloud(cls, project_name: str, bucket_name: str) -> ModelStore:
+    def from_gcloud(cls, project_name: str, bucket_name: str) -> "ModelStore":
         """Creates a ModelStore instance that stores models to a
         Google Cloud Bucket.
         
@@ -64,7 +62,7 @@ class ModelStore:
         )
 
     @classmethod
-    def from_file_system(cls, root_directory: str) -> ModelStore:
+    def from_file_system(cls, root_directory: str) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         the local file system. """
         return ModelStore(storage=FileSystemStorage(root_directory))

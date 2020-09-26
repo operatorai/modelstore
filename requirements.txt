@@ -1,3 +1,4 @@
 gitpython==3.1.8
 joblib==0.16.0
 onnxruntime==1.4.0
+dataclasses==0.6

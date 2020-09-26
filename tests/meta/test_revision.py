@@ -36,6 +36,6 @@ def test_git_meta():
 
     meta = revision.git_meta()
     assert meta is not None
-    assert meta["repository"] == "operator.ai"
+    assert meta["repository"] == "modelstore"
     if meta["local_changes"] is False:
         assert meta["sha"] == exp
