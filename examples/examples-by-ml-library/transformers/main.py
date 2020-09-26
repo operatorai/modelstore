@@ -1,10 +1,12 @@
 import json
 import os
 
-import catboost as ctb
 import click
-from sklearn.datasets import load_diabetes
-from sklearn.model_selection import train_test_split
+from transformers import (
+    AutoConfig,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+)
 
 from modelstore import ModelStore
 
@@ -28,44 +30,53 @@ def create_model_store(backend) -> ModelStore:
 
 
 def train():
-    diabetes = load_diabetes()
-    X_train, X_test, y_train, y_test = train_test_split(
-        diabetes.data, diabetes.target, test_size=0.1, random_state=13
+    model_name = "distilbert-base-cased"
+    config = AutoConfig.from_pretrained(
+        model_name, num_labels=2, finetuning_task="mnli",
     )
-    model = ctb.CatBoostRegressor()
-    model.fit(X_train, y_train)
-    # Skipped for brevity (but important!) evaluate the model
-    return model
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name, config=config,
+    )
+
+    # Skipped for brevity!
+    # trainer = Trainer(
+    #     model=model,
+    #     args=training_args,
+    #     train_dataset=train_dataset,
+    #     eval_dataset=eval_dataset,
+    #     compute_metrics=build_compute_metrics_fn(data_args.task_name),
+    # )
+    # trainer.train()
+    return config, model, tokenizer
 
 
 @click.command()
 @click.option(
     "--storage",
-    type=click.Choice(
-        ["filesystem", "gcloud", "aws", "all"], case_sensitive=False
-    ),
+    type=click.Choice(["filesystem", "gcloud", "aws"], case_sensitive=False),
 )
 def main(storage):
-    model_type = "catboost"
-    model_domain = "diabetes-boosting-demo"
+    model_type = "transformers"
+    model_domain = "example-distilbert-model"
 
     # Create a model store instance
     model_store = create_model_store(storage)
 
-    # In this demo, we train a CatBoostRegressor
-    # Replace this with the code to train your own model
-    print(f"🤖  Training a {model_type} model...")
-    model = train()
+    # In this demo, we train a single layered net
+    # using the sklearn.datasets.load_diabetes dataset
+    print(f"🤖  Creating a model using {model_type}...")
+    config, model, tokenizer = train()
 
     # Create an archive containing the trained model
     print("📦  Creating a model archive...")
-    archive = model_store.catboost.create_archive(model=model)
+    archive = model_store.transformers.create_archive(
+        config=config, model=model, tokenizer=tokenizer,
+    )
 
     # Upload the archive to the model store
-    # The first string is the model's domain - which helps you to group
-    # many models that are trained on the same target together
-
-    print(f"⤴️  Uploading the archive to the {model_domain} domain.")
+    # Model domains help you to group many models together
+    print(f"⤴️  Uploading the archive to the {storage} {model_domain} domain.")
     meta = model_store.upload(model_domain, archive)
 
     # Optional: the artifacts.tar.gz file is generated into the current

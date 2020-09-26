@@ -11,7 +11,7 @@ pyenv:
 
 pyenv-local: pyenv-uninstall pyenv
 	pip uninstall -y modelstore
-	pip install -e $REPO_ROOT
+	pip install -e $(REPO_ROOT)
 
 pyenv-test: pyenv-uninstall pyenv
 	pip uninstall -y modelstore
@@ -26,4 +26,4 @@ pyenv-uninstall:
 
 refresh:
 	pip uninstall -y modelstore
-	pip install -e $REPO_ROOT
+	pip install -e $(REPO_ROOT)

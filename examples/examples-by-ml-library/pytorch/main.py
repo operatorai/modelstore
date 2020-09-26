@@ -4,7 +4,6 @@ import os
 import click
 import torch
 from sklearn.datasets import load_diabetes
-from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from torch import nn
 
@@ -69,9 +68,8 @@ def train():
 def main(storage):
     model_type = "pytorch"
 
-    # Create a model store instance; in this case, we want to
-    # store our models in s3 (use from_gcloud for GCP)
-    model_store = ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    # Create a model store instance
+    model_store = create_model_store(storage)
 
     # In this demo, we train a single layered net
     # using the sklearn.datasets.load_diabetes dataset

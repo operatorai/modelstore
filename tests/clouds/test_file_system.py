@@ -41,7 +41,7 @@ def test_name(fs_model_store):
 
 def test_validate(fs_model_store):
     assert fs_model_store.validate()
-    assert not os.path.exists(fs_model_store.root_dir)
+    assert os.path.exists(fs_model_store.root_dir)
 
 
 def test_upload(fs_model_store, tmp_path):
