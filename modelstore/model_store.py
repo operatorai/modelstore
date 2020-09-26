@@ -83,6 +83,7 @@ class ModelStore:
         """
         _validate_domain(domain)
         model_id = str(uuid.uuid4())
+        # Warning! Mac OS translates ":" in paths to "/"
         upload_time = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
         location = self.storage.upload(domain, upload_time, archive_path)
 
