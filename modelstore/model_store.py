@@ -116,7 +116,9 @@ class ModelStore:
         of the models that have been uploaded to a domain """
         return self.storage.list_versions(domain)
 
-    def download(self, local_path: str, domain: str, model_id: str = None):
+    def download(
+        self, local_path: str, domain: str, model_id: str = None
+    ) -> str:
         return self.storage.get_model(local_path, domain, model_id)
 
 

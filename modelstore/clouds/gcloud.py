@@ -77,21 +77,20 @@ class GoogleCloudStorage(CloudStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def _pull(self, source: str, destination: str) -> str:
+    def _pull(self, source: dict, destination: str) -> str:
         """ Pulls a model to a destination """
         logger.info("Downloading from: %s...", source)
+        prefix = _get_location(self.bucket_name, source)
         bucket = self.client.get_bucket(self.bucket_name)
-        blob = bucket.blob(source)
+        blob = bucket.blob(prefix)
         blob.download_to_filename(destination)
         logger.debug("Finished: %s", destination)
         return destination
 
     def upload(self, domain: str, prefix: str, local_path: str) -> dict:
         bucket_path = get_archive_path(domain, prefix, local_path)
-        return {
-            "bucket": self.bucket_name,
-            "prefix": self._push(local_path, bucket_path),
-        }
+        prefix = self._push(local_path, bucket_path)
+        return _format_location(self.bucket_name, prefix)
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -112,3 +111,16 @@ class GoogleCloudStorage(CloudStorage):
         blob = bucket.blob(path)
         obj = blob.download_as_string()
         return obj
+
+
+def _format_location(bucket_name: str, prefix: str) -> dict:
+    return {
+        "bucket": bucket_name,
+        "prefix": prefix,
+    }
+
+
+def _get_location(bucket_name, meta: dict) -> str:
+    if bucket_name != meta["bucket"]:
+        raise ValueError("Meta-data has a different bucket name")
+    return meta["prefix"]

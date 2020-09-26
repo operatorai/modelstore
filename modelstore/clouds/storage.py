@@ -55,7 +55,7 @@ class CloudStorage(ABC):
         """ Pushes a file to a destination """
 
     @abstractmethod
-    def _pull(self, source: str, destination: str) -> str:
+    def _pull(self, source: dict, destination: str) -> str:
         """ Pulls a model to a destination """
 
     @abstractmethod

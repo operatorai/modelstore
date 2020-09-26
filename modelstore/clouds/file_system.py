@@ -69,9 +69,10 @@ class FileSystemStorage(CloudStorage):
         shutil.copy(source, destination)
         return destination
 
-    def _pull(self, source: str, destination: str) -> str:
+    def _pull(self, source: dict, destination: str) -> str:
         """ Pulls a model to a destination """
-        shutil.copy(source, destination)
+        path = _get_location(source)
+        shutil.copy(path, destination)
         return destination
 
     def upload(self, domain: str, prefix: str, local_path: str) -> dict:
@@ -79,7 +80,7 @@ class FileSystemStorage(CloudStorage):
         logger.info("Moving to: %s...", fs_path)
         archive_path = self._push(local_path, fs_path)
         logger.debug("Finished: %s", fs_path)
-        return {"path": os.path.abspath(archive_path)}
+        return _format_location(archive_path)
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -105,3 +106,11 @@ class FileSystemStorage(CloudStorage):
         if not os.path.exists(parent_dir):
             os.makedirs(parent_dir)
         return os.path.join(parent_dir, paths[1])
+
+
+def _format_location(archive_path: str) -> dict:
+    return {"path": os.path.abspath(archive_path)}
+
+
+def _get_location(meta: dict) -> str:
+    return meta["path"]
