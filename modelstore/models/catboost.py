@@ -19,6 +19,12 @@ from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
 from modelstore.utils.log import logger
 
+_MODEL_PREFIX = "model.{}"
+MODEL_JSON = _MODEL_PREFIX.format("json")
+MODEL_CBM = _MODEL_PREFIX.format(".cbm")
+MODEL_ONNX = _MODEL_PREFIX.format("onnx")
+MODEL_ATTRIBUTES = "model_attributes.json"
+
 
 class CatBoostManager(ModelManager):
 
@@ -70,7 +76,7 @@ def save_model(
     https://catboost.ai/docs/concepts/python-reference_catboost_save_model.html#python-reference_catboost_save_model
     """
     logger.debug("Saving catboost model as %s", fmt)
-    target = os.path.join(tmp_dir, f"model.{fmt}")
+    target = os.path.join(tmp_dir, _MODEL_PREFIX.format(fmt))
     model.save_model(target, format=fmt, pool=pool)
     return target
 
@@ -92,4 +98,4 @@ def dump_attributes(tmp_dir: str, model: "catboost.CatBoost") -> str:
         # Return the names of classes for classification models.
         # An empty list is returned for all other models.
         config["classes"] = model.classes_.tolist()
-    return save_json(tmp_dir, "model_attributes.json", config)
+    return save_json(tmp_dir, MODEL_ATTRIBUTES, config)

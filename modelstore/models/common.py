@@ -26,7 +26,7 @@ def save_json(tmp_dir: str, file_name: str, data: dict) -> str:
     return target
 
 
-def save_joblib(tmp_dir: str, model: Any, fn: str = "model.joblib") -> str:
+def save_joblib(tmp_dir: str, model: Any, fn: str) -> str:
     model_path = os.path.join(tmp_dir, fn)
     joblib.dump(model, model_path)
     return model_path

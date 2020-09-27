@@ -17,6 +17,9 @@ from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
 
+MODEL_CHECKPOINT = "checkpoint"
+MODEL_DIRECTORY = "model"
+
 
 class TensorflowManager(ModelManager):
 
@@ -56,13 +59,13 @@ class TensorflowManager(ModelManager):
 
 def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
     # https://www.tensorflow.org/api_docs/python/tf/keras/Model#save_weights
-    weights_path = os.path.join(tmp_dir, "checkpoint")
+    weights_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
     model.save_weights(weights_path)
     return weights_path
 
 
 def _save_model(tmp_dir: str, model) -> str:
-    model_path = os.path.join(tmp_dir, "model")
+    model_path = os.path.join(tmp_dir, MODEL_DIRECTORY)
     os.makedirs(model_path)
     model.save(model_path)
     return model_path

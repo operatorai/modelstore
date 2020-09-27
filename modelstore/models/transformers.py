@@ -18,6 +18,7 @@ from functools import partial
 from modelstore.models.modelmanager import ModelManager
 
 # pylint disable=import-outside-toplevel
+MODEL_DIRECTORY = "transformers"
 
 
 class TransformersManager(ModelManager):
@@ -81,7 +82,7 @@ def _save_transformers(
             "Tokenizer is not a transformers.PreTrainedTokenizerBase!"
         )
 
-    model_dir = os.path.join(tmp_dir, "transformers")
+    model_dir = os.path.join(tmp_dir, MODEL_DIRECTORY)
     model.save_pretrained(model_dir)
     if config is not None:
         config.save_pretrained(model_dir)

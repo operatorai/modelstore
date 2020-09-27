@@ -27,7 +27,7 @@ def test_get_version():
     if "isort" in sys.modules:
         # Force import
         del sys.modules["isort"]
-    assert dependencies._get_version("isort") == "5.4.2"
+    assert dependencies._get_version("isort") == "5.5.3"
 
 
 def test_get_dependency_versions():
@@ -44,7 +44,7 @@ def test_get_dependency_versions():
         "pylint": "2.6.0",
         "black": "19.10b0",
         "flake8": "3.8.3",
-        "isort": "5.4.2",
+        "isort": "5.5.3",
         "a-missing-dependency": None,
     }
     result = dependencies._get_dependency_versions(test_deps)
@@ -70,7 +70,7 @@ def test_save_dependencies(tmp_path):
         "pylint": "2.6.0",
         "black": "19.10b0",
         "flake8": "3.8.3",
-        "isort": "5.4.2",
+        "isort": "5.5.3",
     }
     tmp_file = dependencies.save_dependencies(tmp_path, test_deps)
     assert os.path.split(tmp_file)[1] == "python-info.json"
@@ -85,7 +85,7 @@ def test_extract_dependencies(tmp_path):
         "pylint": "2.6.0",
         "black": "19.10b0",
         "flake8": "3.8.3",
-        "isort": "5.4.2",
+        "isort": "5.5.3",
     }
     tmp_archive = os.path.join(tmp_path, "archive.tar.gz")
     tmp_file = dependencies.save_dependencies(tmp_path, expected)

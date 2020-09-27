@@ -18,6 +18,9 @@ from functools import partial
 from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
 
+MODEL_CONFIG = "model_config.json"
+MODEL_DIRECTORY = "model"
+
 
 class KerasManager(ModelManager):
 
@@ -53,9 +56,7 @@ class KerasManager(ModelManager):
         model = kwargs["model"]
         return [
             partial(_save_model, model=model),
-            partial(
-                save_json, file_name="model_config.json", data=model.to_json(),
-            ),
+            partial(save_json, file_name=MODEL_CONFIG, data=model.to_json(),),
         ]
 
 
@@ -64,6 +65,6 @@ def _save_model(tmp_dir: str, model: "keras.Model") -> str:
 
     if model and not isinstance(model, keras.Model):
         raise TypeError("model is not a keras.Model!")
-    file_path = os.path.join(tmp_dir, "model")
+    file_path = os.path.join(tmp_dir, MODEL_DIRECTORY)
     model.save(file_path)
     return file_path

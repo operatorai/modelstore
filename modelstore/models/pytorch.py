@@ -18,6 +18,8 @@ from functools import partial
 from modelstore.models.modelmanager import ModelManager
 
 # pylint disable=import-outside-toplevel
+MODEL_CHECKPOINT = "checkpoint.pt"
+MODEL_PT = "model.pt"
 
 
 class PyTorchManager(ModelManager):
@@ -73,7 +75,7 @@ def _save_state_dict(
     if not isinstance(optimizer, torch.optim.Optimizer):
         raise TypeError("Optimizer is not a torch.optim.Optimizer!")
 
-    file_path = os.path.join(tmp_dir, "checkpoint.pt")
+    file_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
     torch.save(
         {
             "model_state_dict": model.state_dict(),
@@ -87,6 +89,6 @@ def _save_state_dict(
 def _save_model(tmp_dir: str, model: "nn.Module") -> str:
     import torch
 
-    file_path = os.path.join(tmp_dir, "model.pt")
+    file_path = os.path.join(tmp_dir, MODEL_PT)
     torch.save(model, file_path)
     return file_path

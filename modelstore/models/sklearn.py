@@ -17,6 +17,8 @@ from functools import partial
 from modelstore.models.common import save_joblib
 from modelstore.models.modelmanager import ModelManager
 
+MODEL_JOBLIB = "model.joblib"
+
 
 class SKLearnManager(ModelManager):
 
@@ -54,5 +56,5 @@ class SKLearnManager(ModelManager):
         if not isinstance(kwargs["model"], sklearn.base.BaseEstimator):
             raise TypeError("This model is not an sklearn model!")
         return [
-            partial(save_joblib, model=kwargs["model"]),
+            partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB),
         ]
