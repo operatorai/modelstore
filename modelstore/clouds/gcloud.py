@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json
+import os
 
 from modelstore.clouds.storage import CloudStorage
 from modelstore.clouds.util.paths import get_archive_path
@@ -44,10 +45,6 @@ class GoogleCloudStorage(CloudStorage):
         self.bucket_name = bucket_name
         self.__client = client
 
-    @classmethod
-    def get_name(cls):
-        return "google:cloud-storage"
-
     @property
     def client(self) -> "storage.Client":
         try:
@@ -60,7 +57,13 @@ class GoogleCloudStorage(CloudStorage):
             )
             raise
 
+    @classmethod
+    def get_name(cls):
+        return "google:cloud-storage"
+
     def validate(self) -> bool:
+        """ Runs any required validation steps - e.g.,
+        checking that a cloud bucket exists"""
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
         for bucket in list(self.client.list_buckets(prefix=self.bucket_name)):
             if bucket.name == self.bucket_name:
@@ -75,12 +78,22 @@ class GoogleCloudStorage(CloudStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
+    def _pull(self, source: dict, destination: str) -> str:
+        """ Pulls a model to a destination """
+        logger.info("Downloading from: %s...", source)
+        prefix = _get_location(self.bucket_name, source)
+        file_name = os.path.split(prefix)[1]
+        destination = os.path.join(destination, file_name)
+        bucket = self.client.get_bucket(self.bucket_name)
+        blob = bucket.blob(prefix)
+        blob.download_to_filename(destination)
+        logger.debug("Finished: %s", destination)
+        return destination
+
     def upload(self, domain: str, prefix: str, local_path: str) -> dict:
         bucket_path = get_archive_path(domain, prefix, local_path)
-        return {
-            "bucket": self.bucket_name,
-            "prefix": self._push(local_path, bucket_path),
-        }
+        prefix = self._push(local_path, bucket_path)
+        return _format_location(self.bucket_name, prefix)
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -94,3 +107,23 @@ class GoogleCloudStorage(CloudStorage):
             obj = blob.download_as_string()
             results.append(json.loads(obj))
         return sorted_by_created(results)
+
+    def _read_json_object(self, path: str) -> dict:
+        """ Returns a dictionary of the JSON stored in a given path """
+        bucket = self.client.get_bucket(self.bucket_name)
+        blob = bucket.blob(path)
+        obj = blob.download_as_string()
+        return json.loads(obj)
+
+
+def _format_location(bucket_name: str, prefix: str) -> dict:
+    return {
+        "bucket": bucket_name,
+        "prefix": prefix,
+    }
+
+
+def _get_location(bucket_name, meta: dict) -> str:
+    if bucket_name != meta["bucket"]:
+        raise ValueError("Meta-data has a different bucket name")
+    return meta["prefix"]

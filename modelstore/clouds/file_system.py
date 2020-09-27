@@ -44,13 +44,6 @@ class FileSystemStorage(CloudStorage):
     def get_name(cls):
         return "file_system"
 
-    def relative_dir(self, file_path: str) -> str:
-        paths = os.path.split(file_path)
-        parent_dir = os.path.join(self.root_dir, paths[0])
-        if not os.path.exists(parent_dir):
-            os.makedirs(parent_dir)
-        return os.path.join(parent_dir, paths[1])
-
     def validate(self) -> bool:
         """ This validates that the directory exists """
         # pylint: disable=broad-except
@@ -70,18 +63,25 @@ class FileSystemStorage(CloudStorage):
             logger.error("Error=%s...", str(ex))
             return False
 
-    def upload(self, domain: str, prefix: str, local_path: str) -> dict:
-        fs_path = get_archive_path(domain, prefix, local_path)
-        logger.info("Moving to: %s...", fs_path)
-        archive_path = self._push(local_path, fs_path)
-        logger.debug("Finished: %s", fs_path)
-        return {"path": os.path.abspath(archive_path)}
-
     def _push(self, source: str, destination: str) -> str:
         """ Pushes a file to a destination """
         destination = self.relative_dir(destination)
         shutil.copy(source, destination)
         return destination
+
+    def _pull(self, source: dict, destination: str) -> str:
+        """ Pulls a model to a destination """
+        path = _get_location(source)
+        file_name = os.path.split(path)[1]
+        shutil.copy(path, destination)
+        return os.path.join(os.path.abspath(destination), file_name)
+
+    def upload(self, domain: str, prefix: str, local_path: str) -> dict:
+        fs_path = get_archive_path(domain, prefix, local_path)
+        logger.info("Moving to: %s...", fs_path)
+        archive_path = self._push(local_path, fs_path)
+        logger.debug("Finished: %s", fs_path)
+        return _format_location(archive_path)
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -91,7 +91,32 @@ class FileSystemStorage(CloudStorage):
                 # @TODO tighter controls
                 continue
             version_path = os.path.join(path, entry)
-            with open(version_path, "r") as lines:
-                meta = json.loads(lines.read())
-                results.append(meta)
+            meta = _read_json_file(version_path)
+            results.append(meta)
         return sorted_by_created(results)
+
+    def _read_json_object(self, path: str) -> dict:
+        """ Returns a dictionary of the JSON stored in a given path """
+        path = self.relative_dir(path)
+        return _read_json_file(path)
+
+    def relative_dir(self, file_path: str) -> str:
+        paths = os.path.split(file_path)
+        parent_dir = os.path.join(self.root_dir, paths[0])
+        if not os.path.exists(parent_dir):
+            os.makedirs(parent_dir)
+        return os.path.join(parent_dir, paths[1])
+
+
+def _format_location(archive_path: str) -> dict:
+    return {"path": os.path.abspath(archive_path)}
+
+
+def _get_location(meta: dict) -> str:
+    return meta["path"]
+
+
+def _read_json_file(path: str) -> dict:
+    with open(path, "r") as lines:
+        meta = json.loads(lines.read())
+    return meta

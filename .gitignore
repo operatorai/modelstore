@@ -19,3 +19,9 @@ catboost_info/
 *.pyc
 
 *operatorai-model-store*
+
+*.json
+
+*.joblib
+
+*.xgboost

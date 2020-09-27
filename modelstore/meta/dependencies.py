@@ -8,6 +8,7 @@ from modelstore.utils.log import logger
 
 # pylint: disable=broad-except
 _PYTHON_INFO_FILE = "python-info.json"
+_MODEL_TYPE_FILE = "model-info.json"
 
 
 def _get_version(modname: str) -> str:
@@ -45,11 +46,24 @@ def save_dependencies(tmp_dir: str, deps: list) -> str:
     return save_json(tmp_dir, _PYTHON_INFO_FILE, deps_info)
 
 
+def save_model_info(tmp_dir, model_name: str, model_info: dict) -> str:
+    model_info["name"] = model_name
+    return save_json(tmp_dir, _MODEL_TYPE_FILE, model_info)
+
+
 def extract_dependencies(archive_path: str) -> dict:
+    return _extract_json(archive_path, _PYTHON_INFO_FILE)
+
+
+def extract_model_type(archive_path: str) -> dict:
+    return _extract_json(archive_path, _MODEL_TYPE_FILE)
+
+
+def _extract_json(archive_path: str, file_name: str) -> dict:
     if not archive_path.endswith(".tar.gz"):
         return {}
     with tarfile.open(archive_path, "r:gz") as tar:
-        deps_info = tar.extractfile(_PYTHON_INFO_FILE)
+        deps_info = tar.extractfile(file_name)
         if deps_info is not None:
             deps = deps_info.read()
             return json.loads(deps)

@@ -31,6 +31,11 @@ class MissingDepManager(ModelManager):
         self.library = library
 
     @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "missing"
+
+    @classmethod
     def required_dependencies(cls) -> list:
         return []
 
@@ -39,6 +44,9 @@ class MissingDepManager(ModelManager):
 
     def _required_kwargs(self) -> list:
         return []
+
+    def model_info(self, **kwargs) -> dict:
+        return {}
 
     def create_archive(self, **kwargs) -> str:
         logger.error("Error: %s is not installed", self.library)

@@ -68,9 +68,13 @@ def main(model_type):
     print(f"🤖  Training a {model_type} model...")
     model = train(model_type)
 
-    # Create an archive containing the trained model
     print("📦  Creating a model archive...")
-    archive = model_store.sklearn.create_archive(model=model)
+    if model_type == "sklearn":
+        archive = model_store.sklearn.create_archive(model=model)
+    elif model_type == "xgboost":
+        archive = model_store.xgboost.create_archive(model=model)
+    else:
+        raise NotImplementedError(f"Not implemented for: {model_type}")
 
     # Upload the archive to the model store
     # The first string is the model's domain - which helps you to group
@@ -89,6 +93,16 @@ def main(model_type):
     #  bucket
     print(f"✅  Finished uploading the {model_type} model!")
     print(json.dumps(meta, indent=4))
+
+    # Download the model back!
+    target = f"downloaded-{model_type}-model"
+    os.makedirs(target, exist_ok=True)
+    model_path = model_store.download(
+        local_path=target,
+        domain=model_domain,
+        model_id=meta["model"]["model_id"],
+    )
+    print(f"⤵️  Downloaded the model back to {model_path}")
 
 
 if __name__ == "__main__":

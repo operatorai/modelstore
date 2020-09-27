@@ -25,14 +25,14 @@ from modelstore.models.transformers import TransformersManager
 from modelstore.models.xgboost import XGBoostManager
 
 ML_LIBRARIES = {
-    "catboost": CatBoostManager,
-    "keras": KerasManager,
+    CatBoostManager.name(): CatBoostManager,
+    KerasManager.name(): KerasManager,
     "pytorch": PyTorchManager,  # Adding twice as this is a common typo
-    "sklearn": SKLearnManager,
-    "torch": PyTorchManager,
-    "tensorflow": TensorflowManager,
-    "transformers": TransformersManager,
-    "xgboost": XGBoostManager,
+    SKLearnManager.name(): SKLearnManager,
+    PyTorchManager.name(): PyTorchManager,
+    TensorflowManager.name(): TensorflowManager,
+    TransformersManager.name(): TransformersManager,
+    XGBoostManager.name(): XGBoostManager,
 }
 
 

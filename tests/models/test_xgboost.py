@@ -38,6 +38,16 @@ def xgboost_manager():
     return xgboost.XGBoostManager()
 
 
+def test_name(xgboost_manager):
+    assert xgboost_manager.name() == "xgboost"
+
+
+def test_model_info(xgboost_manager, xgb_model):
+    exp = {"type": "XGBClassifier"}
+    res = xgboost_manager.model_info(model=xgb_model)
+    assert exp == res
+
+
 def test_required_kwargs(xgboost_manager):
     assert xgboost_manager._required_kwargs() == ["model"]
 

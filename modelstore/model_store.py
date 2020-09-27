@@ -11,6 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import os
+import tarfile
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -88,7 +90,11 @@ class ModelStore:
         location = self.storage.upload(domain, upload_time, archive_path)
 
         meta_data = {
-            "model": {"domain": domain, "model_id": model_id,},
+            "model": {
+                "domain": domain,
+                "model_id": model_id,
+                "type": dependencies.extract_model_type(archive_path),
+            },
             "storage": {"name": self.storage.get_name(), "location": location,},
             "meta": {
                 "runtime": f"python:{runtime.get_python_version()}",
@@ -106,10 +112,25 @@ class ModelStore:
         self.storage.set_meta_data(domain, model_id, meta_data)
         return meta_data
 
+    def list_domains(self) -> list:
+        """ Returns a list of dicts, containing info about all
+        of the domains """
+        return self.storage.list_domains()
+
     def list_versions(self, domain: str) -> list:
         """ Returns a list of dicts, containing info about all
         of the models that have been uploaded to a domain """
         return self.storage.list_versions(domain)
+
+    def download(
+        self, local_path: str, domain: str, model_id: str = None
+    ) -> str:
+        local_path = os.path.abspath(local_path)
+        archive_path = self.storage.download(local_path, domain, model_id)
+        with tarfile.open(archive_path, "r:gz") as tar:
+            tar.extractall(local_path)
+        os.remove(archive_path)
+        return local_path
 
 
 def _validate_domain(domain: str):

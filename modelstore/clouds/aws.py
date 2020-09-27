@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json
+import os
 
 from modelstore.clouds.storage import CloudStorage
 from modelstore.clouds.util.paths import get_archive_path
@@ -42,10 +43,6 @@ class AWSStorage(CloudStorage):
         self.region = region
         self.__client = None
 
-    @classmethod
-    def get_name(cls):
-        return "aws:s3"
-
     @property
     def client(self):
         try:
@@ -55,6 +52,10 @@ class AWSStorage(CloudStorage):
         except ClientError:
             logger.error("Unable to create s3 client!")
             raise
+
+    @classmethod
+    def get_name(cls):
+        return "aws:s3"
 
     def validate(self) -> bool:
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
@@ -72,12 +73,20 @@ class AWSStorage(CloudStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
+    def _pull(self, source: dict, destination: str) -> str:
+        """ Pulls a model to a destination """
+        prefix = _get_location(self.bucket_name, source)
+        file_name = os.path.split(prefix)[1]
+        destination = os.path.join(destination, file_name)
+        logger.info("Downloading from: %s...", prefix)
+        self.client.download_file(self.bucket_name, prefix, destination)
+        logger.debug("Finished: %s", destination)
+        return destination
+
     def upload(self, domain: str, prefix: str, local_path: str) -> dict:
         bucket_path = get_archive_path(domain, prefix, local_path)
-        return {
-            "bucket": self.bucket_name,
-            "prefix": self._push(local_path, bucket_path),
-        }
+        prefix = self._push(local_path, bucket_path)
+        return _format_location(self.bucket_name, prefix)
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -88,9 +97,25 @@ class AWSStorage(CloudStorage):
             if not version["Key"].endswith(".json"):
                 # @TODO tighter controls here
                 continue
-            obj = self.client.get_object(
-                Bucket=self.bucket_name, Key=version["Key"]
-            )
-            body = obj["Body"].read()
-            results.append(json.loads(body))
+            obj = self._read_json_object(version["Key"])
+            results.append(obj)
         return sorted_by_created(results)
+
+    def _read_json_object(self, path: str) -> dict:
+        """ Returns a dictionary of the JSON stored in a given path """
+        obj = self.client.get_object(Bucket=self.bucket_name, Key=path)
+        body = obj["Body"].read()
+        return json.loads(body)
+
+
+def _format_location(bucket_name: str, prefix: str) -> dict:
+    return {
+        "bucket": bucket_name,
+        "prefix": prefix,
+    }
+
+
+def _get_location(bucket_name, meta: dict) -> str:
+    if bucket_name != meta["bucket"]:
+        raise ValueError("Meta-data has a different bucket name")
+    return meta["prefix"]

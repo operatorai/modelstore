@@ -17,6 +17,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from modelstore.models.sklearn import SKLearnManager
 
 # pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
@@ -31,13 +32,26 @@ def sklearn_model():
     return GradientBoostingRegressor(**params)
 
 
-def test_required_kwargs():
-    mngr = SKLearnManager()
-    assert mngr._required_kwargs() == ["model"]
+@pytest.fixture
+def sklearn_manager():
+    return SKLearnManager()
 
 
-def test_get_functions(sklearn_model):
-    mngr = SKLearnManager()
-    assert len(mngr._get_functions(model=sklearn_model)) == 1
+def test_name(sklearn_manager):
+    assert sklearn_manager.name() == "sklearn"
+
+
+def test_model_info(sklearn_manager, sklearn_model):
+    exp = {"type": "GradientBoostingRegressor"}
+    res = sklearn_manager.model_info(model=sklearn_model)
+    assert exp == res
+
+
+def test_required_kwargs(sklearn_manager):
+    assert sklearn_manager._required_kwargs() == ["model"]
+
+
+def test_get_functions(sklearn_manager, sklearn_model):
+    assert len(sklearn_manager._get_functions(model=sklearn_model)) == 1
     with pytest.raises(TypeError):
-        mngr._get_functions(model="not-an-sklearn-model")
+        sklearn_manager._get_functions(model="not-an-sklearn-model")

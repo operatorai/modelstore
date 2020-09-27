@@ -19,6 +19,10 @@ from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
 from modelstore.utils.log import logger
 
+MODEL_FILE = "model.xgboost"
+MODEL_JSON = "model.json"
+MODEL_CONFIG = "config.json"
+
 
 class XGBoostManager(ModelManager):
 
@@ -26,6 +30,11 @@ class XGBoostManager(ModelManager):
     Model persistence for xgboost models:
     https://xgboost.readthedocs.io/en/latest/tutorials/saving_model.html
     """
+
+    @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "xgboost"
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -41,6 +50,10 @@ class XGBoostManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the model's type """
+        return {"type": type(kwargs["model"]).__name__}
+
     def _get_functions(self, **kwargs) -> list:
         return [
             partial(save_model, model=kwargs["model"]),
@@ -55,7 +68,7 @@ def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
     among the various XGBoost interfaces.
     """
     logger.debug("Saving xgboost model")
-    target = os.path.join(tmp_dir, "model.xgboost")
+    target = os.path.join(tmp_dir, MODEL_FILE)
     model.save_model(target)
     return target
 
@@ -66,7 +79,7 @@ def dump_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
     output format is primarily used for visualization or interpretation
     """
     logger.debug("Dumping xgboost model")
-    model_file = os.path.join(tmp_dir, "model.json")
+    model_file = os.path.join(tmp_dir, MODEL_JSON)
     model.get_booster().dump_model(
         model_file, with_stats=True, dump_format="json"
     )
@@ -76,4 +89,4 @@ def dump_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
 def model_config(tmp_dir: str, model: "xgb.XGBModel") -> str:
     logger.debug("Dumping model config")
     config = model.get_booster().save_config()
-    return save_json(tmp_dir, "config.json", config)
+    return save_json(tmp_dir, MODEL_CONFIG, config)

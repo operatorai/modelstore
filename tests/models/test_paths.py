@@ -16,7 +16,6 @@ import json
 import os
 
 import joblib
-
 from modelstore.models import common
 
 
@@ -31,7 +30,7 @@ def test_save_json(tmp_path):
 def test_save_joblib(tmp_path):
     exp = {"key": "value"}
     exp_path = os.path.join(tmp_path, "model.joblib")
-    target = common.save_joblib(tmp_path, exp)
+    target = common.save_joblib(tmp_path, exp, fn="model.joblib")
     assert os.path.exists(exp_path)
     with open(target, "rb") as f:
         res = joblib.load(f)

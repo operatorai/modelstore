@@ -18,6 +18,7 @@ from functools import partial
 from modelstore.models.modelmanager import ModelManager
 
 # pylint disable=import-outside-toplevel
+MODEL_DIRECTORY = "transformers"
 
 
 class TransformersManager(ModelManager):
@@ -26,8 +27,12 @@ class TransformersManager(ModelManager):
     Model persistence for Transformer models:
     https://huggingface.co/transformers/main_classes/model.html#transformers.TFPreTrainedModel.save_pretrained
     https://github.com/huggingface/transformers/blob/e50a931c118b9f55f77a743bf703f436bf7a7c29/src/transformers/modeling_utils.py#L676
-
     """
+
+    @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "transformers"
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -42,6 +47,10 @@ class TransformersManager(ModelManager):
 
     def _required_kwargs(self):
         return ["model", "tokenizer"]
+
+    def model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the model's type """
+        return {}
 
     def _get_functions(self, **kwargs) -> list:
         return [
@@ -73,7 +82,7 @@ def _save_transformers(
             "Tokenizer is not a transformers.PreTrainedTokenizerBase!"
         )
 
-    model_dir = os.path.join(tmp_dir, "transformers")
+    model_dir = os.path.join(tmp_dir, MODEL_DIRECTORY)
     model.save_pretrained(model_dir)
     if config is not None:
         config.save_pretrained(model_dir)

@@ -17,6 +17,8 @@ from functools import partial
 from modelstore.models.common import save_joblib
 from modelstore.models.modelmanager import ModelManager
 
+MODEL_JOBLIB = "model.joblib"
+
 
 class SKLearnManager(ModelManager):
 
@@ -24,6 +26,11 @@ class SKLearnManager(ModelManager):
     Model persistence for scikit-learn models:
     https://scikit-learn.org/stable/modules/model_persistence.html
     """
+
+    @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "sklearn"
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -39,11 +46,15 @@ class SKLearnManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the model's type """
+        return {"type": type(kwargs["model"]).__name__}
+
     def _get_functions(self, **kwargs) -> list:
         import sklearn
 
         if not isinstance(kwargs["model"], sklearn.base.BaseEstimator):
             raise TypeError("This model is not an sklearn model!")
         return [
-            partial(save_joblib, model=kwargs["model"]),
+            partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB),
         ]

@@ -18,6 +18,8 @@ from functools import partial
 from modelstore.models.modelmanager import ModelManager
 
 # pylint disable=import-outside-toplevel
+MODEL_CHECKPOINT = "checkpoint.pt"
+MODEL_PT = "model.pt"
 
 
 class PyTorchManager(ModelManager):
@@ -28,6 +30,11 @@ class PyTorchManager(ModelManager):
     https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_a_general_checkpoint.html
     https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_models_for_inference.html
     """
+
+    @classmethod
+    def name(cls) -> str:
+        """ Returns the name of this model type """
+        return "torch"
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -42,6 +49,10 @@ class PyTorchManager(ModelManager):
 
     def _required_kwargs(self):
         return ["model", "optimizer"]
+
+    def model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the model's type """
+        return {}
 
     def _get_functions(self, **kwargs) -> list:
         return [
@@ -64,7 +75,7 @@ def _save_state_dict(
     if not isinstance(optimizer, torch.optim.Optimizer):
         raise TypeError("Optimizer is not a torch.optim.Optimizer!")
 
-    file_path = os.path.join(tmp_dir, "checkpoint.pt")
+    file_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
     torch.save(
         {
             "model_state_dict": model.state_dict(),
@@ -78,6 +89,6 @@ def _save_state_dict(
 def _save_model(tmp_dir: str, model: "nn.Module") -> str:
     import torch
 
-    file_path = os.path.join(tmp_dir, "model.pt")
+    file_path = os.path.join(tmp_dir, MODEL_PT)
     torch.save(model, file_path)
     return file_path
