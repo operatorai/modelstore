@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as lines:
 
 setup(
     name="modelstore",
-    version="0.0.1b",
+    version="0.0.2",
     packages=find_packages(exclude=["tests", "examples", "docs"]),
     include_package_data=True,
     description="modelstore is a library for versioning, exporting, and storing machine learning models",
@@ -19,7 +19,9 @@ setup(
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: Apache Software License",
     ],
     license="Please refer to the readme",
