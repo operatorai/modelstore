@@ -1,6 +1,6 @@
 # Change log
 
-## Adding now (not released yet)
+## modelstore 0.0.2
 
 Added models: `transformers`, `tensorflow`
 

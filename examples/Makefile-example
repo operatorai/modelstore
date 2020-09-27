@@ -15,7 +15,7 @@ pyenv-local: pyenv-uninstall pyenv
 
 pyenv-test: pyenv-uninstall pyenv
 	pip uninstall -y modelstore
-	pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple modelstore==0.0.1b
+	pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple modelstore==0.0.2
 
 pyenv-prod: pyenv-uninstall pyenv
 	pip uninstall -y modelstore
