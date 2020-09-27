@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 def sort_by_version(meta_data: dict, version: str):
-    if not version.startswith("0.0.1"):
+    if not any(version.startswith(x) for x in ["0.0.1", "0.0.2"]):
         raise NotImplementedError(f"Sort order for version {version}")
 
     created = datetime.strptime(
