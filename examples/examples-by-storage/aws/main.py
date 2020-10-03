@@ -4,12 +4,11 @@ import os
 import click
 import numpy as np
 import xgboost as xgb
+from modelstore import ModelStore
 from sklearn.datasets import load_diabetes
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-
-from modelstore import ModelStore
 
 
 def create_model_store() -> ModelStore:
@@ -102,7 +101,8 @@ def main(model_type):
         domain=model_domain,
         model_id=meta["model"]["model_id"],
     )
-    print(f"⤵️  Downloaded the model back to {model_path}")
+    print(f"⤵️  Downloaded the model back to {model_path}")l,ljhgfa2erwqryupp
+    
 
 
 if __name__ == "__main__":

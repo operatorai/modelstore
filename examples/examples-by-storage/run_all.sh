@@ -1,6 +1,6 @@
 function run {
 	cd $1
-	make pyenv-local
+	make pyenv-test
 	make run
 	cd ..
 }
