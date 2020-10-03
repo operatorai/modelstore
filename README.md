@@ -26,18 +26,28 @@ clf = RandomForestClassifier(n_estimators=10)
 clf = clf.fit(X, Y)
 
 # Create a model store that uses a Google Cloud bucket (or AWS bucket)
-ms = ModelStore.from_gcloud(
+model_store = ModelStore.from_gcloud(
    project_name="my-project",
    bucket_name="my-bucket",
 )
 
 # Create an archive that exports your model
-archive = ms.sklearn.create_archive(model=clf)
+archive = model_store.sklearn.create_archive(model=clf)
 
 # Upload the archive to your model store
-meta_data = ms.upload(domain="example-model", archive)
+meta_data = model_store.upload(domain="example-model", archive)
 
+# Print the meta-data about the model
 print(json.dumps(meta_data, indent=4))
+
+# Download the model back!
+target = f"downloaded-{model_type}-model"
+os.makedirs(target, exist_ok=True)
+model_path = model_store.download(
+   local_path=target,
+   domain=model_domain,
+   model_id=meta["model"]["model_id"],
+)
 ```
 
 For more details, please refer to the documentation.
