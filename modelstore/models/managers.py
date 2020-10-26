@@ -11,7 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from functools import partial
 from typing import Iterator
 
 from modelstore.clouds.storage import CloudStorage
@@ -38,9 +37,9 @@ ML_LIBRARIES = {
 }
 
 
-def iter_libraries() -> Iterator[ModelManager]:
+def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
     for library, mngr in ML_LIBRARIES.items():
         if all(module_exists(x) for x in mngr.required_dependencies()):
-            yield library, mngr()
+            yield library, mngr(storage)
         else:
-            yield library, partial(MissingDepManager, library=library)()
+            yield library, MissingDepManager(library, storage)

@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
+from modelstore.clouds.storage import CloudStorage
 from modelstore.models.modelmanager import ModelManager
 from modelstore.utils.log import logger
 
@@ -24,8 +24,8 @@ class MissingDepManager(ModelManager):
         and gives the user informative error messages
         """
 
-    def __init__(self, library: str):
-        super().__init__()
+    def __init__(self, library: str, storage: CloudStorage = None):
+        super().__init__(storage)
         if library == "pytorch":
             library = "torch"
         self.library = library

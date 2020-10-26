@@ -18,6 +18,7 @@ import tarfile
 import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 
+from modelstore.clouds.storage import CloudStorage
 from modelstore.meta.dependencies import save_dependencies, save_model_info
 
 
@@ -30,6 +31,10 @@ class ModelManager(ABC):
     """
 
     __metaclass__ = ABCMeta
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__()
+        self.storage = storage
 
     @classmethod
     def required_dependencies(cls) -> list:
