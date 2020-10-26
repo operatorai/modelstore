@@ -64,13 +64,15 @@ def test_from_file_system(tmp_path):
     validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
 
 
-def only_sklearn(library):
-    if library == "sklearn":
-        return SKLearnManager
-    return partial(MissingDepManager, library=library)
+def only_sklearn():
+    for k, v in ML_LIBRARIES.items():
+        if k == "sklearn":
+            yield k, v()
+        else:
+            yield k, partial(MissingDepManager, library=k)()
 
 
-@patch("modelstore.model_store.get_manager", side_effect=only_sklearn)
+@patch("modelstore.model_store.iter_libraries", side_effect=only_sklearn)
 @patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
 def test_from_gcloud_only_sklearn(mock_gcloud, _):
     mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
