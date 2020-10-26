@@ -23,7 +23,7 @@ from modelstore.clouds.file_system import FileSystemStorage
 from modelstore.clouds.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.clouds.storage import CloudStorage
 from modelstore.meta import dependencies, revision, runtime
-from modelstore.models.managers import ML_LIBRARIES, get_manager
+from modelstore.models.managers import iter_libraries
 
 
 @dataclass(frozen=True)
@@ -75,8 +75,8 @@ class ModelStore:
                 f"Failed to set up the {self.storage.name} storage."
             )
         # Supported machine learning model libraries
-        for library in ML_LIBRARIES:
-            object.__setattr__(self, library, get_manager(library)())
+        for library, manager in iter_libraries():
+            object.__setattr__(self, library, manager)
 
     def upload(self, domain: str, archive_path: str) -> dict:
         """Upload an archive to cloud storage. This function returns

@@ -118,3 +118,6 @@ class ModelManager(ABC):
             target = os.path.join(os.getcwd(), archive_name)
             shutil.move(result, target)
         return target
+
+    def upload(self, domain: str, **kwargs) -> dict:
+        archive = self._create_archive(kwargs)
