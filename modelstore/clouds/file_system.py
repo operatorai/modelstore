@@ -40,10 +40,6 @@ class FileSystemStorage(CloudStorage):
         self.root_dir = root_path
         logger.debug("Root is: %s", self.root_dir)
 
-    @classmethod
-    def get_name(cls):
-        return "file_system"
-
     def validate(self) -> bool:
         """ This validates that the directory exists """
         # pylint: disable=broad-except
@@ -109,7 +105,10 @@ class FileSystemStorage(CloudStorage):
 
 
 def _format_location(archive_path: str) -> dict:
-    return {"path": os.path.abspath(archive_path)}
+    return {
+        "type": "file_system",
+        "path": os.path.abspath(archive_path),
+    }
 
 
 def _get_location(meta: dict) -> str:

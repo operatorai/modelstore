@@ -48,13 +48,6 @@ def gcloud_client():
     return mock_client
 
 
-def test_name(gcloud_client):
-    gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
-    )
-    assert gcloud_model_store.get_name() == "google:cloud-storage"
-
-
 def test_validate(gcloud_client):
     gcloud_model_store = GoogleCloudStorage(
         project_name="", bucket_name="existing-bucket", client=gcloud_client
@@ -84,8 +77,10 @@ def test_upload(gcloud_client, tmp_path):
     blob = bucket(gcloud_model_store.bucket_name).blob
     blob.assert_called_with(model_path)
     blob(model_path).upload_from_filename.assert_called_with(source)
-    assert model_path == rsp["prefix"]
-    assert gcloud_model_store.bucket_name == rsp["bucket"]
+
+    assert rsp["type"] == "google:cloud-storage"
+    assert rsp["prefix"] == model_path
+    assert rsp["bucket"] == gcloud_model_store.bucket_name
 
 
 def test_set_meta_data(gcloud_client):

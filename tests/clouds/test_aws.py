@@ -38,11 +38,6 @@ def get_file_contents(conn, prefix):
     )
 
 
-def test_name():
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
-    assert aws_model_store.get_name() == "aws:s3"
-
-
 @mock_s3
 def test_validate():
     conn = boto3.resource("s3")
@@ -65,6 +60,7 @@ def test_upload(tmp_path):
 
     model_path = get_archive_path("test-domain", source)
     rsp = aws_model_store.upload("test-domain", source)
+    assert rsp["type"] == "aws:s3"
     assert rsp["bucket"] == "existing-bucket"
     assert rsp["prefix"] == model_path
     assert get_file_contents(conn, model_path) == "file-contents"

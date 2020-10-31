@@ -57,10 +57,6 @@ class GoogleCloudStorage(CloudStorage):
             )
             raise
 
-    @classmethod
-    def get_name(cls):
-        return "google:cloud-storage"
-
     def validate(self) -> bool:
         """ Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
@@ -118,6 +114,7 @@ class GoogleCloudStorage(CloudStorage):
 
 def _format_location(bucket_name: str, prefix: str) -> dict:
     return {
+        "type": "google:cloud-storage",
         "bucket": bucket_name,
         "prefix": prefix,
     }

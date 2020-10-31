@@ -40,11 +40,6 @@ class CloudStorage(ABC):
             if not module_exists(dep):
                 raise ModuleNotFoundError(f"{dep} not installed.")
 
-    @classmethod
-    def get_name(cls):
-        """ Returns the name of this type of storage"""
-        raise NotImplementedError()
-
     @abstractmethod
     def validate(self) -> bool:
         """ Runs any required validation steps - e.g.,
