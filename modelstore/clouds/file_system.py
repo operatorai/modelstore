@@ -51,7 +51,7 @@ class FileSystemStorage(CloudStorage):
                 return False
 
             # Check we can write to it
-            source = os.path.join(parent_dir, ".operator-ai")
+            source = os.path.join(self.root_dir, ".operator-ai")
             Path(source).touch()
             os.remove(source)
             return True

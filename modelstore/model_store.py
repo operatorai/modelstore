@@ -68,7 +68,7 @@ class ModelStore:
     def __post_init__(self):
         if not self.storage.validate():
             raise Exception(
-                f"Failed to set up the {self.storage.name} storage."
+                f"Failed to set up the {type(self.storage).__name__} storage."
             )
         # Supported machine learning model libraries
         for library, manager in iter_libraries(self.storage):
