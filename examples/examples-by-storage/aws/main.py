@@ -58,6 +58,8 @@ def train(model_type):
     type=click.Choice(["sklearn", "xgboost"], case_sensitive=False),
 )
 def main(model_type):
+    model_domain = "diabetes-boosting-demo"
+
     # Create a model store instance
     model_store = create_model_store()
 
@@ -67,31 +69,19 @@ def main(model_type):
     print(f"🤖  Training a {model_type} model...")
     model = train(model_type)
 
-    print("📦  Creating a model archive...")
+    print(f"⤴️  Uploading to the {model_domain} domain.")
     if model_type == "sklearn":
-        archive = model_store.sklearn.create_archive(model=model)
+        meta_data = model_store.sklearn.upload(model_domain, model=model)
     elif model_type == "xgboost":
-        archive = model_store.xgboost.create_archive(model=model)
+        meta_data = model_store.xgboost.upload(model_domain, model=model)
     else:
         raise NotImplementedError(f"Not implemented for: {model_type}")
-
-    # Upload the archive to the model store
-    # The first string is the model's domain - which helps you to group
-    # many models that are trained on the same target together
-    model_domain = "diabetes-boosting-demo"
-    print(f"⤴️  Uploading the archive to the {model_domain} domain.")
-    meta = model_store.upload(model_domain, archive)
-
-    # Optional: the artifacts.tar.gz file is generated into the current
-    # working directory and you can remove them if you do not
-    # need a local copy
-    os.remove(archive)
 
     # The upload returns meta-data about the model that was uploaded
     # This meta-data has also been sync'ed into the cloud storage
     #  bucket
     print(f"✅  Finished uploading the {model_type} model!")
-    print(json.dumps(meta, indent=4))
+    print(json.dumps(meta_data, indent=4))
 
     # Download the model back!
     target = f"downloaded-{model_type}-model"
@@ -99,10 +89,9 @@ def main(model_type):
     model_path = model_store.download(
         local_path=target,
         domain=model_domain,
-        model_id=meta["model"]["model_id"],
+        model_id=meta_data["model"]["model_id"],
     )
-    print(f"⤵️  Downloaded the model back to {model_path}")l,ljhgfa2erwqryupp
-    
+    print(f"⤵️  Downloaded the model back to {model_path}")
 
 
 if __name__ == "__main__":
