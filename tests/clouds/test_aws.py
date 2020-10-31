@@ -17,8 +17,6 @@ import time
 from datetime import datetime
 
 import boto3
-from moto import mock_s3
-
 import modelstore
 from modelstore.clouds.aws import AWSStorage
 from modelstore.clouds.util.paths import (
@@ -26,6 +24,7 @@ from modelstore.clouds.util.paths import (
     get_domain_path,
     get_metadata_path,
 )
+from moto import mock_s3
 
 # pylint: disable=redefined-outer-name
 
@@ -64,8 +63,8 @@ def test_upload(tmp_path):
     conn.create_bucket(Bucket="existing-bucket")
     aws_model_store = AWSStorage(bucket_name="existing-bucket")
 
-    model_path = get_archive_path("test-domain", "prefix", source)
-    rsp = aws_model_store.upload("test-domain", "prefix", source)
+    model_path = get_archive_path("test-domain", source)
+    rsp = aws_model_store.upload("test-domain", source)
     assert rsp["bucket"] == "existing-bucket"
     assert rsp["prefix"] == model_path
     assert get_file_contents(conn, model_path) == "file-contents"

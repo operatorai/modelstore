@@ -76,8 +76,8 @@ class FileSystemStorage(CloudStorage):
         shutil.copy(path, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
-    def upload(self, domain: str, prefix: str, local_path: str) -> dict:
-        fs_path = get_archive_path(domain, prefix, local_path)
+    def upload(self, domain: str, local_path: str) -> dict:
+        fs_path = get_archive_path(domain, local_path)
         logger.info("Moving to: %s...", fs_path)
         archive_path = self._push(local_path, fs_path)
         logger.debug("Finished: %s", fs_path)

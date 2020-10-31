@@ -17,10 +17,9 @@ from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
+import modelstore
 import pytest
 from google.cloud import storage
-
-import modelstore
 from modelstore.clouds.gcloud import GoogleCloudStorage
 from modelstore.clouds.util.paths import (
     get_archive_path,
@@ -76,8 +75,8 @@ def test_upload(gcloud_client, tmp_path):
         bucket_name="existing-bucket",
         client=gcloud_client,
     )
-    model_path = get_archive_path("test-domain", "prefix", source)
-    rsp = gcloud_model_store.upload("test-domain", "prefix", source)
+    model_path = get_archive_path("test-domain", source)
+    rsp = gcloud_model_store.upload("test-domain", source)
 
     bucket = gcloud_client.get_bucket
     bucket.assert_called_with(gcloud_model_store.bucket_name)
