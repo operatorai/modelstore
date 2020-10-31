@@ -11,10 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import os
-import uuid
 from functools import partial
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -50,10 +47,8 @@ def validate_library_attributes(
 def test_from_gcloud(mock_gcloud):
     mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
     mocked_gcloud.validate.return_value = True
-    mocked_gcloud.get_name.return_value = "google:cloud-storage"
 
     store = ModelStore.from_gcloud("project-name", "gcs-bucket-name")
-    assert store.storage.get_name() == "google:cloud-storage"
     validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
 
 
@@ -76,11 +71,7 @@ def only_sklearn():
 def test_from_gcloud_only_sklearn(mock_gcloud, _):
     mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
     mocked_gcloud.validate.return_value = True
-    mocked_gcloud.get_name.return_value = "google:cloud-storage"
-
     store = ModelStore.from_gcloud("project-name", "gcs-bucket-name")
-    assert store.storage.get_name() == "google:cloud-storage"
-
     libraries = ML_LIBRARIES.copy()
     libraries.pop("sklearn")
     validate_library_attributes(

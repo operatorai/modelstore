@@ -16,9 +16,11 @@ import os
 import shutil
 import tarfile
 import tempfile
+import uuid
 from abc import ABC, ABCMeta, abstractmethod
 
 from modelstore.clouds.storage import CloudStorage
+from modelstore.meta import metadata
 from modelstore.meta.dependencies import save_dependencies, save_model_info
 
 
@@ -140,9 +142,15 @@ class ModelManager(ABC):
         """
         _validate_domain(domain)
         self._validate_kwargs(**kwargs)
+
+        model_id = str(uuid.uuid4())
         archive_path = self._create_archive(**kwargs)
-        self.storage.upload(domain, archive_path)
-        return {}  # TODO return the meta data
+        location = self.storage.upload(domain, archive_path)
+        meta_data = metadata.generate(
+            self.name(), model_id, domain, location, self._get_dependencies(),
+        )
+        self.storage.set_meta_data(domain, model_id, meta_data)
+        return meta_data
 
 
 def _validate_domain(domain: str):

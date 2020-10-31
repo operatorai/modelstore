@@ -1,34 +1,28 @@
-import uuid
 from datetime import datetime
 
 import modelstore
-from modelstore.meta import dependencies, revision, runtime
+from modelstore.meta import revision, runtime
 
 
-def generate(domain: str):
-    model_id = str(uuid.uuid4())
-    # Warning! Mac OS translates ":" in paths to "/"
-    upload_time = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-    location = self.storage.upload(domain, upload_time, archive_path)
+def generate(
+    model_type: str,
+    model_id: str,
+    domain: str,
+    location: dict,
+    dependencies: list,
+):
     meta_data = {
-        "model": {
-            "domain": domain,
-            "model_id": model_id,
-            "type": dependencies.extract_model_type(archive_path),
-        },
-        "storage": {"name": self.storage.get_name(), "location": location,},
+        "model": {"domain": domain, "model_id": model_id, "type": model_type,},
+        "storage": location,
         "meta": {
             "runtime": f"python:{runtime.get_python_version()}",
             "user": runtime.get_user(),
-            "created": upload_time,
-            "dependencies": dependencies.extract_dependencies(archive_path),
+            "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+            "dependencies": dependencies,
         },
         "modelstore": modelstore.__version__,
     }
-
     git_meta = revision.git_meta()
     if git_meta is not None:
         meta_data["meta"]["git"] = git_meta
-
-    self.storage.set_meta_data(domain, model_id, meta_data)
     return meta_data

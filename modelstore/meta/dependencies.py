@@ -51,14 +51,6 @@ def save_model_info(tmp_dir, model_name: str, model_info: dict) -> str:
     return save_json(tmp_dir, _MODEL_TYPE_FILE, model_info)
 
 
-def extract_dependencies(archive_path: str) -> dict:
-    return _extract_json(archive_path, _PYTHON_INFO_FILE)
-
-
-def extract_model_type(archive_path: str) -> dict:
-    return _extract_json(archive_path, _MODEL_TYPE_FILE)
-
-
 def _extract_json(archive_path: str, file_name: str) -> dict:
     if not archive_path.endswith(".tar.gz"):
         return {}
