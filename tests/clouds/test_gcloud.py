@@ -76,7 +76,7 @@ def test_upload(gcloud_client, tmp_path):
 
     blob = bucket(gcloud_model_store.bucket_name).blob
     blob.assert_called_with(model_path)
-    blob(model_path).upload_from_filename.assert_called_with(source)
+    blob(model_path).upload_from_file.assert_called()
 
     assert rsp["type"] == "google:cloud-storage"
     assert rsp["prefix"] == model_path
@@ -97,7 +97,7 @@ def test_set_meta_data(gcloud_client):
     bucket.assert_called_with(gcloud_model_store.bucket_name)
     blob = bucket(gcloud_model_store.bucket_name).blob
     blob.assert_called_with(meta_data)
-    assert blob(meta_data).upload_from_filename.call_count == 2
+    assert blob(meta_data).upload_from_file.call_count == 2
 
 
 def test_list_versions(gcloud_client):

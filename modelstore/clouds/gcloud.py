@@ -23,6 +23,9 @@ try:
     from google.auth.exceptions import DefaultCredentialsError
     from google.cloud import storage
 
+    storage.blob._DEFAULT_CHUNKSIZE = 2097152  # 1024 * 1024 B * 2 = 2 MB
+    storage.blob._MAX_MULTIPART_SIZE = 2097152  # 2 MB
+
     GCLOUD_EXISTS = True
 except ImportError:
     GCLOUD_EXISTS = False
@@ -70,7 +73,12 @@ class GoogleCloudStorage(CloudStorage):
         logger.info("Uploading to: %s...", destination)
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
-        blob.upload_from_filename(source)
+
+        ## For slow upload speed
+        # https://stackoverflow.com/questions/61001454/why-does-upload-from-file-google-cloud-storage-function-throws-timeout-error
+
+        with open(source, "rb") as f:
+            blob.upload_from_file(f)
         logger.debug("Finished: %s", destination)
         return destination
 

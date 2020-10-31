@@ -19,11 +19,8 @@ from datetime import datetime
 import boto3
 import modelstore
 from modelstore.clouds.aws import AWSStorage
-from modelstore.clouds.util.paths import (
-    get_archive_path,
-    get_domain_path,
-    get_metadata_path,
-)
+from modelstore.clouds.util.paths import (get_archive_path, get_domain_path,
+                                          get_metadata_path)
 from moto import mock_s3
 
 # pylint: disable=redefined-outer-name
