@@ -13,11 +13,10 @@
 #    limitations under the License.
 
 import pytest
-
 from modelstore.models.missingmanager import MissingDepManager
 
 
 def test_missing_dep_create():
     mngr = MissingDepManager("some-missing-library")
     with pytest.raises(ModuleNotFoundError):
-        mngr.create_archive()
+        mngr.upload("test-domain")

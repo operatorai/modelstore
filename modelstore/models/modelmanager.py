@@ -13,7 +13,6 @@
 #    limitations under the License.
 
 import os
-import shutil
 import tarfile
 import tempfile
 from abc import ABC, ABCMeta, abstractmethod
@@ -25,9 +24,8 @@ from modelstore.meta.dependencies import save_dependencies, save_model_info
 class ModelManager(ABC):
 
     """
-    ModelManager is an abstract class that we use to create an archive
-    that contains all of the model-related artifacts that need to be stored
-    and uploaded to the model store.
+    ModelManager is an abstract class that we use to create and upload archives
+    that contains all of the model-related artifacts.
     """
 
     __metaclass__ = ABCMeta
@@ -58,6 +56,7 @@ class ModelManager(ABC):
         Returns a list of functions to call to save the model
         and any other required data
         """
+        raise NotImplementedError()
 
     @classmethod
     @abstractmethod
@@ -71,6 +70,7 @@ class ModelManager(ABC):
         The kwargs that must be set when calling
         create_archive()
         """
+        raise NotImplementedError()
 
     def _validate_kwargs(self, **kwargs):
         """ Ensures that the required kwargs are set
@@ -102,11 +102,16 @@ class ModelManager(ABC):
                 file_paths.append(rsp)
         return file_paths
 
-    def create_archive(self, **kwargs) -> str:
+    def upload(self, domain: str, **kwargs) -> dict:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model
+
+        Uploads the archive to storage. This function returns
+        a dictionary of meta-data that is associated with this model,
+        including an id.
         """
+        _validate_domain(domain)
         self._validate_kwargs(**kwargs)
         archive_name = "artifacts.tar.gz"
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -119,10 +124,19 @@ class ModelManager(ABC):
                     file_name = os.path.split(file_path)[1]
                     tar.add(name=file_path, arcname=file_name)
 
-            # Moves the file into the current working directory
-            target = os.path.join(os.getcwd(), archive_name)
-            shutil.move(result, target)
-        return target
+            # Upload the archive to storage
+            archive = os.path.join(os.getcwd(), archive_name)
+            self.storage.upload(domain, archive)
+        return {}  # TODO return the meta data
 
-    def upload(self, domain: str, **kwargs) -> dict:
-        archive = self._create_archive(kwargs)
+
+def _validate_domain(domain: str):
+    if len(domain) == 0:
+        raise ValueError("Please provide a non-empty domain name.")
+    if domain in [
+        "versions",
+        "domains",
+        "modelstore",
+        "operatorai-model-store",
+    ]:
+        raise ValueError("Please use a different domain name.")

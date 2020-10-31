@@ -17,14 +17,26 @@ import tarfile
 from pathlib import Path
 
 import pytest
-
+from modelstore.clouds.file_system import FileSystemStorage
 from modelstore.models.modelmanager import ModelManager
 
 # pylint: disable=protected-access
 # pylint: disable=missing-class-docstring
 
 
+class MockCloudStorage(FileSystemStorage):
+    def __init__(self):
+        super().__init__(root_path=".")
+        self.called = False
+
+    def upload(self, domain: str, local_path: str):
+        self.called = True
+
+
 class MockModelManager(ModelManager):
+    def __init__(self):
+        super().__init__(storage=MockCloudStorage())
+
     @classmethod
     def name(cls) -> str:
         return "mock"
@@ -81,19 +93,19 @@ def test_validate_kwargs():
     mngr._validate_kwargs(model="model", config="config")
 
 
-def test_create_archive():
-    target = os.path.join(os.getcwd(), "artifacts.tar.gz")
-    if os.path.exists(target):
-        os.remove(target)
+def test_upload():
+    # target = os.path.join(os.getcwd(), "artifacts.tar.gz")
+    # if os.path.exists(target):
+    #     os.remove(target)
 
     mngr = MockModelManager()
-    mngr.create_archive(model="model", config="config")
-    assert os.path.exists(target)
+    mngr.upload(domain="model", model="model", config="config")
+    assert mngr.storage.called
 
-    exp = sorted(
-        ["model-info.json", "python-info.json", "model.joblib", "config.json",]
-    )
-    with tarfile.open(target) as tar:
-        files = sorted([f.name for f in tar.getmembers()])
-        assert len(files) == len(exp)
-        assert files == exp
+    # exp = sorted(
+    # ["model-info.json", "python-info.json", "model.joblib", "config.json",]
+    # )
+    # with tarfile.open(target) as tar:
+    # files = sorted([f.name for f in tar.getmembers()])
+    # assert len(files) == len(exp)
+    # assert files == exp
