@@ -10,5 +10,5 @@ run keras
 run pytorch
 run sklearn
 run tensorflow
-run xgboost
 run transformers
+run xgboost
