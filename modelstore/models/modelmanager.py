@@ -150,6 +150,7 @@ class ModelManager(ABC):
             self.name(), model_id, domain, location, self._get_dependencies(),
         )
         self.storage.set_meta_data(domain, model_id, meta_data)
+        os.remove(archive_path)
         return meta_data
 
 

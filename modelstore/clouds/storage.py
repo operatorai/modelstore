@@ -102,4 +102,4 @@ class CloudStorage(ABC):
         else:
             model_meta_path = get_metadata_path(domain, model_id)
             model_meta = self._read_json_object(model_meta_path)
-        return self._pull(model_meta["storage"]["location"], local_path)
+        return self._pull(model_meta["storage"], local_path)
