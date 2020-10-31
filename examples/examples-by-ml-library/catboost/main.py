@@ -1,12 +1,12 @@
 import json
 import os
 
-import catboost as ctb
 import click
+from modelstore import ModelStore
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 
-from modelstore import ModelStore
+import catboost as ctb
 
 
 def create_model_store(backend) -> ModelStore:
@@ -25,6 +25,8 @@ def create_model_store(backend) -> ModelStore:
         # created an s3 bucket where you want to store your models, and
         # will raise an exception if it doesn't exist.
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    else:
+        raise ValueError(f"Unknown model store: {backend}")
 
 
 def train():
@@ -58,26 +60,14 @@ def main(storage):
     model = train()
 
     # Create an archive containing the trained model
-    print("📦  Creating a model archive...")
-    archive = model_store.catboost.create_archive(model=model)
-
-    # Upload the archive to the model store
-    # The first string is the model's domain - which helps you to group
-    # many models that are trained on the same target together
-
-    print(f"⤴️  Uploading the archive to the {model_domain} domain.")
-    meta = model_store.upload(model_domain, archive)
-
-    # Optional: the artifacts.tar.gz file is generated into the current
-    # working directory and you can remove them if you do not
-    # need a local copy
-    os.remove(archive)
+    print(f"⤴️  Uploading the model to the {model_domain} domain.")
+    meta_data = model_store.catboost.upload(model_domain, model=model)
 
     # The upload returns meta-data about the model that was uploaded
     # This meta-data has also been sync'ed into the cloud storage
     #  bucket
     print(f"✅  Finished uploading the {model_type} model!")
-    print(json.dumps(meta, indent=4))
+    print(json.dumps(meta_data, indent=4))
 
 
 if __name__ == "__main__":

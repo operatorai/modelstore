@@ -3,11 +3,10 @@ import os
 
 import click
 import torch
+from modelstore import ModelStore
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from torch import nn
-
-from modelstore import ModelStore
 
 
 def create_model_store(backend) -> ModelStore:
@@ -26,6 +25,8 @@ def create_model_store(backend) -> ModelStore:
         # created an s3 bucket where you want to store your models, and
         # will raise an exception if it doesn't exist.
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    else:
+        raise ValueError(f"Unknown model store: {backend}")
 
 
 class ExampleNet(nn.Module):
@@ -67,6 +68,7 @@ def train():
 )
 def main(storage):
     model_type = "pytorch"
+    model_domain = "diabetes-boosting-demo"
 
     # Create a model store instance
     model_store = create_model_store(storage)
@@ -76,23 +78,10 @@ def main(storage):
     print(f"🤖  Training an {model_type} model...")
     model, optim = train()
 
-    # Create an archive containing the trained model
-    print("📦  Creating a model archive...")
-    archive = model_store.pytorch.create_archive(model=model, optimizer=optim)
-
-    # Note: it also works with
-    # archive = model_store.torch.create_archive(model=model, optimizer=optim)
-
-    # Upload the archive to the model store
-    # Model domains help you to group many models together
-    model_domain = "diabetes-boosting-demo"
     print(f"⤴️  Uploading the archive to the {model_domain} domain.")
-    meta = model_store.upload(model_domain, archive)
-
-    # Optional: the artifacts.tar.gz file is generated into the current
-    # working directory and you can remove them if you do not
-    # need a local copy
-    os.remove(archive)
+    meta = model_store.pytorch.upload(
+        model_domain, model=model, optimizer=optim
+    )
 
     # The upload returns meta-data about the model that was uploaded
     # This meta-data has also been sync'ed into the cloud storage

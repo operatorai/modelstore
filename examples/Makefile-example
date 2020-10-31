@@ -25,5 +25,6 @@ pyenv-uninstall:
 	@$(REPO_ROOT)/bin/_remove_pyenv
 
 refresh:
+	pip install --upgrade pip setuptools
 	pip uninstall -y modelstore
 	pip install -e $(REPO_ROOT)

@@ -2,13 +2,13 @@ import json
 import os
 
 import click
+from modelstore import ModelStore
+
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
     AutoTokenizer,
 )
-
-from modelstore import ModelStore
 
 
 def create_model_store(backend) -> ModelStore:
@@ -27,6 +27,8 @@ def create_model_store(backend) -> ModelStore:
         # created an s3 bucket where you want to store your models, and
         # will raise an exception if it doesn't exist.
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    else:
+        raise ValueError(f"Unknown model store: {backend}")
 
 
 def train():
@@ -68,27 +70,18 @@ def main(storage):
     print(f"🤖  Creating a model using {model_type}...")
     config, model, tokenizer = train()
 
-    # Create an archive containing the trained model
-    print("📦  Creating a model archive...")
-    archive = model_store.transformers.create_archive(
-        config=config, model=model, tokenizer=tokenizer,
-    )
-
     # Upload the archive to the model store
     # Model domains help you to group many models together
     print(f"⤴️  Uploading the archive to the {storage} {model_domain} domain.")
-    meta = model_store.upload(model_domain, archive)
-
-    # Optional: the artifacts.tar.gz file is generated into the current
-    # working directory and you can remove them if you do not
-    # need a local copy
-    os.remove(archive)
+    meta_data = model_store.transformers.upload(
+        model_domain, config=config, model=model, tokenizer=tokenizer,
+    )
 
     # The upload returns meta-data about the model that was uploaded
     # This meta-data has also been sync'ed into the cloud storage
     #  bucket
     print(f"✅  Finished uploading the {model_type} model!")
-    print(json.dumps(meta, indent=4))
+    print(json.dumps(meta_data, indent=4))
 
 
 if __name__ == "__main__":
