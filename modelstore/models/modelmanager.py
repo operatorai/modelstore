@@ -13,6 +13,7 @@
 #    limitations under the License.
 
 import os
+import shutil
 import tarfile
 import tempfile
 from abc import ABC, ABCMeta, abstractmethod
@@ -102,7 +103,7 @@ class ModelManager(ABC):
                 file_paths.append(rsp)
         return file_paths
 
-    def upload(self, domain: str, **kwargs) -> dict:
+    def _create_archive(self, **kwargs) -> str:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model
@@ -111,7 +112,6 @@ class ModelManager(ABC):
         a dictionary of meta-data that is associated with this model,
         including an id.
         """
-        _validate_domain(domain)
         self._validate_kwargs(**kwargs)
         archive_name = "artifacts.tar.gz"
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -124,9 +124,24 @@ class ModelManager(ABC):
                     file_name = os.path.split(file_path)[1]
                     tar.add(name=file_path, arcname=file_name)
 
-            # Upload the archive to storage
-            archive = os.path.join(os.getcwd(), archive_name)
-            self.storage.upload(domain, archive)
+            # Move the archive to the current working directory
+            archive_path = os.path.join(os.getcwd(), archive_name)
+            shutil.move(result, archive_path)
+        return archive_path
+
+    def upload(self, domain: str, **kwargs) -> dict:
+        """
+        Creates the `artifacts.tar.gz` archive which contains
+        all of the files of the model
+
+        Uploads the archive to storage. This function returns
+        a dictionary of meta-data that is associated with this model,
+        including an id.
+        """
+        _validate_domain(domain)
+        self._validate_kwargs(**kwargs)
+        archive_path = self._create_archive(**kwargs)
+        self.storage.upload(domain, archive_path)
         return {}  # TODO return the meta data
 
 

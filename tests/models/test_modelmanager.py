@@ -94,18 +94,23 @@ def test_validate_kwargs():
 
 
 def test_upload():
-    # target = os.path.join(os.getcwd(), "artifacts.tar.gz")
-    # if os.path.exists(target):
-    #     os.remove(target)
-
     mngr = MockModelManager()
     mngr.upload(domain="model", model="model", config="config")
     assert mngr.storage.called
 
-    # exp = sorted(
-    # ["model-info.json", "python-info.json", "model.joblib", "config.json",]
-    # )
-    # with tarfile.open(target) as tar:
-    # files = sorted([f.name for f in tar.getmembers()])
-    # assert len(files) == len(exp)
-    # assert files == exp
+
+def test_create_archive():
+    target = os.path.join(os.getcwd(), "artifacts.tar.gz")
+    if os.path.exists(target):
+        os.remove(target)
+
+    mngr = MockModelManager()
+    mngr._create_archive(model="model", config="config")
+
+    exp = sorted(
+        ["model-info.json", "python-info.json", "model.joblib", "config.json",]
+    )
+    with tarfile.open(target) as tar:
+        files = sorted([f.name for f in tar.getmembers()])
+    assert len(files) == len(exp)
+    assert files == exp
