@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import modelstore
-from modelstore.meta import revision, runtime
+from modelstore.meta import dependencies, revision, runtime
 
 
 def generate(
@@ -9,8 +9,13 @@ def generate(
     model_id: str,
     domain: str,
     location: dict,
-    dependencies: list,
+    deps_list: dict,
 ):
+    deps = {
+        k: v
+        for k, v in dependencies.get_dependency_versions(deps_list).items()
+        if v is not None
+    }
     meta_data = {
         "model": {"domain": domain, "model_id": model_id, "type": model_type,},
         "storage": location,
@@ -18,7 +23,7 @@ def generate(
             "runtime": f"python:{runtime.get_python_version()}",
             "user": runtime.get_user(),
             "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
-            "dependencies": dependencies,
+            "dependencies": deps,
         },
         "modelstore": modelstore.__version__,
     }

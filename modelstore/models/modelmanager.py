@@ -33,7 +33,7 @@ class ModelManager(ABC):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, storage: CloudStorage = None):
+    def __init__(self, storage: CloudStorage):
         super().__init__()
         self.storage = storage
 

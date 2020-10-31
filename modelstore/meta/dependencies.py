@@ -26,7 +26,7 @@ def _get_version(modname: str) -> str:
         return None
 
 
-def _get_dependency_versions(modnames: list) -> dict:
+def get_dependency_versions(modnames: list) -> dict:
     """
     This function re-implements the functionality of the 'private' `_get_deps_info()`
     function in sklearn:
@@ -41,7 +41,7 @@ def module_exists(modname: str) -> bool:
 
 
 def save_dependencies(tmp_dir: str, deps: list) -> str:
-    deps_info = _get_dependency_versions(deps)
+    deps_info = get_dependency_versions(deps)
     deps_info = {k: v for k, v in deps_info.items() if v is not None}
     return save_json(tmp_dir, _PYTHON_INFO_FILE, deps_info)
 

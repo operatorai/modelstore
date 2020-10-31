@@ -71,7 +71,7 @@ class ModelStore:
                 f"Failed to set up the {self.storage.name} storage."
             )
         # Supported machine learning model libraries
-        for library, manager in iter_libraries():
+        for library, manager in iter_libraries(self.storage):
             object.__setattr__(self, library, manager)
 
     def list_domains(self) -> list:
