@@ -12,9 +12,10 @@ from sklearn.model_selection import train_test_split
 
 
 def create_model_store() -> ModelStore:
-    # By default, create a new local model store one directory up
-    #  from the current example that is being run
-    return ModelStore.from_file_system(root_directory="..")
+    # By default, create a new local model store
+    # in our home directory
+    home_dir = os.path.expanduser("~")
+    return ModelStore.from_file_system(root_directory=home_dir)
 
 
 def train(model_type):

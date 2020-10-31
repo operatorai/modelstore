@@ -11,9 +11,10 @@ from sklearn.model_selection import train_test_split
 
 def create_model_store(backend) -> ModelStore:
     if backend == "filesystem":
-        # By default, create a new local model store one directory up
-        #  from the current example that is being run
-        return ModelStore.from_file_system(root_directory="~")
+        # By default, create a new local model store
+        # in our home directory
+        home_dir = os.path.expanduser("~")
+        return ModelStore.from_file_system(root_directory=home_dir)
     if backend == "gcloud":
         # The modelstore library assumes you have already created
         # a Cloud Storage bucket and will raise an exception if it doesn't exist
@@ -25,8 +26,7 @@ def create_model_store(backend) -> ModelStore:
         # created an s3 bucket where you want to store your models, and
         # will raise an exception if it doesn't exist.
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
-    else:
-        raise ValueError(f"Unknown model store: {backend}")
+    raise ValueError(f"Unknown model store: {backend}")
 
 
 def train():
