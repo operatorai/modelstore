@@ -58,7 +58,7 @@ def test_from_file_system(tmp_path):
     validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
 
 
-def only_sklearn():
+def only_sklearn(storage=None):
     for k, v in ML_LIBRARIES.items():
         if k == "sklearn":
             yield k, v()

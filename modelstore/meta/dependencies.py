@@ -49,14 +49,3 @@ def save_dependencies(tmp_dir: str, deps: list) -> str:
 def save_model_info(tmp_dir, model_name: str, model_info: dict) -> str:
     model_info["name"] = model_name
     return save_json(tmp_dir, _MODEL_TYPE_FILE, model_info)
-
-
-def _extract_json(archive_path: str, file_name: str) -> dict:
-    if not archive_path.endswith(".tar.gz"):
-        return {}
-    with tarfile.open(archive_path, "r:gz") as tar:
-        deps_info = tar.extractfile(file_name)
-        if deps_info is not None:
-            deps = deps_info.read()
-            return json.loads(deps)
-    return {}

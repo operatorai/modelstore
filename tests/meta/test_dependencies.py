@@ -14,7 +14,6 @@
 import json
 import os
 import sys
-import tarfile
 
 from modelstore.meta import dependencies
 
@@ -47,7 +46,7 @@ def test_get_dependency_versions():
         "isort": "5.5.3",
         "a-missing-dependency": None,
     }
-    result = dependencies._get_dependency_versions(test_deps)
+    result = dependencies.get_dependency_versions(test_deps)
     assert result == expected
 
 
