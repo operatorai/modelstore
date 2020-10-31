@@ -15,7 +15,7 @@ def create_model_store(backend) -> ModelStore:
     if backend == "filesystem":
         # By default, create a new local model store one directory up
         #  from the current example that is being run
-        return ModelStore.from_file_system(root_directory="..")
+        return ModelStore.from_file_system(root_directory="~")
     if backend == "gcloud":
         # The modelstore library assumes you have already created
         # a Cloud Storage bucket and will raise an exception if it doesn't exist
