@@ -40,10 +40,6 @@ class FileSystemStorage(CloudStorage):
         self.root_dir = root_path
         logger.debug("Root is: %s", self.root_dir)
 
-    @classmethod
-    def get_name(cls):
-        return "file_system"
-
     def validate(self) -> bool:
         """ This validates that the directory exists """
         # pylint: disable=broad-except
@@ -55,7 +51,7 @@ class FileSystemStorage(CloudStorage):
                 return False
 
             # Check we can write to it
-            source = os.path.join(parent_dir, ".operator-ai")
+            source = os.path.join(self.root_dir, ".operator-ai")
             Path(source).touch()
             os.remove(source)
             return True
@@ -76,8 +72,8 @@ class FileSystemStorage(CloudStorage):
         shutil.copy(path, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
-    def upload(self, domain: str, prefix: str, local_path: str) -> dict:
-        fs_path = get_archive_path(domain, prefix, local_path)
+    def upload(self, domain: str, local_path: str) -> dict:
+        fs_path = get_archive_path(domain, local_path)
         logger.info("Moving to: %s...", fs_path)
         archive_path = self._push(local_path, fs_path)
         logger.debug("Finished: %s", fs_path)
@@ -109,7 +105,10 @@ class FileSystemStorage(CloudStorage):
 
 
 def _format_location(archive_path: str) -> dict:
-    return {"path": os.path.abspath(archive_path)}
+    return {
+        "type": "file_system",
+        "path": os.path.abspath(archive_path),
+    }
 
 
 def _get_location(meta: dict) -> str:

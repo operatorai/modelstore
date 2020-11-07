@@ -13,6 +13,7 @@
 #    limitations under the License.
 
 import os
+from datetime import datetime
 
 from modelstore.clouds.util import paths
 
@@ -20,8 +21,9 @@ from modelstore.clouds.util import paths
 
 
 def test_create_path():
-    exp = os.path.join(paths._ROOT, "domain", "prefix", "file-name")
-    res = paths.get_archive_path("domain", "prefix", "path/to/file-name")
+    prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+    exp = os.path.join(paths._ROOT, "domain", prefix, "file-name")
+    res = paths.get_archive_path("domain", "path/to/file-name")
     assert exp == res
 
 

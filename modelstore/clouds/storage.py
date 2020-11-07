@@ -40,35 +40,36 @@ class CloudStorage(ABC):
             if not module_exists(dep):
                 raise ModuleNotFoundError(f"{dep} not installed.")
 
-    @classmethod
-    def get_name(cls):
-        """ Returns the name of this type of storage"""
-        raise NotImplementedError()
-
     @abstractmethod
     def validate(self) -> bool:
         """ Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
+        raise NotImplementedError()
 
     @abstractmethod
     def _push(self, source: str, destination: str) -> str:
         """ Pushes a file to a destination """
+        raise NotImplementedError()
 
     @abstractmethod
     def _pull(self, source: dict, destination: str) -> str:
         """ Pulls a model to a destination """
+        raise NotImplementedError()
 
     @abstractmethod
-    def upload(self, domain: str, prefix: str, local_path: str) -> dict:
+    def upload(self, domain: str, local_path: str) -> dict:
         """ Uploads an archive to this type of storage"""
+        raise NotImplementedError()
 
     @abstractmethod
     def _read_json_objects(self, path: str) -> list:
         """ Returns a list of all the JSON in a path """
+        raise NotImplementedError()
 
     @abstractmethod
     def _read_json_object(self, path: str) -> dict:
         """ Returns a dictionary of the JSON stored in a given path """
+        raise NotImplementedError()
 
     def list_versions(self, domain: str) -> list:
         versions_for_domain = get_versions_path(domain)
@@ -101,4 +102,4 @@ class CloudStorage(ABC):
         else:
             model_meta_path = get_metadata_path(domain, model_id)
             model_meta = self._read_json_object(model_meta_path)
-        return self._pull(model_meta["storage"]["location"], local_path)
+        return self._pull(model_meta["storage"], local_path)

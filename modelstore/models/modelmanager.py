@@ -16,20 +16,26 @@ import os
 import shutil
 import tarfile
 import tempfile
+import uuid
 from abc import ABC, ABCMeta, abstractmethod
 
+from modelstore.clouds.storage import CloudStorage
+from modelstore.meta import metadata
 from modelstore.meta.dependencies import save_dependencies, save_model_info
 
 
 class ModelManager(ABC):
 
     """
-    ModelManager is an abstract class that we use to create an archive
-    that contains all of the model-related artifacts that need to be stored
-    and uploaded to the model store.
+    ModelManager is an abstract class that we use to create and upload archives
+    that contains all of the model-related artifacts.
     """
 
     __metaclass__ = ABCMeta
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__()
+        self.storage = storage
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -53,6 +59,7 @@ class ModelManager(ABC):
         Returns a list of functions to call to save the model
         and any other required data
         """
+        raise NotImplementedError()
 
     @classmethod
     @abstractmethod
@@ -66,6 +73,7 @@ class ModelManager(ABC):
         The kwargs that must be set when calling
         create_archive()
         """
+        raise NotImplementedError()
 
     def _validate_kwargs(self, **kwargs):
         """ Ensures that the required kwargs are set
@@ -97,10 +105,14 @@ class ModelManager(ABC):
                 file_paths.append(rsp)
         return file_paths
 
-    def create_archive(self, **kwargs) -> str:
+    def _create_archive(self, **kwargs) -> str:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model
+
+        Uploads the archive to storage. This function returns
+        a dictionary of meta-data that is associated with this model,
+        including an id.
         """
         self._validate_kwargs(**kwargs)
         archive_name = "artifacts.tar.gz"
@@ -114,7 +126,41 @@ class ModelManager(ABC):
                     file_name = os.path.split(file_path)[1]
                     tar.add(name=file_path, arcname=file_name)
 
-            # Moves the file into the current working directory
-            target = os.path.join(os.getcwd(), archive_name)
-            shutil.move(result, target)
-        return target
+            # Move the archive to the current working directory
+            archive_path = os.path.join(os.getcwd(), archive_name)
+            shutil.move(result, archive_path)
+        return archive_path
+
+    def upload(self, domain: str, **kwargs) -> dict:
+        """
+        Creates the `artifacts.tar.gz` archive which contains
+        all of the files of the model
+
+        Uploads the archive to storage. This function returns
+        a dictionary of meta-data that is associated with this model,
+        including an id.
+        """
+        _validate_domain(domain)
+        self._validate_kwargs(**kwargs)
+
+        model_id = str(uuid.uuid4())
+        archive_path = self._create_archive(**kwargs)
+        location = self.storage.upload(domain, archive_path)
+        meta_data = metadata.generate(
+            self.name(), model_id, domain, location, self._get_dependencies(),
+        )
+        self.storage.set_meta_data(domain, model_id, meta_data)
+        os.remove(archive_path)
+        return meta_data
+
+
+def _validate_domain(domain: str):
+    if len(domain) == 0:
+        raise ValueError("Please provide a non-empty domain name.")
+    if domain in [
+        "versions",
+        "domains",
+        "modelstore",
+        "operatorai-model-store",
+    ]:
+        raise ValueError("Please use a different domain name.")

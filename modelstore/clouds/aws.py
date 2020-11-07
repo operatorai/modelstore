@@ -53,10 +53,6 @@ class AWSStorage(CloudStorage):
             logger.error("Unable to create s3 client!")
             raise
 
-    @classmethod
-    def get_name(cls):
-        return "aws:s3"
-
     def validate(self) -> bool:
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
         try:
@@ -83,8 +79,8 @@ class AWSStorage(CloudStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def upload(self, domain: str, prefix: str, local_path: str) -> dict:
-        bucket_path = get_archive_path(domain, prefix, local_path)
+    def upload(self, domain: str, local_path: str) -> dict:
+        bucket_path = get_archive_path(domain, local_path)
         prefix = self._push(local_path, bucket_path)
         return _format_location(self.bucket_name, prefix)
 
@@ -110,6 +106,7 @@ class AWSStorage(CloudStorage):
 
 def _format_location(bucket_name: str, prefix: str) -> dict:
     return {
+        "type": "aws:s3",
         "bucket": bucket_name,
         "prefix": prefix,
     }

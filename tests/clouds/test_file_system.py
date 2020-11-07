@@ -16,9 +16,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-import pytest
-
 import modelstore
+import pytest
 from modelstore.clouds.file_system import FileSystemStorage
 from modelstore.clouds.util.paths import (
     get_archive_path,
@@ -35,10 +34,6 @@ def fs_model_store(tmp_path):
     return FileSystemStorage(root_path=str(tmp_path))
 
 
-def test_name(fs_model_store):
-    assert fs_model_store.get_name() == "file_system"
-
-
 def test_validate(fs_model_store):
     assert fs_model_store.validate()
     assert os.path.exists(fs_model_store.root_dir)
@@ -49,11 +44,11 @@ def test_upload(fs_model_store, tmp_path):
     Path(source).touch()
 
     model_path = os.path.join(
-        fs_model_store.root_dir,
-        get_archive_path("test-domain", "prefix", source),
+        fs_model_store.root_dir, get_archive_path("test-domain", source),
     )
-    rsp = fs_model_store.upload("test-domain", "prefix", source)
-    assert model_path == rsp["path"]
+    rsp = fs_model_store.upload("test-domain", source)
+    assert rsp["type"] == "file_system"
+    assert rsp["path"] == model_path
     assert os.path.exists(model_path)
 
 

@@ -18,7 +18,6 @@ import os
 import catboost as ctb
 import numpy as np
 import pytest
-
 from modelstore.models import catboost
 
 # pylint: disable=protected-access

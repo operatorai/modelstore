@@ -14,16 +14,15 @@
 
 from modelstore.models import managers
 from modelstore.models.catboost import CatBoostManager
-from modelstore.models.missingmanager import MissingDepManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.xgboost import XGBoostManager
 
 
-def test_get_manager():
-    assert managers.get_manager("sklearn") == SKLearnManager
-    assert managers.get_manager("pytorch") == PyTorchManager
-    assert managers.get_manager("torch") == PyTorchManager
-    assert managers.get_manager("xgboost") == XGBoostManager
-    assert managers.get_manager("catboost") == CatBoostManager
-    assert managers.get_manager("some-other-dep") == MissingDepManager
+def test_iter_libraries():
+    mgrs = {library: manager for library, manager in managers.iter_libraries()}
+    assert isinstance(mgrs["sklearn"], SKLearnManager)
+    assert isinstance(mgrs["pytorch"], PyTorchManager)
+    assert isinstance(mgrs["torch"], PyTorchManager)
+    assert isinstance(mgrs["xgboost"], XGBoostManager)
+    assert isinstance(mgrs["catboost"], CatBoostManager)

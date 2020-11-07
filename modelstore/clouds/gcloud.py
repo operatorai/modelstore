@@ -23,6 +23,9 @@ try:
     from google.auth.exceptions import DefaultCredentialsError
     from google.cloud import storage
 
+    storage.blob._DEFAULT_CHUNKSIZE = 2097152  # 1024 * 1024 B * 2 = 2 MB
+    storage.blob._MAX_MULTIPART_SIZE = 2097152  # 2 MB
+
     GCLOUD_EXISTS = True
 except ImportError:
     GCLOUD_EXISTS = False
@@ -57,10 +60,6 @@ class GoogleCloudStorage(CloudStorage):
             )
             raise
 
-    @classmethod
-    def get_name(cls):
-        return "google:cloud-storage"
-
     def validate(self) -> bool:
         """ Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
@@ -74,7 +73,12 @@ class GoogleCloudStorage(CloudStorage):
         logger.info("Uploading to: %s...", destination)
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
-        blob.upload_from_filename(source)
+
+        ## For slow upload speed
+        # https://stackoverflow.com/questions/61001454/why-does-upload-from-file-google-cloud-storage-function-throws-timeout-error
+
+        with open(source, "rb") as f:
+            blob.upload_from_file(f)
         logger.debug("Finished: %s", destination)
         return destination
 
@@ -90,8 +94,8 @@ class GoogleCloudStorage(CloudStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def upload(self, domain: str, prefix: str, local_path: str) -> dict:
-        bucket_path = get_archive_path(domain, prefix, local_path)
+    def upload(self, domain: str, local_path: str) -> dict:
+        bucket_path = get_archive_path(domain, local_path)
         prefix = self._push(local_path, bucket_path)
         return _format_location(self.bucket_name, prefix)
 
@@ -118,6 +122,7 @@ class GoogleCloudStorage(CloudStorage):
 
 def _format_location(bucket_name: str, prefix: str) -> dict:
     return {
+        "type": "google:cloud-storage",
         "bucket": bucket_name,
         "prefix": prefix,
     }

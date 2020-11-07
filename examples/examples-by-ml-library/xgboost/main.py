@@ -3,19 +3,20 @@ import os
 
 import click
 import numpy as np
-import xgboost as xgb
+from modelstore import ModelStore
 from sklearn.datasets import load_diabetes
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
-from modelstore import ModelStore
+import xgboost as xgb
 
 
 def create_model_store(backend) -> ModelStore:
     if backend == "filesystem":
-        # By default, create a new local model store one directory up
-        #  from the current example that is being run
-        return ModelStore.from_file_system(root_directory="..")
+        # By default, create a new local model store
+        # in our home directory
+        home_dir = os.path.expanduser("~")
+        return ModelStore.from_file_system(root_directory=home_dir)
     if backend == "gcloud":
         # The modelstore library assumes you have already created
         # a Cloud Storage bucket and will raise an exception if it doesn't exist
@@ -27,6 +28,7 @@ def create_model_store(backend) -> ModelStore:
         # created an s3 bucket where you want to store your models, and
         # will raise an exception if it doesn't exist.
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    raise ValueError(f"Unknown model store: {backend}")
 
 
 def train():
@@ -67,26 +69,17 @@ def main(storage):
     print(f"🤖  Training an {model_type} model...")
     model = train()
 
-    # Create an archive containing the trained model
-    print("📦  Creating a model archive...")
-    archive = model_store.xgboost.create_archive(model=model)
-
     # Upload the archive to the model store
     # The first string is the model's domain - which helps you to group
     # many models that are trained on the same target together
     print(f"⤴️  Uploading the archive to the {model_domain} domain.")
-    meta = model_store.upload(model_domain, archive)
-
-    # Optional: the artifacts.tar.gz file is generated into the current
-    # working directory and you can remove them if you do not
-    # need a local copy
-    os.remove(archive)
+    meta_data = model_store.xgboost.upload(model_domain, model=model)
 
     # The upload returns meta-data about the model that was uploaded
     # This meta-data has also been sync'ed into the cloud storage
     #  bucket
     print(f"✅  Finished uploading the {model_type} model!")
-    print(json.dumps(meta, indent=4))
+    print(json.dumps(meta_data, indent=4))
 
 
 if __name__ == "__main__":

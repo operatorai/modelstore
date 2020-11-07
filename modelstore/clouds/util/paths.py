@@ -12,11 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+from datetime import datetime
 
 _ROOT = "operatorai-model-store"
 
 
-def get_archive_path(domain: str, prefix: str, local_path: str) -> str:
+def get_archive_path(domain: str, local_path: str) -> str:
     """Creates a bucket prefix where a model archive will be stored.
     I.e.: :code:`operatorai-model-store/<domain>/<prefix>/<file-name>`
 
@@ -26,11 +27,11 @@ def get_archive_path(domain: str, prefix: str, local_path: str) -> str:
         
         local_path (str): The path to the local file that is
         to be updated.
-        
-        prefix (str): Is the prefix in the cloud storage bucket
-        where the file will be uploaded to.
     """
     file_name = os.path.split(local_path)[1]
+    # Future: enable different types of prefixes
+    # Warning! Mac OS translates ":" in paths to "/"
+    prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
     return os.path.join(_ROOT, domain, prefix, file_name)
 
 

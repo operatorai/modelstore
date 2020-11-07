@@ -2,7 +2,6 @@ import os
 import subprocess
 
 import git
-
 from modelstore.meta import revision
 
 # pylint: disable=protected-access

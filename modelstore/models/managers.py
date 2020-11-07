@@ -11,8 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from functools import partial
+from typing import Iterator
 
+from modelstore.clouds.storage import CloudStorage
 from modelstore.meta.dependencies import module_exists
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.keras import KerasManager
@@ -36,8 +37,9 @@ ML_LIBRARIES = {
 }
 
 
-def get_manager(library: str) -> ModelManager:
-    mngr = ML_LIBRARIES.get(library, MissingDepManager)
-    if all(module_exists(x) for x in mngr.required_dependencies()):
-        return mngr
-    return partial(MissingDepManager, library=library)
+def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
+    for library, mngr in ML_LIBRARIES.items():
+        if all(module_exists(x) for x in mngr.required_dependencies()):
+            yield library, mngr(storage)
+        else:
+            yield library, MissingDepManager(library, storage)
