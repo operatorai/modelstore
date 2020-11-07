@@ -31,7 +31,7 @@ model_store = ModelStore.from_gcloud(
 
 # Upload the archive to your model store
 domain = "example-model"
-meta_data = model_store.upload(domain, model=clf)
+meta_data = model_store.sklearn.upload(domain, model=clf)
 
 # Print the meta-data about the model
 print(json.dumps(meta_data, indent=4))
