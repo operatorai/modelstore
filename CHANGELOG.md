@@ -1,5 +1,9 @@
 # Change log
 
+## modelstore 0.0.3
+
+Simplied the API to just requiring `upload()` (no more `create_archive()`).
+
 ## modelstore 0.0.2
 
 Added models: `transformers`, `tensorflow`
