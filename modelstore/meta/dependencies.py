@@ -1,7 +1,5 @@
 import importlib
-import json
 import sys
-import tarfile
 
 from modelstore.models.common import save_json
 from modelstore.utils.log import logger

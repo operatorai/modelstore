@@ -1,11 +1,10 @@
 # modelstore
 
-`modelstore` is a Python library that allows you to export, save and version a machine learning models.
+`modelstore` is a Python library that allows you to export, save and version machine learning models.
 
-The library's `ModelStore` will (a) version your mdoels, (b) store them in a structured way, and
-(c) collect meta data about the Python runtime that was used to train them.
+The library's `ModelStore` will (a) version your models, (b) store them in a structured way, and (c) collect meta-data about the Python runtime that was used to train them.
 
-This library has been developed using Python `3.7.0` and is in pre-alpha. Please open an issue if you have any trouble!
+This library has been developed using Python `3.6` and `3.7` and is in pre-alpha. Please open an issue if you have any trouble!
 
 ## Installation
 

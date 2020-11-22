@@ -1,6 +1,6 @@
 # Operator AI Examples
 
-This directory contains a examples of training models and storing them into a model store.
+This directory contains examples of training models and storing them into a model store.
 
 ## Running the examples
 
