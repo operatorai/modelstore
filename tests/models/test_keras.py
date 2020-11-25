@@ -18,7 +18,6 @@ import os
 import keras
 import numpy as np
 import pytest
-
 from modelstore.models.keras import KerasManager, _save_model, save_json
 
 # pylint: disable=protected-access
@@ -55,6 +54,28 @@ def test_required_kwargs(keras_manager):
 
 def test_get_functions(keras_manager, keras_model):
     assert len(keras_manager._get_functions(model=keras_model)) == 2
+
+
+def test_get_params(keras_manager, keras_model):
+    exp = {
+        "layers": [
+            {
+                "type": "InputLayer",
+                "name": "input_2",
+                "output_shape": [(None, 10)],
+                "num_params": 0,
+            },
+            {
+                "type": "Dense",
+                "name": "dense_1",
+                "output_shape": (None, 1),
+                "num_params": 11,
+            },
+        ],
+        "total_params": 11,
+    }
+    res = keras_manager._get_params(model=keras_model)
+    assert exp == res
 
 
 def test_save_model(keras_model, tmp_path):
