@@ -12,9 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import pytest
-from sklearn.ensemble import GradientBoostingRegressor
-
 from modelstore.models.sklearn import SKLearnManager
+from sklearn.ensemble import GradientBoostingRegressor
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -55,3 +54,9 @@ def test_get_functions(sklearn_manager, sklearn_model):
     assert len(sklearn_manager._get_functions(model=sklearn_model)) == 1
     with pytest.raises(TypeError):
         sklearn_manager._get_functions(model="not-an-sklearn-model")
+
+
+def test_get_params(sklearn_manager, sklearn_model):
+    exp = sklearn_model.get_params()
+    res = sklearn_manager._get_params(model=sklearn_model)
+    assert exp == res

@@ -61,6 +61,14 @@ class ModelManager(ABC):
         """
         raise NotImplementedError()
 
+    @abstractmethod
+    def _get_params(self, **kwargs) -> dict:
+        """
+        Returns a dictionary containing any model parameters
+        that are available
+        """
+        raise NotImplementedError()
+
     @classmethod
     @abstractmethod
     def name(cls) -> str:
@@ -147,7 +155,12 @@ class ModelManager(ABC):
         archive_path = self._create_archive(**kwargs)
         location = self.storage.upload(domain, archive_path)
         meta_data = metadata.generate(
-            self.name(), model_id, domain, location, self._get_dependencies(),
+            self.name(),
+            model_id,
+            domain,
+            location,
+            self._get_dependencies(),
+            self._get_params(**kwargs),
         )
         self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
