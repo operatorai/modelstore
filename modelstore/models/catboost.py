@@ -68,6 +68,14 @@ class CatBoostManager(ModelManager):
             partial(dump_attributes, model=kwargs["model"]),
         ]
 
+    def _get_params(self, **kwargs) -> dict:
+        """
+        Returns a dictionary containing any model parameters
+        that are available
+        https://catboost.ai/docs/concepts/python-reference_catboost_get_params.html
+        """
+        return kwargs["model"].get_params()
+
 
 def save_model(
     tmp_dir: str, model: "catboost.CatBoost", fmt: str, pool: Any = None
