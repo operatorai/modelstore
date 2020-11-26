@@ -18,7 +18,7 @@ def generate(
             "domain": domain,
             "model_id": model_id,
             "type": model_type,
-            "params": _remove_nones(model_params),
+            "description": _remove_nones(model_params),
         },
         "storage": location,
         "meta": {
