@@ -43,7 +43,7 @@ class MissingDepManager(ModelManager):
         return []
 
     def _get_params(self, **kwargs) -> dict:
-        return {}
+        return None
 
     def _required_kwargs(self) -> list:
         return []

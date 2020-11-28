@@ -16,14 +16,13 @@ import os
 
 import pytest
 import torch
-from torch import nn, optim
-from torch.nn import functional as F
-
 from modelstore.models.pytorch import (
     PyTorchManager,
     _save_model,
     _save_state_dict,
 )
+from torch import nn, optim
+from torch.nn import functional as F
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -82,6 +81,14 @@ def test_get_functions(torch_manager):
     assert (
         len(torch_manager._get_functions(model="model", optimizer="optim")) == 2
     )
+
+
+def test_get_params(torch_manager, pytorch_model, pytorch_optim):
+    exp = pytorch_optim.state_dict()
+    res = torch_manager._get_params(
+        model=pytorch_model, optimizer=pytorch_optim
+    )
+    assert exp == res
 
 
 def models_equal(model_a: nn.Module, module_b: nn.Module):

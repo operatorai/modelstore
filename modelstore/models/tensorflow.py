@@ -56,6 +56,13 @@ class TensorflowManager(ModelManager):
             partial(_save_model, model=model),
         ]
 
+    def _get_params(self, **kwargs) -> dict:
+        """
+        Returns a dictionary containing any model parameters
+        that are available
+        """
+        return kwargs["model"].optimizer.get_config()
+
 
 def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
     # https://www.tensorflow.org/api_docs/python/tf/keras/Model#save_weights

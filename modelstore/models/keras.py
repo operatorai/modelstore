@@ -61,21 +61,10 @@ class KerasManager(ModelManager):
 
     def _get_params(self, **kwargs) -> dict:
         """
-        Returns a dictionary that reconstructs what is contained
-        in model.summary()
+        Returns a dictionary containing the optimizer
+        parameters
         """
-        return {
-            "layers": [
-                {
-                    "type": type(layer).__name__,
-                    "name": layer.name,
-                    "output_shape": layer.output_shape,
-                    "num_params": layer.count_params(),
-                }
-                for layer in kwargs["model"].layers
-            ],
-            "total_params": kwargs["model"].count_params(),
-        }
+        return kwargs["model"].optimizer.get_config()
 
 
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:

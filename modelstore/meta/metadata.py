@@ -14,12 +14,7 @@ def generate(
 ):
     versioned_deps = dependencies.get_dependency_versions(deps_list)
     meta_data = {
-        "model": {
-            "domain": domain,
-            "model_id": model_id,
-            "type": model_type,
-            "description": _remove_nones(model_params),
-        },
+        "model": {"domain": domain, "model_id": model_id, "type": model_type,},
         "storage": location,
         "meta": {
             "runtime": f"python:{runtime.get_python_version()}",
@@ -32,6 +27,8 @@ def generate(
     git_meta = revision.git_meta()
     if git_meta is not None:
         meta_data["meta"]["git"] = git_meta
+    if model_params is not None:
+        meta_data["model"]["parameters"] = _remove_nones(model_params)
     return meta_data
 
 
