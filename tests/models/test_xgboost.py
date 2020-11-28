@@ -17,7 +17,6 @@ import os
 import numpy as np
 import pytest
 import xgboost as xgb
-
 from modelstore.models import xgboost
 
 # pylint: disable=protected-access
@@ -54,6 +53,12 @@ def test_required_kwargs(xgboost_manager):
 
 def test_get_functions(xgboost_manager):
     assert len(xgboost_manager._get_functions(model="model")) == 3
+
+
+def test_get_params(xgboost_manager, xgb_model):
+    exp = xgb_model.get_xgb_params()
+    res = xgboost_manager._get_params(model=xgb_model)
+    assert exp == res
 
 
 def test_save_model(xgb_model, tmp_path):

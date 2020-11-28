@@ -16,6 +16,10 @@ import json
 import os
 
 import pytest
+from modelstore.models.transformers import (
+    TransformersManager,
+    _save_transformers,
+)
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
@@ -24,11 +28,6 @@ from transformers import (
     DistilBertTokenizer,
 )
 from transformers.file_utils import CONFIG_NAME
-
-from modelstore.models.transformers import (
-    TransformersManager,
-    _save_transformers,
-)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -82,6 +81,12 @@ def test_get_functions(tr_manager):
         len(tr_manager._get_functions(config="c", model="m", tokenizer="t"))
         == 1
     )
+
+
+def test_get_params(tr_manager, model_config):
+    exp = model_config.to_dict()
+    res = tr_manager._get_params(config=model_config)
+    assert exp == res
 
 
 def test_save_transformers(model_config, model, tokenizer, tmp_path):

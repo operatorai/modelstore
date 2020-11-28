@@ -54,8 +54,14 @@ def test_required_kwargs(catboost_manager):
     assert catboost_manager._required_kwargs() == ["model"]
 
 
-def test_get_functions(catb_model, catboost_manager):
+def test_get_functions(catboost_manager, catb_model):
     assert len(catboost_manager._get_functions(model=catb_model)) == 4
+
+
+def test_get_params(catboost_manager, catb_model):
+    exp = catb_model.get_params()
+    res = catboost_manager._get_params(model=catb_model)
+    assert exp == res
 
 
 @pytest.mark.parametrize("fmt", ["json", "cbm", "onnx"])

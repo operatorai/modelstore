@@ -1,5 +1,9 @@
 # Change log
 
+## Dev (Github only)
+
+Added auto-extraction of model params
+
 ## modelstore 0.0.3
 
 Simplied the API to just requiring `upload()` (no more `create_archive()`).

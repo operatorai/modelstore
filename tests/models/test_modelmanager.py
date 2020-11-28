@@ -55,6 +55,9 @@ class MockModelManager(ModelManager):
             mock_save_config,
         ]
 
+    def _get_params(self, **kwargs) -> dict:
+        return None
+
     def _required_kwargs(self) -> list:
         return ["model", "config"]
 

@@ -58,3 +58,11 @@ class SKLearnManager(ModelManager):
         return [
             partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB),
         ]
+
+    def _get_params(self, **kwargs) -> dict:
+        """
+        Returns a dictionary containing any model parameters
+        that are available
+        https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator.get_params
+        """
+        return kwargs["model"].get_params()

@@ -59,6 +59,13 @@ class KerasManager(ModelManager):
             partial(save_json, file_name=MODEL_CONFIG, data=model.to_json(),),
         ]
 
+    def _get_params(self, **kwargs) -> dict:
+        """
+        Returns a dictionary containing the optimizer
+        parameters
+        """
+        return kwargs["model"].optimizer.get_config()
+
 
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:
     import keras

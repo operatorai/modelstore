@@ -42,6 +42,9 @@ class MissingDepManager(ModelManager):
     def _get_functions(self, **kwargs) -> list:
         return []
 
+    def _get_params(self, **kwargs) -> dict:
+        return None
+
     def _required_kwargs(self) -> list:
         return []
 

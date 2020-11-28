@@ -64,6 +64,13 @@ class PyTorchManager(ModelManager):
             partial(_save_model, model=kwargs["model"]),
         ]
 
+    def _get_params(self, **kwargs) -> dict:
+        """
+        Returns a dictionary the optimizer's state
+        dictionary
+        """
+        return kwargs["optimizer"].state_dict()
+
 
 def _save_state_dict(
     tmp_dir: str, model: "nn.Module", optimizer: "optim.Optimizer"

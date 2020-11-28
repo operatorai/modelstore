@@ -18,7 +18,6 @@ import keras
 import numpy as np
 import pytest
 import tensorflow as tf
-
 from modelstore.models.tensorflow import (
     TensorflowManager,
     _save_model,
@@ -51,7 +50,7 @@ def test_name(tf_manager):
     assert tf_manager.name() == "tensorflow"
 
 
-def test_model_info(tf_manager):
+def test_model_info(tf_manager, tf_model):
     exp = {}
     res = tf_manager.model_info()
     assert exp == res
@@ -63,6 +62,12 @@ def test_required_kwargs(tf_manager):
 
 def test_get_functions(tf_manager, tf_model):
     assert len(tf_manager._get_functions(model=tf_model)) == 2
+
+
+def test_get_params(tf_manager, tf_model):
+    exp = tf_model.optimizer.get_config()
+    res = tf_manager._get_params(model=tf_model)
+    assert exp == res
 
 
 def test_save_model(tf_model, tmp_path):

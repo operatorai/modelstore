@@ -61,6 +61,13 @@ class XGBoostManager(ModelManager):
             partial(model_config, model=kwargs["model"]),
         ]
 
+    def _get_params(self, **kwargs) -> dict:
+        """
+        Returns a dictionary containing any model parameters
+        that are available
+        """
+        return kwargs["model"].get_xgb_params()
+
 
 def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
     """  From the docs:
