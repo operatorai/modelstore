@@ -22,11 +22,12 @@ from modelstore.models.modelmanager import ModelManager
 
 # pylint: disable=protected-access
 # pylint: disable=missing-class-docstring
+# pylint: disable=redefined-outer-name
 
 
 class MockCloudStorage(FileSystemStorage):
-    def __init__(self):
-        super().__init__(root_path=".")
+    def __init__(self, tmpdir):
+        super().__init__(root_path=str(tmpdir))
         self.called = False
 
     def upload(self, domain: str, local_path: str):
@@ -34,8 +35,8 @@ class MockCloudStorage(FileSystemStorage):
 
 
 class MockModelManager(ModelManager):
-    def __init__(self):
-        super().__init__(storage=MockCloudStorage())
+    def __init__(self, tmpdir):
+        super().__init__(storage=MockCloudStorage(tmpdir))
 
     @classmethod
     def name(cls) -> str:
@@ -74,8 +75,13 @@ def mock_save_config(tmp_dir: str) -> str:
     return path
 
 
-def test_collect_files(tmp_path):
-    mngr = MockModelManager()
+@pytest.fixture
+def mock_manager(tmpdir):
+    return MockModelManager(tmpdir)
+
+
+def test_collect_files(mock_manager):
+    tmp_path = mock_manager.storage.root_dir
     exp = sorted(
         [
             os.path.join(tmp_path, "model-info.json"),
@@ -84,32 +90,28 @@ def test_collect_files(tmp_path):
             os.path.join(tmp_path, "config.json"),
         ]
     )
-    res = sorted(mngr._collect_files(tmp_path))
+    res = sorted(mock_manager._collect_files(tmp_path))
     assert res == exp
 
 
-def test_validate_kwargs():
-    mngr = MockModelManager()
+def test_validate_kwargs(mock_manager):
     with pytest.raises(TypeError):
         # Missing model= kwarg
-        mngr._validate_kwargs(config="config")
-    mngr._validate_kwargs(model="model", config="config")
+        mock_manager._validate_kwargs(config="config")
+    mock_manager._validate_kwargs(model="model", config="config")
 
 
-def test_upload():
-    mngr = MockModelManager()
-    mngr.upload(domain="model", model="model", config="config")
-    assert mngr.storage.called
+def test_upload(mock_manager):
+    mock_manager.upload(domain="model", model="model", config="config")
+    assert mock_manager.storage.called
 
 
-def test_create_archive():
+def test_create_archive(mock_manager):
     target = os.path.join(os.getcwd(), "artifacts.tar.gz")
     if os.path.exists(target):
         os.remove(target)
 
-    mngr = MockModelManager()
-    mngr._create_archive(model="model", config="config")
-
+    mock_manager._create_archive(model="model", config="config")
     exp = sorted(
         ["model-info.json", "python-info.json", "model.joblib", "config.json",]
     )
