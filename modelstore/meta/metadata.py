@@ -4,32 +4,47 @@ import modelstore
 from modelstore.meta import dependencies, revision, runtime
 
 
-def generate(
-    model_type: str,
+def generate_for_model(
     model_id: str,
+    model_type: str,
+    model_info: dict,
     domain: str,
-    location: dict,
-    deps_list: dict,
-    model_params: dict,
+    model_params: dict = None,
 ):
+    metadata = {
+        "domain": domain,
+        "model_id": model_id,
+        "type": model_type,
+        "info": _remove_nones(model_info),
+    }
+    if model_params is not None:
+        metadata["parameters"] = _remove_nones(model_params)
+    return metadata
+
+
+def generate_for_code(deps_list: dict):
     versioned_deps = dependencies.get_dependency_versions(deps_list)
-    meta_data = {
-        "model": {"domain": domain, "model_id": model_id, "type": model_type,},
-        "storage": location,
-        "meta": {
-            "runtime": f"python:{runtime.get_python_version()}",
-            "user": runtime.get_user(),
-            "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
-            "dependencies": _remove_nones(versioned_deps),
-        },
-        "modelstore": modelstore.__version__,
+    metadata = {
+        "runtime": f"python:{runtime.get_python_version()}",
+        "user": runtime.get_user(),
+        "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+        "dependencies": _remove_nones(versioned_deps),
     }
     git_meta = revision.git_meta()
     if git_meta is not None:
-        meta_data["meta"]["git"] = git_meta
-    if model_params is not None:
-        meta_data["model"]["parameters"] = _remove_nones(model_params)
-    return meta_data
+        metadata["git"] = git_meta
+    return metadata
+
+
+def generate(
+    model_meta: dict, storage_meta: dict, code_meta: dict,
+):
+    return {
+        "model": model_meta,
+        "storage": storage_meta,
+        "code": code_meta,
+        "modelstore": modelstore.__version__,
+    }
 
 
 def _remove_nones(values) -> dict:
