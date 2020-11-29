@@ -25,8 +25,10 @@ from modelstore.models import catboost
 
 
 @pytest.fixture
-def catb_model():
-    model = ctb.CatBoostClassifier(loss_function="MultiClass")
+def catb_model(tmpdir):
+    model = ctb.CatBoostClassifier(
+        loss_function="MultiClass", train_dir=str(tmpdir)
+    )
     x = np.random.rand(10, 10)
     y = np.random.randint(0, 2, size=(10))
     while len(np.unique(y)) == 1:

@@ -2,7 +2,7 @@
 
 ## Dev (Github only)
 
-Added auto-extraction of model params
+Added auto-extraction of model params and model info into the meta-data
 
 ## modelstore 0.0.3
 

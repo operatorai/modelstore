@@ -151,17 +151,25 @@ class ModelManager(ABC):
         _validate_domain(domain)
         self._validate_kwargs(**kwargs)
 
+        # Meta-data about the model
         model_id = str(uuid.uuid4())
-        archive_path = self._create_archive(**kwargs)
-        location = self.storage.upload(domain, archive_path)
-        meta_data = metadata.generate(
-            self.name(),
-            model_id,
-            domain,
-            location,
-            self._get_dependencies(),
-            self._get_params(**kwargs),
+        model_meta = metadata.generate_for_model(
+            model_id=model_id,
+            model_type=self.name(),
+            model_info=self.model_info(),
+            domain=domain,
+            model_params=self._get_params(),
         )
+
+        # Meta-data about the code
+        code_meta = metadata.generate_for_code(self._get_dependencies())
+
+        # Meta-data about the model location
+        archive_path = self._create_archive(**kwargs)
+        storage_meta = self.storage.upload(domain, archive_path)
+
+        # Generate the combined meta-data and add it to the store
+        meta_data = metadata.generate(model_meta, storage_meta, code_meta)
         self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
         return meta_data
