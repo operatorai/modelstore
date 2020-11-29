@@ -119,3 +119,4 @@ def test_create_archive(mock_manager):
         files = sorted([f.name for f in tar.getmembers()])
     assert len(files) == len(exp)
     assert files == exp
+    os.remove(target)
