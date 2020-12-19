@@ -48,7 +48,7 @@ class PyTorchManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"library": "torch"}
+        return {"library": "pytorch"}
 
     def _get_functions(self, **kwargs) -> list:
         return [
