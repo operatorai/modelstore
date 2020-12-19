@@ -157,7 +157,7 @@ class ModelManager(ABC):
             model_type=self.name(),
             model_info=self.model_info(**kwargs),
             domain=domain,
-            model_params=self._get_params(),
+            model_params=self._get_params(**kwargs),
         )
 
         # Meta-data about the code
