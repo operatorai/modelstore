@@ -1,6 +1,6 @@
 # Change log
 
-## modelstore 0.0.4
+## Github only (modelstore 0.0.4)
 
 Upgraded dependencies to deal with an issue using `modelstore` in Colab
 
