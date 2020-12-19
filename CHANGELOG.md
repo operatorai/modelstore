@@ -2,6 +2,8 @@
 
 ## Github only (modelstore 0.0.4)
 
+Add interactive authentication when using Google Colab
+
 Upgraded dependencies to deal with an issue using `modelstore` in Colab
 
 Added auto-extraction of model params and model info into the meta-data

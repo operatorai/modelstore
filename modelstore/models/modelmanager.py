@@ -39,14 +39,14 @@ class ModelManager(ABC):
 
     @classmethod
     def required_dependencies(cls) -> list:
-        """ Returns a list of dependencies that
+        """Returns a list of dependencies that
         must be pip installed for this ModelManager to work"""
         raise NotImplementedError()
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """ Returns a list of dependencies that, if installed
-        are useful to log info about """
+        """Returns a list of dependencies that, if installed
+        are useful to log info about"""
         return ["pip", "setuptools", "numpy", "scipy", "pandas"]
 
     @classmethod
@@ -84,8 +84,7 @@ class ModelManager(ABC):
         raise NotImplementedError()
 
     def _validate_kwargs(self, **kwargs):
-        """ Ensures that the required kwargs are set
-        """
+        """Ensures that the required kwargs are set"""
         for arg in self._required_kwargs():
             if arg not in kwargs:
                 raise TypeError(f"Please specify {arg}=<value>")
@@ -96,7 +95,7 @@ class ModelManager(ABC):
         raise NotImplementedError()
 
     def _collect_files(self, tmp_dir: str, **kwargs) -> list:
-        """ Returns a list of files created in tmp_dir that will form
+        """Returns a list of files created in tmp_dir that will form
         part of the artifacts archive.
         """
         file_paths = [
@@ -156,9 +155,9 @@ class ModelManager(ABC):
         model_meta = metadata.generate_for_model(
             model_id=model_id,
             model_type=self.name(),
-            model_info=self.model_info(),
+            model_info=self.model_info(**kwargs),
             domain=domain,
-            model_params=self._get_params(),
+            model_params=self._get_params(**kwargs),
         )
 
         # Meta-data about the code
