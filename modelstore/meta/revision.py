@@ -22,5 +22,5 @@ def git_meta() -> dict:
             "local_changes": repo.is_dirty(),
             "branch": repo.active_branch.name,
         }
-    except Exception as ex:
+    except Exception:
         return None
