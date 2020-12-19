@@ -25,7 +25,7 @@ from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
     DistilBertForSequenceClassification,
-    DistilBertTokenizer,
+    PreTrainedTokenizerFast,
 )
 from transformers.file_utils import CONFIG_NAME
 
@@ -41,7 +41,9 @@ def model_name():
 @pytest.fixture
 def model_config(model_name):
     return AutoConfig.from_pretrained(
-        model_name, num_labels=3, finetuning_task="mnli",
+        model_name,
+        num_labels=3,
+        finetuning_task="mnli",
     )
 
 
@@ -53,7 +55,8 @@ def tokenizer(model_name):
 @pytest.fixture()
 def model(model_name, model_config):
     return AutoModelForSequenceClassification.from_pretrained(
-        model_name, config=model_config,
+        model_name,
+        config=model_config,
     )
 
 
@@ -103,10 +106,11 @@ def test_save_transformers(model_config, model, tokenizer, tmp_path):
 
     # Validate model
     model = AutoModelForSequenceClassification.from_pretrained(
-        file_path, config=model_config,
+        file_path,
+        config=model_config,
     )
     assert isinstance(model, DistilBertForSequenceClassification)
 
     # Validate tokenizer
     token = AutoTokenizer.from_pretrained(file_path)
-    assert isinstance(token, DistilBertTokenizer)
+    assert isinstance(token, PreTrainedTokenizerFast)
