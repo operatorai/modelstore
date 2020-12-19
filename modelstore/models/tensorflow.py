@@ -29,11 +29,6 @@ class TensorflowManager(ModelManager):
     """
 
     @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "tensorflow"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return [
             "h5py",
@@ -47,7 +42,7 @@ class TensorflowManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {}
+        return {"library": "tensorflow"}
 
     def _get_functions(self, **kwargs) -> list:
         model = kwargs["model"]

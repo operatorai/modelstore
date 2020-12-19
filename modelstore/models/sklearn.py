@@ -28,18 +28,13 @@ class SKLearnManager(ModelManager):
     """
 
     @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "sklearn"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return ["sklearn"]
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """ Returns a list of dependencies that, if installed
-        are useful to log info about """
+        """Returns a list of dependencies that, if installed
+        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["Cython", "joblib", "threadpoolctl"]
 
@@ -48,7 +43,7 @@ class SKLearnManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"type": type(kwargs["model"]).__name__}
+        return {"library": "sklearn", "type": type(kwargs["model"]).__name__}
 
     def _get_functions(self, **kwargs) -> list:
         import sklearn

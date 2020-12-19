@@ -69,12 +69,6 @@ class ModelManager(ABC):
         """
         raise NotImplementedError()
 
-    @classmethod
-    @abstractmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        raise NotImplementedError()
-
     @abstractmethod
     def _required_kwargs(self) -> list:
         """
@@ -100,7 +94,7 @@ class ModelManager(ABC):
         """
         file_paths = [
             save_dependencies(tmp_dir, self._get_dependencies()),
-            save_model_info(tmp_dir, self.name(), self.model_info(**kwargs)),
+            save_model_info(tmp_dir, self.model_info(**kwargs)),
         ]
         for func in self._get_functions(**kwargs):
             rsp = func(tmp_dir)
@@ -154,7 +148,6 @@ class ModelManager(ABC):
         model_id = str(uuid.uuid4())
         model_meta = metadata.generate_for_model(
             model_id=model_id,
-            model_type=self.name(),
             model_info=self.model_info(**kwargs),
             domain=domain,
             model_params=self._get_params(**kwargs),
