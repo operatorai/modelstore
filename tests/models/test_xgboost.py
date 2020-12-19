@@ -28,6 +28,10 @@ def xgb_model():
     model = xgb.XGBClassifier(use_label_encoder=False)
     x = np.random.rand(5, 5)
     y = np.random.randint(0, 2, size=(5))
+    while len(np.unique(y)) == 1:
+        # Addressing randomly generating a label set
+        # that just has 1 value
+        y = np.random.randint(0, 2, size=(5))
     model.fit(x, y)
     return model
 
