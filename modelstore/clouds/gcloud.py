@@ -19,6 +19,8 @@ from modelstore.clouds.util.paths import get_archive_path
 from modelstore.clouds.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
+# pylint: disable=protected-access
+
 try:
     from google.auth.exceptions import DefaultCredentialsError
     from google.cloud import storage
@@ -50,18 +52,29 @@ class GoogleCloudStorage(CloudStorage):
 
     @property
     def client(self) -> "storage.Client":
+        if not GCLOUD_EXISTS:
+            raise ImportError("Please install google-cloud-storage")
         try:
             if self.__client is None:
                 self.__client = storage.Client(self.project_name)
             return self.__client
         except DefaultCredentialsError:
+            try:
+                # Try to authenticate, if in a Colab notebook
+                from google.colab import auth
+
+                auth.authenticate_user()
+                self.__client = storage.Client(self.project_name)
+                return self.__client
+            except ModuleNotFoundError:
+                pass
             logger.error(
                 "Missing credentials: https://cloud.google.com/docs/authentication/getting-started#command-line"  # noqa
             )
             raise
 
     def validate(self) -> bool:
-        """ Runs any required validation steps - e.g.,
+        """Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
         for bucket in list(self.client.list_buckets(prefix=self.bucket_name)):
