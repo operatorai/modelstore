@@ -46,12 +46,8 @@ def tf_manager():
     return TensorflowManager()
 
 
-def test_name(tf_manager):
-    assert tf_manager.name() == "tensorflow"
-
-
 def test_model_info(tf_manager, tf_model):
-    exp = {}
+    exp = {"library": "tensorflow"}
     res = tf_manager.model_info()
     assert exp == res
 

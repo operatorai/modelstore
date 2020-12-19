@@ -65,12 +65,8 @@ def tr_manager():
     return TransformersManager()
 
 
-def test_name(tr_manager):
-    assert tr_manager.name() == "transformers"
-
-
 def test_model_info(tr_manager):
-    exp = {}
+    exp = {"library": "transformers"}
     res = tr_manager.model_info()
     assert exp == res
 

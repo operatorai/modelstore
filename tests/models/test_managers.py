@@ -23,6 +23,5 @@ def test_iter_libraries():
     mgrs = {library: manager for library, manager in managers.iter_libraries()}
     assert isinstance(mgrs["sklearn"], SKLearnManager)
     assert isinstance(mgrs["pytorch"], PyTorchManager)
-    assert isinstance(mgrs["torch"], PyTorchManager)
     assert isinstance(mgrs["xgboost"], XGBoostManager)
     assert isinstance(mgrs["catboost"], CatBoostManager)

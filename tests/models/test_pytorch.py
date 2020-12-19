@@ -63,12 +63,8 @@ def torch_manager():
     return PyTorchManager()
 
 
-def test_name(torch_manager):
-    assert torch_manager.name() == "torch"
-
-
 def test_model_info(torch_manager, pytorch_model):
-    exp = {}
+    exp = {"library": "pytorch"}
     res = torch_manager.model_info(model=pytorch_model)
     assert exp == res
 

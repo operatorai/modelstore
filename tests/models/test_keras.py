@@ -38,12 +38,8 @@ def keras_manager():
     return KerasManager()
 
 
-def test_name(keras_manager):
-    assert keras_manager.name() == "keras"
-
-
 def test_model_info(keras_manager):
-    exp = {}
+    exp = {"library": "keras"}
     res = keras_manager.model_info()
     assert exp == res
 

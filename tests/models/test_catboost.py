@@ -42,12 +42,8 @@ def catboost_manager():
     return catboost.CatBoostManager()
 
 
-def test_name(catboost_manager):
-    assert catboost_manager.name() == "catboost"
-
-
 def test_model_info(catboost_manager, catb_model):
-    exp = {"type": "CatBoostClassifier"}
+    exp = {"library": "catboost", "type": "CatBoostClassifier"}
     res = catboost_manager.model_info(model=catb_model)
     assert exp == res
 
