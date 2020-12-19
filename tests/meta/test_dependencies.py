@@ -22,11 +22,11 @@ from modelstore.meta import dependencies
 
 def test_get_version():
     assert dependencies._get_version("a-missing-dependency") is None
-    assert dependencies._get_version("pytest") == "6.0.1"
+    assert dependencies._get_version("pytest") == "6.2.1"
     if "isort" in sys.modules:
         # Force import
         del sys.modules["isort"]
-    assert dependencies._get_version("isort") == "5.5.3"
+    assert dependencies._get_version("isort") == "5.6.4"
 
 
 def test_get_dependency_versions():
@@ -39,11 +39,11 @@ def test_get_dependency_versions():
         "a-missing-dependency",
     ]
     expected = {
-        "pytest": "6.0.1",
+        "black": "20.8b1",
+        "pytest": "6.2.1",
         "pylint": "2.6.0",
-        "black": "19.10b0",
-        "flake8": "3.8.3",
-        "isort": "5.5.3",
+        "flake8": "3.8.4",
+        "isort": "5.6.4",
         "a-missing-dependency": None,
     }
     result = dependencies.get_dependency_versions(test_deps)
@@ -65,11 +65,11 @@ def test_save_dependencies(tmp_path):
         "a-missing-dependency",
     ]
     expected = {
-        "pytest": "6.0.1",
+        "black": "20.8b1",
+        "flake8": "3.8.4",
+        "isort": "5.6.4",
+        "pytest": "6.2.1",
         "pylint": "2.6.0",
-        "black": "19.10b0",
-        "flake8": "3.8.3",
-        "isort": "5.5.3",
     }
     tmp_file = dependencies.save_dependencies(tmp_path, test_deps)
     assert os.path.split(tmp_file)[1] == "python-info.json"

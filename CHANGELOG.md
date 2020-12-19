@@ -1,6 +1,8 @@
 # Change log
 
-## Dev (Github only)
+## Github only (modelstore 0.0.4)
+
+Upgraded dependencies to deal with an issue using `modelstore` in Colab
 
 Added auto-extraction of model params and model info into the meta-data
 
