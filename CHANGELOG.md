@@ -2,6 +2,8 @@
 
 ## Github only (modelstore 0.0.4)
 
+Clean up how meta-data is generated
+
 Add interactive authentication when using Google Colab
 
 Upgraded dependencies to deal with an issue using `modelstore` in Colab

@@ -32,18 +32,13 @@ class XGBoostManager(ModelManager):
     """
 
     @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "xgboost"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return ["xgboost"]
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """ Returns a list of dependencies that, if installed
-        are useful to log info about """
+        """Returns a list of dependencies that, if installed
+        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["sklearn"]
 
@@ -52,7 +47,7 @@ class XGBoostManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"type": type(kwargs["model"]).__name__}
+        return {"library": "xgboost", "type": type(kwargs["model"]).__name__}
 
     def _get_functions(self, **kwargs) -> list:
         return [
@@ -70,7 +65,7 @@ class XGBoostManager(ModelManager):
 
 
 def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
-    """  From the docs:
+    """From the docs:
     The model is saved in an XGBoost internal format which is universal
     among the various XGBoost interfaces.
     """
@@ -81,7 +76,7 @@ def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
 
 
 def dump_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
-    """ From the docs:
+    """From the docs:
     Dump model into a text or JSON file.  Unlike `save_model`, the
     output format is primarily used for visualization or interpretation
     """

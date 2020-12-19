@@ -40,11 +40,6 @@ class CatBoostManager(ModelManager):
     """
 
     @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "catboost"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return ["catboost", "onnxruntime"]
 
@@ -53,7 +48,7 @@ class CatBoostManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"type": type(kwargs["model"]).__name__}
+        return {"library": "catboost", "type": type(kwargs["model"]).__name__}
 
     def _get_functions(self, **kwargs) -> list:
         import catboost
@@ -80,7 +75,7 @@ class CatBoostManager(ModelManager):
 def save_model(
     tmp_dir: str, model: "catboost.CatBoost", fmt: str, pool: Any = None
 ) -> str:
-    """ CatBoost supports storing models in multiple formats:
+    """CatBoost supports storing models in multiple formats:
     https://catboost.ai/docs/concepts/python-reference_catboost_save_model.html#python-reference_catboost_save_model
     """
     logger.debug("Saving catboost model as %s", fmt)

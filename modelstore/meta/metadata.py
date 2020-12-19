@@ -6,7 +6,6 @@ from modelstore.meta import dependencies, revision, runtime
 
 def generate_for_model(
     model_id: str,
-    model_type: str,
     model_info: dict,
     domain: str,
     model_params: dict = None,
@@ -14,8 +13,7 @@ def generate_for_model(
     metadata = {
         "domain": domain,
         "model_id": model_id,
-        "type": model_type,
-        "info": _remove_nones(model_info),
+        "model_type": _remove_nones(model_info),
     }
     if model_params is not None:
         metadata["parameters"] = _remove_nones(model_params)
@@ -37,7 +35,9 @@ def generate_for_code(deps_list: dict):
 
 
 def generate(
-    model_meta: dict, storage_meta: dict, code_meta: dict,
+    model_meta: dict,
+    storage_meta: dict,
+    code_meta: dict,
 ):
     return {
         "model": model_meta,

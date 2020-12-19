@@ -41,12 +41,8 @@ def xgboost_manager():
     return xgboost.XGBoostManager()
 
 
-def test_name(xgboost_manager):
-    assert xgboost_manager.name() == "xgboost"
-
-
 def test_model_info(xgboost_manager, xgb_model):
-    exp = {"type": "XGBClassifier"}
+    exp = {"library": "xgboost", "type": "XGBClassifier"}
     res = xgboost_manager.model_info(model=xgb_model)
     assert exp == res
 

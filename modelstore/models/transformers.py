@@ -30,18 +30,13 @@ class TransformersManager(ModelManager):
     """
 
     @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "transformers"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return ["transformers"]
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """ Returns a list of dependencies that, if installed
-        are useful to log info about """
+        """Returns a list of dependencies that, if installed
+        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["torch", "tensorflow"]
 
@@ -50,7 +45,7 @@ class TransformersManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {}
+        return {"library": "transformers"}
 
     def _get_functions(self, **kwargs) -> list:
         return [

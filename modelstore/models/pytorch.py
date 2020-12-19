@@ -32,18 +32,13 @@ class PyTorchManager(ModelManager):
     """
 
     @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "torch"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return ["torch"]
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """ Returns a list of dependencies that, if installed
-        are useful to log info about """
+        """Returns a list of dependencies that, if installed
+        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["torchvision"]
 
@@ -52,7 +47,7 @@ class PyTorchManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {}
+        return {"library": "pytorch"}
 
     def _get_functions(self, **kwargs) -> list:
         return [

@@ -31,11 +31,6 @@ class KerasManager(ModelManager):
     """
 
     @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "keras"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return [
             "keras",
@@ -50,13 +45,17 @@ class KerasManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {}
+        return {"library": "keras"}
 
     def _get_functions(self, **kwargs) -> list:
         model = kwargs["model"]
         return [
             partial(_save_model, model=model),
-            partial(save_json, file_name=MODEL_CONFIG, data=model.to_json(),),
+            partial(
+                save_json,
+                file_name=MODEL_CONFIG,
+                data=model.to_json(),
+            ),
         ]
 
     def _get_params(self, **kwargs) -> dict:
