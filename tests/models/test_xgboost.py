@@ -25,7 +25,7 @@ from modelstore.models import xgboost
 
 @pytest.fixture
 def xgb_model():
-    model = xgb.XGBClassifier()
+    model = xgb.XGBClassifier(use_label_encoder=False)
     x = np.random.rand(5, 5)
     y = np.random.randint(0, 2, size=(5))
     model.fit(x, y)
