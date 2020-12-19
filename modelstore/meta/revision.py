@@ -1,6 +1,5 @@
 import git
 from git.exc import InvalidGitRepositoryError
-
 from modelstore.utils.log import logger
 
 # pylint: disable=broad-except
@@ -10,8 +9,7 @@ def _repo_name(repo: git.Repo) -> str:
     try:
         repo_url = repo.remotes.origin.url
         return repo_url.split(".git")[0].split("/")[-1]
-    except Exception as ex:
-        logger.error("Error retrieving repo name %s", str(ex))
+    except Exception:
         return ""
 
 
@@ -25,5 +23,4 @@ def git_meta() -> dict:
             "branch": repo.active_branch.name,
         }
     except Exception as ex:
-        logger.error("Error retrieving repo details %s", str(ex))
         return None
