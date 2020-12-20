@@ -1,6 +1,6 @@
 # Change log
 
-## Github only (modelstore 0.0.4)
+## modelstore 0.0.4
 
 Clean up how meta-data is generated
 
