@@ -20,6 +20,7 @@ from modelstore.models.keras import KerasManager
 from modelstore.models.missingmanager import MissingDepManager
 from modelstore.models.modelmanager import ModelManager
 from modelstore.models.pytorch import PyTorchManager
+from modelstore.models.pytorchlightning import PyTorchLightningManager
 from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.transformers import TransformersManager
@@ -29,6 +30,7 @@ ML_LIBRARIES = {
     "catboost": CatBoostManager,
     "keras": KerasManager,
     "pytorch": PyTorchManager,
+    "pytorchlightning": PyTorchLightningManager,
     "sklearn": SKLearnManager,
     "tensorflow": TensorflowManager,
     "transformers": TransformersManager,
