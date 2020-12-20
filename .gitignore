@@ -25,3 +25,5 @@ catboost_info/
 *.joblib
 
 *.xgboost
+
+lightning_logs/

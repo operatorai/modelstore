@@ -1,5 +1,9 @@
 # Change log
 
+## (Unreleased) modelstore 0.0.5
+
+Added PyTorch Lightning
+
 ## modelstore 0.0.4
 
 Clean up how meta-data is generated

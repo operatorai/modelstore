@@ -26,6 +26,7 @@ from torch.nn import functional as F
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-class-docstring
 
 
 class ExampleNet(nn.Module):
