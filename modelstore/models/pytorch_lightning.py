@@ -48,7 +48,7 @@ class PyTorchLightningManager(ModelManager):
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {
-            "library": "pytorch-lightning",
+            "library": "pytorch_lightning",
             "type": type(kwargs["model"]).__name__,
         }
 
