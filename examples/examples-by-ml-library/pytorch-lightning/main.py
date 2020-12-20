@@ -48,6 +48,12 @@ class ExampleLightningNet(pl.LightningModule):
         self.log("train_loss", train_loss, on_epoch=True, prog_bar=True)
         return train_loss
 
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        y_hat = self.linear(x)
+        val_loss = F.mse_loss(y_hat, y)
+        return val_loss
+
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters())
         scheduler = torch.optim.lr_scheduler.StepLR(
