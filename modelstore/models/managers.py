@@ -20,17 +20,18 @@ from modelstore.models.keras import KerasManager
 from modelstore.models.missingmanager import MissingDepManager
 from modelstore.models.modelmanager import ModelManager
 from modelstore.models.pytorch import PyTorchManager
-from modelstore.models.pytorchlightning import PyTorchLightningManager
+from modelstore.models.pytorch_lightning import PyTorchLightningManager
 from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.transformers import TransformersManager
 from modelstore.models.xgboost import XGBoostManager
+from modelstore.utils.log import logger
 
 ML_LIBRARIES = {
     "catboost": CatBoostManager,
     "keras": KerasManager,
     "pytorch": PyTorchManager,
-    "pytorchlightning": PyTorchLightningManager,
+    "pytorch_lightning": PyTorchLightningManager,
     "sklearn": SKLearnManager,
     "tensorflow": TensorflowManager,
     "transformers": TransformersManager,
@@ -43,4 +44,5 @@ def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
         if all(module_exists(x) for x in mngr.required_dependencies()):
             yield library, mngr(storage)
         else:
+            logger.warn(f"Skipping: {library}")
             yield library, MissingDepManager(library, storage)

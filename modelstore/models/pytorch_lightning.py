@@ -19,7 +19,6 @@ from modelstore.models.modelmanager import ModelManager
 
 # pylint disable=import-outside-toplevel
 MODEL_CHECKPOINT = "checkpoint.pt"
-MODEL_PT = "model.pt"
 
 
 class PyTorchLightningManager(ModelManager):
@@ -34,7 +33,7 @@ class PyTorchLightningManager(ModelManager):
 
     @classmethod
     def required_dependencies(cls) -> list:
-        return ["pytorch-lightning"]
+        return ["pytorch_lightning"]
 
     @classmethod
     def optional_dependencies(cls) -> list:
@@ -48,7 +47,10 @@ class PyTorchLightningManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"library": "pytorch-lightning"}
+        return {
+            "library": "pytorch-lightning",
+            "type": type(kwargs["model"]).__name__,
+        }
 
     def _get_functions(self, **kwargs) -> list:
         return [
