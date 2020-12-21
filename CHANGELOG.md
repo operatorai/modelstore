@@ -2,7 +2,7 @@
 
 ## (Unreleased) modelstore 0.0.5
 
-Added PyTorch Lightning
+Added PyTorch Lightning and LightGBM support
 
 ## modelstore 0.0.4
 
