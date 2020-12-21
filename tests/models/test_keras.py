@@ -40,7 +40,13 @@ def keras_manager():
 
 def test_model_info(keras_manager):
     exp = {"library": "keras"}
-    res = keras_manager.model_info()
+    res = keras_manager._model_info()
+    assert exp == res
+
+
+def test_model_features(keras_manager, keras_model):
+    exp = {}
+    res = keras_manager._model_features(model=keras_model)
     assert exp == res
 
 

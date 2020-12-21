@@ -91,7 +91,13 @@ def pytorchlightning_manager():
 
 def test_model_info(pytorchlightning_manager, pytorchlightning_model):
     exp = {"library": "pytorch_lightning", "type": "ExampleLightningNet"}
-    res = pytorchlightning_manager.model_info(model=pytorchlightning_model)
+    res = pytorchlightning_manager._model_info(model=pytorchlightning_model)
+    assert exp == res
+
+
+def test_model_features(pytorchlightning_manager, pytorchlightning_model):
+    exp = {}
+    res = pytorchlightning_manager._model_features(model=pytorchlightning_model)
     assert exp == res
 
 

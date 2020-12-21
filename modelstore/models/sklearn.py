@@ -41,12 +41,15 @@ class SKLearnManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
-    def model_info(self, **kwargs) -> dict:
+    def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {
             "library": "sklearn",
             "type": type(kwargs["model"]).__name__,
         }
+
+    def _model_features(self, **kwargs) -> dict:
+        return {}
 
     def _get_functions(self, **kwargs) -> list:
         import sklearn

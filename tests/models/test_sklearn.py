@@ -38,7 +38,13 @@ def sklearn_manager():
 
 def test_model_info(sklearn_manager, sklearn_model):
     exp = {"library": "sklearn", "type": "GradientBoostingRegressor"}
-    res = sklearn_manager.model_info(model=sklearn_model)
+    res = sklearn_manager._model_info(model=sklearn_model)
+    assert exp == res
+
+
+def test_model_features(sklearn_manager, sklearn_model):
+    exp = {}
+    res = sklearn_manager._model_features(model=sklearn_model)
     assert exp == res
 
 

@@ -154,9 +154,9 @@ class ModelManager(ABC):
         model_meta = metadata.generate_for_model(
             domain=domain,
             model_id=model_id,
-            model_info=self.model_info(**kwargs),
+            model_info=self._model_info(**kwargs),
             model_params=self._get_params(**kwargs),
-            features=self._get_features(**kwargs),
+            features=self._model_features(**kwargs),
         )
 
         # Meta-data about the code

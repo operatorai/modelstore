@@ -11,9 +11,9 @@ def test_generate_for_model():
         "model_type": {"library": "model-library", "name": "model-class"},
     }
     res = metadata.generate_for_model(
-        "test-model-id",
-        {"library": "model-library", "name": "model-class"},
-        "test-model",
+        domain="test-model",
+        model_id="test-model-id",
+        model_info={"library": "model-library", "name": "model-class"},
     )
     assert exp == res
 

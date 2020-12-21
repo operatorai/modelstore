@@ -53,7 +53,7 @@ def tokenizer(model_name):
 
 
 @pytest.fixture()
-def model(model_name, model_config):
+def tr_model(model_name, model_config):
     return AutoModelForSequenceClassification.from_pretrained(
         model_name,
         config=model_config,
@@ -67,7 +67,13 @@ def tr_manager():
 
 def test_model_info(tr_manager):
     exp = {"library": "transformers"}
-    res = tr_manager.model_info()
+    res = tr_manager._model_info()
+    assert exp == res
+
+
+def test_model_features(tr_manager, tr_model):
+    exp = {}
+    res = tr_manager._model_features(model=tr_model)
     assert exp == res
 
 
@@ -88,9 +94,9 @@ def test_get_params(tr_manager, model_config):
     assert exp == res
 
 
-def test_save_transformers(model_config, model, tokenizer, tmp_path):
+def test_save_transformers(model_config, tr_model, tokenizer, tmp_path):
     exp = os.path.join(tmp_path, "transformers")
-    file_path = _save_transformers(tmp_path, model_config, model, tokenizer)
+    file_path = _save_transformers(tmp_path, model_config, tr_model, tokenizer)
     assert exp == file_path
 
     # Validate config
