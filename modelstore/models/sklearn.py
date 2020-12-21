@@ -14,6 +14,7 @@
 
 from functools import partial
 
+from modelstore.meta import datasets
 from modelstore.models.common import save_joblib
 from modelstore.models.modelmanager import ModelManager
 
@@ -49,12 +50,12 @@ class SKLearnManager(ModelManager):
         }
 
     def _model_data(self, **kwargs) -> dict:
-        features = {}
-        # if "X_train" in kwargs:
-        #     features
-        # if "y_train" in kwargs:
-        #     functions.append()
-        return features
+        data = {}
+        if "X_train" in kwargs:
+            data["features"] = datasets.describe_training(kwargs["X_train"])
+        if "y_train" in kwargs:
+            data["labels"] = datasets.describe_labels(kwargs["y_train"])
+        return data
 
     def _get_functions(self, **kwargs) -> list:
         import sklearn
