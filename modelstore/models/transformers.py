@@ -43,9 +43,13 @@ class TransformersManager(ModelManager):
     def _required_kwargs(self):
         return ["model", "tokenizer"]
 
-    def model_info(self, **kwargs) -> dict:
+    def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "transformers"}
+
+    def _model_features(self, **kwargs) -> dict:
+        """ Returns meta-data about features used to train the model """
+        return {}
 
     def _get_functions(self, **kwargs) -> list:
         return [

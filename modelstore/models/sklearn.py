@@ -43,16 +43,25 @@ class SKLearnManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"library": "sklearn", "type": type(kwargs["model"]).__name__}
+        return {
+            "library": "sklearn",
+            "type": type(kwargs["model"]).__name__,
+        }
 
     def _get_functions(self, **kwargs) -> list:
         import sklearn
 
         if not isinstance(kwargs["model"], sklearn.base.BaseEstimator):
             raise TypeError("This model is not an sklearn model!")
-        return [
-            partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB),
+
+        functions = [
+            partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB)
         ]
+        if "X_train" in kwargs:
+            functions.append()
+        if "y_train" in kwargs:
+            functions.append()
+        return functions
 
     def _get_params(self, **kwargs) -> dict:
         """

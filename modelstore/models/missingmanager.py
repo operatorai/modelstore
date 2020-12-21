@@ -19,15 +19,13 @@ from modelstore.utils.log import logger
 class MissingDepManager(ModelManager):
 
     """
-        MissingDepManager is used when a dependency is not
-        installed; it overrides the ModelManager functionality
-        and gives the user informative error messages
-        """
+    MissingDepManager is used when a dependency is not
+    installed; it overrides the ModelManager functionality
+    and gives the user informative error messages
+    """
 
     def __init__(self, library: str, storage: CloudStorage = None):
         super().__init__(storage)
-        if library == "pytorch":
-            library = "torch"
         self.library = library
 
     @classmethod
@@ -48,8 +46,11 @@ class MissingDepManager(ModelManager):
     def _required_kwargs(self) -> list:
         return []
 
-    def model_info(self, **kwargs) -> dict:
-        return {}
+    def _model_info(self, **kwargs) -> dict:
+        return None
+
+    def _model_features(self, **kwargs) -> dict:
+        return None
 
     def upload(self, domain: str, **kwargs) -> str:
         logger.error("Error: %s is not installed", self.library)
