@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import json
 import os
 
 import lightgbm as lgb
@@ -53,7 +54,7 @@ def test_required_kwargs(lightgbm_manager):
 
 
 def test_get_functions(lightgbm_manager):
-    assert len(lightgbm_manager._get_functions(model="model")) == 1
+    assert len(lightgbm_manager._get_functions(model="model")) == 2
 
 
 def test_get_params(lightgbm_manager, lgb_model):
@@ -67,8 +68,24 @@ def test_get_params(lightgbm_manager, lgb_model):
     assert exp == res
 
 
+def test_save_model(lgb_model, tmp_path):
+    exp = os.path.join(tmp_path, "model.txt")
+    res = lightgbm.save_model(tmp_path, lgb_model)
+    assert res == exp
+
+    model = lgb.Booster(model_file=res)
+    assert lgb_model.model_to_string() == model.model_to_string()
+
+
 def test_dump_model(lgb_model, tmp_path):
-    res = lightgbm.dump_model(tmp_path, lgb_model)
     exp = os.path.join(tmp_path, "model.json")
+    res = lightgbm.dump_model(tmp_path, lgb_model)
+
     assert os.path.exists(exp)
     assert res == exp
+    try:
+        with open(exp, "r") as lines:
+            json.loads(lines.read())
+    except:
+        # Fail if we cannot load
+        assert False

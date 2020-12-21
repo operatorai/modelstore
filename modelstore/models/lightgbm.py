@@ -20,6 +20,7 @@ from modelstore.models.modelmanager import ModelManager
 from modelstore.utils.log import logger
 
 MODEL_JSON = "model.json"
+MODEL_FILE = "model.txt"
 
 
 class LightGbmManager(ModelManager):
@@ -42,6 +43,7 @@ class LightGbmManager(ModelManager):
 
     def _get_functions(self, **kwargs) -> list:
         return [
+            partial(save_model, model=kwargs["model"]),
             partial(dump_model, model=kwargs["model"]),
         ]
 
@@ -53,6 +55,19 @@ class LightGbmManager(ModelManager):
         return kwargs["model"].params
 
 
+def save_model(tmp_dir: str, model: "lgb.Booster") -> str:
+    """From the docs: dump model into JSON file"""
+    import lightgbm as lgb
+
+    if not isinstance(model, lgb.Booster):
+        raise TypeError("Model is not a lgb.Booster!")
+
+    logger.debug("Saving lightgbm model")
+    model_file = os.path.join(tmp_dir, MODEL_FILE)
+    model.save_model(model_file)
+    return model_file
+
+
 def dump_model(tmp_dir: str, model: "lgb.Booster") -> str:
     """From the docs: dump model into JSON file"""
     import lightgbm as lgb
@@ -60,7 +75,7 @@ def dump_model(tmp_dir: str, model: "lgb.Booster") -> str:
     if not isinstance(model, lgb.Booster):
         raise TypeError("Model is not a lgb.Booster!")
 
-    logger.debug("Dumping lightgbm model")
+    logger.debug("Dumping lightgbm model as JSON")
     model_file = os.path.join(tmp_dir, MODEL_JSON)
     with open(model_file, "w") as out:
         model_json = model.dump_model()
