@@ -17,6 +17,7 @@ from modelstore.clouds.storage import CloudStorage
 from modelstore.meta.dependencies import module_exists
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.keras import KerasManager
+from modelstore.models.lightgbm import LightGbmManager
 from modelstore.models.missingmanager import MissingDepManager
 from modelstore.models.modelmanager import ModelManager
 from modelstore.models.pytorch import PyTorchManager
@@ -30,6 +31,7 @@ from modelstore.utils.log import logger
 ML_LIBRARIES = {
     "catboost": CatBoostManager,
     "keras": KerasManager,
+    "lightgbm": LightGbmManager,
     "pytorch": PyTorchManager,
     "pytorch_lightning": PyTorchLightningManager,
     "sklearn": SKLearnManager,
