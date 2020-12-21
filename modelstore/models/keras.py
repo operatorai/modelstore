@@ -47,7 +47,7 @@ class KerasManager(ModelManager):
         """ Returns meta-data about the model's type """
         return {"library": "keras"}
 
-    def _model_features(self, **kwargs) -> dict:
+    def _model_data(self, **kwargs) -> dict:
         """ Returns meta-data about features used to train the model """
         return {}
 

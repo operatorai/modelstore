@@ -49,9 +49,9 @@ def test_model_info(lightgbm_manager, lgb_model):
     assert exp == res
 
 
-def test_model_features(lightgbm_manager, lgb_model):
+def test_model_data(lightgbm_manager, lgb_model):
     exp = {}
-    res = lightgbm_manager._model_features(model=lgb_model)
+    res = lightgbm_manager._model_data(model=lgb_model)
     assert exp == res
 
 

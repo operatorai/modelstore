@@ -95,9 +95,9 @@ def test_model_info(pytorchlightning_manager, pytorchlightning_model):
     assert exp == res
 
 
-def test_model_features(pytorchlightning_manager, pytorchlightning_model):
+def test_model_data(pytorchlightning_manager, pytorchlightning_model):
     exp = {}
-    res = pytorchlightning_manager._model_features(model=pytorchlightning_model)
+    res = pytorchlightning_manager._model_data(model=pytorchlightning_model)
     assert exp == res
 
 

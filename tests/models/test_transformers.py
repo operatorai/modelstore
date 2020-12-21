@@ -71,9 +71,9 @@ def test_model_info(tr_manager):
     assert exp == res
 
 
-def test_model_features(tr_manager, tr_model):
+def test_model_data(tr_manager, tr_model):
     exp = {}
-    res = tr_manager._model_features(model=tr_model)
+    res = tr_manager._model_data(model=tr_model)
     assert exp == res
 
 

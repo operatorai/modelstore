@@ -49,7 +49,7 @@ class MissingDepManager(ModelManager):
     def _model_info(self, **kwargs) -> dict:
         return None
 
-    def _model_features(self, **kwargs) -> dict:
+    def _model_data(self, **kwargs) -> dict:
         return None
 
     def upload(self, domain: str, **kwargs) -> str:

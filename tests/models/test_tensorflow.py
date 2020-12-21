@@ -52,9 +52,9 @@ def test_model_info(tf_manager, tf_model):
     assert exp == res
 
 
-def test_model_features(tf_manager, tf_model):
+def test_model_data(tf_manager, tf_model):
     exp = {}
-    res = tf_manager._model_features(model=tf_model)
+    res = tf_manager._model_data(model=tf_model)
     assert exp == res
 
 

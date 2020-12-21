@@ -42,9 +42,9 @@ def test_model_info(sklearn_manager, sklearn_model):
     assert exp == res
 
 
-def test_model_features(sklearn_manager, sklearn_model):
+def test_model_data(sklearn_manager, sklearn_model):
     exp = {}
-    res = sklearn_manager._model_features(model=sklearn_model)
+    res = sklearn_manager._model_data(model=sklearn_model)
     assert exp == res
 
 

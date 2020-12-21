@@ -45,7 +45,7 @@ class MockModelManager(ModelManager):
     def _model_info(self, **kwargs) -> dict:
         return {}
 
-    def _model_features(self, **kwargs) -> dict:
+    def _model_data(self, **kwargs) -> dict:
         return {}
 
     @classmethod

@@ -47,9 +47,9 @@ def test_model_info(xgboost_manager, xgb_model):
     assert exp == res
 
 
-def test_model_features(xgboost_manager, xgb_model):
+def test_model_data(xgboost_manager, xgb_model):
     exp = {}
-    res = xgboost_manager._model_features(model=xgb_model)
+    res = xgboost_manager._model_data(model=xgb_model)
     assert exp == res
 
 

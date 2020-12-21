@@ -48,9 +48,9 @@ def test_model_info(catboost_manager, catb_model):
     assert exp == res
 
 
-def test_model_features(catboost_manager, catb_model):
+def test_model_data(catboost_manager, catb_model):
     exp = {}
-    res = catboost_manager._model_features(model=catb_model)
+    res = catboost_manager._model_data(model=catb_model)
     assert exp == res
 
 

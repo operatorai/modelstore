@@ -89,7 +89,7 @@ class ModelManager(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def _model_features(self, **kwargs) -> dict:
+    def _model_data(self, **kwargs) -> dict:
         """ Returns meta-data about features used to train the model """
         raise NotImplementedError()
 
@@ -156,7 +156,7 @@ class ModelManager(ABC):
             model_id=model_id,
             model_info=self._model_info(**kwargs),
             model_params=self._get_params(**kwargs),
-            features=self._model_features(**kwargs),
+            model_data=self._model_data(**kwargs),
         )
 
         # Meta-data about the code

@@ -48,8 +48,13 @@ class SKLearnManager(ModelManager):
             "type": type(kwargs["model"]).__name__,
         }
 
-    def _model_features(self, **kwargs) -> dict:
-        return {}
+    def _model_data(self, **kwargs) -> dict:
+        features = {}
+        # if "X_train" in kwargs:
+        #     features
+        # if "y_train" in kwargs:
+        #     functions.append()
+        return features
 
     def _get_functions(self, **kwargs) -> list:
         import sklearn
@@ -57,14 +62,8 @@ class SKLearnManager(ModelManager):
         if not isinstance(kwargs["model"], sklearn.base.BaseEstimator):
             raise TypeError("This model is not an sklearn model!")
 
-        functions = [
-            partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB)
-        ]
-        if "X_train" in kwargs:
-            functions.append()
-        if "y_train" in kwargs:
-            functions.append()
-        return functions
+        # @TODO: export/save in onnx format
+        return [partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB)]
 
     def _get_params(self, **kwargs) -> dict:
         """

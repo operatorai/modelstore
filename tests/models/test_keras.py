@@ -44,9 +44,9 @@ def test_model_info(keras_manager):
     assert exp == res
 
 
-def test_model_features(keras_manager, keras_model):
+def test_model_data(keras_manager, keras_model):
     exp = {}
-    res = keras_manager._model_features(model=keras_model)
+    res = keras_manager._model_data(model=keras_model)
     assert exp == res
 
 

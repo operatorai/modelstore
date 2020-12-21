@@ -44,7 +44,7 @@ class TensorflowManager(ModelManager):
         """ Returns meta-data about the model's type """
         return {"library": "tensorflow"}
 
-    def _model_features(self, **kwargs) -> dict:
+    def _model_data(self, **kwargs) -> dict:
         """ Returns meta-data about features used to train the model """
         return {}
 

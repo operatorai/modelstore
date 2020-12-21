@@ -9,7 +9,7 @@ def generate_for_model(
     model_id: str,
     model_info: dict,
     model_params: dict = None,
-    features: dict = None,
+    model_data: dict = None,
 ):
     metadata = {
         "domain": domain,
@@ -18,8 +18,8 @@ def generate_for_model(
     }
     if model_params is not None:
         metadata["parameters"] = _remove_nones(model_params)
-    if features is not None:
-        metadata["features"] = _remove_nones(features)
+    if model_data is not None:
+        metadata["data"] = _remove_nones(model_data)
     return metadata
 
 

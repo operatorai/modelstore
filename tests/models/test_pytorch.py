@@ -70,9 +70,9 @@ def test_model_info(torch_manager, pytorch_model):
     assert exp == res
 
 
-def test_model_features(torch_manager, pytorch_model):
+def test_model_data(torch_manager, pytorch_model):
     exp = {}
-    res = torch_manager._model_features(model=pytorch_model)
+    res = torch_manager._model_data(model=pytorch_model)
     assert exp == res
 
 
