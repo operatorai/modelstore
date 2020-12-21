@@ -12,10 +12,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import json
 import os
 from functools import partial
 
-from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
 from modelstore.utils.log import logger
 
@@ -38,7 +38,7 @@ class LightGbmManager(ModelManager):
 
     def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"library": "lightgbm"}
+        return {"library": "lightgbm", "type": type(kwargs["model"]).__name__}
 
     def _get_functions(self, **kwargs) -> list:
         return [
@@ -50,7 +50,7 @@ class LightGbmManager(ModelManager):
         Returns a dictionary containing any model parameters
         that are available
         """
-        return {}
+        return kwargs["model"].params
 
 
 def dump_model(tmp_dir: str, model: "lgb.Booster") -> str:
@@ -63,5 +63,6 @@ def dump_model(tmp_dir: str, model: "lgb.Booster") -> str:
     logger.debug("Dumping lightgbm model")
     model_file = os.path.join(tmp_dir, MODEL_JSON)
     with open(model_file, "w") as out:
-        out.write(model.dump_model())
+        model_json = model.dump_model()
+        out.write(json.dumps(model_json))
     return model_file
