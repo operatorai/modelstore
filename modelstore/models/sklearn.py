@@ -52,9 +52,13 @@ class SKLearnManager(ModelManager):
     def _model_data(self, **kwargs) -> dict:
         data = {}
         if "X_train" in kwargs:
-            data["features"] = datasets.describe_training(kwargs["X_train"])
+            features = datasets.describe_dataset(kwargs["X_train"])
+            features.update(
+                _feature_importances(kwargs["model"], kwargs["X_train"])
+            )
+            data["features"] = features
         if "y_train" in kwargs:
-            data["labels"] = datasets.describe_labels(kwargs["y_train"])
+            data["labels"] = datasets.describe_dataset(kwargs["y_train"])
         return data
 
     def _get_functions(self, **kwargs) -> list:
@@ -73,3 +77,13 @@ class SKLearnManager(ModelManager):
         https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator.get_params
         """
         return kwargs["model"].get_params()
+
+
+def _feature_importances(
+    model: "BaseEstimator", x_train: "pd.DataFrame"
+) -> dict:
+    if datasets.is_pandas_dataframe(x_train):
+        if hasattr(model, "feature_importances_"):
+            return {f: w for f, w in zip(x_train, model.feature_importances_)}
+        # @TODO add support for Linear models with coef_
+    return {}

@@ -12,8 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import numpy as np
+import pandas as pd
 import pytest
-from modelstore.models.sklearn import SKLearnManager
+from modelstore.models.sklearn import SKLearnManager, _feature_importances
 from sklearn.datasets import make_classification
 from sklearn.ensemble import GradientBoostingRegressor
 
@@ -67,11 +68,14 @@ def test_get_params(sklearn_manager, sklearn_model):
     assert exp == res
 
 
-# def _feature_importances(
-#     model: "BaseEstimator", x_train: "pd.DataFrame"
-# ) -> dict:
-#     if datasets.is_pandas_dataframe(x_train):
-#         if hasattr(model, "feature_importances_"):
-#             return {f: w for f, w in zip(x_train, model.feature_importances_)}
-#         # @TODO add support for Linear models with coef_
-#     return {}
+def test_feature_importances(sklearn_model):
+    X_train, y_train = make_classification(
+        n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1
+    )
+    df = pd.DataFrame(
+        X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])]
+    )
+    sklearn_model.fit(df, y_train)
+    exp = {f: w for f, w in zip(df, sklearn_model.feature_importances_)}
+    res = _feature_importances(sklearn_model, df)
+    assert exp == res
