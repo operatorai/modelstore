@@ -11,8 +11,10 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import numpy as np
 import pytest
 from modelstore.models.sklearn import SKLearnManager
+from sklearn.datasets import make_classification
 from sklearn.ensemble import GradientBoostingRegressor
 
 # pylint: disable=protected-access
@@ -43,8 +45,9 @@ def test_model_info(sklearn_manager, sklearn_model):
 
 
 def test_model_data(sklearn_manager, sklearn_model):
-    exp = {}
-    res = sklearn_manager._model_data(model=sklearn_model)
+    labels = np.array([0, 1, 1, 0, 1])
+    exp = {"labels": {"shape": [5], "values": {0: 2, 1: 3}}}
+    res = sklearn_manager._model_data(model=sklearn_model, y_train=labels)
     assert exp == res
 
 
@@ -62,3 +65,13 @@ def test_get_params(sklearn_manager, sklearn_model):
     exp = sklearn_model.get_params()
     res = sklearn_manager._get_params(model=sklearn_model)
     assert exp == res
+
+
+# def _feature_importances(
+#     model: "BaseEstimator", x_train: "pd.DataFrame"
+# ) -> dict:
+#     if datasets.is_pandas_dataframe(x_train):
+#         if hasattr(model, "feature_importances_"):
+#             return {f: w for f, w in zip(x_train, model.feature_importances_)}
+#         # @TODO add support for Linear models with coef_
+#     return {}
