@@ -35,27 +35,29 @@ def is_pandas_series(values):
     return False
 
 
-def describe_training(dataset) -> Optional[dict]:
-    """ Returns a description of a dataset"""
+def describe_dataset(dataset) -> Optional[dict]:
+    """ Returns summary stats about a dataset"""
     if is_numpy_array(dataset):
+        if dataset.ndim == 1:
+            # Array has one dimension (e.g., labels); return its
+            # its shape and value counts
+            unique, counts = np.unique(dataset, return_counts=True)
+            return {
+                "shape": list(dataset.shape),
+                "values": dict(zip(unique, counts)),
+            }
+        # Array is multi-dimensional, only return its shape
         return {"shape": list(dataset.shape)}
     if is_pandas_dataframe(dataset):
+        # Data frame can have multiple dimensions; only
+        # return its shape
         return {"shape": list(dataset.shape)}
-    logger.debug(f"Trying to describe unknown type: {type(dataset)}")
-    return None
-
-
-def describe_labels(labels) -> Optional[dict]:
-    if is_numpy_array(labels):
-        unique, counts = np.unique(labels, return_counts=True)
+    if is_pandas_series(dataset):
+        # Data series has one dimension (e.g., labels); return
+        # its shape and value counts
         return {
-            "shape": list(labels.shape),
-            "values": dict(zip(unique, counts)),
+            "shape": list(dataset.shape),
+            "values": dataset.value_counts().to_dict(),
         }
-    if is_pandas_series(labels):
-        return {
-            "shape": list(labels.shape),
-            "values": labels.value_counts().to_dict(),
-        }
-    logger.debug(f"Trying to describe unknown type: {type(labels)}")
+    logger.debug("Trying to describe unknown type: %s", type(dataset))
     return None
