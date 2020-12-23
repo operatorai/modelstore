@@ -3,6 +3,8 @@ import pandas as pd
 import pytest
 from modelstore.meta import datasets
 
+# pylint: disable=redefined-outer-name
+
 
 @pytest.fixture
 def np_array():
