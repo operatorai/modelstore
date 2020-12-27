@@ -15,9 +15,9 @@ import numpy as np
 import pandas as pd
 import pytest
 from modelstore.models.sklearn import SKLearnManager, _feature_importances
-from sklearn.datasets import make_classification
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LogisticRegression
+from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -38,14 +38,6 @@ def sklearn_tree():
 @pytest.fixture
 def sklearn_logistic():
     return LogisticRegression()
-
-
-@pytest.fixture
-def classification_data():
-    X_train, y_train = make_classification(
-        n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1
-    )
-    return X_train, y_train
 
 
 @pytest.fixture

@@ -14,25 +14,20 @@
 
 import os
 
-import numpy as np
 import pytest
 import xgboost as xgb
 from modelstore.models import xgboost
+from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
-def xgb_model():
+def xgb_model(classification_data):
+    X_train, y_train = classification_data
     model = xgb.XGBClassifier(use_label_encoder=False)
-    x = np.random.rand(5, 5)
-    y = np.random.randint(0, 2, size=(5))
-    while len(np.unique(y)) == 1:
-        # Addressing randomly generating a label set
-        # that just has 1 value
-        y = np.random.randint(0, 2, size=(5))
-    model.fit(x, y)
+    model.fit(X_train, y_train)
     return model
 
 
