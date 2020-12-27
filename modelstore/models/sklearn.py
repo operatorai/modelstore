@@ -87,5 +87,5 @@ def _feature_importances(
         if hasattr(model, "feature_importances_"):
             return dict(zip(x_train, model.feature_importances_))
         if hasattr(model, "coef_"):
-            return dict(zip(x_train, model.coef_))
+            return dict(zip(x_train, model.coef_[0]))
     return {}
