@@ -85,6 +85,7 @@ def _feature_importances(
 ) -> dict:
     if datasets.is_pandas_dataframe(x_train):
         if hasattr(model, "feature_importances_"):
-            return {f: w for f, w in zip(x_train, model.feature_importances_)}
-        # @TODO add support for Linear models with coef_
+            return dict(zip(x_train, model.feature_importances_))
+        if hasattr(model, "coef_"):
+            return dict(zip(x_train, model.coef_))
     return {}
