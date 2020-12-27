@@ -42,18 +42,18 @@ class CloudStorage(ABC):
 
     @abstractmethod
     def validate(self) -> bool:
-        """ Runs any required validation steps - e.g.,
+        """Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
         raise NotImplementedError()
 
     @abstractmethod
     def _push(self, source: str, destination: str) -> str:
-        """ Pushes a file to a destination """
+        """ Pushes a file from a source to a destination """
         raise NotImplementedError()
 
     @abstractmethod
     def _pull(self, source: dict, destination: str) -> str:
-        """ Pulls a model to a destination """
+        """ Pulls a model from a source to a destination """
         raise NotImplementedError()
 
     @abstractmethod
@@ -91,9 +91,9 @@ class CloudStorage(ABC):
             self._push(version_path, get_domain_path(domain))
 
     def download(self, local_path: str, domain: str, model_id: str = None):
-        """ Downloads an artifacts archive for a given (domain, model_id) pair.
+        """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that
-        domain """
+        domain"""
         model_meta = None
         if model_id is None:
             model_domain = get_domain_path(domain)

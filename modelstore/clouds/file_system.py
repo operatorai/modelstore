@@ -41,7 +41,8 @@ class FileSystemStorage(CloudStorage):
         logger.debug("Root is: %s", self.root_dir)
 
     def validate(self) -> bool:
-        """ This validates that the directory exists """
+        """This validates that the directory exists
+        and can be written to"""
         # pylint: disable=broad-except
         try:
             parent_dir = os.path.split(self.root_dir)[0]
@@ -60,13 +61,11 @@ class FileSystemStorage(CloudStorage):
             return False
 
     def _push(self, source: str, destination: str) -> str:
-        """ Pushes a file to a destination """
         destination = self.relative_dir(destination)
         shutil.copy(source, destination)
         return destination
 
     def _pull(self, source: dict, destination: str) -> str:
-        """ Pulls a model to a destination """
         path = _get_location(source)
         file_name = os.path.split(path)[1]
         shutil.copy(path, destination)
@@ -92,7 +91,6 @@ class FileSystemStorage(CloudStorage):
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
-        """ Returns a dictionary of the JSON stored in a given path """
         path = self.relative_dir(path)
         return _read_json_file(path)
 

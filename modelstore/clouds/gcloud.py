@@ -37,6 +37,8 @@ class GoogleCloudStorage(CloudStorage):
 
     """
     Google Cloud Storage
+
+    Assumes that google.cloud.storage is installed and configured
     """
 
     def __init__(
