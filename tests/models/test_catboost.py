@@ -16,24 +16,21 @@ import json
 import os
 
 import catboost as ctb
-import numpy as np
 import pytest
 from modelstore.models import catboost
+from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
-def catb_model(tmpdir):
+def catb_model(tmpdir, classification_data):
     model = ctb.CatBoostClassifier(
         loss_function="MultiClass", train_dir=str(tmpdir)
     )
-    x = np.random.rand(10, 10)
-    y = np.random.randint(0, 2, size=(10))
-    while len(np.unique(y)) == 1:
-        y = np.random.randint(0, 2, size=(10))
-    model.fit(x, y)
+    X_train, y_train = classification_data
+    model.fit(X_train, y_train)
     return model
 
 

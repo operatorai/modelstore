@@ -19,21 +19,16 @@ import lightgbm as lgb
 import numpy as np
 import pytest
 from modelstore.models import lightgbm
+from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
-def lgb_model():
-    x = np.random.rand(5, 5)
-    y = np.random.randint(0, 2, size=(5))
-    while len(np.unique(y)) == 1:
-        # Addressing randomly generating a label set
-        # that just has 1 value
-        y = np.random.randint(0, 2, size=(5))
-
-    train_data = lgb.Dataset(x, label=y)
+def lgb_model(classification_data):
+    X_train, y_train = classification_data
+    train_data = lgb.Dataset(X_train, label=y_train)
     param = {"num_leaves": 31, "objective": "binary"}
     return lgb.train(param, train_data, 3)
 
