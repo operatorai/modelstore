@@ -53,7 +53,7 @@ class PyTorchLightningManager(ModelManager):
         }
 
     def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about features used to train the model """
+        """ Returns meta-data about the data used to train the model """
         return {}
 
     def _get_functions(self, **kwargs) -> list:

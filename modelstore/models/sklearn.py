@@ -50,6 +50,7 @@ class SKLearnManager(ModelManager):
         }
 
     def _model_data(self, **kwargs) -> dict:
+        """ Returns meta-data about the data used to train the model """
         data = {}
         if "X_train" in kwargs:
             features = datasets.describe_dataset(kwargs["X_train"])
