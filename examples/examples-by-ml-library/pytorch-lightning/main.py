@@ -1,5 +1,6 @@
 import json
 import os
+from tempfile import mkdtemp
 
 import click
 import pytorch_lightning as pl
@@ -79,7 +80,7 @@ def train():
     train_dataloader = DataLoader(data_set)
 
     model = ExampleLightningNet()
-    trainer = pl.Trainer(max_epochs=5)
+    trainer = pl.Trainer(max_epochs=5, default_root_dir=mkdtemp())
     trainer.fit(model, train_dataloader, val_dataloader)
     return trainer, model
 

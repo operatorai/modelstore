@@ -26,4 +26,3 @@ catboost_info/
 
 *.xgboost
 
-lightning_logs/
