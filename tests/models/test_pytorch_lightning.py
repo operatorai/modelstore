@@ -78,8 +78,10 @@ def val_loader():
 
 
 @pytest.fixture
-def pytorchlightning_trainer(pytorchlightning_model, train_loader, val_loader):
-    trainer = pl.Trainer(max_epochs=5)
+def pytorchlightning_trainer(
+    tmp_path, pytorchlightning_model, train_loader, val_loader
+):
+    trainer = pl.Trainer(max_epochs=5, default_root_dir=tmp_path)
     trainer.fit(pytorchlightning_model, train_loader, val_loader)
     return trainer
 
