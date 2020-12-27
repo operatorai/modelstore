@@ -84,8 +84,13 @@ class ModelManager(ABC):
                 raise TypeError(f"Please specify {arg}=<value>")
 
     @abstractmethod
-    def model_info(self, **kwargs) -> dict:
+    def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _model_data(self, **kwargs) -> dict:
+        """ Returns meta-data about the data used to train the model """
         raise NotImplementedError()
 
     def _collect_files(self, tmp_dir: str, **kwargs) -> list:
@@ -94,7 +99,7 @@ class ModelManager(ABC):
         """
         file_paths = [
             save_dependencies(tmp_dir, self._get_dependencies()),
-            save_model_info(tmp_dir, self.model_info(**kwargs)),
+            save_model_info(tmp_dir, self._model_info(**kwargs)),
         ]
         for func in self._get_functions(**kwargs):
             rsp = func(tmp_dir)
@@ -147,10 +152,11 @@ class ModelManager(ABC):
         # Meta-data about the model
         model_id = str(uuid.uuid4())
         model_meta = metadata.generate_for_model(
-            model_id=model_id,
-            model_info=self.model_info(**kwargs),
             domain=domain,
+            model_id=model_id,
+            model_info=self._model_info(**kwargs),
             model_params=self._get_params(**kwargs),
+            model_data=self._model_data(**kwargs),
         )
 
         # Meta-data about the code

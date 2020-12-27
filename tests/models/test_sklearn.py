@@ -11,16 +11,20 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import numpy as np
+import pandas as pd
 import pytest
-from modelstore.models.sklearn import SKLearnManager
+from modelstore.models.sklearn import SKLearnManager, _feature_importances
+from sklearn.datasets import make_classification
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.linear_model import LogisticRegression
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
-def sklearn_model():
+def sklearn_tree():
     params = {
         "n_estimators": 500,
         "max_depth": 4,
@@ -32,13 +36,33 @@ def sklearn_model():
 
 
 @pytest.fixture
+def sklearn_logistic():
+    return LogisticRegression()
+
+
+@pytest.fixture
+def classification_data():
+    X_train, y_train = make_classification(
+        n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1
+    )
+    return X_train, y_train
+
+
+@pytest.fixture
 def sklearn_manager():
     return SKLearnManager()
 
 
-def test_model_info(sklearn_manager, sklearn_model):
+def test_model_info(sklearn_manager, sklearn_tree):
     exp = {"library": "sklearn", "type": "GradientBoostingRegressor"}
-    res = sklearn_manager.model_info(model=sklearn_model)
+    res = sklearn_manager._model_info(model=sklearn_tree)
+    assert exp == res
+
+
+def test_model_data(sklearn_manager, sklearn_tree):
+    labels = np.array([0, 1, 1, 0, 1])
+    exp = {"labels": {"shape": [5], "values": {0: 2, 1: 3}}}
+    res = sklearn_manager._model_data(model=sklearn_tree, y_train=labels)
     assert exp == res
 
 
@@ -46,13 +70,37 @@ def test_required_kwargs(sklearn_manager):
     assert sklearn_manager._required_kwargs() == ["model"]
 
 
-def test_get_functions(sklearn_manager, sklearn_model):
-    assert len(sklearn_manager._get_functions(model=sklearn_model)) == 1
+def test_get_functions(sklearn_manager, sklearn_tree):
+    assert len(sklearn_manager._get_functions(model=sklearn_tree)) == 1
     with pytest.raises(TypeError):
         sklearn_manager._get_functions(model="not-an-sklearn-model")
 
 
-def test_get_params(sklearn_manager, sklearn_model):
-    exp = sklearn_model.get_params()
-    res = sklearn_manager._get_params(model=sklearn_model)
+def test_get_params(sklearn_manager, sklearn_tree):
+    exp = sklearn_tree.get_params()
+    res = sklearn_manager._get_params(model=sklearn_tree)
+    assert exp == res
+
+
+def test_feature_importances_tree_model(sklearn_tree, classification_data):
+    X_train, y_train = classification_data
+    df = pd.DataFrame(
+        X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])]
+    )
+    sklearn_tree.fit(df, y_train)
+    exp = dict(zip(df, sklearn_tree.feature_importances_))
+    res = _feature_importances(sklearn_tree, df)
+    assert exp == res
+
+
+def test_feature_importances_linear_model(
+    sklearn_logistic, classification_data
+):
+    X_train, y_train = classification_data
+    df = pd.DataFrame(
+        X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])]
+    )
+    sklearn_logistic.fit(df, y_train)
+    exp = dict(zip(df, sklearn_logistic.coef_[0]))
+    res = _feature_importances(sklearn_logistic, df)
     assert exp == res

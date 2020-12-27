@@ -2,6 +2,8 @@
 
 ## (Unreleased) modelstore 0.0.5
 
+Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models
+
 Added PyTorch Lightning and LightGBM support
 
 ## modelstore 0.0.4

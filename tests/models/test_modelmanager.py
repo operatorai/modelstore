@@ -42,8 +42,10 @@ class MockModelManager(ModelManager):
     def name(cls) -> str:
         return "mock"
 
-    def model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
+    def _model_info(self, **kwargs) -> dict:
+        return {}
+
+    def _model_data(self, **kwargs) -> dict:
         return {}
 
     @classmethod
@@ -113,7 +115,12 @@ def test_create_archive(mock_manager):
 
     mock_manager._create_archive(model="model", config="config")
     exp = sorted(
-        ["model-info.json", "python-info.json", "model.joblib", "config.json",]
+        [
+            "model-info.json",
+            "python-info.json",
+            "model.joblib",
+            "config.json",
+        ]
     )
     with tarfile.open(target) as tar:
         files = sorted([f.name for f in tar.getmembers()])

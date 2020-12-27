@@ -14,6 +14,7 @@
 
 from functools import partial
 
+from modelstore.meta import datasets
 from modelstore.models.common import save_joblib
 from modelstore.models.modelmanager import ModelManager
 
@@ -41,18 +42,34 @@ class SKLearnManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
-    def model_info(self, **kwargs) -> dict:
+    def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        return {"library": "sklearn", "type": type(kwargs["model"]).__name__}
+        return {
+            "library": "sklearn",
+            "type": type(kwargs["model"]).__name__,
+        }
+
+    def _model_data(self, **kwargs) -> dict:
+        """ Returns meta-data about the data used to train the model """
+        data = {}
+        if "X_train" in kwargs:
+            features = datasets.describe_dataset(kwargs["X_train"])
+            features.update(
+                _feature_importances(kwargs["model"], kwargs["X_train"])
+            )
+            data["features"] = features
+        if "y_train" in kwargs:
+            data["labels"] = datasets.describe_dataset(kwargs["y_train"])
+        return data
 
     def _get_functions(self, **kwargs) -> list:
         import sklearn
 
         if not isinstance(kwargs["model"], sklearn.base.BaseEstimator):
             raise TypeError("This model is not an sklearn model!")
-        return [
-            partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB),
-        ]
+
+        # @TODO: export/save in onnx format
+        return [partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB)]
 
     def _get_params(self, **kwargs) -> dict:
         """
@@ -61,3 +78,14 @@ class SKLearnManager(ModelManager):
         https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator.get_params
         """
         return kwargs["model"].get_params()
+
+
+def _feature_importances(
+    model: "BaseEstimator", x_train: "pd.DataFrame"
+) -> dict:
+    if datasets.is_pandas_dataframe(x_train):
+        if hasattr(model, "feature_importances_"):
+            return dict(zip(x_train, model.feature_importances_))
+        if hasattr(model, "coef_"):
+            return dict(zip(x_train, model.coef_[0]))
+    return {}

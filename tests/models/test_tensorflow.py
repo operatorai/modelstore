@@ -48,7 +48,13 @@ def tf_manager():
 
 def test_model_info(tf_manager, tf_model):
     exp = {"library": "tensorflow"}
-    res = tf_manager.model_info()
+    res = tf_manager._model_info()
+    assert exp == res
+
+
+def test_model_data(tf_manager, tf_model):
+    exp = {}
+    res = tf_manager._model_data(model=tf_model)
     assert exp == res
 
 
