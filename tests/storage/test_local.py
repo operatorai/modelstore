@@ -47,7 +47,7 @@ def test_upload(fs_model_store, tmp_path):
         fs_model_store.root_dir,
         get_archive_path("test-domain", source),
     )
-    rsp = fs_model_store.upload("test-domain", source)
+    rsp = fs_model_store.upload("test-domain", "test-model-id", source)
     assert rsp["type"] == "file_system"
     assert rsp["path"] == model_path
     assert os.path.exists(model_path)

@@ -30,7 +30,7 @@ class MockCloudStorage(FileSystemStorage):
         super().__init__(root_path=str(tmpdir))
         self.called = False
 
-    def upload(self, domain: str, local_path: str):
+    def upload(self, domain: str, model_id: str, local_path: str):
         self.called = True
 
 

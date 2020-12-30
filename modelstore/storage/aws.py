@@ -78,7 +78,7 @@ class AWSStorage(BlobStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def upload(self, domain: str, local_path: str) -> dict:
+    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         bucket_path = get_archive_path(domain, local_path)
         prefix = self._push(local_path, bucket_path)
         return _format_location(self.bucket_name, prefix)

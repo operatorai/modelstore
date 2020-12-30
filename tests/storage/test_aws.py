@@ -59,7 +59,7 @@ def test_upload(tmp_path):
     aws_model_store = AWSStorage(bucket_name="existing-bucket")
 
     model_path = get_archive_path("test-domain", source)
-    rsp = aws_model_store.upload("test-domain", source)
+    rsp = aws_model_store.upload("test-domain", "test-model-id", source)
     assert rsp["type"] == "aws:s3"
     assert rsp["bucket"] == "existing-bucket"
     assert rsp["prefix"] == model_path

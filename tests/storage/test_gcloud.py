@@ -69,7 +69,7 @@ def test_upload(gcloud_client, tmp_path):
         client=gcloud_client,
     )
     model_path = get_archive_path("test-domain", source)
-    rsp = gcloud_model_store.upload("test-domain", source)
+    rsp = gcloud_model_store.upload("test-domain", "test-model-id", source)
 
     bucket = gcloud_client.get_bucket
     bucket.assert_called_with(gcloud_model_store.bucket_name)

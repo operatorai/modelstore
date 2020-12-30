@@ -18,8 +18,8 @@ from dataclasses import dataclass
 from modelstore.models.managers import iter_libraries
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
+from modelstore.storage.hosted import HostedStorage
 from modelstore.storage.local import FileSystemStorage
-from modelstore.storage.operator import OperatorStorage
 from modelstore.storage.storage import CloudStorage
 
 
@@ -70,7 +70,7 @@ class ModelStore:
     def from_api_key(cls, api_key: str) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         a managed system."""
-        return ModelStore(storage=OperatorStorage(api_key))
+        return ModelStore(storage=HostedStorage(api_key))
 
     def __post_init__(self):
         if not self.storage.validate():

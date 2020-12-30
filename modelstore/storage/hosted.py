@@ -11,52 +11,57 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from abc import ABC, ABCMeta, abstractmethod
+from modelstore.storage.storage import CloudStorage
+from modelstore.utils.log import logger
 
-from modelstore.meta.dependencies import module_exists
+# pylint: disable=protected-access
+
+_URL_ROOT = "https://europe-west1-revival-287212.cloudfunctions.net/"
 
 
-class CloudStorage(ABC):
+class HostedStorage(CloudStorage):
 
     """
-    Abstract class capturing a type of cloud storage
-    (e.g., Google Cloud, AWS, other)
+    OperatorStorage is a managed model store. No dependencies required.
+
+    Usage of this storage requires you to have an `api_key`.
     """
 
-    __metaclass__ = ABCMeta
+    def __init__(self, api_key: str):
+        super().__init__([])
+        self.api_key = api_key
 
-    def __init__(self, required_deps: str):
-        for dep in required_deps:
-            if not module_exists(dep):
-                raise ModuleNotFoundError(f"{dep} not installed.")
-
-    @abstractmethod
     def validate(self) -> bool:
-        """Runs any required validation steps - e.g.,
-        checking that a cloud bucket exists"""
-        raise NotImplementedError()
+        """ No dependencies or setup required; validation returns True """
+        return self.api_key is not None and len(self.api_key) > 0
 
-    @abstractmethod
+    # def get_url(self, )
+
+    # def _push(self, source: str, destination: str):
+    # @TODO use curl to upload the model
+    # logger.debug("Uploading from: %s...", source)
+
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        """ Uploads an archive to this type of storage"""
-        raise NotImplementedError()
+        # @TODO request a presigned URL
+        # @TODO self._push()
+        # @TODO register upload
+        return {
+            "type": "operator:cloud-storage",
+        }
 
-    @abstractmethod
     def list_versions(self, domain: str) -> list:
         """ Returns a list of a model's versions """
         raise NotImplementedError()
 
-    @abstractmethod
     def list_domains(self) -> list:
         """ Returns a list of all the existing model domains """
         raise NotImplementedError()
 
-    @abstractmethod
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         """ Annotates a model with some given meta data """
-        raise NotImplementedError()
+        # @TODO
+        return
 
-    @abstractmethod
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that

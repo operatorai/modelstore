@@ -71,7 +71,7 @@ class FileSystemStorage(BlobStorage):
         shutil.copy(path, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
-    def upload(self, domain: str, local_path: str) -> dict:
+    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         fs_path = get_archive_path(domain, local_path)
         logger.info("Moving to: %s...", fs_path)
         archive_path = self._push(local_path, fs_path)
