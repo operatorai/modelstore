@@ -16,8 +16,8 @@ import os
 import tempfile
 from abc import ABCMeta, abstractmethod
 
-from modelstore.clouds.storage import CloudStorage
-from modelstore.clouds.util.paths import (
+from modelstore.storage.storage import CloudStorage
+from modelstore.storage.util.paths import (
     get_domain_path,
     get_domains_path,
     get_metadata_path,

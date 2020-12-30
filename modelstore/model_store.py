@@ -15,12 +15,12 @@ import os
 import tarfile
 from dataclasses import dataclass
 
-from modelstore.clouds.aws import BOTO_EXISTS, AWSStorage
-from modelstore.clouds.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
-from modelstore.clouds.local import FileSystemStorage
-from modelstore.clouds.operator import OperatorStorage
-from modelstore.clouds.storage import CloudStorage
 from modelstore.models.managers import iter_libraries
+from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
+from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
+from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.operator import OperatorStorage
+from modelstore.storage.storage import CloudStorage
 
 
 @dataclass(frozen=True)

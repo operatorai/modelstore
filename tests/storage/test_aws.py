@@ -18,9 +18,12 @@ from datetime import datetime
 
 import boto3
 import modelstore
-from modelstore.clouds.aws import AWSStorage
-from modelstore.clouds.util.paths import (get_archive_path, get_domain_path,
-                                          get_metadata_path)
+from modelstore.storage.aws import AWSStorage
+from modelstore.storage.util.paths import (
+    get_archive_path,
+    get_domain_path,
+    get_metadata_path,
+)
 from moto import mock_s3
 
 # pylint: disable=redefined-outer-name
@@ -91,8 +94,13 @@ def test_list_versions():
     for model in ["model-1", "model-2"]:
         created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
-            "model": {"domain": domain, "model_id": model,},
-            "meta": {"created": created,},
+            "model": {
+                "domain": domain,
+                "model_id": model,
+            },
+            "meta": {
+                "created": created,
+            },
             "modelstore": modelstore.__version__,
         }
         aws_model_store.set_meta_data(domain, model, meta_data)
@@ -119,8 +127,13 @@ def test_list_domains():
     for domain in ["domain-1", "domain-2"]:
         created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
-            "model": {"domain": domain, "model_id": model,},
-            "meta": {"created": created,},
+            "model": {
+                "domain": domain,
+                "model_id": model,
+            },
+            "meta": {
+                "created": created,
+            },
             "modelstore": modelstore.__version__,
         }
         aws_model_store.set_meta_data(domain, model, meta_data)

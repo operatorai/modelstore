@@ -20,8 +20,8 @@ from unittest import mock
 import modelstore
 import pytest
 from google.cloud import storage
-from modelstore.clouds.gcloud import GoogleCloudStorage
-from modelstore.clouds.util.paths import (
+from modelstore.storage.gcloud import GoogleCloudStorage
+from modelstore.storage.util.paths import (
     get_archive_path,
     get_domain_path,
     get_domains_path,
@@ -109,8 +109,13 @@ def test_list_versions(gcloud_client):
     for model in ["model-1", "model-2"]:
         created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
-            "model": {"domain": domain, "model_id": model,},
-            "meta": {"created": created,},
+            "model": {
+                "domain": domain,
+                "model_id": model,
+            },
+            "meta": {
+                "created": created,
+            },
             "modelstore": modelstore.__version__,
         }
         gcloud_model_store.set_meta_data(domain, model, meta_data)
@@ -119,7 +124,9 @@ def test_list_versions(gcloud_client):
     gcloud_model_store.list_versions(domain)
     versions_for_domain = get_versions_path(domain) + "/"
     gcloud_client.list_blobs.assert_called_with(
-        "existing-bucket", prefix=versions_for_domain, delimiter="/",
+        "existing-bucket",
+        prefix=versions_for_domain,
+        delimiter="/",
     )
 
 
@@ -132,8 +139,13 @@ def test_list_domains(gcloud_client):
     for domain in ["domain-1", "domain-2"]:
         created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
-            "model": {"domain": domain, "model_id": model,},
-            "meta": {"created": created,},
+            "model": {
+                "domain": domain,
+                "model_id": model,
+            },
+            "meta": {
+                "created": created,
+            },
             "modelstore": modelstore.__version__,
         }
         gcloud_model_store.set_meta_data(domain, model, meta_data)
@@ -142,5 +154,7 @@ def test_list_domains(gcloud_client):
     gcloud_model_store.list_domains()
     domains = get_domains_path() + "/"
     gcloud_client.list_blobs.assert_called_with(
-        "existing-bucket", prefix=domains, delimiter="/",
+        "existing-bucket",
+        prefix=domains,
+        delimiter="/",
     )

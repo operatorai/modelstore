@@ -18,8 +18,8 @@ from pathlib import Path
 
 import modelstore
 import pytest
-from modelstore.clouds.local import FileSystemStorage
-from modelstore.clouds.util.paths import (
+from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.util.paths import (
     get_archive_path,
     get_domain_path,
     get_metadata_path,

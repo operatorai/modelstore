@@ -14,9 +14,9 @@
 import json
 import os
 
-from modelstore.clouds.blob_storage import BlobStorage
-from modelstore.clouds.util.paths import get_archive_path
-from modelstore.clouds.util.versions import sorted_by_created
+from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util.paths import get_archive_path
+from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
 # pylint: disable=protected-access

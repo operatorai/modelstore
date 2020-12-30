@@ -13,7 +13,6 @@
 #    limitations under the License.
 from typing import Iterator
 
-from modelstore.clouds.storage import CloudStorage
 from modelstore.meta.dependencies import module_exists
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.keras import KerasManager
@@ -26,6 +25,7 @@ from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.transformers import TransformersManager
 from modelstore.models.xgboost import XGBoostManager
+from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
 ML_LIBRARIES = {
@@ -46,5 +46,5 @@ def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
         if all(module_exists(x) for x in mngr.required_dependencies()):
             yield library, mngr(storage)
         else:
-            logger.warn(f"Skipping: {library}")
+            logger.warn("Skipping: %s", library)
             yield library, MissingDepManager(library, storage)
