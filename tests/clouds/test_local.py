@@ -18,7 +18,7 @@ from pathlib import Path
 
 import modelstore
 import pytest
-from modelstore.clouds.file_system import FileSystemStorage
+from modelstore.clouds.local import FileSystemStorage
 from modelstore.clouds.util.paths import (
     get_archive_path,
     get_domain_path,
@@ -44,7 +44,8 @@ def test_upload(fs_model_store, tmp_path):
     Path(source).touch()
 
     model_path = os.path.join(
-        fs_model_store.root_dir, get_archive_path("test-domain", source),
+        fs_model_store.root_dir,
+        get_archive_path("test-domain", source),
     )
     rsp = fs_model_store.upload("test-domain", source)
     assert rsp["type"] == "file_system"
@@ -60,7 +61,8 @@ def test_set_meta_data(fs_model_store):
 
         # Expected files
         meta_data_path = os.path.join(
-            fs_model_store.root_dir, get_metadata_path("test-domain", model),
+            fs_model_store.root_dir,
+            get_metadata_path("test-domain", model),
         )
         assert os.path.exists(meta_data_path)
         latest_version_path = os.path.join(
@@ -74,8 +76,13 @@ def test_list_versions(fs_model_store):
     for model in ["model-1", "model-2"]:
         created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
-            "model": {"domain": domain, "model_id": model,},
-            "meta": {"created": created,},
+            "model": {
+                "domain": domain,
+                "model_id": model,
+            },
+            "meta": {
+                "created": created,
+            },
             "modelstore": modelstore.__version__,
         }
         fs_model_store.set_meta_data(domain, model, meta_data)
@@ -96,8 +103,13 @@ def test_list_domains(fs_model_store):
     for domain in ["domain-1", "domain-2"]:
         created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
-            "model": {"domain": domain, "model_id": model,},
-            "meta": {"created": created,},
+            "model": {
+                "domain": domain,
+                "model_id": model,
+            },
+            "meta": {
+                "created": created,
+            },
             "modelstore": modelstore.__version__,
         }
         fs_model_store.set_meta_data(domain, model, meta_data)

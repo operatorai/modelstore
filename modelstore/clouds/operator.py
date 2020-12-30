@@ -36,7 +36,8 @@ class OperatorStorage(CloudStorage):
 
     def validate(self) -> bool:
         """ No dependencies or setup required; validation returns True """
-        return True
+        # @TODO add validation check
+        return len(self.api_key) > 0
 
     def _push(self, source: str, destination: str) -> str:
         logger.info("Uploading to: %s...", destination)
@@ -64,9 +65,11 @@ class OperatorStorage(CloudStorage):
         return destination
 
     def upload(self, domain: str, local_path: str) -> dict:
-        bucket_path = get_archive_path(domain, local_path)
-        prefix = self._push(local_path, bucket_path)
-        return _format_location(self.bucket_name, prefix)
+        # @TODO request a presigned URL
+        # @TODO use curl to upload the model
+        return {
+            "type": "operator:cloud-storage",
+        }
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -87,17 +90,3 @@ class OperatorStorage(CloudStorage):
         blob = bucket.blob(path)
         obj = blob.download_as_string()
         return json.loads(obj)
-
-
-def _format_location(bucket_name: str, prefix: str) -> dict:
-    return {
-        "type": "google:cloud-storage",
-        "bucket": bucket_name,
-        "prefix": prefix,
-    }
-
-
-def _get_location(bucket_name, meta: dict) -> str:
-    if bucket_name != meta["bucket"]:
-        raise ValueError("Meta-data has a different bucket name")
-    return meta["prefix"]

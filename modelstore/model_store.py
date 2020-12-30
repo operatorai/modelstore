@@ -16,8 +16,8 @@ import tarfile
 from dataclasses import dataclass
 
 from modelstore.clouds.aws import BOTO_EXISTS, AWSStorage
-from modelstore.clouds.file_system import FileSystemStorage
 from modelstore.clouds.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
+from modelstore.clouds.local import FileSystemStorage
 from modelstore.clouds.operator import OperatorStorage
 from modelstore.clouds.storage import CloudStorage
 from modelstore.models.managers import iter_libraries

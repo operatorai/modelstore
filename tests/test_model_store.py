@@ -15,7 +15,7 @@ from functools import partial
 from unittest.mock import patch
 
 import pytest
-from modelstore.clouds.file_system import FileSystemStorage
+from modelstore.clouds.local import FileSystemStorage
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import ML_LIBRARIES
 from modelstore.models.missingmanager import MissingDepManager

@@ -17,7 +17,7 @@ import tarfile
 from pathlib import Path
 
 import pytest
-from modelstore.clouds.file_system import FileSystemStorage
+from modelstore.clouds.local import FileSystemStorage
 from modelstore.models.modelmanager import ModelManager
 
 # pylint: disable=protected-access
