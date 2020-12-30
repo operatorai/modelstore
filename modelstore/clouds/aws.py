@@ -14,7 +14,7 @@
 import json
 import os
 
-from modelstore.clouds.storage import CloudStorage
+from modelstore.clouds.blob_storage import BlobStorage
 from modelstore.clouds.util.paths import get_archive_path
 from modelstore.clouds.util.versions import sorted_by_created
 from modelstore.utils.log import logger
@@ -28,7 +28,7 @@ except ImportError:
     BOTO_EXISTS = False
 
 
-class AWSStorage(CloudStorage):
+class AWSStorage(BlobStorage):
 
     """
     AWS S3 Storage

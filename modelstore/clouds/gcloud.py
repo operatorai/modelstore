@@ -14,7 +14,7 @@
 import json
 import os
 
-from modelstore.clouds.storage import CloudStorage
+from modelstore.clouds.blob_storage import BlobStorage
 from modelstore.clouds.util.paths import get_archive_path
 from modelstore.clouds.util.versions import sorted_by_created
 from modelstore.utils.log import logger
@@ -33,7 +33,7 @@ except ImportError:
     GCLOUD_EXISTS = False
 
 
-class GoogleCloudStorage(CloudStorage):
+class GoogleCloudStorage(BlobStorage):
 
     """
     Google Cloud Storage
@@ -63,6 +63,7 @@ class GoogleCloudStorage(CloudStorage):
         except DefaultCredentialsError:
             try:
                 # Try to authenticate, if in a Colab notebook
+                # pylint: disable=no-name-in-module,import-error,import-outside-toplevel
                 from google.colab import auth
 
                 auth.authenticate_user()
