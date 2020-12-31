@@ -8,4 +8,5 @@ function run {
 run aws
 run filesystem
 run gcloud
+run hosted
 
