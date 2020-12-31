@@ -46,5 +46,5 @@ def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
         if all(module_exists(x) for x in mngr.required_dependencies()):
             yield library, mngr(storage)
         else:
-            logger.warn("Skipping: %s", library)
+            logger.debug("Skipping: %s, not installed.", library)
             yield library, MissingDepManager(library, storage)
