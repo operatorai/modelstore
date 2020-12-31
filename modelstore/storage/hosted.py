@@ -50,20 +50,10 @@ class HostedStorage(CloudStorage):
             "url_type": url_type,
         }
         rsp = requests.post(endpoint, data=json.dumps(body))
-        if rsp.status_code == 200:
-            return rsp.json()["url"]
-        raise Exception(f"Error: {rsp.text.strip()}")
-
-    def _upload(self, local_path, upload_url):
-        """ Uploads a local file to an upload URL, showing a progress bar """
-        file_path = os.path.abspath(local_path)
-        file_size = os.stat(file_path).st_size
-        with open(file_path, "rb") as f:
-            with tqdm(
-                total=file_size, unit="B", unit_scale=True, unit_divisor=1024
-            ) as t:
-                wrapped_file = CallbackIOWrapper(t.update, f, "read")
-                requests.put(upload_url, data=wrapped_file)
+        if rsp.status_code != 200:
+            logger.debug("Request failed: %s", rsp.status_code)
+            raise Exception(f"Error: {rsp.text.strip()}")
+        return rsp.json()["url"]
 
     def _register_upload(self, domain: str, model_id: str):
         endpoint = os.path.join(_URL_ROOT, "model-register-uploaded")
@@ -74,11 +64,12 @@ class HostedStorage(CloudStorage):
         }
         rsp = requests.post(endpoint, data=json.dumps(body))
         if rsp.status_code != 200:
+            logger.debug("Request failed: %s", rsp.status_code)
             raise Exception(f"Error: {rsp.text.strip()}")
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         upload_url = self._get_url(domain, model_id, "PUT")
-        self._upload(local_path, upload_url)
+        _upload(local_path, upload_url)
         self._register_upload(domain, model_id)
         return {
             "type": "operator:cloud-storage",
@@ -102,3 +93,15 @@ class HostedStorage(CloudStorage):
         If no model_id is given, it defaults to the latest model in that
         domain"""
         raise NotImplementedError()
+
+
+def _upload(local_path, upload_url):
+    """ Uploads a local file to an upload URL, showing a progress bar """
+    file_path = os.path.abspath(local_path)
+    file_size = os.stat(file_path).st_size
+    with open(file_path, "rb") as f:
+        with tqdm(
+            total=file_size, unit="B", unit_scale=True, unit_divisor=1024
+        ) as t:
+            wrapped_file = CallbackIOWrapper(t.update, f, "read")
+            requests.put(upload_url, data=wrapped_file)
