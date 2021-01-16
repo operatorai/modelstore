@@ -22,7 +22,7 @@ from tqdm.utils import CallbackIOWrapper
 
 # pylint: disable=protected-access
 
-_URL_ROOT = "https://europe-west1-revival-287212.cloudfunctions.net/"
+_URL_ROOT = "https://maamxzc32j.execute-api.eu-west-1.amazonaws.com/prod/"
 
 
 class HostedStorage(CloudStorage):
@@ -32,43 +32,48 @@ class HostedStorage(CloudStorage):
     Usage of this storage requires you to have an `api_key`.
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self, access_key_id: str, secret_access_key: str):
         super().__init__([])
-        self.api_key = api_key
+        self.access_key_id = access_key_id
+        self.secret_access_key = secret_access_key
 
     def validate(self) -> bool:
-        """ No dependencies or setup required; validation returns True """
-        return self.api_key is not None and len(self.api_key) > 0
+        """ Requires an ACCESS_KEY_ID and SECRET_ACCESS_KEY """
+        for key in [self.access_key_id, self.secret_access_key]:
+            if key is None or len(key) == 0:
+                return False
+        return True
 
     def _get_url(self, domain: str, model_id: str, url_type: str) -> str:
         """ Returns a pre-signed URL for up/downloading models """
-        endpoint = os.path.join(_URL_ROOT, "model-generate-url")
+        url = os.path.join(_URL_ROOT, url_type)
+        headers = {"x-api-key": self.secret_access_key}
         body = {
-            "api_key": self.api_key,
             "domain": domain,
             "model_id": model_id,
-            "url_type": url_type,
+            "api_key_id": self.access_key_id,
         }
-        rsp = requests.post(endpoint, data=json.dumps(body))
+        rsp = requests.post(url, headers=headers, data=json.dumps(body))
         if rsp.status_code != 200:
             logger.debug("Request failed: %s", rsp.status_code)
             raise Exception(f"Error: {rsp.text.strip()}")
         return rsp.json()["url"]
 
     def _register_upload(self, domain: str, model_id: str):
-        endpoint = os.path.join(_URL_ROOT, "model-register-uploaded")
-        body = {
-            "domain": domain,
-            "model_id": model_id,
-            "api_key": self.api_key,
-        }
-        rsp = requests.post(endpoint, data=json.dumps(body))
-        if rsp.status_code != 200:
-            logger.debug("Request failed: %s", rsp.status_code)
-            raise Exception(f"Error: {rsp.text.strip()}")
+        pass
+        # endpoint = os.path.join(_URL_ROOT, "model-register-uploaded")
+        # body = {
+        #     "domain": domain,
+        #     "model_id": model_id,
+        #     "api_key": self.api_key,
+        # }
+        # rsp = requests.post(endpoint, data=json.dumps(body))
+        # if rsp.status_code != 200:
+        #     logger.debug("Request failed: %s", rsp.status_code)
+        #     raise Exception(f"Error: {rsp.text.strip()}")
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        upload_url = self._get_url(domain, model_id, "PUT")
+        upload_url = self._get_url(domain, model_id, "upload-url")
         _upload(local_path, upload_url)
         self._register_upload(domain, model_id)
         return {
@@ -85,7 +90,6 @@ class HostedStorage(CloudStorage):
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         """ Annotates a model with some given meta data """
-        # @TODO
         return
 
     def download(self, local_path: str, domain: str, model_id: str = None):

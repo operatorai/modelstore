@@ -13,7 +13,9 @@ from sklearn.model_selection import train_test_split
 
 def create_model_store() -> ModelStore:
     # To use the hosted model store, you need an API key
-    return ModelStore.from_api_key(os.environ["MODEL_STORE_KEY"])
+    return ModelStore.from_api_key(
+        os.environ["MODELSTORE_KEY_ID"], os.environ["MODELSTORE_ACCESS_KEY"]
+    )
 
 
 def train(model_type):

@@ -67,10 +67,14 @@ class ModelStore:
         return ModelStore(storage=FileSystemStorage(root_directory))
 
     @classmethod
-    def from_api_key(cls, api_key: str) -> "ModelStore":
+    def from_api_key(
+        cls, access_key_id: str, secret_access_key: str
+    ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         a managed system."""
-        return ModelStore(storage=HostedStorage(api_key))
+        return ModelStore(
+            storage=HostedStorage(access_key_id, secret_access_key)
+        )
 
     def __post_init__(self):
         if not self.storage.validate():
