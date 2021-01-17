@@ -42,22 +42,27 @@ class HostedStorage(CloudStorage):
         for key in [self.access_key_id, self.secret_access_key]:
             if key is None or len(key) == 0:
                 return False
-        return True
+        try:
+            _ = self._post("ping", {})
+            return True
+        except:
+            return False
 
-    def _get_url(self, domain: str, model_id: str, url_type: str) -> str:
-        """ Returns a pre-signed URL for up/downloading models """
-        url = os.path.join(_URL_ROOT, url_type)
+    def _post(self, endpoint: str, data: dict) -> dict:
+        url = os.path.join(_URL_ROOT, endpoint)
         headers = {"x-api-key": self.secret_access_key}
-        body = {
-            "domain": domain,
-            "model_id": model_id,
-            "api_key_id": self.access_key_id,
-        }
-        rsp = requests.post(url, headers=headers, data=json.dumps(body))
+        data["api_key_id"] = self.access_key_id
+        rsp = requests.post(url, headers=headers, data=json.dumps(data))
         if rsp.status_code != 200:
             logger.debug("Request failed: %s", rsp.status_code)
             raise Exception(f"Error: {rsp.text.strip()}")
-        return rsp.json()["url"]
+        return rsp.json()
+
+    def _get_upload_url(self, domain: str, model_id: str) -> str:
+        """ Returns a pre-signed URL for up/downloading models """
+        data = {"domain": domain, "model_id": model_id}
+        rsp = self._post("upload-url", data)
+        return rsp["url"]
 
     def _register_upload(self, domain: str, model_id: str):
         pass
@@ -73,7 +78,7 @@ class HostedStorage(CloudStorage):
         #     raise Exception(f"Error: {rsp.text.strip()}")
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        upload_url = self._get_url(domain, model_id, "upload-url")
+        upload_url = self._get_upload_url(domain, model_id)
         _upload(local_path, upload_url)
         self._register_upload(domain, model_id)
         return {
