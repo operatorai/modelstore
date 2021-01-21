@@ -14,6 +14,7 @@
 import os
 import tarfile
 from dataclasses import dataclass
+from typing import Optional
 
 from modelstore.models.managers import iter_libraries
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
@@ -68,7 +69,9 @@ class ModelStore:
 
     @classmethod
     def from_api_key(
-        cls, access_key_id: str, secret_access_key: str
+        cls,
+        access_key_id: Optional[str] = None,
+        secret_access_key: Optional[str] = None,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         a managed system."""

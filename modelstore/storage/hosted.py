@@ -36,8 +36,10 @@ class HostedStorage(CloudStorage):
 
     def __init__(self, access_key_id: str, secret_access_key: str):
         super().__init__([])
-        self.access_key_id = access_key_id
-        self.secret_access_key = secret_access_key
+        self.access_key_id = _get_environ(access_key_id, "MODELSTORE_KEY_ID")
+        self.secret_access_key = _get_environ(
+            secret_access_key, "MODELSTORE_ACCESS_KEY"
+        )
 
     def validate(self) -> bool:
         """ Requires an ACCESS_KEY_ID and SECRET_ACCESS_KEY """
@@ -96,6 +98,12 @@ class HostedStorage(CloudStorage):
         domain"""
         download_url = self._get_url("download-url", domain, model_id)
         return _download(local_path, download_url)
+
+
+def _get_environ(value: str, key: str) -> str:
+    if value is not None:
+        return value
+    return os.environ.get(key)
 
 
 def _upload(local_path, upload_url):
