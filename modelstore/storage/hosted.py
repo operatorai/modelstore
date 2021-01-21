@@ -13,6 +13,8 @@
 #    limitations under the License.
 import json
 import os
+import threading
+import urllib
 
 import requests
 from modelstore.storage.storage import CloudStorage
@@ -49,6 +51,7 @@ class HostedStorage(CloudStorage):
             return False
 
     def _post(self, endpoint: str, data: dict) -> dict:
+        logger.info(endpoint)
         url = os.path.join(_URL_ROOT, endpoint)
         headers = {"x-api-key": self.secret_access_key}
         data["api_key_id"] = self.access_key_id
@@ -58,27 +61,17 @@ class HostedStorage(CloudStorage):
             raise Exception(f"Error: {rsp.text.strip()}")
         return rsp.json()
 
-    def _get_upload_url(self, domain: str, model_id: str) -> str:
+    def _get_url(self, endpoint: str, domain: str, model_id: str) -> str:
         """ Returns a pre-signed URL for up/downloading models """
         data = {"domain": domain, "model_id": model_id}
-        rsp = self._post("upload-url", data)
+        rsp = self._post(endpoint, data)
         return rsp["url"]
 
     def _register_upload(self, domain: str, model_id: str):
         pass
-        # endpoint = os.path.join(_URL_ROOT, "model-register-uploaded")
-        # body = {
-        #     "domain": domain,
-        #     "model_id": model_id,
-        #     "api_key": self.api_key,
-        # }
-        # rsp = requests.post(endpoint, data=json.dumps(body))
-        # if rsp.status_code != 200:
-        #     logger.debug("Request failed: %s", rsp.status_code)
-        #     raise Exception(f"Error: {rsp.text.strip()}")
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        upload_url = self._get_upload_url(domain, model_id)
+        upload_url = self._get_url("upload-url", domain, model_id)
         _upload(local_path, upload_url)
         self._register_upload(domain, model_id)
         return {
@@ -101,7 +94,8 @@ class HostedStorage(CloudStorage):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that
         domain"""
-        raise NotImplementedError()
+        download_url = self._get_url("download-url", domain, model_id)
+        return _download(local_path, download_url)
 
 
 def _upload(local_path, upload_url):
@@ -114,3 +108,18 @@ def _upload(local_path, upload_url):
         ) as t:
             wrapped_file = CallbackIOWrapper(t.update, f, "read")
             requests.put(upload_url, data=wrapped_file)
+
+
+def _download(local_path, download_url) -> str:
+    """ Uploads a local file to an upload URL, showing a progress bar """
+    resp = requests.get(download_url, stream=True)
+    total_length = int(resp.headers.get("content-length", 0))
+    logger.info(total_length)
+    archive_file = os.path.join(local_path, "artifacts.tar.gz")
+    with open(archive_file, "wb") as f, tqdm(
+        total=total_length, unit="iB", unit_scale=True
+    ) as t:
+        for chunk in resp.iter_content(chunk_size=1024):
+            t.update(len(chunk))
+            f.write(chunk)
+    return archive_file
