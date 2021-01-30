@@ -13,8 +13,6 @@
 #    limitations under the License.
 import json
 import os
-import threading
-import urllib
 
 import requests
 from modelstore.storage.storage import CloudStorage
@@ -30,8 +28,8 @@ _URL_ROOT = "https://maamxzc32j.execute-api.eu-west-1.amazonaws.com/prod/"
 class HostedStorage(CloudStorage):
 
     """
-    HostedStorage is a managed model store. No dependencies required.
-    Usage of this storage requires you to have an `api_key`.
+    HostedStorage is a managed model store.
+    Usage of this storage requires you to have an `api_access_key` and `api_key_id`.
     """
 
     def __init__(self, access_key_id: str, secret_access_key: str):
@@ -53,7 +51,6 @@ class HostedStorage(CloudStorage):
             return False
 
     def _post(self, endpoint: str, data: dict) -> dict:
-        logger.info(endpoint)
         url = os.path.join(_URL_ROOT, endpoint)
         headers = {"x-api-key": self.secret_access_key}
         data["api_key_id"] = self.access_key_id
@@ -113,8 +110,8 @@ def _upload(local_path, upload_url):
     with open(file_path, "rb") as f:
         with tqdm(
             total=file_size, unit="B", unit_scale=True, unit_divisor=1024
-        ) as t:
-            wrapped_file = CallbackIOWrapper(t.update, f, "read")
+        ) as progress:
+            wrapped_file = CallbackIOWrapper(progress.update, f, "read")
             requests.put(upload_url, data=wrapped_file)
 
 
@@ -126,8 +123,8 @@ def _download(local_path, download_url) -> str:
     archive_file = os.path.join(local_path, "artifacts.tar.gz")
     with open(archive_file, "wb") as f, tqdm(
         total=total_length, unit="iB", unit_scale=True
-    ) as t:
+    ) as progress:
         for chunk in resp.iter_content(chunk_size=1024):
-            t.update(len(chunk))
+            progress.update(len(chunk))
             f.write(chunk)
     return archive_file

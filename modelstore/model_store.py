@@ -52,9 +52,7 @@ class ModelStore:
     @classmethod
     def from_gcloud(cls, project_name: str, bucket_name: str) -> "ModelStore":
         """Creates a ModelStore instance that stores models to a
-        Google Cloud Bucket.
-
-        This currently assumes that the Cloud bucket already exists."""
+        Google Cloud Bucket. This assumes that the Cloud bucket already exists."""
         if not GCLOUD_EXISTS:
             raise ModuleNotFoundError("google.cloud is not installed!")
         return ModelStore(
@@ -74,7 +72,7 @@ class ModelStore:
         secret_access_key: Optional[str] = None,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
-        a managed system."""
+        a managed system. Requires API keys."""
         return ModelStore(
             storage=HostedStorage(access_key_id, secret_access_key)
         )
