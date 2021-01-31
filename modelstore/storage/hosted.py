@@ -80,8 +80,8 @@ class HostedStorage(CloudStorage):
 
     def list_versions(self, domain: str) -> list:
         """ Returns a list of a model's versions """
-        # @TODO
-        raise NotImplementedError()
+        rsp = self._post("list-models", {"domain": domain})
+        return rsp["models"]
 
     def list_domains(self) -> list:
         """ Returns a list of all the existing model domains """
