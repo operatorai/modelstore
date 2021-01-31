@@ -1,6 +1,6 @@
-export PYTHON_VERSION=3.6.11
-#export PYTHON_VERSION=3.7.0
-#export PYTHON_VERSION=3.8.5
+#export PYTHON_VERSION=3.6.11
+export PYTHON_VERSION=3.7.0
+export PYTHON_VERSION=3.8.7
 
 export VIRTUALENV_NAME=$(pyenv local) || ""
 export REPO_ROOT=$(cd $(dirname $0)/.. && pwd)

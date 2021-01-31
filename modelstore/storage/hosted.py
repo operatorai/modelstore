@@ -67,7 +67,8 @@ class HostedStorage(CloudStorage):
         return rsp["url"]
 
     def _register_upload(self, domain: str, model_id: str):
-        pass
+        data = {"domain": domain, "model_id": model_id}
+        self._post("uploaded", data)
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         upload_url = self._get_url("upload-url", domain, model_id)
@@ -79,14 +80,17 @@ class HostedStorage(CloudStorage):
 
     def list_versions(self, domain: str) -> list:
         """ Returns a list of a model's versions """
+        # @TODO
         raise NotImplementedError()
 
     def list_domains(self) -> list:
         """ Returns a list of all the existing model domains """
+        # @TODO
         raise NotImplementedError()
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         """ Annotates a model with some given meta data """
+        # @TODO
         return
 
     def download(self, local_path: str, domain: str, model_id: str = None):
