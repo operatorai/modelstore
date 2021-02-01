@@ -85,8 +85,8 @@ class HostedStorage(CloudStorage):
 
     def list_domains(self) -> list:
         """ Returns a list of all the existing model domains """
-        # @TODO
-        raise NotImplementedError()
+        rsp = self._post("list-domains", {})
+        return rsp["domains"]
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         """ Annotates a model with some given meta data """
