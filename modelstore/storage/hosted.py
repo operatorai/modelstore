@@ -90,8 +90,12 @@ class HostedStorage(CloudStorage):
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         """ Annotates a model with some given meta data """
-        # @TODO
-        return
+        data = {
+            "domain": domain,
+            "model_id": model_id,
+            "meta_data": json.dumps(meta_data),
+        }
+        self._post("set-metadata", data)
 
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
