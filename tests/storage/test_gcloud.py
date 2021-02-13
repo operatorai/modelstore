@@ -113,7 +113,7 @@ def test_list_versions(gcloud_client):
                 "domain": domain,
                 "model_id": model,
             },
-            "meta": {
+            "code": {
                 "created": created,
             },
             "modelstore": modelstore.__version__,
@@ -143,7 +143,7 @@ def test_list_domains(gcloud_client):
                 "domain": domain,
                 "model_id": model,
             },
-            "meta": {
+            "code": {
                 "created": created,
             },
             "modelstore": modelstore.__version__,
