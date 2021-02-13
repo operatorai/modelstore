@@ -2,10 +2,8 @@ import json
 import os
 
 import click
-import numpy as np
 from modelstore import ModelStore
 from sklearn.datasets import load_diabetes
-from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
 import lightgbm as lgb
@@ -29,6 +27,11 @@ def create_model_store(backend) -> ModelStore:
         # created an s3 bucket where you want to store your models, and
         # will raise an exception if it doesn't exist.
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    if backend == "hosted":
+        # To use the hosted model store, you need an API key
+        return ModelStore.from_api_key(
+            os.environ["MODELSTORE_KEY_ID"], os.environ["MODELSTORE_ACCESS_KEY"]
+        )
     raise ValueError(f"Unknown model store: {backend}")
 
 
@@ -48,7 +51,9 @@ def train():
 @click.command()
 @click.option(
     "--storage",
-    type=click.Choice(["filesystem", "gcloud", "aws"], case_sensitive=False),
+    type=click.Choice(
+        ["filesystem", "gcloud", "aws", "hosted"], case_sensitive=False
+    ),
 )
 def main(storage):
     model_domain = "diabetes-boosting-demo"

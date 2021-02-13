@@ -17,13 +17,13 @@ import shutil
 import warnings
 from pathlib import Path
 
-from modelstore.clouds.storage import CloudStorage
-from modelstore.clouds.util.paths import _ROOT, get_archive_path
-from modelstore.clouds.util.versions import sorted_by_created
+from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util.paths import _ROOT, get_archive_path
+from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
 
-class FileSystemStorage(CloudStorage):
+class FileSystemStorage(BlobStorage):
 
     """
     File System Storage
@@ -41,7 +41,8 @@ class FileSystemStorage(CloudStorage):
         logger.debug("Root is: %s", self.root_dir)
 
     def validate(self) -> bool:
-        """ This validates that the directory exists """
+        """This validates that the directory exists
+        and can be written to"""
         # pylint: disable=broad-except
         try:
             parent_dir = os.path.split(self.root_dir)[0]
@@ -60,19 +61,17 @@ class FileSystemStorage(CloudStorage):
             return False
 
     def _push(self, source: str, destination: str) -> str:
-        """ Pushes a file to a destination """
         destination = self.relative_dir(destination)
         shutil.copy(source, destination)
         return destination
 
     def _pull(self, source: dict, destination: str) -> str:
-        """ Pulls a model to a destination """
         path = _get_location(source)
         file_name = os.path.split(path)[1]
         shutil.copy(path, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
-    def upload(self, domain: str, local_path: str) -> dict:
+    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         fs_path = get_archive_path(domain, local_path)
         logger.info("Moving to: %s...", fs_path)
         archive_path = self._push(local_path, fs_path)
@@ -92,7 +91,6 @@ class FileSystemStorage(CloudStorage):
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
-        """ Returns a dictionary of the JSON stored in a given path """
         path = self.relative_dir(path)
         return _read_json_file(path)
 

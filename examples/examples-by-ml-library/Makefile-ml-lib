@@ -5,3 +5,4 @@ run:
 	@python main.py --storage filesystem
 	@python main.py --storage gcloud
 	@python main.py --storage aws
+	@python main.py --storage hosted

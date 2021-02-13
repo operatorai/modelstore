@@ -14,12 +14,14 @@
 import os
 import tarfile
 from dataclasses import dataclass
+from typing import Optional
 
-from modelstore.clouds.aws import BOTO_EXISTS, AWSStorage
-from modelstore.clouds.file_system import FileSystemStorage
-from modelstore.clouds.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
-from modelstore.clouds.storage import CloudStorage
 from modelstore.models.managers import iter_libraries
+from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
+from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
+from modelstore.storage.hosted import HostedStorage
+from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.storage import CloudStorage
 
 
 @dataclass(frozen=True)
@@ -39,7 +41,7 @@ class ModelStore:
     def from_aws_s3(cls, bucket_name: str, region: str = None) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an AWS s3
         bucket.
-        
+
         This currently assumes that the s3 bucket already exists."""
         if not BOTO_EXISTS:
             raise ModuleNotFoundError("boto3 is not installed!")
@@ -50,9 +52,7 @@ class ModelStore:
     @classmethod
     def from_gcloud(cls, project_name: str, bucket_name: str) -> "ModelStore":
         """Creates a ModelStore instance that stores models to a
-        Google Cloud Bucket.
-        
-        This currently assumes that the Cloud bucket already exists."""
+        Google Cloud Bucket. This assumes that the Cloud bucket already exists."""
         if not GCLOUD_EXISTS:
             raise ModuleNotFoundError("google.cloud is not installed!")
         return ModelStore(
@@ -62,8 +62,20 @@ class ModelStore:
     @classmethod
     def from_file_system(cls, root_directory: str) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
-        the local file system. """
+        the local file system."""
         return ModelStore(storage=FileSystemStorage(root_directory))
+
+    @classmethod
+    def from_api_key(
+        cls,
+        access_key_id: Optional[str] = None,
+        secret_access_key: Optional[str] = None,
+    ) -> "ModelStore":
+        """Creates a ModelStore instance that stores models to
+        a managed system. Requires API keys."""
+        return ModelStore(
+            storage=HostedStorage(access_key_id, secret_access_key)
+        )
 
     def __post_init__(self):
         if not self.storage.validate():
@@ -75,13 +87,13 @@ class ModelStore:
             object.__setattr__(self, library, manager)
 
     def list_domains(self) -> list:
-        """ Returns a list of dicts, containing info about all
-        of the domains """
+        """Returns a list of dicts, containing info about all
+        of the domains"""
         return self.storage.list_domains()
 
     def list_versions(self, domain: str) -> list:
-        """ Returns a list of dicts, containing info about all
-        of the models that have been uploaded to a domain """
+        """Returns a list of dicts, containing info about all
+        of the models that have been uploaded to a domain"""
         return self.storage.list_versions(domain)
 
     def download(

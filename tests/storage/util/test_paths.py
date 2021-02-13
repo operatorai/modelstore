@@ -15,7 +15,7 @@
 import os
 from datetime import datetime
 
-from modelstore.clouds.util import paths
+from modelstore.storage.util import paths
 
 # pylint: disable=protected-access
 

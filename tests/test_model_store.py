@@ -15,11 +15,11 @@ from functools import partial
 from unittest.mock import patch
 
 import pytest
-from modelstore.clouds.file_system import FileSystemStorage
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import ML_LIBRARIES
 from modelstore.models.missingmanager import MissingDepManager
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=protected-access
 
@@ -58,7 +58,7 @@ def test_from_file_system(tmp_path):
     validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
 
 
-def only_sklearn(storage=None):
+def only_sklearn(_):
     for k, v in ML_LIBRARIES.items():
         if k == "sklearn":
             yield k, v()

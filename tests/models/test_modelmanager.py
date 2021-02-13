@@ -17,8 +17,8 @@ import tarfile
 from pathlib import Path
 
 import pytest
-from modelstore.clouds.file_system import FileSystemStorage
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=protected-access
 # pylint: disable=missing-class-docstring
@@ -30,7 +30,7 @@ class MockCloudStorage(FileSystemStorage):
         super().__init__(root_path=str(tmpdir))
         self.called = False
 
-    def upload(self, domain: str, local_path: str):
+    def upload(self, domain: str, model_id: str, local_path: str):
         self.called = True
 
 
@@ -59,7 +59,7 @@ class MockModelManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        return None
+        return {}
 
     def _required_kwargs(self) -> list:
         return ["model", "config"]

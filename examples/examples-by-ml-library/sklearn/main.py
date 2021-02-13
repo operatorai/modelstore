@@ -19,19 +19,25 @@ def create_model_store(backend) -> ModelStore:
         # The modelstore library assumes you have already created
         # a Cloud Storage bucket and will raise an exception if it doesn't exist
         return ModelStore.from_gcloud(
-            os.environ["GCP_PROJECT_ID"], os.environ["GCP_BUCKET_NAME"],
+            os.environ["GCP_PROJECT_ID"],
+            os.environ["GCP_BUCKET_NAME"],
         )
     if backend == "aws":
         # The modelstore library assumes that you already have
         # created an s3 bucket where you want to store your models, and
         # will raise an exception if it doesn't exist.
         return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    if backend == "hosted":
+        # To use the hosted model store, you need an API key
+        return ModelStore.from_api_key(
+            os.environ["MODELSTORE_KEY_ID"], os.environ["MODELSTORE_ACCESS_KEY"]
+        )
     raise ValueError(f"Unknown model store: {backend}")
 
 
 def train():
     diabetes = load_diabetes()
-    X_train, X_test, y_train, y_test = train_test_split(
+    X_train, _, y_train, _ = train_test_split(
         diabetes.data, diabetes.target, test_size=0.1, random_state=13
     )
     params = {
@@ -50,7 +56,7 @@ def train():
 @click.command()
 @click.option(
     "--storage",
-    type=click.Choice(["filesystem", "gcloud", "aws"], case_sensitive=False),
+    type=click.Choice(["filesystem", "gcloud", "aws", "hosted"], case_sensitive=False),
 )
 def main(storage):
     model_type = "sklearn"

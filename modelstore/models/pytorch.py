@@ -68,7 +68,20 @@ class PyTorchManager(ModelManager):
         Returns a dictionary the optimizer's state
         dictionary
         """
-        return kwargs["optimizer"].state_dict()
+        return _convert_tensors(kwargs["optimizer"].state_dict())
+
+
+def _convert_tensors(model_params: dict) -> dict:
+    import torch
+
+    for k, v in model_params.items():
+        if isinstance(v, dict):
+            model_params[k] = _convert_tensors(v)
+        if isinstance(v, torch.Tensor):
+            if hasattr(v, "detach"):
+                v = v.detach()
+            model_params[k] = v.cpu().numpy()
+    return model_params
 
 
 def _save_state_dict(

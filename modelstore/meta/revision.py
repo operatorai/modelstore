@@ -1,6 +1,4 @@
 import git
-from git.exc import InvalidGitRepositoryError
-from modelstore.utils.log import logger
 
 # pylint: disable=broad-except
 

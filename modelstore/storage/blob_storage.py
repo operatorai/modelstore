@@ -14,51 +14,35 @@
 import json
 import os
 import tempfile
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod
 
-from modelstore.clouds.util.paths import (
+from modelstore.storage.storage import CloudStorage
+from modelstore.storage.util.paths import (
     get_domain_path,
     get_domains_path,
     get_metadata_path,
     get_versions_path,
 )
-from modelstore.meta.dependencies import module_exists
 from modelstore.utils.log import logger
 
 
-class CloudStorage(ABC):
+class BlobStorage(CloudStorage):
 
     """
-    Abstract class capturing a type of cloud storage
-    (e.g., Google Cloud, AWS, other)
+    Abstract class capturing a file system type of cloud storage
+    (e.g., Google Cloud Storage, AWS S3, local file system)
     """
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, required_deps: str):
-        for dep in required_deps:
-            if not module_exists(dep):
-                raise ModuleNotFoundError(f"{dep} not installed.")
-
-    @abstractmethod
-    def validate(self) -> bool:
-        """ Runs any required validation steps - e.g.,
-        checking that a cloud bucket exists"""
-        raise NotImplementedError()
-
     @abstractmethod
     def _push(self, source: str, destination: str) -> str:
-        """ Pushes a file to a destination """
+        """ Pushes a file from a source to a destination """
         raise NotImplementedError()
 
     @abstractmethod
     def _pull(self, source: dict, destination: str) -> str:
-        """ Pulls a model to a destination """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def upload(self, domain: str, local_path: str) -> dict:
-        """ Uploads an archive to this type of storage"""
+        """ Pulls a model from a source to a destination """
         raise NotImplementedError()
 
     @abstractmethod
@@ -91,9 +75,9 @@ class CloudStorage(ABC):
             self._push(version_path, get_domain_path(domain))
 
     def download(self, local_path: str, domain: str, model_id: str = None):
-        """ Downloads an artifacts archive for a given (domain, model_id) pair.
+        """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that
-        domain """
+        domain"""
         model_meta = None
         if model_id is None:
             model_domain = get_domain_path(domain)

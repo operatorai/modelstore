@@ -14,9 +14,9 @@
 import json
 import os
 
-from modelstore.clouds.storage import CloudStorage
-from modelstore.clouds.util.paths import get_archive_path
-from modelstore.clouds.util.versions import sorted_by_created
+from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util.paths import get_archive_path
+from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
 # pylint: disable=protected-access
@@ -33,10 +33,12 @@ except ImportError:
     GCLOUD_EXISTS = False
 
 
-class GoogleCloudStorage(CloudStorage):
+class GoogleCloudStorage(BlobStorage):
 
     """
     Google Cloud Storage
+
+    Assumes that google.cloud.storage is installed and configured
     """
 
     def __init__(
@@ -61,6 +63,7 @@ class GoogleCloudStorage(CloudStorage):
         except DefaultCredentialsError:
             try:
                 # Try to authenticate, if in a Colab notebook
+                # pylint: disable=no-name-in-module,import-error,import-outside-toplevel
                 from google.colab import auth
 
                 auth.authenticate_user()
@@ -107,7 +110,7 @@ class GoogleCloudStorage(CloudStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def upload(self, domain: str, local_path: str) -> dict:
+    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         bucket_path = get_archive_path(domain, local_path)
         prefix = self._push(local_path, bucket_path)
         return _format_location(self.bucket_name, prefix)

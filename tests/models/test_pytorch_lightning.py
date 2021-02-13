@@ -11,8 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
-
 import os
 
 import pytest
@@ -66,7 +64,7 @@ def train_loader():
     x = torch.rand(20, 10)
     y = torch.rand(20).view(-1, 1)
     data_set = TensorDataset(x, y)
-    return DataLoader(data_set, num_workers=4)
+    return DataLoader(data_set, num_workers=0)
 
 
 @pytest.fixture
@@ -74,7 +72,7 @@ def val_loader():
     x = torch.rand(2, 10)
     y = torch.rand(2).view(-1, 1)
     data_set = TensorDataset(x, y)
-    return DataLoader(data_set, num_workers=4)
+    return DataLoader(data_set, num_workers=0)
 
 
 @pytest.fixture
