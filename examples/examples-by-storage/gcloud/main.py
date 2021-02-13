@@ -15,7 +15,8 @@ def create_model_store() -> ModelStore:
     # The modelstore library assumes you have already created
     # a Cloud Storage bucket and will raise an exception if it doesn't exist
     return ModelStore.from_gcloud(
-        os.environ["GCP_PROJECT_ID"], os.environ["GCP_BUCKET_NAME"],
+        os.environ["GCP_PROJECT_ID"],
+        os.environ["GCP_BUCKET_NAME"],
     )
 
 
@@ -60,10 +61,15 @@ def train(model_type):
     type=click.Choice(["sklearn", "xgboost"], case_sensitive=False),
 )
 def main(model_type):
-    model_domain = "diabetes-boosting-demo"
-
     # Create a model store instance
-    model_store = create_model_store()
+    modelstore = create_model_store()
+
+    # List the available domains
+    print(modelstore.list_domains())
+
+    # List the available models
+    model_domain = "diabetes-boosting-demo"
+    print(modelstore.list_versions(domain=model_domain))
 
     # In this demo, we train a GradientBoostingRegressor
     # using the same approach described on the scikit-learn website.
@@ -73,9 +79,9 @@ def main(model_type):
 
     print(f"⤴️  Uploading the archive to the {model_domain} domain.")
     if model_type == "sklearn":
-        meta_data = model_store.sklearn.upload(model_domain, model=model)
+        meta_data = modelstore.sklearn.upload(model_domain, model=model)
     elif model_type == "xgboost":
-        meta_data = model_store.xgboost.upload(model_domain, model=model)
+        meta_data = modelstore.xgboost.upload(model_domain, model=model)
     else:
         raise NotImplementedError(f"Not implemented for: {model_type}")
 
@@ -88,7 +94,7 @@ def main(model_type):
     # Download the model back!
     target = f"downloaded-{model_type}-model"
     os.makedirs(target, exist_ok=True)
-    model_path = model_store.download(
+    model_path = modelstore.download(
         local_path=target,
         domain=model_domain,
         model_id=meta_data["model"]["model_id"],
