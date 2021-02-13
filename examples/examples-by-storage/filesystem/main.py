@@ -64,11 +64,15 @@ def main(model_type):
     modelstore = create_model_store()
 
     # List the available domains
-    print(modelstore.list_domains())
+    domains = modelstore.list_domains()
+    for domain in domains:
+        print(f"✅  Domain: {domain}")
 
     # List the available models
     model_domain = "diabetes-boosting-demo"
-    print(modelstore.list_versions(domain=model_domain))
+    versions = modelstore.list_versions(domain=model_domain)
+    for version in versions:
+        print(f"✅  Domain: {model_domain} has model with id={version}")
 
     # In this demo, we train a GradientBoostingRegressor
     # using the same approach described on the scikit-learn website.
