@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-def sort_by_version(meta_data: dict, version: str):
+def sort_by_version(meta_data: dict):
     created = datetime.strptime(
         meta_data["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
     )
@@ -11,6 +11,6 @@ def sort_by_version(meta_data: dict, version: str):
 def sorted_by_created(versions: list):
     return sorted(
         versions,
-        key=lambda x: sort_by_version(x, x["modelstore"]),
+        key=sort_by_version,
         reverse=True,
     )

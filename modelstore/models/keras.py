@@ -15,7 +15,6 @@
 import os
 from functools import partial
 
-import numpy as np
 from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
 
@@ -68,12 +67,7 @@ class KerasManager(ModelManager):
         Returns a dictionary containing the optimizer
         parameters
         """
-        model_params = kwargs["model"].optimizer.get_config()
-        # Convert to enable json.dumps
-        for k, v in model_params.items():
-            if type(v) == np.float32:
-                model_params[k] = float(v)
-        return model_params
+        return kwargs["model"].optimizer.get_config()
 
 
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:

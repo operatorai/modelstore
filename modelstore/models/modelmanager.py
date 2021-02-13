@@ -11,7 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import os
 import shutil
 import tarfile
@@ -19,6 +18,7 @@ import tempfile
 import uuid
 from abc import ABC, ABCMeta, abstractmethod
 
+import numpy as np
 from modelstore.meta import metadata
 from modelstore.meta.dependencies import save_dependencies, save_model_info
 from modelstore.storage.storage import CloudStorage
@@ -155,7 +155,7 @@ class ModelManager(ABC):
             domain=domain,
             model_id=model_id,
             model_info=self._model_info(**kwargs),
-            model_params=self._get_params(**kwargs),
+            model_params=_format_numpy(self._get_params(**kwargs)),
             model_data=self._model_data(**kwargs),
         )
 
@@ -171,6 +171,17 @@ class ModelManager(ABC):
         self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
         return meta_data
+
+
+def _format_numpy(model_params: dict) -> dict:
+    for k, v in model_params.items():
+        if isinstance(v, (np.float_, np.float16, np.float32, np.float64)):
+            model_params[k] = float(v)
+        if isinstance(v, np.ndarray):
+            model_params[k] = v.tolist()
+        if isinstance(v, dict):
+            model_params[k] = _format_numpy(v)
+    return model_params
 
 
 def _validate_domain(domain: str):

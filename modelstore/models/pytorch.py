@@ -15,7 +15,6 @@
 import os
 from functools import partial
 
-import numpy as np
 from modelstore.models.modelmanager import ModelManager
 
 # pylint disable=import-outside-toplevel
@@ -69,12 +68,20 @@ class PyTorchManager(ModelManager):
         Returns a dictionary the optimizer's state
         dictionary
         """
-        model_params = kwargs["optimizer"].state_dict()
-        # Convert to enable json.dumps
-        for k, v in model_params.items():
-            if type(v) == np.float32:
-                model_params[k] = float(v)
-        return model_params
+        return _convert_tensors(kwargs["optimizer"].state_dict())
+
+
+def _convert_tensors(model_params: dict) -> dict:
+    import torch
+
+    for k, v in model_params.items():
+        if isinstance(v, dict):
+            model_params[k] = _convert_tensors(v)
+        if isinstance(v, torch.Tensor):
+            if hasattr(v, "detach"):
+                v = v.detach()
+            model_params[k] = v.cpu().numpy()
+    return model_params
 
 
 def _save_state_dict(
