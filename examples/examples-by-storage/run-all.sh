@@ -5,6 +5,7 @@ function run {
 	cd ..
 }
 
+set -e
 run aws
 run filesystem
 run gcloud

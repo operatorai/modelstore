@@ -5,6 +5,7 @@ function run {
 	cd ..
 }
 
+set -e
 run catboost
 run keras
 run pytorch
