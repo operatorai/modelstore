@@ -1,6 +1,6 @@
 # Change log
 
-## modelstore 0.0.51
+## modelstore 0.0.52
 
 Added PyTorch Lightning and LightGBM support.
 
