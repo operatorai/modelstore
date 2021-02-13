@@ -22,7 +22,7 @@ from tqdm.utils import CallbackIOWrapper
 
 # pylint: disable=protected-access
 
-_URL_ROOT = "https://maamxzc32j.execute-api.eu-west-1.amazonaws.com/prod/"
+_URL_ROOT = "https://k8evynth8b.execute-api.eu-west-1.amazonaws.com/prod/"
 
 
 class HostedStorage(CloudStorage):
