@@ -2,12 +2,10 @@ from datetime import datetime
 
 
 def sort_by_version(meta_data: dict):
-    version = meta_data.get("modelstore", "0.0.1")
-    if version in ["0.0.4", "0.0.5"]:
+    if "code" in meta_data:
         return datetime.strptime(
             meta_data["code"]["created"], "%Y/%m/%d/%H:%M:%S"
         )
-    # Earlier versions of modelstore had a different meta-data structure
     return datetime.strptime(meta_data["meta"]["created"], "%Y/%m/%d/%H:%M:%S")
 
 
