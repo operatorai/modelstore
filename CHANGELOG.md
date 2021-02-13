@@ -1,10 +1,12 @@
 # Change log
 
-## (Unreleased) modelstore 0.0.5
+## modelstore 0.0.5
 
-Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models
+Added PyTorch Lightning and LightGBM support.
 
-Added PyTorch Lightning and LightGBM support
+Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and want an API key, get in touch!
+
+Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models. More to come on this front soon!
 
 ## modelstore 0.0.4
 
