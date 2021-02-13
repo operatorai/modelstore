@@ -57,12 +57,14 @@ class BlobStorage(CloudStorage):
 
     def list_versions(self, domain: str) -> list:
         versions_for_domain = get_versions_path(domain)
-        return self._read_json_objects(versions_for_domain)
+        versions = self._read_json_objects(versions_for_domain)
+        return [v["model"]["model_id"] for v in versions]
 
     def list_domains(self) -> list:
         """ Returns a list of all the existing model domains """
         domains = get_domains_path()
-        return self._read_json_objects(domains)
+        domains = self._read_json_objects(domains)
+        return [d["model"]["domain"] for d in domains]
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         logger.info("Copying meta-data: %s", meta_data)

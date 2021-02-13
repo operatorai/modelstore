@@ -80,7 +80,7 @@ def test_list_versions(fs_model_store):
                 "domain": domain,
                 "model_id": model,
             },
-            "meta": {
+            "code": {
                 "created": created,
             },
             "modelstore": modelstore.__version__,
@@ -89,13 +89,9 @@ def test_list_versions(fs_model_store):
         time.sleep(1)
     versions = fs_model_store.list_versions("test-domain")
     assert len(versions) == 2
-    model_1_created = datetime.strptime(
-        versions[0]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
-    )
-    model_2_created = datetime.strptime(
-        versions[1]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
-    )
-    assert model_1_created > model_2_created
+    # Reverse time sorted
+    assert versions[0] == "model-2"
+    assert versions[1] == "model-1"
 
 
 def test_list_domains(fs_model_store):
@@ -107,19 +103,15 @@ def test_list_domains(fs_model_store):
                 "domain": domain,
                 "model_id": model,
             },
-            "meta": {
+            "code": {
                 "created": created,
             },
             "modelstore": modelstore.__version__,
         }
         fs_model_store.set_meta_data(domain, model, meta_data)
         time.sleep(1)
-    versions = fs_model_store.list_domains()
-    assert len(versions) == 2
-    model_1_created = datetime.strptime(
-        versions[0]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
-    )
-    model_2_created = datetime.strptime(
-        versions[1]["meta"]["created"], "%Y/%m/%d/%H:%M:%S"
-    )
-    assert model_1_created > model_2_created
+    domains = fs_model_store.list_domains()
+    assert len(domains) == 2
+    # Reverse time sorted
+    assert domains[0] == "domain-2"
+    assert domains[1] == "domain-1"
