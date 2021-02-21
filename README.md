@@ -2,17 +2,20 @@
 
 `modelstore` is a Python library that allows you to version, export, save and download machine learning models.
 
-The library's `ModelStore` will (a) version your models, (b) store them in a structured way, and (c) collect meta-data about the Python runtime that was used to train them. For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
+The library's `ModelStore` will (a) version your models, (b) store them in a structured way, and (c) collect meta-data about the Python runtime that was used to train them.
+
+For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
 This library has been developed using Python `3.6` and `3.7`. Please open an issue if you have any trouble!
 
-[![Downloads](https://pepy.tech/badge/modelstore)](https://pepy.tech/project/modelstore)
 
 ## Installation
 
 ```python
 pip install modelstore
 ```
+
+[![Downloads](https://pepy.tech/badge/modelstore)](https://pepy.tech/project/modelstore)
 
 ## Supported storage types
 
