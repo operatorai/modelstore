@@ -1,6 +1,6 @@
 # modelstore
 
-`modelstore` is a Python library that allows you to export, save and version machine learning models.
+`modelstore` is a Python library that allows you to version, export, save and download machine learning models.
 
 The library's `ModelStore` will (a) version your models, (b) store them in a structured way, and (c) collect meta-data about the Python runtime that was used to train them.
 
@@ -14,6 +14,13 @@ This library has been developed using Python `3.6` and `3.7`. Please open an iss
 pip install modelstore
 ```
 
+## Supported storage types
+
+* AWS S3 Bucket ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/aws/main.py))
+* Google Cloud Storage Bucket ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/gcloud/main.py))
+* A filesystem directory ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/filesystem/main.py))
+* A hosted storage option (Get in touch for an API key! [example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/hosted/main.py))
+
 ## Usage
 
 ```python
@@ -24,7 +31,8 @@ from modelstore import ModelStore
 clf = RandomForestClassifier(n_estimators=10)
 clf = clf.fit(X, Y)
 
-# Create a model store that uses a Google Cloud bucket (or AWS bucket)
+# Create a model store that uses a one of the storage options
+# In this example, the model store is created with a GCP bucket
 model_store = ModelStore.from_gcloud(
    project_name="my-project",
    bucket_name="my-bucket",
