@@ -2,7 +2,7 @@
 
 `modelstore` is a Python library that allows you to version, export, save and download machine learning models.
 
-The library's `ModelStore` will (a) version your models, (b) store them in a structured way, and (c) collect meta-data about the Python runtime that was used to train them.
+The library's `ModelStore` will (a) version your models, (b) store them in a structured way, and (c) collect meta-data about the Python runtime that was used to train them. For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
 This library has been developed using Python `3.6` and `3.7`. Please open an issue if you have any trouble!
 
@@ -20,6 +20,18 @@ pip install modelstore
 * Google Cloud Storage Bucket ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/gcloud/main.py))
 * A filesystem directory ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/filesystem/main.py))
 * A hosted storage option (Get in touch for an API key! [example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/hosted/main.py))
+
+## Supported machine learning libraries
+
+* [Scikit Learn](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/sklearn/main.py)
+* [Catboost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/catboost/main.py#L65-L70)
+* [Keras](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/keras/main.py)
+* [Tensorflow](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/tensorflow/main.py)
+* [LightGBM](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/lightgbm/main.py)
+* [PyTorch](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/pytorch/main.py)
+* [PyTorch Lightning](https://github.com/operatorai/modelstore/tree/master/examples/examples-by-ml-library/pytorch-lightning/main.py)
+* [Transformers](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/transformers/main.py)
+* [XGBoost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/xgboost/main.py)
 
 ## Usage
 
@@ -54,8 +66,6 @@ model_path = model_store.download(
    model_id=meta["model"]["model_id"],
 )
 ```
-
-For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
 ## License
 
