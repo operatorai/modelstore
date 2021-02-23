@@ -17,11 +17,14 @@ import os
 import numpy as np
 import pandas as pd
 import pytest
-from fastai.tabular.all import *
-
-# from fastai.tabular.data import TabularDataLoaders
-# from fastai.tabular.learner import tabular_learner
+from fastai.callback.schedule import fit_one_cycle
+from fastai.learner import load_learner
+from fastai.tabular.data import TabularDataLoaders
+from fastai.tabular.learner import tabular_learner
 from modelstore.models.fastai import FastAIManager, _export_model, _save_model
+
+# Not using the * import because it triggers fastcore tests (missing fixture errors)
+# from fastai.tabular.all import *
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -58,51 +61,54 @@ def test_model_info(fastai_manager):
     assert exp == res
 
 
-# def test_model_data(fastai_manager, fastai_learner):
-#     exp = {}
-#     res = fastai_manager._model_data(learner=fastai_learner)
-#     assert exp == res
+def test_model_data(fastai_manager, fastai_learner):
+    exp = {}
+    res = fastai_manager._model_data(learner=fastai_learner)
+    assert exp == res
 
 
-# def test_required_kwargs(fastai_manager):
-#     assert fastai_manager._required_kwargs() == ["learner"]
+def test_required_kwargs(fastai_manager):
+    assert fastai_manager._required_kwargs() == ["learner"]
 
 
-# def test_get_functions(fastai_manager, fastai_learner):
-#     assert len(fastai_manager._get_functions(learner=fastai_learner)) == 2
+def test_get_functions(fastai_manager, fastai_learner):
+    assert len(fastai_manager._get_functions(learner=fastai_learner)) == 2
 
 
-# def test_get_params(fastai_manager, fastai_learner):
-#     exp = fastai_learner.opt.state_dict()
-#     res = fastai_manager._get_params(learner=fastai_learner)
-#     assert exp == res
+def test_get_params(fastai_manager, fastai_learner):
+    exp = fastai_learner.opt.state_dict()
+    res = fastai_manager._get_params(learner=fastai_learner)
+    assert exp == res
 
 
-# def test_save_model(fastai_learner, fastai_dl, tmp_path):
-#     exp = os.path.join(tmp_path, "models", "learner.pth")
-#     model_path = _save_model(tmp_path, fastai_learner)
+def test_save_model(fastai_learner, fastai_dl, tmp_path):
+    exp = os.path.join(tmp_path, "models", "learner.pth")
+    model_path = _save_model(tmp_path, fastai_learner)
 
-#     assert exp == model_path
-#     assert os.path.exists(model_path)
+    assert exp == model_path
+    assert os.path.exists(model_path)
 
-#     test_input = pd.DataFrame([get_row()]).iloc[0]
-#     learner = tabular_learner(fastai_dl, path=tmp_path)
-#     learner.load("learner")
+    test_input = pd.DataFrame([get_row()]).iloc[0]
+    learner = tabular_learner(fastai_dl, path=tmp_path)
+    learner.load("learner")
 
-#     _, _, saved_probs = fastai_learner.predict(test_input)
-#     _, _, loaded_probs = learner.predict(test_input)
+    _, _, saved_probs = fastai_learner.predict(test_input)
+    _, _, loaded_probs = learner.predict(test_input)
 
-#     np.testing.assert_allclose(saved_probs.numpy(), loaded_probs.numpy())
+    np.testing.assert_allclose(saved_probs.numpy(), loaded_probs.numpy())
 
 
-# def test_export_model(fastai_model, tmp_path):
-#     exp = os.path.join(tmp_path, "model")
-#     model_path = _export_model(tmp_path, fastai_model)
-#     assert exp == model_path
-#     assert os.path.isdir(model_path)
+def test_export_model(fastai_learner, tmp_path):
+    exp = os.path.join(tmp_path, "learner.pkl")
+    model_path = _export_model(tmp_path, fastai_learner)
 
-#     # model = keras.models.load_model(model_path)
-#     # test_input = np.random.random((128, 10))
-#     # np.testing.assert_allclose(
-#     #     keras_model.predict(test_input), model.predict(test_input)
-#     # )
+    assert exp == model_path
+    assert os.path.exists(model_path)
+
+    learner = load_learner(model_path)
+
+    test_input = pd.DataFrame([get_row()]).iloc[0]
+    _, _, saved_probs = fastai_learner.predict(test_input)
+    _, _, loaded_probs = learner.predict(test_input)
+
+    np.testing.assert_allclose(saved_probs.numpy(), loaded_probs.numpy())

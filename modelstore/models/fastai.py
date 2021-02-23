@@ -80,11 +80,12 @@ def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
     if not isinstance(learner, Learner):
         raise TypeError("learner is not a fastai.learner.Learner!")
 
+    file_name = LEARNER + ".pth"
     # learner.save(file) will write to: self.path/self.model_dir/file;
     learner_path = learner.path
     learner.path = tmp_dir
 
-    file_path = os.path.join(learner.path, learner.model_dir, LEARNER + ".pth")
+    file_path = os.path.join(learner.path, learner.model_dir, file_name)
     learner.save(LEARNER)
 
     # Revert value
@@ -98,11 +99,12 @@ def _export_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
     if not isinstance(learner, Learner):
         raise TypeError("learner is not a fastai.learner.Learner!")
 
+    file_name = LEARNER + ".pkl"
     # learner.export(file) will write to: self.path/fname
     learner_path = learner.path
     learner.path = tmp_dir
-    learner.export(LEARNER)
+    learner.export(file_name)
 
     # Revert value
     learner.path = learner_path
-    return os.path.join(tmp_dir, LEARNER)
+    return os.path.join(tmp_dir, file_name)
