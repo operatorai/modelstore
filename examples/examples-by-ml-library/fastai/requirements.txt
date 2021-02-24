@@ -1,0 +1,4 @@
+fastai==2.2.7
+google-cloud-storage==1.32.0
+boto3==1.14.56
+click==7.1.2

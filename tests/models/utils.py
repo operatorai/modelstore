@@ -11,6 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from random import randint
+
+import pandas as pd
 import pytest
 from sklearn.datasets import make_classification
 
@@ -18,6 +21,22 @@ from sklearn.datasets import make_classification
 @pytest.fixture
 def classification_data():
     X_train, y_train = make_classification(
-        n_features=5, n_redundant=0, n_informative=3, n_clusters_per_class=1
+        n_features=10, n_redundant=0, n_informative=3, n_clusters_per_class=1
     )
     return X_train, y_train
+
+
+@pytest.fixture
+def classification_df(classification_data):
+    X_train, y_train = classification_data
+    df = pd.DataFrame(
+        X_train,
+        columns=[f"x{i}" for i in range(X_train.shape[1])],
+    )
+    df["y"] = y_train
+    return df
+
+
+@pytest.fixture
+def classification_row(classification_df):
+    return classification_df.iloc[randint(0, classification_df.shape[0] - 1)]

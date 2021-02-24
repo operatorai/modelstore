@@ -16,7 +16,6 @@ import json
 import os
 
 import lightgbm as lgb
-import numpy as np
 import pytest
 from modelstore.models import lightgbm
 from tests.models.utils import classification_data

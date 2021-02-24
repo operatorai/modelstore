@@ -1,5 +1,9 @@
 # Change log
 
+## Unreleased
+
+Added FastAI support.
+
 ## modelstore 0.0.52
 
 Added PyTorch Lightning and LightGBM support.
