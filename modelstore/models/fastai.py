@@ -17,6 +17,7 @@ from functools import partial
 from pathlib import Path
 
 from modelstore.models.modelmanager import ModelManager
+from modelstore.models.util import convert_tensors
 
 LEARNER = "learner"
 
@@ -69,10 +70,10 @@ class FastAIManager(ModelManager):
 
     def _get_params(self, **kwargs) -> dict:
         """
-        Returns a dictionary containing the optimizer
-        parameters
+        @ TODO: extract useful info from
+        kwargs["learner"].opt.state_dict()
         """
-        return kwargs["learner"].opt.state_dict()
+        return {}
 
 
 def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
@@ -81,19 +82,15 @@ def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
     if not isinstance(learner, Learner):
         raise TypeError("learner is not a fastai.learner.Learner!")
 
-    file_name = LEARNER
     # learner.save(file) will write to: self.path/self.model_dir/file;
     learner_path = learner.path
     learner.path = Path(tmp_dir)
 
-    file_path = os.path.join(
-        learner.path, learner.model_dir, file_name + ".pth"
-    )
-    learner.save(file_name)
+    file_path = learner.save(LEARNER)
 
     # Revert value
     learner.path = learner_path
-    return file_path
+    return str(file_path)
 
 
 def _export_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
@@ -105,7 +102,7 @@ def _export_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
     file_name = LEARNER + ".pkl"
     # learner.export(file) will write to: self.path/fname
     learner_path = learner.path
-    learner.path = tmp_dir
+    learner.path = Path(tmp_dir)
     learner.export(file_name)
 
     # Revert value

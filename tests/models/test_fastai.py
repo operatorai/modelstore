@@ -76,7 +76,7 @@ def test_get_functions(fastai_manager, fastai_learner):
 
 
 def test_get_params(fastai_manager, fastai_learner):
-    exp = fastai_learner.opt.state_dict()
+    exp = {}
     res = fastai_manager._get_params(learner=fastai_learner)
     assert exp == res
 
