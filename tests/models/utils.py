@@ -39,4 +39,4 @@ def classification_df(classification_data):
 
 @pytest.fixture
 def classification_row(classification_df):
-    return classification_df.iloc[randint(0, classification_df.shape[0])]
+    return classification_df.iloc[randint(0, classification_df.shape[0] - 1)]
