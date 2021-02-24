@@ -14,6 +14,7 @@
 
 import os
 from functools import partial
+from pathlib import Path
 
 from modelstore.models.modelmanager import ModelManager
 
@@ -80,13 +81,15 @@ def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
     if not isinstance(learner, Learner):
         raise TypeError("learner is not a fastai.learner.Learner!")
 
-    file_name = LEARNER + ".pth"
+    file_name = LEARNER
     # learner.save(file) will write to: self.path/self.model_dir/file;
     learner_path = learner.path
-    learner.path = tmp_dir
+    learner.path = Path(tmp_dir)
 
-    file_path = os.path.join(learner.path, learner.model_dir, file_name)
-    learner.save(LEARNER)
+    file_path = os.path.join(
+        learner.path, learner.model_dir, file_name + ".pth"
+    )
+    learner.save(file_name)
 
     # Revert value
     learner.path = learner_path

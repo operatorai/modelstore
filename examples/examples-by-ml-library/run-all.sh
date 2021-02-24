@@ -7,6 +7,7 @@ function run {
 
 set -e
 run catboost
+run fastai
 run keras
 run pytorch
 run sklearn
