@@ -15,13 +15,13 @@
 import os
 
 import numpy as np
-import pandas as pd
 import pytest
 from fastai.callback.schedule import fit_one_cycle
 from fastai.learner import load_learner
 from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import tabular_learner
 from modelstore.models.fastai import FastAIManager, _export_model, _save_model
+from tests.models.utils import *
 
 # Not using the * import because it triggers fastcore tests (missing fixture errors)
 # from fastai.tabular.all import *
@@ -30,16 +30,11 @@ from modelstore.models.fastai import FastAIManager, _export_model, _save_model
 # pylint: disable=redefined-outer-name
 
 
-def get_row():
-    row = {"y": np.random.randint(2)}
-    row.update({f"x{i}": np.random.uniform() for i in range(10)})
-    return row
-
-
 @pytest.fixture
-def fastai_dl(tmp_path):
-    df = pd.DataFrame([get_row() for _ in range(10)])
-    return TabularDataLoaders.from_df(df, path=tmp_path, y_names=["y"])
+def fastai_dl(classification_df, tmp_path):
+    return TabularDataLoaders.from_df(
+        classification_df, path=tmp_path, y_names=["y"]
+    )
 
 
 @pytest.fixture
@@ -81,24 +76,23 @@ def test_get_params(fastai_manager, fastai_learner):
     assert exp == res
 
 
-def test_save_model(fastai_learner, fastai_dl, tmp_path):
+def test_save_model(fastai_learner, fastai_dl, classification_row, tmp_path):
     exp = os.path.join(tmp_path, "models", "learner.pth")
     model_path = _save_model(tmp_path, fastai_learner)
 
     assert exp == model_path
     assert os.path.exists(model_path)
 
-    test_input = pd.DataFrame([get_row()]).iloc[0]
     learner = tabular_learner(fastai_dl, path=tmp_path)
     learner.load("learner")
 
-    _, _, saved_probs = fastai_learner.predict(test_input)
-    _, _, loaded_probs = learner.predict(test_input)
+    _, _, saved_probs = fastai_learner.predict(classification_row)
+    _, _, loaded_probs = learner.predict(classification_row)
 
     np.testing.assert_allclose(saved_probs.numpy(), loaded_probs.numpy())
 
 
-def test_export_model(fastai_learner, tmp_path):
+def test_export_model(fastai_learner, classification_row, tmp_path):
     exp = os.path.join(tmp_path, "learner.pkl")
     model_path = _export_model(tmp_path, fastai_learner)
 
@@ -107,8 +101,7 @@ def test_export_model(fastai_learner, tmp_path):
 
     learner = load_learner(model_path)
 
-    test_input = pd.DataFrame([get_row()]).iloc[0]
-    _, _, saved_probs = fastai_learner.predict(test_input)
-    _, _, loaded_probs = learner.predict(test_input)
+    _, _, saved_probs = fastai_learner.predict(classification_row)
+    _, _, loaded_probs = learner.predict(classification_row)
 
     np.testing.assert_allclose(saved_probs.numpy(), loaded_probs.numpy())
