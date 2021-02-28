@@ -36,6 +36,8 @@ pip install modelstore
 * [Transformers](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/transformers/main.py)
 * [XGBoost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/xgboost/main.py)
 
+Is there a machine learning framework that is missing? Feel free to [open an issue](https://github.com/operatorai/modelstore/issues) or send us a pull request!
+
 ## Usage
 
 ### Colab Notebook
