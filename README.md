@@ -38,6 +38,12 @@ pip install modelstore
 
 ## Usage
 
+### Colab Notebook
+
+There is a [full example in this Colab notebook](https://colab.research.google.com/drive/1yEY6wy68k7TlHzm8iJMKKBG_Pl-MGZUe?usp=sharing).
+
+### Python Script
+
 ```python
 from modelstore import ModelStore
 # And your other imports
