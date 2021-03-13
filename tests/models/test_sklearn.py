@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import json
 from functools import partial
 
 import numpy as np
@@ -100,10 +101,20 @@ def test_get_functions(sklearn_manager, sklearn_tree):
         sklearn_manager._get_functions(model="not-an-sklearn-model")
 
 
-def test_get_params(sklearn_manager, sklearn_tree):
-    exp = sklearn_tree.get_params()
-    res = sklearn_manager._get_params(model=sklearn_tree)
-    assert exp == res
+@pytest.mark.parametrize(
+    "model_type",
+    [
+        GradientBoostingRegressor,
+        LogisticRegression,
+        partial(Pipeline, steps=[("regressor", GradientBoostingRegressor())]),
+    ],
+)
+def test_get_params(sklearn_manager, model_type):
+    try:
+        result = sklearn_manager._get_params(model=model_type())
+        json.dumps(result)
+    except Exception as e:
+        pytest.fail(f"Exception when dumping params: {str(e)}")
 
 
 def test_feature_importances_tree_model(sklearn_tree, classification_data):
