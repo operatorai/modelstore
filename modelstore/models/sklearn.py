@@ -92,9 +92,22 @@ class SKLearnManager(ModelManager):
 def _feature_importances(
     model: "BaseEstimator", x_train: "pandas.DataFrame"
 ) -> dict:
+    result = {}
     if datasets.is_pandas_dataframe(x_train):
-        if hasattr(model, "feature_importances_"):
-            return dict(zip(x_train, model.feature_importances_))
-        if hasattr(model, "coef_"):
-            return dict(zip(x_train, model.coef_[0]))
-    return {}
+        weights = _get_weights(model)
+        if weights is not None:
+            return dict(zip(x_train, weights))
+        if hasattr(model, "steps"):
+            # Scikit pipelines
+            for key, step in model.steps:
+                weights = _get_weights(step)
+                if weights is not None:
+                    result[key] = weights
+    return result
+
+
+def _get_weights(model: "BaseEstimator"):
+    if hasattr(model, "feature_importances_"):
+        return model.feature_importances_
+    if hasattr(model, "coef_"):
+        return model.coef_[0]
