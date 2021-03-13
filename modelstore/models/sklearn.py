@@ -17,6 +17,7 @@ from functools import partial
 from modelstore.meta import datasets
 from modelstore.models.common import save_joblib
 from modelstore.models.modelmanager import ModelManager
+from modelstore.models.util import convert_numpy
 
 MODEL_JOBLIB = "model.joblib"
 
@@ -77,11 +78,19 @@ class SKLearnManager(ModelManager):
         that are available
         https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator.get_params
         """
-        return kwargs["model"].get_params()
+        params = kwargs["model"].get_params()
+        # Pipelines contain a ton of things that are not JSON serializable
+        # the same params exist separately in get_params(), so we just drop
+        # the bits that could not be serialized
+        if "steps" in params:
+            for k, _ in params["steps"]:
+                params.pop(k)
+            params.pop("steps")
+        return convert_numpy(params)
 
 
 def _feature_importances(
-    model: "BaseEstimator", x_train: "pd.DataFrame"
+    model: "BaseEstimator", x_train: "pandas.DataFrame"
 ) -> dict:
     if datasets.is_pandas_dataframe(x_train):
         if hasattr(model, "feature_importances_"):

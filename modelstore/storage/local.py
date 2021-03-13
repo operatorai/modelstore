@@ -73,7 +73,7 @@ class FileSystemStorage(BlobStorage):
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         fs_path = get_archive_path(domain, local_path)
-        logger.info("Moving to: %s...", fs_path)
+        logger.debug("Moving to: %s...", fs_path)
         archive_path = self._push(local_path, fs_path)
         logger.debug("Finished: %s", fs_path)
         return _format_location(archive_path)
