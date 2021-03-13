@@ -1,8 +1,8 @@
 # Change log
 
-## Unreleased
+## modelstore 0.0.6
 
-Added FastAI support
+Added FastAI support.
 
 Add support for scikit-learn pipelines.
 
