@@ -7,6 +7,8 @@ from modelstore import ModelStore
 from sklearn.datasets import load_diabetes
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 
 def create_model_store(backend) -> ModelStore:
@@ -35,11 +37,7 @@ def create_model_store(backend) -> ModelStore:
     raise ValueError(f"Unknown model store: {backend}")
 
 
-def train():
-    diabetes = load_diabetes()
-    X_train, _, y_train, _ = train_test_split(
-        diabetes.data, diabetes.target, test_size=0.1, random_state=13
-    )
+def train_model(X_train, y_train):
     params = {
         "n_estimators": 500,
         "max_depth": 4,
@@ -49,35 +47,73 @@ def train():
     }
     reg = GradientBoostingRegressor(**params)
     reg.fit(X_train, y_train)
-    # Skipped for brevity (but important!) evaluate the model
+    # Model evaluation skipped for brevity
     return reg
+
+
+def train_pipeline(X_train, y_train):
+    params = {
+        "n_estimators": 250,
+        "max_depth": 4,
+        "min_samples_split": 5,
+        "learning_rate": 0.01,
+        "loss": "ls",
+    }
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("regressor", GradientBoostingRegressor(**params)),
+        ]
+    )
+    pipeline.fit(X_train, y_train)
+    # Model evaluation skipped for brevity
+    return pipeline
 
 
 @click.command()
 @click.option(
     "--storage",
-    type=click.Choice(["filesystem", "gcloud", "aws", "hosted"], case_sensitive=False),
+    type=click.Choice(
+        ["filesystem", "gcloud", "aws", "hosted"], case_sensitive=False
+    ),
 )
 def main(storage):
-    model_type = "sklearn"
     model_domain = "diabetes-boosting-demo"
 
     # Create a model store instance
     model_store = create_model_store(storage)
 
-    # In this demo, we train a GradientBoostingRegressor
-    # using the same approach described on the scikit-learn website.
-    # Replace this with the code to train your own model
-    print(f"🤖  Training an {model_type} model...")
-    model = train()
+    # Load the data
+    diabetes = load_diabetes()
+    X_train, _, y_train, _ = train_test_split(
+        diabetes.data, diabetes.target, test_size=0.1, random_state=13
+    )
 
-    print(f"⤴️  Uploading the archive to the {model_domain} domain.")
+    # Train a GradientBoostingRegressor
+    # Replace this with the code to train your own model
+    print(f"🤖  Training an sklearn model...")
+    model = train_model(X_train, y_train)
+
+    print(f"⤴️  Uploading the model to the {model_domain} domain.")
     meta_data = model_store.sklearn.upload(model_domain, model=model)
 
     # The upload returns meta-data about the model that was uploaded
     # This meta-data has also been sync'ed into the cloud storage
     #  bucket
-    print(f"✅  Finished uploading the {model_type} model!")
+    print(f"✅  Finished uploading the sklearn model!")
+    print(json.dumps(meta_data, indent=4))
+
+    # Fit a pipeline
+    print(f"🤖  Training an sklearn pipeline...")
+    pipeline = train_pipeline(X_train, y_train)
+
+    print(f"⤴️  Uploading the pipeline to the {model_domain} domain.")
+    meta_data = model_store.sklearn.upload(model_domain, model=pipeline)
+
+    # The upload returns meta-data about the model that was uploaded
+    # This meta-data has also been sync'ed into the cloud storage
+    #  bucket
+    print(f"✅  Finished uploading the sklearn model!")
     print(json.dumps(meta_data, indent=4))
 
 
