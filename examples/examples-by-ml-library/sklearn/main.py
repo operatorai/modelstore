@@ -98,8 +98,7 @@ def main(storage):
     meta_data = model_store.sklearn.upload(model_domain, model=model)
 
     # The upload returns meta-data about the model that was uploaded
-    # This meta-data has also been sync'ed into the cloud storage
-    #  bucket
+    # This meta-data has also been sync'ed into the cloud storage bucket
     print(f"✅  Finished uploading the sklearn model!")
     print(json.dumps(meta_data, indent=4))
 
@@ -111,8 +110,7 @@ def main(storage):
     meta_data = model_store.sklearn.upload(model_domain, model=pipeline)
 
     # The upload returns meta-data about the model that was uploaded
-    # This meta-data has also been sync'ed into the cloud storage
-    #  bucket
+    # This meta-data has also been sync'ed into the cloud storage bucket
     print(f"✅  Finished uploading the sklearn pipeline!")
     print(json.dumps(meta_data, indent=4))
 
