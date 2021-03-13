@@ -17,6 +17,7 @@ from functools import partial
 from modelstore.meta import datasets
 from modelstore.models.common import save_joblib
 from modelstore.models.modelmanager import ModelManager
+from modelstore.models.util import convert_numpy
 
 MODEL_JOBLIB = "model.joblib"
 
@@ -77,15 +78,33 @@ class SKLearnManager(ModelManager):
         that are available
         https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator.get_params
         """
-        return kwargs["model"].get_params()
+        params = kwargs["model"].get_params()
+        # Pipelines contain a ton of things that are not JSON serializable
+        # the same params exist separately in get_params(), so we just drop
+        # the bits that could not be serialized
+        params.pop("steps", None)
+        return convert_numpy(params)
 
 
 def _feature_importances(
-    model: "BaseEstimator", x_train: "pd.DataFrame"
+    model: "BaseEstimator", x_train: "pandas.DataFrame"
 ) -> dict:
+    result = {}
     if datasets.is_pandas_dataframe(x_train):
-        if hasattr(model, "feature_importances_"):
-            return dict(zip(x_train, model.feature_importances_))
-        if hasattr(model, "coef_"):
-            return dict(zip(x_train, model.coef_[0]))
-    return {}
+        weights = _get_weights(model)
+        if weights is not None:
+            return dict(zip(x_train, weights))
+        if hasattr(model, "steps"):
+            # Scikit pipelines
+            for key, step in model.steps:
+                weights = _get_weights(step)
+                if weights is not None:
+                    result[key] = weights
+    return result
+
+
+def _get_weights(model: "BaseEstimator"):
+    if hasattr(model, "feature_importances_"):
+        return model.feature_importances_
+    if hasattr(model, "coef_"):
+        return model.coef_[0]

@@ -11,12 +11,16 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from functools import partial
+
 import numpy as np
 import pandas as pd
 import pytest
 from modelstore.models.sklearn import SKLearnManager, _feature_importances
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
@@ -41,14 +45,42 @@ def sklearn_logistic():
 
 
 @pytest.fixture
+def sklearn_pipeline(sklearn_tree):
+    return Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("regressor", sklearn_tree),
+        ]
+    )
+
+
+@pytest.fixture
 def sklearn_manager():
     return SKLearnManager()
 
 
-def test_model_info(sklearn_manager, sklearn_tree):
-    exp = {"library": "sklearn", "type": "GradientBoostingRegressor"}
-    res = sklearn_manager._model_info(model=sklearn_tree)
-    assert exp == res
+@pytest.mark.parametrize(
+    "model_type,expected",
+    [
+        (
+            GradientBoostingRegressor,
+            {"library": "sklearn", "type": "GradientBoostingRegressor"},
+        ),
+        (
+            LogisticRegression,
+            {"library": "sklearn", "type": "LogisticRegression"},
+        ),
+        (
+            partial(
+                Pipeline, steps=[("regressor", GradientBoostingRegressor())]
+            ),
+            {"library": "sklearn", "type": "Pipeline"},
+        ),
+    ],
+)
+def test_model_info(sklearn_manager, model_type, expected):
+    res = sklearn_manager._model_info(model=model_type())
+    assert expected == res
 
 
 def test_model_data(sklearn_manager, sklearn_tree):
@@ -85,14 +117,12 @@ def test_feature_importances_tree_model(sklearn_tree, classification_data):
     assert exp == res
 
 
-def test_feature_importances_linear_model(
-    sklearn_logistic, classification_data
-):
+def test_feature_importances_pipeline(sklearn_pipeline, classification_data):
     X_train, y_train = classification_data
     df = pd.DataFrame(
         X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])]
     )
-    sklearn_logistic.fit(df, y_train)
-    exp = dict(zip(df, sklearn_logistic.coef_[0]))
-    res = _feature_importances(sklearn_logistic, df)
-    assert exp == res
+    sklearn_pipeline.fit(df, y_train)
+    exp = {"regressor": sklearn_pipeline.steps[1][1].feature_importances_}
+    res = _feature_importances(sklearn_pipeline, df)
+    assert (exp["regressor"] == res["regressor"]).all()

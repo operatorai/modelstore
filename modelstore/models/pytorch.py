@@ -16,7 +16,7 @@ import os
 from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
-from modelstore.models.util import convert_tensors
+from modelstore.models.util import convert_numpy, convert_tensors
 
 # pylint disable=import-outside-toplevel
 MODEL_CHECKPOINT = "checkpoint.pt"
@@ -69,7 +69,9 @@ class PyTorchManager(ModelManager):
         Returns a dictionary the optimizer's state
         dictionary
         """
-        return convert_tensors(kwargs["optimizer"].state_dict())
+        params = kwargs["optimizer"].state_dict()
+        params = convert_numpy(params)
+        return convert_tensors(params)
 
 
 def _save_state_dict(

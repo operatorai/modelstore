@@ -67,7 +67,7 @@ class BlobStorage(CloudStorage):
         return [d["model"]["domain"] for d in domains]
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
-        logger.info("Copying meta-data: %s", meta_data)
+        logger.debug("Copying meta-data: %s", meta_data)
         with tempfile.TemporaryDirectory() as tmp_dir:
             version_path = os.path.join(tmp_dir, f"{model_id}.json")
             with open(version_path, "w") as out:

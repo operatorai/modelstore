@@ -14,11 +14,8 @@
 
 
 def convert_tensors(model_params):
-    import numpy as np
     import torch
 
-    if isinstance(model_params, np.ndarray):
-        return model_params.tolist()
     if isinstance(model_params, torch.Tensor):
         if hasattr(model_params, "detach"):
             model_params = model_params.detach()
@@ -28,4 +25,17 @@ def convert_tensors(model_params):
     if isinstance(model_params, dict):
         return {k: convert_tensors(v) for k, v in model_params.items()}
 
+    return model_params
+
+
+def convert_numpy(model_params):
+    import numpy as np
+
+    if isinstance(model_params, np.ndarray):
+        return model_params.tolist()
+
+    if isinstance(model_params, list):
+        return [convert_numpy(c) for c in model_params]
+    if isinstance(model_params, dict):
+        return {k: convert_numpy(v) for k, v in model_params.items()}
     return model_params
