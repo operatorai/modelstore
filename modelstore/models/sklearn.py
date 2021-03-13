@@ -82,7 +82,10 @@ class SKLearnManager(ModelManager):
         # Pipelines contain a ton of things that are not JSON serializable
         # the same params exist separately in get_params(), so we just drop
         # the bits that could not be serialized
-        params.pop("steps", None)
+        if "steps" in params:
+            for key, _ in params["steps"]:
+                params.pop(key, None)
+            params.pop("steps", None)
         return convert_numpy(params)
 
 
