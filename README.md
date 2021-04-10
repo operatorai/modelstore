@@ -26,13 +26,15 @@ pip install modelstore
 
 ## Supported machine learning libraries
 
-* [Scikit Learn](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/sklearn/main.py)
-* [Catboost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/catboost/main.py#L65-L70)
+* [Catboost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/catboost/main.py)
+* [Fast.AI](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/fastai/main.py)
+* [Gensim](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/gensim/main.py)
 * [Keras](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/keras/main.py)
-* [Tensorflow](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/tensorflow/main.py)
 * [LightGBM](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/lightgbm/main.py)
 * [PyTorch](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/pytorch/main.py)
 * [PyTorch Lightning](https://github.com/operatorai/modelstore/tree/master/examples/examples-by-ml-library/pytorch-lightning/main.py)
+* [Scikit Learn](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/sklearn/main.py)
+* [Tensorflow](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/tensorflow/main.py)
 * [Transformers](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/transformers/main.py)
 * [XGBoost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/xgboost/main.py)
 

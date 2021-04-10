@@ -64,6 +64,7 @@ class SKLearnManager(ModelManager):
         return data
 
     def _get_functions(self, **kwargs) -> list:
+        # pylint: disable=import-outside-toplevel
         import sklearn
 
         if not isinstance(kwargs["model"], sklearn.base.BaseEstimator):

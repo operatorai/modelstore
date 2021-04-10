@@ -1,5 +1,9 @@
 # Change log
 
+## Unreleased
+
+Added Gensim support.
+
 ## modelstore 0.0.6
 
 Added FastAI support.

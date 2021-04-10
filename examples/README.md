@@ -1,4 +1,4 @@
-# Operator AI Examples
+# Model Store Examples
 
 This directory contains examples of training models and storing them into a model store.
 

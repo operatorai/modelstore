@@ -16,6 +16,7 @@ from typing import Iterator
 from modelstore.meta.dependencies import module_exists
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.fastai import FastAIManager
+from modelstore.models.gensim import GensimManager
 from modelstore.models.keras import KerasManager
 from modelstore.models.lightgbm import LightGbmManager
 from modelstore.models.missingmanager import MissingDepManager
@@ -32,6 +33,7 @@ from modelstore.utils.log import logger
 ML_LIBRARIES = {
     "catboost": CatBoostManager,
     "fastai": FastAIManager,
+    "gensim": GensimManager,
     "keras": KerasManager,
     "lightgbm": LightGbmManager,
     "pytorch": PyTorchManager,
