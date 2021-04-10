@@ -100,8 +100,8 @@ class GoogleCloudStorage(BlobStorage):
 
     def _pull(self, source: dict, destination: str) -> str:
         """ Pulls a model to a destination """
-        logger.info("Downloading from: %s...", source)
         prefix = _get_location(self.bucket_name, source)
+        logger.info("Downloading from: %s...", prefix)
         file_name = os.path.split(prefix)[1]
         destination = os.path.join(destination, file_name)
         bucket = self.client.get_bucket(self.bucket_name)
@@ -144,7 +144,7 @@ def _format_location(bucket_name: str, prefix: str) -> dict:
     }
 
 
-def _get_location(bucket_name, meta: dict) -> str:
+def _get_location(bucket_name: str, meta: dict) -> str:
     if bucket_name != meta["bucket"]:
         raise ValueError("Meta-data has a different bucket name")
     return meta["prefix"]

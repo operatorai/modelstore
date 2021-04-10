@@ -1,0 +1,144 @@
+#    Copyright 2020 Neal Lathia
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+import json
+import os
+
+from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util.paths import get_archive_path
+from modelstore.storage.util.versions import sorted_by_created
+from modelstore.utils.log import logger
+
+try:
+    from azure.storage.blob import BlobServiceClient
+
+    AZURE_EXISTS = True
+except ImportError:
+    AZURE_EXISTS = False
+
+
+class AzureBlobStorage(BlobStorage):
+
+    """
+    Azure Blob Storage
+
+    Assumes that azure.storage.blob is installed and configured
+    and that the Azure Container already exists
+    """
+
+    def __init__(
+        self,
+        container_name: str,
+        client: "azure.storage.blobage.BlobClient" = None,
+        environ_key: str = "AZURE_STORAGE_CONNECTION_STRING",
+    ):
+        super().__init__(["azure.storage.blob"])
+        self.container_name = container_name
+        self.__client = client
+        self.connection_string_key = environ_key
+
+    @property
+    def client(self) -> "azure.storage.blobage.BlobClient":
+        if not AZURE_EXISTS:
+            raise ImportError("Please install azure-storage-blob")
+        if self.connection_string_key not in os.environ:
+            raise Exception("{self.connection_string_key} is not in os.environ")
+        if self.__client is None:
+            connect_str = os.environ[self.connection_string_key]
+            self.__client = BlobServiceClient.from_connection_string(
+                connect_str
+            )
+        return self.__client
+
+    def _blob_client(self, blob_name: str):
+        blob_client = self.client.get_blob_client(
+            container=self.container_name, blob=blob_name
+        )
+        chunk_size = 2097152  # 1024 * 1024 B * 2 = 2 MB
+
+        # The maximum chunk size for uploading a block blob in chunks
+        blob_client.max_block_size = chunk_size
+
+        # If the blob size is larger than max_single_put_size, the blob will be uploaded in chunks
+        blob_client.max_single_put_size = chunk_size
+
+        # The maximum size for a blob to be downloaded in a single call
+        blob_client.max_single_get_size = chunk_size
+        blob_client.max_chunk_get_size = chunk_size
+        return blob_client
+
+    def _container_client(self):
+        return self.client.get_container_client(self.container_name)
+
+    def validate(self) -> bool:
+        """ Checks that the Azure container exists """
+        logger.debug(
+            "Querying for containers with name=%s...", self.container_name
+        )
+        return self._container_client().exists()
+
+    def _push(self, source: str, destination: str) -> str:
+        logger.info("Uploading to: %s...", destination)
+        blob_client = self._blob_client(destination)
+
+        with open(source, "rb") as data:
+            blob_client.upload_blob(data)
+        return destination
+
+    def _pull(self, source: dict, destination: str) -> str:
+        """ Pulls a model to a destination """
+        prefix = _get_location(self.container_name, source)
+        logger.info("Downloading from: %s...", source)
+        blob_client = self._blob_client(prefix)
+
+        with open(destination, "wb") as download_file:
+            download_file.write(blob_client.download_blob().readall())
+        logger.debug("Finished: %s", destination)
+        return destination
+
+    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
+        container_path = get_archive_path(domain, local_path)
+        prefix = self._push(local_path, container_path)
+        return _format_location(self.container_name, prefix)
+
+    def _read_json_objects(self, path: str) -> list:
+        results = []
+        blobs = self._container_client().list_blobs(name_starts_with=path + "/")
+        for blob in blobs:
+            if not blob.name.endswith(".json"):
+                # @TODO tighter controls here
+                continue
+            blob_client = self._blob_client(blob)
+            obj = blob_client.download_blob().readall()
+            results.append(json.loads(obj))
+        return sorted_by_created(results)
+
+    def _read_json_object(self, path: str) -> dict:
+        """ Returns a dictionary of the JSON stored in a given path """
+        blob_client = self._blob_client(path)
+        obj = blob_client.download_blob().readall()
+        return json.loads(obj)
+
+
+def _format_location(container_name: str, prefix: str) -> dict:
+    return {
+        "type": "google:azure-blob-storage",
+        "container": container_name,
+        "prefix": prefix,
+    }
+
+
+def _get_location(container_name: str, meta: dict) -> str:
+    if container_name != meta["container"]:
+        raise ValueError("Meta-data has a different container name")
+    return meta["prefix"]
