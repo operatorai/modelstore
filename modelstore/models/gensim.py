@@ -55,6 +55,11 @@ class GensimManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
+        import gensim
+
+        if not isinstance(kwargs["model"], gensim.utils.SaveLoad):
+            raise TypeError("This model is not an gensim SaveLoad model")
+
         funcs = [partial(_save_model, model=kwargs["model"])]
         if hasattr(kwargs["model"], "wv"):
             funcs.append(partial(_save_vectors, model=kwargs["model"]))
@@ -74,11 +79,6 @@ class GensimManager(ModelManager):
 
 
 def _save_model(tmp_dir: str, model: "gensim.utils.SaveLoad") -> str:
-    # pylint: disable=import-outside-toplevel
-    import gensim
-
-    if not isinstance(model, gensim.utils.SaveLoad):
-        raise TypeError("This model is not an gensim SaveLoad model")
     file_path = os.path.join(tmp_dir, GENSIM_MODEL)
     model.save(file_path)
     return file_path
