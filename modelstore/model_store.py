@@ -18,6 +18,7 @@ from typing import Optional
 
 from modelstore.models.managers import iter_libraries
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
+from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.storage.hosted import HostedStorage
 from modelstore.storage.local import FileSystemStorage
@@ -47,6 +48,16 @@ class ModelStore:
             raise ModuleNotFoundError("boto3 is not installed!")
         return ModelStore(
             storage=AWSStorage(bucket_name=bucket_name, region=region)
+        )
+
+    @classmethod
+    def from_azure(cls, container_name: str) -> "ModelStore":
+        """Creates a ModelStore instance that stores models to an
+        Azure blob container. This assumes that the container already exists."""
+        if not AZURE_EXISTS:
+            raise ModuleNotFoundError("azure-storage-blob is not installed!")
+        return ModelStore(
+            storage=AzureBlobStorage(container_name=container_name),
         )
 
     @classmethod
