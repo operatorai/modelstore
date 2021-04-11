@@ -4,6 +4,8 @@
 
 Added Gensim support.
 
+Added Azure blob storage support.
+
 ## modelstore 0.0.6
 
 Added FastAI support.
