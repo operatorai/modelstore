@@ -1,3 +1,5 @@
+azure-core==1.13.0
+azure-storage-blob==12.8.0
 black==20.8b1
 boto3>=1.6.16,<1.8
 catboost==0.24.3

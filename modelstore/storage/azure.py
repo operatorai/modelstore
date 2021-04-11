@@ -44,8 +44,8 @@ class AzureBlobStorage(BlobStorage):
     ):
         super().__init__(["azure.storage.blob"])
         self.container_name = container_name
-        self.__client = client
         self.connection_string_key = environ_key
+        self.__client = client
 
     @property
     def client(self) -> "azure.storage.blobage.BlobClient":
@@ -60,10 +60,11 @@ class AzureBlobStorage(BlobStorage):
             )
         return self.__client
 
+    def _container_client(self):
+        return self.client.get_container_client(self.container_name)
+
     def _blob_client(self, blob_name: str):
-        blob_client = self.client.get_blob_client(
-            container=self.container_name, blob=blob_name
-        )
+        blob_client = self._container_client().get_blob_client(blob_name)
         chunk_size = 2097152  # 1024 * 1024 B * 2 = 2 MB
 
         # The maximum chunk size for uploading a block blob in chunks
@@ -76,9 +77,6 @@ class AzureBlobStorage(BlobStorage):
         blob_client.max_single_get_size = chunk_size
         blob_client.max_chunk_get_size = chunk_size
         return blob_client
-
-    def _container_client(self):
-        return self.client.get_container_client(self.container_name)
 
     def validate(self) -> bool:
         """ Checks that the Azure container exists """
@@ -132,7 +130,7 @@ class AzureBlobStorage(BlobStorage):
 
 def _format_location(container_name: str, prefix: str) -> dict:
     return {
-        "type": "google:azure-blob-storage",
+        "type": "azure:blob-storage",
         "container": container_name,
         "prefix": prefix,
     }
