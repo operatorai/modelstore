@@ -20,6 +20,7 @@ pip install modelstore
 ## Supported storage types
 
 * AWS S3 Bucket ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/aws/main.py))
+* Azure Blob Storage ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/azure/main.py))
 * Google Cloud Storage Bucket ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/gcloud/main.py))
 * A filesystem directory ([example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/filesystem/main.py))
 * A hosted storage option (Get in touch for an API key! [example](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-storage/hosted/main.py))

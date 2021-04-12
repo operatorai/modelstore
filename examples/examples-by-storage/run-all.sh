@@ -7,6 +7,7 @@ function run {
 
 set -e
 run aws
+run azure
 run filesystem
 run gcloud
 run hosted

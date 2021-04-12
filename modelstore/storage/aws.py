@@ -71,9 +71,9 @@ class AWSStorage(BlobStorage):
 
     def _pull(self, source: dict, destination: str) -> str:
         prefix = _get_location(self.bucket_name, source)
+        logger.info("Downloading from: %s...", prefix)
         file_name = os.path.split(prefix)[1]
         destination = os.path.join(destination, file_name)
-        logger.info("Downloading from: %s...", prefix)
         self.client.download_file(self.bucket_name, prefix, destination)
         logger.debug("Finished: %s", destination)
         return destination
