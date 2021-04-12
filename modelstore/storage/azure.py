@@ -52,7 +52,9 @@ class AzureBlobStorage(BlobStorage):
         if not AZURE_EXISTS:
             raise ImportError("Please install azure-storage-blob")
         if self.connection_string_key not in os.environ:
-            raise Exception("{self.connection_string_key} is not in os.environ")
+            raise Exception(
+                f"{self.connection_string_key} is not in os.environ"
+            )
         if self.__client is None:
             connect_str = os.environ[self.connection_string_key]
             self.__client = BlobServiceClient.from_connection_string(
@@ -90,7 +92,7 @@ class AzureBlobStorage(BlobStorage):
         blob_client = self._blob_client(destination)
 
         with open(source, "rb") as data:
-            blob_client.upload_blob(data)
+            blob_client.upload_blob(data, overwrite=True)
         return destination
 
     def _pull(self, source: dict, destination: str) -> str:
@@ -99,10 +101,11 @@ class AzureBlobStorage(BlobStorage):
         logger.info("Downloading from: %s...", source)
         blob_client = self._blob_client(prefix)
 
-        with open(destination, "wb") as download_file:
+        target = os.path.join(destination, os.path.split(prefix)[1])
+        with open(target, "wb") as download_file:
             download_file.write(blob_client.download_blob().readall())
         logger.debug("Finished: %s", destination)
-        return destination
+        return target
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         container_path = get_archive_path(domain, local_path)
