@@ -106,15 +106,15 @@ def test_push(azure_storage, temp_file):
     blob_client.upload_blob.assert_called()
 
 
-def test_pull(azure_storage, temp_file):
+def test_pull(azure_storage, tmp_path):
     source = {
         "container": "existing-container",
         "prefix": "source",
     }
-    azure_storage._pull(source, temp_file)
+    azure_storage._pull(source, tmp_path)
     blob_client = azure_storage._blob_client("destination")
     blob_client.download_blob.assert_called()
-    with open(temp_file, "r") as lines:
+    with open(os.path.join(tmp_path, "source"), "r") as lines:
         contents = lines.read()
         assert contents == '{"k": "v"}'
 
