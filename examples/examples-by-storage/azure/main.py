@@ -12,8 +12,9 @@ from sklearn.model_selection import train_test_split
 
 
 def create_model_store() -> ModelStore:
-    # The modelstore library assumes you have already created
-    # an Azure container and will raise an exception if it doesn't exist
+    # The modelstore library assumes that:
+    # 1. You have already created an Azure container
+    #  2. You have an os environment variable called AZURE_STORAGE_CONNECTION_STRING
     return ModelStore.from_azure(
         container_name=os.environ["AZURE_CONTAINER_NAME"],
     )
