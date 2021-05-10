@@ -53,7 +53,7 @@ class HostedStorage(CloudStorage):
     def _post(self, endpoint: str, data: dict) -> dict:
         url = os.path.join(_URL_ROOT, endpoint)
         headers = {"x-api-key": self.secret_access_key}
-        data["api_key_id"] = self.access_key_id
+        data["key_id"] = self.access_key_id
         rsp = requests.post(url, headers=headers, data=json.dumps(data))
         if rsp.status_code != 200:
             logger.debug("Request failed: %s", rsp.status_code)

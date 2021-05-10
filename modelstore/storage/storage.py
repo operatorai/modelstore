@@ -25,7 +25,7 @@ class CloudStorage(ABC):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, required_deps: str):
+    def __init__(self, required_deps: list):
         for dep in required_deps:
             if not module_exists(dep):
                 raise ModuleNotFoundError(f"{dep} not installed.")
