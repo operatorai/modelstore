@@ -13,6 +13,7 @@
 #    limitations under the License.
 import json
 import os
+from typing import Optional
 
 import requests
 from modelstore.storage.storage import CloudStorage
@@ -32,7 +33,9 @@ class HostedStorage(CloudStorage):
     Usage of this storage requires you to have an `api_access_key` and `api_key_id`.
     """
 
-    def __init__(self, access_key_id: str, secret_access_key: str):
+    def __init__(
+        self, access_key_id: Optional[str], secret_access_key: Optional[str]
+    ):
         super().__init__([])
         self.access_key_id = _get_environ(access_key_id, "MODELSTORE_KEY_ID")
         self.secret_access_key = _get_environ(
@@ -52,6 +55,7 @@ class HostedStorage(CloudStorage):
 
     def _post(self, endpoint: str, data: dict) -> dict:
         url = os.path.join(_URL_ROOT, endpoint)
+        logger.info(f"ℹ️  POST: {url}")
         headers = {"x-api-key": self.secret_access_key}
         data["key_id"] = self.access_key_id
         rsp = requests.post(url, headers=headers, data=json.dumps(data))
@@ -124,7 +128,7 @@ def _upload(local_path, upload_url):
 
 
 def _download(local_path, download_url) -> str:
-    """ Uploads a local file to an upload URL, showing a progress bar """
+    """ Downloads a remove file from a URL, showing a progress bar """
     resp = requests.get(download_url, stream=True)
     total_length = int(resp.headers.get("content-length", 0))
     logger.info(total_length)
