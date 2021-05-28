@@ -16,11 +16,7 @@ import os
 import keras
 import pytest
 import tensorflow as tf
-from modelstore.models.tensorflow import (
-    TensorflowManager,
-    _save_model,
-    _save_weights,
-)
+from modelstore.models.tensorflow import TensorflowManager, _save_model
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -36,7 +32,7 @@ def tf_model():
         ]
     )
     model.compile(optimizer="adam", loss="mean_squared_error")
-    _ = model(tf.random.uniform((10, 1)))
+    model(tf.random.uniform((10, 1)))
     return model
 
 
