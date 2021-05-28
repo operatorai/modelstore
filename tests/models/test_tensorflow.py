@@ -13,7 +13,7 @@
 #    limitations under the License.
 import os
 
-import keras
+import numpy as np
 import pytest
 import tensorflow as tf
 from modelstore.models.tensorflow import (
@@ -30,13 +30,12 @@ from modelstore.models.tensorflow import (
 def tf_model():
     model = tf.keras.models.Sequential(
         [
-            keras.layers.Dense(5, activation="relu", input_shape=(10,)),
-            keras.layers.Dropout(0.2),
-            keras.layers.Dense(1),
+            tf.keras.layers.Dense(5, activation="relu", input_shape=(10,)),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(1),
         ]
     )
     model.compile(optimizer="adam", loss="mean_squared_error")
-    model(tf.random.uniform((10, 1)))
     return model
 
 
