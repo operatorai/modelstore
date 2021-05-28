@@ -13,7 +13,6 @@
 #    limitations under the License.
 import os
 
-import keras
 import numpy as np
 import pytest
 import tensorflow as tf
@@ -31,9 +30,9 @@ from modelstore.models.tensorflow import (
 def tf_model():
     model = tf.keras.models.Sequential(
         [
-            keras.layers.Dense(5, activation="relu", input_shape=(10,)),
-            keras.layers.Dropout(0.2),
-            keras.layers.Dense(1),
+            tf.keras.layers.Dense(5, activation="relu", input_shape=(10,)),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(1),
         ]
     )
     model.compile(optimizer="adam", loss="mean_squared_error")
@@ -45,7 +44,7 @@ def tf_manager():
     return TensorflowManager()
 
 
-def test_model_info(tf_manager, tf_model):
+def test_model_info(tf_manager):
     exp = {"library": "tensorflow"}
     res = tf_manager._model_info()
     assert exp == res
@@ -76,7 +75,6 @@ def test_save_model(tf_model, tmp_path):
     model_path = _save_model(tmp_path, tf_model)
     assert exp == model_path
     assert os.path.isdir(model_path)
-
     model = tf.keras.models.load_model(model_path)
     test_input = np.random.random((128, 10))
     np.testing.assert_allclose(

@@ -15,10 +15,10 @@
 import json
 import os
 
-import keras
 import numpy as np
 import pytest
 from modelstore.models.keras import KerasManager, _save_model, save_json
+from tensorflow import keras
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
