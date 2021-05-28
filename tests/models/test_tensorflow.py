@@ -72,23 +72,21 @@ def test_save_model(tf_model, tmp_path):
     model_path = _save_model(tmp_path, tf_model)
     assert exp == model_path
     assert os.path.isdir(model_path)
+    model = tf.keras.models.load_model(model_path)
+    test_input = np.random.random((128, 10))
+    np.testing.assert_allclose(
+        tf_model.predict(test_input), model.predict(test_input)
+    )
 
 
-#     model = tf.keras.models.load_model(model_path)
-#     test_input = np.random.random((128, 10))
-#     np.testing.assert_allclose(
-#         tf_model.predict(test_input), model.predict(test_input)
-#     )
+def test_save_weights(tf_model, tmp_path):
+    exp = os.path.join(tmp_path, "checkpoint")
+    file_path = _save_weights(tmp_path, model=tf_model)
+    assert file_path == exp
+    assert os.path.isfile(file_path)
 
-
-# def test_save_weights(tf_model, tmp_path):
-#     exp = os.path.join(tmp_path, "checkpoint")
-#     file_path = _save_weights(tmp_path, model=tf_model)
-#     assert file_path == exp
-#     assert os.path.isfile(file_path)
-
-#     test_input = np.random.random((128, 10))
-#     pre_preds = tf_model.predict(test_input)
-#     tf_model.load_weights(file_path)
-#     post_preds = tf_model.predict(test_input)
-#     np.testing.assert_allclose(pre_preds, post_preds)
+    test_input = np.random.random((128, 10))
+    pre_preds = tf_model.predict(test_input)
+    tf_model.load_weights(file_path)
+    post_preds = tf_model.predict(test_input)
+    np.testing.assert_allclose(pre_preds, post_preds)
