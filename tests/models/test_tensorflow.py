@@ -16,7 +16,11 @@ import os
 import keras
 import pytest
 import tensorflow as tf
-from modelstore.models.tensorflow import TensorflowManager, _save_model
+from modelstore.models.tensorflow import (
+    TensorflowManager,
+    _save_model,
+    _save_weights,
+)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
