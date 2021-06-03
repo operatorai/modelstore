@@ -6,7 +6,7 @@ Added Gensim support.
 
 Added Azure blob storage support.
 
-Minor fixes to how modelstore uses env variables for the hosted storage.
+Minor fixes to how modelstore uses env variables for the hosted storage, bug fixes for local file system storage.
 
 ## modelstore 0.0.6
 

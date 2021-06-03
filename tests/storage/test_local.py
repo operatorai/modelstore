@@ -94,6 +94,11 @@ def test_list_versions(fs_model_store):
     assert versions[1] == "model-1"
 
 
+def test_list_versions_missing_domain(fs_model_store):
+    versions = fs_model_store.list_versions("domain-that-doesnt-exist")
+    assert len(versions) == 0
+
+
 def test_list_domains(fs_model_store):
     model = "test-model"
     for domain in ["domain-1", "domain-2"]:
