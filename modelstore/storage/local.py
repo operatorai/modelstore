@@ -79,8 +79,10 @@ class FileSystemStorage(BlobStorage):
         return _format_location(archive_path)
 
     def _read_json_objects(self, path: str) -> list:
-        results = []
         path = self.relative_dir(path)
+        if not os.path.exists(path):
+            return []
+        results = []
         for entry in os.listdir(path):
             if not entry.endswith(".json"):
                 # @TODO tighter controls
