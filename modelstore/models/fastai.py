@@ -17,7 +17,6 @@ from functools import partial
 from pathlib import Path
 
 from modelstore.models.modelmanager import ModelManager
-from modelstore.models.util import convert_tensors
 
 LEARNER = "learner"
 
