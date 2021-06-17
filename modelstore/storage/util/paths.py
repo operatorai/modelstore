@@ -15,6 +15,8 @@ import os
 from datetime import datetime
 from typing import Optional
 
+from modelstore.utils.log import logger
+
 _ROOT = "operatorai-model-store"
 
 
@@ -45,7 +47,7 @@ def get_versions_path(domain: str, state_name: Optional[str] = None) -> str:
         same end-use are given the same domain.
         state_name (str): A model's state tag (e.g. "prod" or "archived")
     """
-    if state_name:
+    if state_name is not None:
         return os.path.join(_ROOT, domain, "versions", state_name)
     return os.path.join(_ROOT, domain, "versions")
 
@@ -104,3 +106,16 @@ def get_model_state_path(state_name: str) -> str:
     """
     model_states = get_model_states_path()
     return os.path.join(model_states, f"{state_name}.json")
+
+
+def is_valid_state_name(state_name: str) -> bool:
+    if any(state_name == x for x in [None, ""]):
+        logger.debug("state_name has invalid value: %s", state_name)
+        return False
+    if len(state_name) < 3:
+        logger.debug("state_name is too short: %s", state_name)
+        return False
+    if os.path.split(state_name)[1] != state_name:
+        logger.debug("state_name cannot be a path: %s", state_name)
+        return False
+    return True
