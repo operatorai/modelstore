@@ -15,12 +15,15 @@ import json
 import os
 import tempfile
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
+from typing import Optional
 
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util.paths import (
     get_domain_path,
     get_domains_path,
     get_metadata_path,
+    get_model_state_path,
     get_versions_path,
 )
 from modelstore.utils.log import logger
@@ -55,17 +58,6 @@ class BlobStorage(CloudStorage):
         """ Returns a dictionary of the JSON stored in a given path """
         raise NotImplementedError()
 
-    def list_versions(self, domain: str) -> list:
-        versions_for_domain = get_versions_path(domain)
-        versions = self._read_json_objects(versions_for_domain)
-        return [v["model"]["model_id"] for v in versions]
-
-    def list_domains(self) -> list:
-        """ Returns a list of all the existing model domains """
-        domains = get_domains_path()
-        domains = self._read_json_objects(domains)
-        return [d["model"]["domain"] for d in domains]
-
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         logger.debug("Copying meta-data: %s", meta_data)
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -89,3 +81,39 @@ class BlobStorage(CloudStorage):
             model_meta_path = get_metadata_path(domain, model_id)
             model_meta = self._read_json_object(model_meta_path)
         return self._pull(model_meta["storage"], local_path)
+
+    def list_domains(self) -> list:
+        """ Returns a list of all the existing model domains """
+        domains = get_domains_path()
+        domains = self._read_json_objects(domains)
+        return [d["model"]["domain"] for d in domains]
+
+    def list_versions(
+        self, domain: str, state_name: Optional[str] = None
+    ) -> list:
+        # @TODO check that state_name exists
+        versions_path = get_versions_path(domain, state_name)
+        versions = self._read_json_objects(versions_path)
+        return [v["model"]["model_id"] for v in versions]
+
+    def create_model_state(self, state_name: str):
+        """ Creates a state label that can be used to tag models """
+        logger.debug("Creating model state: %s", state_name)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            version_path = os.path.join(tmp_dir, f"{state_name}.json")
+            with open(version_path, "w") as out:
+                state_data = {
+                    "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+                    "state_name": state_name,
+                }
+                out.write(json.dumps(state_data))
+            self._push(version_path, get_model_state_path(state_name))
+
+    def set_model_state(self, domain: str, model_id: str, state_name: str):
+        """ Adds the given model ID the set that are in the state_name path """
+        # @TODO check that the state exists
+        model_meta_data_path = get_metadata_path(domain, model_id)
+        versions_path = get_versions_path(domain, state_name)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            meta_data = self._pull(model_meta_data_path, tmp_dir)
+            self._push(meta_data, versions_path)

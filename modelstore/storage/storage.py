@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from abc import ABC, ABCMeta, abstractmethod
+from typing import Optional
 
 from modelstore.meta.dependencies import module_exists
 
@@ -42,16 +43,6 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def list_versions(self, domain: str) -> list:
-        """ Returns a list of a model's versions """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def list_domains(self) -> list:
-        """ Returns a list of all the existing model domains """
-        raise NotImplementedError()
-
-    @abstractmethod
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         """ Annotates a model with some given meta data """
         raise NotImplementedError()
@@ -61,4 +52,26 @@ class CloudStorage(ABC):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that
         domain"""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def list_domains(self) -> list:
+        """ Returns a list of all the existing model domains """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def list_versions(
+        self, domain: str, state_name: Optional[str] = None
+    ) -> list:
+        """ Returns a list of a model's versions """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def create_model_state(self, state_name: str):
+        """ Creates a state label that can be used to tag models """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def set_model_state(self, domain: str, model_id: str, state_name: str):
+        """ Sets the given model ID to the given state """
         raise NotImplementedError()

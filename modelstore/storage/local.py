@@ -71,13 +71,6 @@ class FileSystemStorage(BlobStorage):
         shutil.copy(path, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
-    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        fs_path = get_archive_path(domain, local_path)
-        logger.debug("Moving to: %s...", fs_path)
-        archive_path = self._push(local_path, fs_path)
-        logger.debug("Finished: %s", fs_path)
-        return _format_location(archive_path)
-
     def _read_json_objects(self, path: str) -> list:
         path = self.relative_dir(path)
         if not os.path.exists(path):
@@ -92,16 +85,23 @@ class FileSystemStorage(BlobStorage):
             results.append(meta)
         return sorted_by_created(results)
 
-    def _read_json_object(self, path: str) -> dict:
-        path = self.relative_dir(path)
-        return _read_json_file(path)
-
     def relative_dir(self, file_path: str) -> str:
         paths = os.path.split(file_path)
         parent_dir = os.path.join(self.root_dir, paths[0])
         if not os.path.exists(parent_dir):
             os.makedirs(parent_dir)
         return os.path.join(parent_dir, paths[1])
+
+    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
+        fs_path = get_archive_path(domain, local_path)
+        logger.debug("Moving to: %s...", fs_path)
+        archive_path = self._push(local_path, fs_path)
+        logger.debug("Finished: %s", fs_path)
+        return _format_location(archive_path)
+
+    def _read_json_object(self, path: str) -> dict:
+        path = self.relative_dir(path)
+        return _read_json_file(path)
 
 
 def _format_location(archive_path: str) -> dict:
