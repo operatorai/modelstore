@@ -22,6 +22,22 @@ from modelstore.models.modelmanager import ModelManager
 from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
+
+
+@pytest.fixture
+def libraries_without_sklearn():
+    libraries = ML_LIBRARIES.copy()
+    libraries.pop("sklearn")
+    return libraries
+
+
+def iter_only_sklearn(_):
+    for k, v in ML_LIBRARIES.items():
+        if k == "sklearn":
+            yield k, v()
+        else:
+            yield k, partial(MissingDepManager, library=k)()
 
 
 def validate_library_attributes(
@@ -52,28 +68,27 @@ def test_from_gcloud(mock_gcloud):
     validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
 
 
+@patch("modelstore.model_store.iter_libraries", side_effect=iter_only_sklearn)
+@patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
+def test_from_gcloud_only_sklearn(mock_gcloud, libraries_without_sklearn):
+    mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
+    mocked_gcloud.validate.return_value = True
+    store = ModelStore.from_gcloud("project-name", "gcs-bucket-name")
+    validate_library_attributes(
+        store, allowed=["sklearn"], not_allowed=libraries_without_sklearn
+    )
+
+
 def test_from_file_system(tmp_path):
     store = ModelStore.from_file_system(root_directory=str(tmp_path))
     assert isinstance(store.storage, FileSystemStorage)
     validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
 
 
-def only_sklearn(_):
-    for k, v in ML_LIBRARIES.items():
-        if k == "sklearn":
-            yield k, v()
-        else:
-            yield k, partial(MissingDepManager, library=k)()
-
-
-@patch("modelstore.model_store.iter_libraries", side_effect=only_sklearn)
-@patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
-def test_from_gcloud_only_sklearn(mock_gcloud, _):
-    mocked_gcloud = mock_gcloud("project-name", "gcs-bucket-name")
-    mocked_gcloud.validate.return_value = True
-    store = ModelStore.from_gcloud("project-name", "gcs-bucket-name")
-    libraries = ML_LIBRARIES.copy()
-    libraries.pop("sklearn")
+@patch("modelstore.model_store.iter_libraries", side_effect=iter_only_sklearn)
+def test_from_file_system_only_sklearn(_, libraries_without_sklearn, tmp_path):
+    store = ModelStore.from_file_system(root_directory=str(tmp_path))
+    assert isinstance(store.storage, FileSystemStorage)
     validate_library_attributes(
-        store, allowed=["sklearn"], not_allowed=libraries
+        store, allowed=["sklearn"], not_allowed=libraries_without_sklearn
     )
