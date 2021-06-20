@@ -13,16 +13,17 @@
 #    limitations under the License.
 import json
 import os
-import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import boto3
 import modelstore
+import pytest
 from modelstore.storage.aws import AWSStorage
 from modelstore.storage.util.paths import (
     get_archive_path,
     get_domain_path,
     get_metadata_path,
+    get_model_state_path,
 )
 from moto import mock_s3
 
@@ -38,61 +39,65 @@ def get_file_contents(conn, prefix):
     )
 
 
-@mock_s3
+@pytest.fixture(autouse=True)
+def moto_boto():
+    with mock_s3():
+        conn = boto3.resource("s3")
+        conn.create_bucket(Bucket="existing-bucket")
+        yield conn
+
+
 def test_validate():
-    conn = boto3.resource("s3")
-    conn.create_bucket(Bucket="existing-bucket")
     aws_model_store = AWSStorage(bucket_name="existing-bucket")
     assert aws_model_store.validate()
     aws_model_store = AWSStorage(bucket_name="missing-bucket")
     assert not aws_model_store.validate()
 
 
-@mock_s3
-def test_upload(tmp_path):
+def test_upload(tmp_path, moto_boto):
+    # Create a test file
     source = os.path.join(tmp_path, "test-file.txt")
     with open(source, "w") as out:
         out.write("file-contents")
 
-    conn = boto3.resource("s3")
-    conn.create_bucket(Bucket="existing-bucket")
+    # Upload it to the model store
     aws_model_store = AWSStorage(bucket_name="existing-bucket")
-
     model_path = get_archive_path("test-domain", source)
     rsp = aws_model_store.upload("test-domain", "test-model-id", source)
+
+    # Assert meta-data is correct
     assert rsp["type"] == "aws:s3"
     assert rsp["bucket"] == "existing-bucket"
     assert rsp["prefix"] == model_path
-    assert get_file_contents(conn, model_path) == "file-contents"
+    assert get_file_contents(moto_boto, model_path) == "file-contents"
 
 
-@mock_s3
-def test_set_meta_data():
-    conn = boto3.resource("s3")
-    conn.create_bucket(Bucket="existing-bucket")
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
-
+def test_set_meta_data(moto_boto):
+    # Create a meta data string
     meta_dict = {"key": "value"}
     meta_str = json.dumps(meta_dict)
+
+    # Set the meta data against a fake model
+    aws_model_store = AWSStorage(bucket_name="existing-bucket")
     aws_model_store.set_meta_data("test-domain", "model-123", meta_dict)
 
-    # Expected two upload
+    # Expected two uploads
+    # The meta data for the 'latest' model
     meta_data = get_domain_path("test-domain")
-    assert get_file_contents(conn, meta_data) == meta_str
+    assert get_file_contents(moto_boto, meta_data) == meta_str
 
+    # The meta data for a specific model
     meta_data = get_metadata_path("test-domain", "model-123")
-    assert get_file_contents(conn, meta_data) == meta_str
+    assert get_file_contents(moto_boto, meta_data) == meta_str
 
 
-@mock_s3
 def test_list_versions():
-    conn = boto3.resource("s3")
-    conn.create_bucket(Bucket="existing-bucket")
+    # Create and set meta data for two models in the same domain
     aws_model_store = AWSStorage(bucket_name="existing-bucket")
-
+    upload_time = datetime.now()
     domain = "test-domain"
     for model in ["model-1", "model-2"]:
-        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
             "model": {
                 "domain": domain,
@@ -104,24 +109,23 @@ def test_list_versions():
             "modelstore": modelstore.__version__,
         }
         aws_model_store.set_meta_data(domain, model, meta_data)
-        time.sleep(1)
+        upload_time += timedelta(hours=1)
 
+    # List back the models; we expect two
     versions = aws_model_store.list_versions(domain)
     assert len(versions) == 2
-    # Reverse time sorted
+    # The results should be reverse time sorted
     assert versions[0] == "model-2"
     assert versions[1] == "model-1"
 
 
-@mock_s3
 def test_list_domains():
-    conn = boto3.resource("s3")
-    conn.create_bucket(Bucket="existing-bucket")
+    # Create and set meta data for two domains
     aws_model_store = AWSStorage(bucket_name="existing-bucket")
-
+    upload_time = datetime.now()
     model = "test-model"
     for domain in ["domain-1", "domain-2"]:
-        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
         meta_data = {
             "model": {
                 "domain": domain,
@@ -133,10 +137,21 @@ def test_list_domains():
             "modelstore": modelstore.__version__,
         }
         aws_model_store.set_meta_data(domain, model, meta_data)
-        time.sleep(1)
+        upload_time += timedelta(hours=1)
 
+    # List back the domains; we expect two
     domains = aws_model_store.list_domains()
     assert len(domains) == 2
-    # Reverse time sorted
+    # The results should be reverse time sorted
     assert domains[0] == "domain-2"
     assert domains[1] == "domain-1"
+
+
+def test_create_model_state(moto_boto):
+    """ Creates a state label that can be used to tag models """
+    aws_model_store = AWSStorage(bucket_name="existing-bucket")
+    aws_model_store.create_model_state("production")
+
+    file_path = get_model_state_path("production")
+    state_meta = json.loads(get_file_contents(moto_boto, file_path))
+    assert state_meta["state_name"] == "production"
