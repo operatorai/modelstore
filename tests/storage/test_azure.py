@@ -29,7 +29,7 @@ from modelstore.storage.azure import (
     _format_location,
     _get_location,
 )
-from modelstore.storage.util.paths import get_archive_path
+from modelstore.storage.util.paths import get_archive_path, get_model_state_path
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -38,6 +38,8 @@ from modelstore.storage.util.paths import get_archive_path
 
 @pytest.fixture(autouse=True)
 def mock_settings_env_vars():
+    # The AzureStorage client assumes that this environ variable
+    #  has been set
     with mock.patch.dict(
         os.environ, {"AZURE_STORAGE_CONNECTION_STRING": "test-value"}
     ):
@@ -46,6 +48,8 @@ def mock_settings_env_vars():
 
 @pytest.fixture
 def mock_blob_client():
+    # Mocks the Azure Blob Client; reading a file using
+    # this mock will return a static value "{"k": "v"}"
     blob_client = mock.create_autospec(BlobClient)
     blob_stream = mock.create_autospec(StorageStreamDownloader)
     blob_stream.readall.return_value = str.encode(json.dumps({"k": "v"}))
@@ -55,24 +59,14 @@ def mock_blob_client():
 
 @pytest.fixture
 def azure_client(mock_blob_client):
+    # Mocks the Azure Container Client; listing the files
+    # in this container will return a static list ["a.json", "b.json", "c.json"]
     mock_container_client = mock.create_autospec(ContainerClient)
     mock_container_client.exists.return_value = True
     mock_container_client.list_blobs.return_value = [
         BlobProperties(name=x + ".json") for x in ["a", "b", "c"]
     ]
     mock_container_client.get_blob_client.return_value = mock_blob_client
-
-    mock_client = mock.create_autospec(BlobServiceClient)
-    mock_client.get_container_client.return_value = mock_container_client
-    return mock_client
-
-
-@pytest.fixture
-def azure_client_no_container(mock_blob_client):
-    mock_container_client = mock.create_autospec(ContainerClient)
-    mock_container_client.exists.return_value = False
-    mock_container_client.get_blob_client.return_value = mock_blob_client
-
     mock_client = mock.create_autospec(BlobServiceClient)
     mock_client.get_container_client.return_value = mock_container_client
     return mock_client
@@ -92,21 +86,35 @@ def azure_storage(azure_client):
     )
 
 
-def test_validate(azure_storage, azure_client_no_container):
+def test_validate(azure_storage, mock_blob_client):
     assert azure_storage.validate()
+
+    # Mocks the Azure Container Client, but returns False
+    # when queried whether the container exists
+    def azure_client_no_container():
+        mock_container_client = mock.create_autospec(ContainerClient)
+        mock_container_client.exists.return_value = False
+        mock_container_client.get_blob_client.return_value = mock_blob_client
+
+        mock_client = mock.create_autospec(BlobServiceClient)
+        mock_client.get_container_client.return_value = mock_container_client
+        return mock_client
+
     azure_storage = AzureBlobStorage(
-        container_name="missing-container", client=azure_client_no_container
+        container_name="missing-container", client=azure_client_no_container()
     )
     assert not azure_storage.validate()
 
 
 def test_push(azure_storage, temp_file):
+    # Asserts that pushing a file results in an upload
     azure_storage._push(temp_file, "destination")
     blob_client = azure_storage._blob_client("destination")
     blob_client.upload_blob.assert_called()
 
 
 def test_pull(azure_storage, tmp_path):
+    # Asserts that pulling a file results in a download
     source = {
         "container": "existing-container",
         "prefix": "source",
@@ -120,18 +128,23 @@ def test_pull(azure_storage, tmp_path):
 
 
 def test_upload(azure_storage, temp_file):
+    # Upload a temp file as a model
     model_path = get_archive_path("test-domain", temp_file)
     rsp = azure_storage.upload("test-domain", "test-model-id", temp_file)
 
+    # Assert that an upload was triggered
     blob_client = azure_storage._blob_client(model_path)
     blob_client.upload_blob.assert_called()
 
+    # Assert the meta data is correct
     assert rsp["type"] == "azure:blob-storage"
     assert rsp["prefix"] == model_path
     assert rsp["container"] == azure_storage.container_name
 
 
 def test_read_json_objects(azure_storage):
+    # Assert that listing the files at a prefix results in 3
+    # files (returned statically in the mock)
     result = azure_storage._read_json_objects("path/to/files")
     azure_storage._container_client().list_blobs.assert_called_with(
         "path/to/files/"
@@ -140,12 +153,15 @@ def test_read_json_objects(azure_storage):
 
 
 def test_read_json_object(azure_storage):
+    # Assert that reading a JSON object triggers a download
+    #  and returns the mocked content
     result = azure_storage._read_json_object("path/to/files")
     azure_storage._blob_client("path/to/files").download_blob.assert_called()
     assert result == {"k": "v"}
 
 
 def test_format_location():
+    # Asserts that the location meta data is correctly formatted
     container_name = "my-container"
     prefix = "/path/to/file"
     exp = {
@@ -157,6 +173,8 @@ def test_format_location():
 
 
 def test_get_location() -> str:
+    # Asserts that pulling the location out of meta data
+    # is correct
     exp = "/path/to/file"
     container_name = "my-container"
     meta = {
@@ -165,3 +183,18 @@ def test_get_location() -> str:
         "prefix": "/path/to/file",
     }
     assert _get_location(container_name, meta) == exp
+
+
+def test_create_model_state(azure_storage):
+    # Create a new model state
+    azure_storage.create_model_state("production")
+    state_path = get_model_state_path("production")
+
+    # Assert that an upload was triggered
+    blob_client = azure_storage._blob_client(state_path)
+    blob_client.upload_blob.assert_called()
+
+    # Assert that a file at this location was created
+    result = azure_storage._read_json_object(state_path)
+    azure_storage._blob_client(state_path).download_blob.assert_called()
+    assert result == {"k": "v"}

@@ -69,6 +69,8 @@ def test_upload(tmp_path, moto_boto):
     assert rsp["type"] == "aws:s3"
     assert rsp["bucket"] == "existing-bucket"
     assert rsp["prefix"] == model_path
+
+    # Assert that the uploaded file was created
     assert get_file_contents(moto_boto, model_path) == "file-contents"
 
 
@@ -148,10 +150,11 @@ def test_list_domains():
 
 
 def test_create_model_state(moto_boto):
-    """ Creates a state label that can be used to tag models """
+    # Create a model state
     aws_model_store = AWSStorage(bucket_name="existing-bucket")
     aws_model_store.create_model_state("production")
 
-    file_path = get_model_state_path("production")
-    state_meta = json.loads(get_file_contents(moto_boto, file_path))
+    # Assert that a file at this location was created
+    state_path = get_model_state_path("production")
+    state_meta = json.loads(get_file_contents(moto_boto, state_path))
     assert state_meta["state_name"] == "production"
