@@ -20,11 +20,13 @@ from modelstore.storage.util.paths import get_archive_path
 from moto import mock_s3
 
 # pylint: disable=redefined-outer-name
+# pylint: disable=protected-access
+_MOCK_BUCKET_NAME = "existing-bucket"
 
 
 def get_file_contents(conn, prefix):
     return (
-        conn.Object("existing-bucket", prefix)
+        conn.Object(_MOCK_BUCKET_NAME, prefix)
         .get()["Body"]
         .read()
         .decode("utf-8")
@@ -35,15 +37,44 @@ def get_file_contents(conn, prefix):
 def moto_boto():
     with mock_s3():
         conn = boto3.resource("s3")
-        conn.create_bucket(Bucket="existing-bucket")
+        conn.create_bucket(Bucket=_MOCK_BUCKET_NAME)
         yield conn
 
 
 def test_validate():
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
+    aws_model_store = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     assert aws_model_store.validate()
     aws_model_store = AWSStorage(bucket_name="missing-bucket")
     assert not aws_model_store.validate()
+
+
+def test_push_and_pull(tmp_path, moto_boto):
+    # Create a file
+    source = os.path.join(tmp_path, "test-file-source.txt")
+    with open(source, "w") as out:
+        out.write("expected-result")
+
+    # Create an AWS-backed storage
+    aws_model_store = AWSStorage(bucket_name="existing-bucket")
+
+    # Push the file to storage
+    remote_destination = "prefix/to/file/test-file-destination.txt"
+    result = aws_model_store._push(source, remote_destination)
+    assert result == remote_destination
+    assert get_file_contents(moto_boto, remote_destination) == "expected-result"
+
+    # Pull the file back from storage
+    meta_data = {
+        "bucket": _MOCK_BUCKET_NAME,
+        "prefix": remote_destination,
+    }
+    local_destination = os.path.join(tmp_path, "test-file-destination.txt")
+    result = aws_model_store._pull(meta_data, tmp_path)
+    assert result == local_destination
+    assert os.path.exists(local_destination)
+    with open(result, "r") as lines:
+        contents = lines.read()
+        assert contents == "expected-result"
 
 
 def test_upload(tmp_path, moto_boto):
