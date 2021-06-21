@@ -11,20 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import json
 import os
-from datetime import datetime, timedelta
 
 import boto3
-import modelstore
 import pytest
 from modelstore.storage.aws import AWSStorage
-from modelstore.storage.util.paths import (
-    get_archive_path,
-    get_domain_path,
-    get_metadata_path,
-    get_model_state_path,
-)
+from modelstore.storage.util.paths import get_archive_path
 from moto import mock_s3
 
 # pylint: disable=redefined-outer-name
@@ -72,89 +64,3 @@ def test_upload(tmp_path, moto_boto):
 
     # Assert that the uploaded file was created
     assert get_file_contents(moto_boto, model_path) == "file-contents"
-
-
-def test_set_meta_data(moto_boto):
-    # Create a meta data string
-    meta_dict = {"key": "value"}
-    meta_str = json.dumps(meta_dict)
-
-    # Set the meta data against a fake model
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
-    aws_model_store.set_meta_data("test-domain", "model-123", meta_dict)
-
-    # Expected two uploads
-    # The meta data for the 'latest' model
-    meta_data = get_domain_path("test-domain")
-    assert get_file_contents(moto_boto, meta_data) == meta_str
-
-    # The meta data for a specific model
-    meta_data = get_metadata_path("test-domain", "model-123")
-    assert get_file_contents(moto_boto, meta_data) == meta_str
-
-
-def test_list_versions():
-    # Create and set meta data for two models in the same domain
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
-    upload_time = datetime.now()
-    domain = "test-domain"
-    for model in ["model-1", "model-2"]:
-        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        aws_model_store.set_meta_data(domain, model, meta_data)
-        upload_time += timedelta(hours=1)
-
-    # List back the models; we expect two
-    versions = aws_model_store.list_versions(domain)
-    assert len(versions) == 2
-    # The results should be reverse time sorted
-    assert versions[0] == "model-2"
-    assert versions[1] == "model-1"
-
-
-def test_list_domains():
-    # Create and set meta data for two domains
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
-    upload_time = datetime.now()
-    model = "test-model"
-    for domain in ["domain-1", "domain-2"]:
-        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        aws_model_store.set_meta_data(domain, model, meta_data)
-        upload_time += timedelta(hours=1)
-
-    # List back the domains; we expect two
-    domains = aws_model_store.list_domains()
-    assert len(domains) == 2
-    # The results should be reverse time sorted
-    assert domains[0] == "domain-2"
-    assert domains[1] == "domain-1"
-
-
-def test_create_model_state(moto_boto):
-    # Create a model state
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
-    aws_model_store.create_model_state("production")
-
-    # Assert that a file at this location was created
-    state_path = get_model_state_path("production")
-    state_meta = json.loads(get_file_contents(moto_boto, state_path))
-    assert state_meta["state_name"] == "production"

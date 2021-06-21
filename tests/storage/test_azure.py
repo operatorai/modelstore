@@ -183,18 +183,3 @@ def test_get_location() -> str:
         "prefix": "/path/to/file",
     }
     assert _get_location(container_name, meta) == exp
-
-
-def test_create_model_state(azure_storage):
-    # Create a new model state
-    azure_storage.create_model_state("production")
-    state_path = get_model_state_path("production")
-
-    # Assert that an upload was triggered
-    blob_client = azure_storage._blob_client(state_path)
-    blob_client.upload_blob.assert_called()
-
-    # Assert that a file at this location was created
-    result = azure_storage._read_json_object(state_path)
-    azure_storage._blob_client(state_path).download_blob.assert_called()
-    assert result == {"k": "v"}

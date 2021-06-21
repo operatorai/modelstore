@@ -12,21 +12,13 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import time
-from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
-import modelstore
 import pytest
 from google.cloud import storage
 from modelstore.storage.gcloud import GoogleCloudStorage
-from modelstore.storage.util.paths import (
-    get_archive_path,
-    get_domain_path,
-    get_domains_path,
-    get_versions_path,
-)
+from modelstore.storage.util.paths import get_archive_path
 
 # pylint: disable=redefined-outer-name
 
@@ -81,80 +73,3 @@ def test_upload(gcloud_client, tmp_path):
     assert rsp["type"] == "google:cloud-storage"
     assert rsp["prefix"] == model_path
     assert rsp["bucket"] == gcloud_model_store.bucket_name
-
-
-def test_set_meta_data(gcloud_client):
-    gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
-    )
-    gcloud_model_store.set_meta_data(
-        "test-domain", "model-123", {"key": "value"}
-    )
-
-    # Expected two uploads
-    meta_data = get_domain_path("test-domain")
-    bucket = gcloud_client.get_bucket
-    bucket.assert_called_with(gcloud_model_store.bucket_name)
-    blob = bucket(gcloud_model_store.bucket_name).blob
-    blob.assert_called_with(meta_data)
-    assert blob(meta_data).upload_from_file.call_count == 2
-
-
-def test_list_versions(gcloud_client):
-    gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
-    )
-
-    domain = "test-domain"
-    for model in ["model-1", "model-2"]:
-        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        gcloud_model_store.set_meta_data(domain, model, meta_data)
-        time.sleep(1)
-
-    gcloud_model_store.list_versions(domain)
-    versions_for_domain = get_versions_path(domain) + "/"
-    gcloud_client.list_blobs.assert_called_with(
-        "existing-bucket",
-        prefix=versions_for_domain,
-        delimiter="/",
-    )
-
-
-def test_list_domains(gcloud_client):
-    gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
-    )
-
-    model = "test-model"
-    for domain in ["domain-1", "domain-2"]:
-        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        gcloud_model_store.set_meta_data(domain, model, meta_data)
-        time.sleep(1)
-
-    gcloud_model_store.list_domains()
-    domains = get_domains_path() + "/"
-    gcloud_client.list_blobs.assert_called_with(
-        "existing-bucket",
-        prefix=domains,
-        delimiter="/",
-    )
