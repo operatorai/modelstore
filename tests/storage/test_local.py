@@ -12,18 +12,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import time
-from datetime import datetime
 from pathlib import Path
 
-import modelstore
 import pytest
 from modelstore.storage.local import FileSystemStorage
-from modelstore.storage.util.paths import (
-    get_archive_path,
-    get_domain_path,
-    get_metadata_path,
-)
+from modelstore.storage.util.paths import get_archive_path
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
