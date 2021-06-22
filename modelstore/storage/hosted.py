@@ -55,7 +55,7 @@ class HostedStorage(CloudStorage):
 
     def _post(self, endpoint: str, data: dict) -> dict:
         url = os.path.join(_URL_ROOT, endpoint)
-        logger.info(f"ℹ️  POST: {url}")
+        logger.info(f"ℹ️  POST: %s", url)
         headers = {"x-api-key": self.secret_access_key}
         data["key_id"] = self.access_key_id
         rsp = requests.post(url, headers=headers, data=json.dumps(data))
@@ -82,8 +82,11 @@ class HostedStorage(CloudStorage):
             "type": "operator:cloud-storage",
         }
 
-    def list_versions(self, domain: str) -> list:
+    def list_versions(
+        self, domain: str, state_name: Optional[str] = None
+    ) -> list:
         """ Returns a list of a model's versions """
+        # @TODO enable filtering by state-name
         rsp = self._post("list-models", {"domain": domain})
         return rsp["models"]
 
@@ -107,6 +110,16 @@ class HostedStorage(CloudStorage):
         domain"""
         download_url = self._get_url("download-url", domain, model_id)
         return _download(local_path, download_url)
+
+    def create_model_state(self, state_name: str):
+        """ Creates a state label that can be used to tag models """
+        # @TODO coming soon
+        raise NotImplementedError()
+
+    def set_model_state(self, domain: str, model_id: str, state_name: str):
+        """ Adds the given model ID the set that are in the state_name path """
+        # @TODO coming soon
+        raise NotImplementedError()
 
 
 def _get_environ(value: str, key: str) -> str:

@@ -12,23 +12,20 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import time
-from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
-import modelstore
 import pytest
 from google.cloud import storage
-from modelstore.storage.gcloud import GoogleCloudStorage
-from modelstore.storage.util.paths import (
-    get_archive_path,
-    get_domain_path,
-    get_domains_path,
-    get_versions_path,
+from modelstore.storage.gcloud import (
+    GoogleCloudStorage,
+    _format_location,
+    _get_location,
 )
+from modelstore.storage.util.paths import get_archive_path
 
 # pylint: disable=redefined-outer-name
+_MOCK_BUCKET_NAME = "gcloud-bucket"
 
 
 @pytest.fixture
@@ -37,7 +34,7 @@ def gcloud_client():
 
     # Buckets
     mock_bucket = mock.create_autospec(storage.Bucket)
-    mock_bucket.name = "existing-bucket"
+    mock_bucket.name = _MOCK_BUCKET_NAME
     mock_bucket.client = mock_client
 
     # Blobs
@@ -48,11 +45,14 @@ def gcloud_client():
     return mock_client
 
 
-def test_validate(gcloud_client):
+def test_validate_existing_bucket(gcloud_client):
     gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
+        project_name="", bucket_name=_MOCK_BUCKET_NAME, client=gcloud_client
     )
     assert gcloud_model_store.validate()
+
+
+def test_validate_missing_bucket(gcloud_client):
     gcloud_model_store = GoogleCloudStorage(
         project_name="", bucket_name="missing-bucket", client=gcloud_client
     )
@@ -65,7 +65,7 @@ def test_upload(gcloud_client, tmp_path):
 
     gcloud_model_store = GoogleCloudStorage(
         project_name="project-name",
-        bucket_name="existing-bucket",
+        bucket_name=_MOCK_BUCKET_NAME,
         client=gcloud_client,
     )
     model_path = get_archive_path("test-domain", source)
@@ -83,78 +83,24 @@ def test_upload(gcloud_client, tmp_path):
     assert rsp["bucket"] == gcloud_model_store.bucket_name
 
 
-def test_set_meta_data(gcloud_client):
-    gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
-    )
-    gcloud_model_store.set_meta_data(
-        "test-domain", "model-123", {"key": "value"}
-    )
-
-    # Expected two uploads
-    meta_data = get_domain_path("test-domain")
-    bucket = gcloud_client.get_bucket
-    bucket.assert_called_with(gcloud_model_store.bucket_name)
-    blob = bucket(gcloud_model_store.bucket_name).blob
-    blob.assert_called_with(meta_data)
-    assert blob(meta_data).upload_from_file.call_count == 2
+def test_format_location():
+    # Asserts that the location meta data is correctly formatted
+    prefix = "/path/to/file"
+    exp = {
+        "type": "google:cloud-storage",
+        "bucket": _MOCK_BUCKET_NAME,
+        "prefix": prefix,
+    }
+    assert _format_location(_MOCK_BUCKET_NAME, prefix) == exp
 
 
-def test_list_versions(gcloud_client):
-    gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
-    )
-
-    domain = "test-domain"
-    for model in ["model-1", "model-2"]:
-        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        gcloud_model_store.set_meta_data(domain, model, meta_data)
-        time.sleep(1)
-
-    gcloud_model_store.list_versions(domain)
-    versions_for_domain = get_versions_path(domain) + "/"
-    gcloud_client.list_blobs.assert_called_with(
-        "existing-bucket",
-        prefix=versions_for_domain,
-        delimiter="/",
-    )
-
-
-def test_list_domains(gcloud_client):
-    gcloud_model_store = GoogleCloudStorage(
-        project_name="", bucket_name="existing-bucket", client=gcloud_client
-    )
-
-    model = "test-model"
-    for domain in ["domain-1", "domain-2"]:
-        created = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        gcloud_model_store.set_meta_data(domain, model, meta_data)
-        time.sleep(1)
-
-    gcloud_model_store.list_domains()
-    domains = get_domains_path() + "/"
-    gcloud_client.list_blobs.assert_called_with(
-        "existing-bucket",
-        prefix=domains,
-        delimiter="/",
-    )
+def test_get_location() -> str:
+    # Asserts that pulling the location out of meta data
+    # is correct
+    exp = "/path/to/file"
+    meta = {
+        "type": "google:cloud-storage",
+        "bucket": _MOCK_BUCKET_NAME,
+        "prefix": exp,
+    }
+    assert _get_location(_MOCK_BUCKET_NAME, meta) == exp

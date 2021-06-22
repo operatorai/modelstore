@@ -102,10 +102,13 @@ class ModelStore:
         of the domains"""
         return self.storage.list_domains()
 
-    def list_versions(self, domain: str) -> list:
-        """Returns a list of dicts, containing info about all
-        of the models that have been uploaded to a domain"""
-        return self.storage.list_versions(domain)
+    def list_versions(
+        self, domain: str, state_name: Optional[str] = None
+    ) -> list:
+        """Returns a list of dicts, containing info about the
+        models that have been uploaded to a domain; if state_name
+        is given results are filtered to models set to that state"""
+        return self.storage.list_versions(domain, state_name)
 
     def download(
         self, local_path: str, domain: str, model_id: str = None
@@ -116,3 +119,13 @@ class ModelStore:
             tar.extractall(local_path)
         os.remove(archive_path)
         return local_path
+
+    def create_model_state(self, state_name: str):
+        """ Creates a state label models (e.g., shadow/prod/archived) """
+        return self.storage.create_model_state(state_name)
+
+    def set_model_state(self, domain: str, model_id: str, state_name: str):
+        """Sets the model_id model to a specific state.
+        That state must already exist (ref: `create_model_state()`)
+        """
+        return self.storage.set_model_state(domain, model_id, state_name)
