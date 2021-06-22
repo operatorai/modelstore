@@ -59,13 +59,6 @@ class BlobStorage(CloudStorage):
         """ Returns a dictionary of the JSON stored in a given path """
         raise NotImplementedError()
 
-    def _state_exists(self, state_name: str) -> bool:
-        """ Returns whether a model state with name state_name exists """
-        # @TODO implement
-        if not is_valid_state_name(state_name):
-            return False
-        return False
-
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         logger.debug("Copying meta-data: %s", meta_data)
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -104,11 +97,26 @@ class BlobStorage(CloudStorage):
         versions = self._read_json_objects(versions_path)
         return [v["model"]["model_id"] for v in versions]
 
+    def state_exists(self, state_name: str) -> bool:
+        """ Returns whether a model state with name state_name exists """
+        if not is_valid_state_name(state_name):
+            return False
+        try:
+            state_path = get_model_state_path(state_name)
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                self._pull(state_path, tmp_dir)
+            return True
+            # pylint: disable=broad-except,invalid-name
+        except Exception as e:
+            # @TODO - check the error type
+            logger.error("Error checking state: %s", str(e))
+            return False
+
     def create_model_state(self, state_name: str):
         """ Creates a state label that can be used to tag models """
         if not is_valid_state_name(state_name):
             raise Exception(f"Cannot create state with name: '{state_name}'")
-        if self._state_exists(state_name):
+        if self.state_exists(state_name):
             logger.debug("Model state '%s' already exists", state_name)
             return
         logger.debug("Creating model state: %s", state_name)
@@ -124,7 +132,7 @@ class BlobStorage(CloudStorage):
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """ Adds the given model ID the set that are in the state_name path """
-        if not self._state_exists(state_name):
+        if not self.state_exists(state_name):
             logger.debug("Model state '%s' does not exist", state_name)
             raise Exception(f"State '{state_name}' does not exist")
         model_meta_data_path = get_metadata_path(domain, model_id)
