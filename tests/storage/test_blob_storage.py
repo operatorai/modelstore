@@ -42,7 +42,7 @@ def get_file_contents(file_path: str):
 
 
 def test_state_exists(mock_blob_storage):
-    assert not mock_blob_storage._state_exists("foo")
+    assert not mock_blob_storage.state_exists("foo")
 
 
 def test_set_meta_data(mock_blob_storage):
@@ -157,23 +157,10 @@ def test_create_model_state(mock_blob_storage):
     assert state_meta["state_name"] == "production"
 
 
-#     def create_model_state(self, state_name: str):
-#         """ Creates a state label that can be used to tag models """
-#         if not is_valid_state_name(state_name):
-#             raise Exception(f"Cannot create state with name: '{state_name}'")
-#         if self._state_exists(state_name):
-#             logger.debug("Model state '%s' already exists", state_name)
-#             return
-#         logger.debug("Creating model state: %s", state_name)
-#         with tempfile.TemporaryDirectory() as tmp_dir:
-#             version_path = os.path.join(tmp_dir, f"{state_name}.json")
-#             with open(version_path, "w") as out:
-#                 state_data = {
-#                     "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
-#                     "state_name": state_name,
-#                 }
-#                 out.write(json.dumps(state_data))
-#             self._push(version_path, get_model_state_path(state_name))
+def test_set_model_state(mock_blob_storage):
+    # Create a model state
+    mock_blob_storage.create_model_state("production")
+
 
 #     def set_model_state(self, domain: str, model_id: str, state_name: str):
 #         """ Adds the given model ID the set that are in the state_name path """
