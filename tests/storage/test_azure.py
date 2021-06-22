@@ -86,22 +86,20 @@ def azure_storage(azure_client):
     )
 
 
-def test_validate(azure_storage, mock_blob_client):
+def test_validate_existing_container(azure_storage):
     assert azure_storage.validate()
 
-    # Mocks the Azure Container Client, but returns False
-    # when queried whether the container exists
-    def azure_client_no_container():
-        mock_container_client = mock.create_autospec(ContainerClient)
-        mock_container_client.exists.return_value = False
-        mock_container_client.get_blob_client.return_value = mock_blob_client
 
-        mock_client = mock.create_autospec(BlobServiceClient)
-        mock_client.get_container_client.return_value = mock_container_client
-        return mock_client
+def test_validate_missing_container(mock_blob_client):
+    mock_container_client = mock.create_autospec(ContainerClient)
+    mock_container_client.exists.return_value = False
+    mock_container_client.get_blob_client.return_value = mock_blob_client
+
+    mock_client = mock.create_autospec(BlobServiceClient)
+    mock_client.get_container_client.return_value = mock_container_client
 
     azure_storage = AzureBlobStorage(
-        container_name="missing-container", client=azure_client_no_container()
+        container_name="missing-container", client=mock_client
     )
     assert not azure_storage.validate()
 

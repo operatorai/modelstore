@@ -15,7 +15,7 @@ import os
 
 import boto3
 import pytest
-from modelstore.storage.aws import AWSStorage
+from modelstore.storage.aws import AWSStorage, _format_location, _get_location
 from modelstore.storage.util.paths import get_archive_path
 from moto import mock_s3
 
@@ -41,9 +41,12 @@ def moto_boto():
         yield conn
 
 
-def test_validate():
+def test_validate_existing_bucket():
     aws_model_store = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     assert aws_model_store.validate()
+
+
+def test_validate_missing_bucket():
     aws_model_store = AWSStorage(bucket_name="missing-bucket")
     assert not aws_model_store.validate()
 
@@ -95,3 +98,34 @@ def test_upload(tmp_path, moto_boto):
 
     # Assert that the uploaded file was created
     assert get_file_contents(moto_boto, model_path) == "file-contents"
+
+
+# @TODO missing tests!
+# def test_read_json_objects(self, path: str) -> list:
+# pass
+
+# def test_read_json_object(self, path: str) -> dict:
+# pass
+
+
+def test_format_location():
+    # Asserts that the location meta data is correctly formatted
+    prefix = "/path/to/file"
+    exp = {
+        "type": "aws:s3",
+        "bucket": _MOCK_BUCKET_NAME,
+        "prefix": prefix,
+    }
+    assert _format_location(_MOCK_BUCKET_NAME, prefix) == exp
+
+
+def test_get_location() -> str:
+    # Asserts that pulling the location out of meta data
+    # is correct
+    exp = "/path/to/file"
+    meta = {
+        "type": "aws:s3",
+        "bucket": _MOCK_BUCKET_NAME,
+        "prefix": exp,
+    }
+    assert _get_location(_MOCK_BUCKET_NAME, meta) == exp
