@@ -15,8 +15,7 @@ import os
 
 import boto3
 import pytest
-from modelstore.storage.aws import AWSStorage, _format_location, _get_location
-from modelstore.storage.util.paths import get_archive_path
+from modelstore.storage.aws import AWSStorage, _get_location
 from moto import mock_s3
 
 # pylint: disable=redefined-outer-name
@@ -41,8 +40,12 @@ def moto_boto():
         yield conn
 
 
-def test_validate_existing_bucket():
-    aws_model_store = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+@pytest.fixture
+def aws_model_store():
+    return AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+
+
+def test_validate_existing_bucket(aws_model_store):
     assert aws_model_store.validate()
 
 
@@ -51,14 +54,11 @@ def test_validate_missing_bucket():
     assert not aws_model_store.validate()
 
 
-def test_push_and_pull(tmp_path, moto_boto):
+def test_push_and_pull(tmp_path, moto_boto, aws_model_store):
     # Create a file
     source = os.path.join(tmp_path, "test-file-source.txt")
     with open(source, "w") as out:
         out.write("expected-result")
-
-    # Create an AWS-backed storage
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
 
     # Push the file to storage
     remote_destination = "prefix/to/file/test-file-destination.txt"
@@ -80,26 +80,6 @@ def test_push_and_pull(tmp_path, moto_boto):
         assert contents == "expected-result"
 
 
-def test_upload(tmp_path, moto_boto):
-    # Create a test file
-    source = os.path.join(tmp_path, "test-file.txt")
-    with open(source, "w") as out:
-        out.write("file-contents")
-
-    # Upload it to the model store
-    aws_model_store = AWSStorage(bucket_name="existing-bucket")
-    model_path = get_archive_path("test-domain", source)
-    rsp = aws_model_store.upload("test-domain", "test-model-id", source)
-
-    # Assert meta-data is correct
-    assert rsp["type"] == "aws:s3"
-    assert rsp["bucket"] == "existing-bucket"
-    assert rsp["prefix"] == model_path
-
-    # Assert that the uploaded file was created
-    assert get_file_contents(moto_boto, model_path) == "file-contents"
-
-
 # @TODO missing tests!
 # def test_read_json_objects(self, path: str) -> list:
 # pass
@@ -108,7 +88,7 @@ def test_upload(tmp_path, moto_boto):
 # pass
 
 
-def test_format_location():
+def test_storage_location(aws_model_store):
     # Asserts that the location meta data is correctly formatted
     prefix = "/path/to/file"
     exp = {
@@ -116,7 +96,7 @@ def test_format_location():
         "bucket": _MOCK_BUCKET_NAME,
         "prefix": prefix,
     }
-    assert _format_location(_MOCK_BUCKET_NAME, prefix) == exp
+    assert aws_model_store._storage_location(prefix) == exp
 
 
 def test_get_location() -> str:

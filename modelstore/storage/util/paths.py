@@ -17,7 +17,7 @@ from typing import Optional
 
 from modelstore.utils.log import logger
 
-_ROOT = "operatorai-model-store"
+MODELSTORE_ROOT = "operatorai-model-store"
 
 
 def get_archive_path(domain: str, local_path: str) -> str:
@@ -35,7 +35,7 @@ def get_archive_path(domain: str, local_path: str) -> str:
     # Future: enable different types of prefixes
     # Warning! Mac OS translates ":" in paths to "/"
     prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-    return os.path.join(_ROOT, domain, prefix, file_name)
+    return os.path.join(MODELSTORE_ROOT, domain, prefix, file_name)
 
 
 def get_versions_path(domain: str, state_name: Optional[str] = None) -> str:
@@ -48,8 +48,8 @@ def get_versions_path(domain: str, state_name: Optional[str] = None) -> str:
         state_name (str): A model's state tag (e.g. "prod" or "archived")
     """
     if state_name is not None:
-        return os.path.join(_ROOT, domain, "versions", state_name)
-    return os.path.join(_ROOT, domain, "versions")
+        return os.path.join(MODELSTORE_ROOT, domain, "versions", state_name)
+    return os.path.join(MODELSTORE_ROOT, domain, "versions")
 
 
 def get_metadata_path(domain: str, model_id: str) -> str:
@@ -71,7 +71,7 @@ def get_domains_path() -> str:
     """Creates a path where meta-data about the latest trained model
     is stored, i.e.: :code:`operatorai-model-store/domains/`
     """
-    return os.path.join(_ROOT, "domains")
+    return os.path.join(MODELSTORE_ROOT, "domains")
 
 
 def get_domain_path(domain: str) -> str:
@@ -94,7 +94,7 @@ def get_model_states_path() -> str:
         domain (str): A group of models that are trained for the
         same end-use are given the same domain.
     """
-    return os.path.join(_ROOT, "model_states")
+    return os.path.join(MODELSTORE_ROOT, "model_states")
 
 
 def get_model_state_path(state_name: str) -> str:

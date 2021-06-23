@@ -18,7 +18,7 @@ import warnings
 from pathlib import Path
 
 from modelstore.storage.blob_storage import BlobStorage
-from modelstore.storage.util.paths import _ROOT, get_archive_path
+from modelstore.storage.util.paths import MODELSTORE_ROOT
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
@@ -31,9 +31,9 @@ class FileSystemStorage(BlobStorage):
 
     def __init__(self, root_path: str):
         super().__init__([])
-        if _ROOT in root_path:
+        if MODELSTORE_ROOT in root_path:
             warnings.warn(
-                f'Warning: "{_ROOT}" is in the root path, and is a value'
+                f'Warning: "{MODELSTORE_ROOT}" is in the root path, and is a value'
                 + " that this library usually appends. Is this intended?"
             )
         root_path = os.path.abspath(root_path)
@@ -92,23 +92,16 @@ class FileSystemStorage(BlobStorage):
             os.makedirs(parent_dir)
         return os.path.join(parent_dir, paths[1])
 
-    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        fs_path = get_archive_path(domain, local_path)
-        logger.debug("Moving to: %s...", fs_path)
-        archive_path = self._push(local_path, fs_path)
-        logger.debug("Finished: %s", fs_path)
-        return _format_location(archive_path)
+    def _storage_location(self, archive_path: str) -> dict:
+        """ Returns a dict of the location the artifact was stored """
+        return {
+            "type": "file_system",
+            "path": os.path.abspath(archive_path),
+        }
 
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)
         return _read_json_file(path)
-
-
-def _format_location(archive_path: str) -> dict:
-    return {
-        "type": "file_system",
-        "path": os.path.abspath(archive_path),
-    }
 
 
 def _get_location(meta: dict) -> str:

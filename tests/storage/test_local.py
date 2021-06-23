@@ -12,11 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-from pathlib import Path
 
 import pytest
 from modelstore.storage.local import FileSystemStorage
-from modelstore.storage.util.paths import get_archive_path
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -30,20 +28,6 @@ def fs_model_store(tmp_path):
 def test_validate(fs_model_store):
     assert fs_model_store.validate()
     assert os.path.exists(fs_model_store.root_dir)
-
-
-def test_upload(fs_model_store, tmp_path):
-    source = os.path.join(tmp_path, "test-file.txt")
-    Path(source).touch()
-
-    model_path = os.path.join(
-        fs_model_store.root_dir,
-        get_archive_path("test-domain", source),
-    )
-    rsp = fs_model_store.upload("test-domain", "test-model-id", source)
-    assert rsp["type"] == "file_system"
-    assert rsp["path"] == model_path
-    assert os.path.exists(model_path)
 
 
 def test_list_versions_missing_domain(fs_model_store):
