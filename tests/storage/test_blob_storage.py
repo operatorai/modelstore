@@ -14,17 +14,16 @@
 import json
 import os
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import modelstore
 import pytest
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
+    get_archive_path,
     get_domain_path,
-    get_domains_path,
     get_metadata_path,
     get_model_state_path,
-    get_versions_path,
-    is_valid_state_name,
 )
 
 # pylint: disable=redefined-outer-name
@@ -66,6 +65,20 @@ def test_set_meta_data(mock_blob_storage):
         get_metadata_path("test-domain", "model-123"),
     )
     assert get_file_contents(meta_data) == meta_str
+
+
+def test_upload(mock_blob_storage, tmp_path):
+    source = os.path.join(tmp_path, "test-file.txt")
+    Path(source).touch()
+
+    model_path = os.path.join(
+        mock_blob_storage.root_dir,
+        get_archive_path("test-domain", source),
+    )
+    rsp = mock_blob_storage.upload("test-domain", "test-model-id", source)
+    assert rsp["type"] == "file_system"
+    assert rsp["path"] == model_path
+    assert os.path.exists(model_path)
 
 
 def test_download_latest(mock_blob_storage):
