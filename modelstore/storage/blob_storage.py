@@ -20,6 +20,7 @@ from typing import Optional
 
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util.paths import (
+    get_archive_path,
     get_domain_path,
     get_domains_path,
     get_metadata_path,
@@ -58,6 +59,16 @@ class BlobStorage(CloudStorage):
     def _read_json_object(self, path: str) -> dict:
         """ Returns a dictionary of the JSON stored in a given path """
         raise NotImplementedError()
+
+    @abstractmethod
+    def _storage_location(self, prefix: str) -> dict:
+        """ Returns a dict of the location the artifact was stored """
+        raise NotImplementedError()
+
+    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
+        bucket_path = get_archive_path(domain, local_path)
+        prefix = self._push(local_path, bucket_path)
+        return self._storage_location(prefix)
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         logger.debug("Copying meta-data: %s", meta_data)

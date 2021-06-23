@@ -15,7 +15,6 @@ import json
 import os
 
 from modelstore.storage.blob_storage import BlobStorage
-from modelstore.storage.util.paths import get_archive_path
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
@@ -106,10 +105,13 @@ class AzureBlobStorage(BlobStorage):
         logger.debug("Finished: %s", destination)
         return target
 
-    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        container_path = get_archive_path(domain, local_path)
-        prefix = self._push(local_path, container_path)
-        return _format_location(self.container_name, prefix)
+    def _storage_location(self, prefix: str) -> dict:
+        """ Returns a dict of the location the artifact was stored """
+        return {
+            "type": "azure:blob-storage",
+            "container": self.container_name,
+            "prefix": prefix,
+        }
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -128,14 +130,6 @@ class AzureBlobStorage(BlobStorage):
         blob_client = self._blob_client(path)
         obj = blob_client.download_blob().readall()
         return json.loads(obj)
-
-
-def _format_location(container_name: str, prefix: str) -> dict:
-    return {
-        "type": "azure:blob-storage",
-        "container": container_name,
-        "prefix": prefix,
-    }
 
 
 def _get_location(container_name: str, meta: dict) -> str:
