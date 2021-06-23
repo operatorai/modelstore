@@ -96,7 +96,7 @@ def test_storage_location(aws_model_store):
         "bucket": _MOCK_BUCKET_NAME,
         "prefix": prefix,
     }
-    assert aws_model_store._storage_location(_MOCK_BUCKET_NAME, prefix) == exp
+    assert aws_model_store._storage_location(prefix) == exp
 
 
 def test_get_location() -> str:

@@ -29,6 +29,7 @@ from modelstore.storage.azure import AzureBlobStorage, _get_location
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 # pylint: disable=no-member
+_MOCK_CONTAINER_NAME = "existing-container"
 
 
 @pytest.fixture(autouse=True)
@@ -77,7 +78,7 @@ def temp_file(tmp_path):
 @pytest.fixture
 def azure_storage(azure_client):
     return AzureBlobStorage(
-        container_name="existing-container", client=azure_client
+        container_name=_MOCK_CONTAINER_NAME, client=azure_client
     )
 
 
@@ -109,7 +110,7 @@ def test_push(azure_storage, temp_file):
 def test_pull(azure_storage, tmp_path):
     # Asserts that pulling a file results in a download
     source = {
-        "container": "existing-container",
+        "container": _MOCK_CONTAINER_NAME,
         "prefix": "source",
     }
     azure_storage._pull(source, tmp_path)
@@ -140,14 +141,13 @@ def test_read_json_object(azure_storage):
 
 def test_storage_location(azure_storage):
     # Asserts that the location meta data is correctly formatted
-    container_name = "my-container"
     prefix = "/path/to/file"
     exp = {
         "type": "azure:blob-storage",
-        "container": container_name,
+        "container": _MOCK_CONTAINER_NAME,
         "prefix": prefix,
     }
-    assert azure_storage._storage_location(container_name, prefix) == exp
+    assert azure_storage._storage_location(prefix) == exp
 
 
 def test_get_location() -> str:

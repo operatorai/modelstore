@@ -64,9 +64,7 @@ def test_storage_location(gcloud_model_store):
         "bucket": _MOCK_BUCKET_NAME,
         "prefix": prefix,
     }
-    assert (
-        gcloud_model_store._storage_location(_MOCK_BUCKET_NAME, prefix) == exp
-    )
+    assert gcloud_model_store._storage_location(prefix) == exp
 
 
 def test_get_location() -> str:
