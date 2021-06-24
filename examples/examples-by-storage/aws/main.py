@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split
 
 def create_model_store() -> ModelStore:
     # The modelstore library assumes you have already created
-    # a Cloud Storage bucket and will raise an exception if it doesn't exist
+    # an s3 bucket and will raise an exception if it doesn't exist
     return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
 
 
@@ -53,13 +53,39 @@ def train(model_type):
 
 
 @click.command()
-@click.option(
-    "--model-type",
-    type=click.Choice(["sklearn", "xgboost"], case_sensitive=False),
-)
-def main(model_type):
+def main():
     # Create a model store instance
     modelstore = create_model_store()
+    model_domain = "diabetes-boosting-demo"
+
+    # In this demo, we train two models, so that we can demonstrate
+    # how modelstore keeps track of uploaded models for us
+    for model_type in ["sklearn", "xgboost"]:
+        print(f"🤖  Training a {model_type} model...")
+        model = train(model_type)
+
+        print(f"⤴️  Uploading to the {model_domain} domain.")
+        if model_type == "sklearn":
+            meta_data = modelstore.sklearn.upload(model_domain, model=model)
+        elif model_type == "xgboost":
+            meta_data = modelstore.xgboost.upload(model_domain, model=model)
+        else:
+            raise NotImplementedError(f"Not implemented for: {model_type}")
+
+        # The upload returns meta-data about the model that was uploaded
+        # This meta-data has also been sync'ed into the s3 bucket
+        print(f"✅  Finished uploading the {model_type} model!")
+        print(json.dumps(meta_data, indent=4))
+
+        # Download the model back!
+        target = f"downloaded-{model_type}-model"
+        os.makedirs(target, exist_ok=True)
+        model_path = modelstore.download(
+            local_path=target,
+            domain=model_domain,
+            model_id=meta_data["model"]["model_id"],
+        )
+        print(f"⤵️  Downloaded the model back to {model_path}")
 
     # List the available domains
     print(f"✅  Listing existing domains:")
@@ -67,42 +93,28 @@ def main(model_type):
     for domain in domains:
         print(f"\t  Domain: {domain}")
 
-    # List the available models
-    model_domain = "diabetes-boosting-demo"
+    # List the available models in the diabest-boosting-demo domain
     print(f"✅  Listing models for {model_domain}:")
     versions = modelstore.list_versions(domain=model_domain)
     for version in versions:
         print(f"\t  Domain: {model_domain} has model with id={version}")
 
-    # In this demo, we train a GradientBoostingRegressor
-    # using the same approach described on the scikit-learn website.
-    # Replace this with the code to train your own model
-    print(f"🤖  Training a {model_type} model...")
-    model = train(model_type)
+    # Create a new model state
+    state_prod = "production"
+    print(f"✅  Creating model state={state_prod}:")
+    modelstore.create_model_state(state_prod)
 
-    print(f"⤴️  Uploading to the {model_domain} domain.")
-    if model_type == "sklearn":
-        meta_data = modelstore.sklearn.upload(model_domain, model=model)
-    elif model_type == "xgboost":
-        meta_data = modelstore.xgboost.upload(model_domain, model=model)
-    else:
-        raise NotImplementedError(f"Not implemented for: {model_type}")
+    # Set the first model to the production state
+    print(f"✅  Setting model_id={versions[0]} to state={state_prod}:")
+    modelstore.set_model_state(model_domain, versions[0], state_prod)
 
-    # The upload returns meta-data about the model that was uploaded
-    # This meta-data has also been sync'ed into the cloud storage
-    #  bucket
-    print(f"✅  Finished uploading the {model_type} model!")
-    print(json.dumps(meta_data, indent=4))
-
-    # Download the model back!
-    target = f"downloaded-{model_type}-model"
-    os.makedirs(target, exist_ok=True)
-    model_path = modelstore.download(
-        local_path=target,
-        domain=model_domain,
-        model_id=meta_data["model"]["model_id"],
+    # List the models that are in production
+    print(
+        f"✅  Listing models for {model_domain} that are in state={state_prod}:"
     )
-    print(f"⤵️  Downloaded the model back to {model_path}")
+    versions = modelstore.list_versions(model_domain, state_name=state_prod)
+    for version in versions:
+        print(f"\t  Domain: {model_domain} has model with id={version}")
 
 
 if __name__ == "__main__":
