@@ -134,7 +134,7 @@ class BlobStorage(CloudStorage):
         if not is_valid_state_name(state_name):
             raise Exception(f"Cannot create state with name: '{state_name}'")
         if self.state_exists(state_name):
-            logger.debug("Model state '%s' already exists", state_name)
+            logger.info("Model state '%s' already exists", state_name)
             return
         logger.debug("Creating model state: %s", state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -152,9 +152,8 @@ class BlobStorage(CloudStorage):
         if not self.state_exists(state_name):
             logger.debug("Model state '%s' does not exist", state_name)
             raise Exception(f"State '{state_name}' does not exist")
-        model_meta = get_metadata_path(domain, model_id)
+        model_path = get_metadata_path(domain, model_id)
         versions_path = get_versions_path(domain, state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            storage_path = self._get_storage_location(model_meta["storage"])
-            meta_data = self._pull(storage_path, tmp_dir)
+            meta_data = self._pull(model_path, tmp_dir)
             self._push(meta_data, versions_path)
