@@ -97,8 +97,8 @@ class AzureBlobStorage(BlobStorage):
     def _pull(self, source: str, destination: str) -> str:
         """ Pulls a model to a destination """
         logger.info("Downloading from: %s...", source)
-        blob_client = self._blob_client(prefix)
-        target = os.path.join(destination, os.path.split(prefix)[1])
+        blob_client = self._blob_client(source)
+        target = os.path.join(destination, os.path.split(source)[1])
         with open(target, "wb") as download_file:
             download_file.write(blob_client.download_blob().readall())
         logger.debug("Finished: %s", destination)
