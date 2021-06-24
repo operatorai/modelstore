@@ -97,14 +97,13 @@ class GoogleCloudStorage(BlobStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def _pull(self, source: dict, destination: str) -> str:
+    def _pull(self, source: str, destination: str) -> str:
         """ Pulls a model to a destination """
-        prefix = _get_location(self.bucket_name, source)
-        logger.info("Downloading from: %s...", prefix)
-        file_name = os.path.split(prefix)[1]
+        logger.info("Downloading from: %s...", source)
+        file_name = os.path.split(source)[1]
         destination = os.path.join(destination, file_name)
         bucket = self.client.get_bucket(self.bucket_name)
-        blob = bucket.blob(prefix)
+        blob = bucket.blob(source)
         blob.download_to_filename(destination)
         logger.debug("Finished: %s", destination)
         return destination
@@ -116,6 +115,12 @@ class GoogleCloudStorage(BlobStorage):
             "bucket": self.bucket_name,
             "prefix": prefix,
         }
+
+    def _get_storage_location(self, meta: dict) -> str:
+        """ Extracts the storage location from a meta data dictionary """
+        if self.bucket_name != meta.get("bucket"):
+            raise ValueError("Meta-data has a different bucket name")
+        return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -136,9 +141,3 @@ class GoogleCloudStorage(BlobStorage):
         blob = bucket.blob(path)
         obj = blob.download_as_string()
         return json.loads(obj)
-
-
-def _get_location(bucket_name: str, meta: dict) -> str:
-    if bucket_name != meta["bucket"]:
-        raise ValueError("Meta-data has a different bucket name")
-    return meta["prefix"]

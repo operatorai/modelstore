@@ -46,7 +46,7 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     @abstractmethod
-    def _pull(self, source: dict, destination: str) -> str:
+    def _pull(self, source: str, destination: str) -> str:
         """ Pulls a model from a source to a destination """
         raise NotImplementedError()
 
@@ -63,6 +63,11 @@ class BlobStorage(CloudStorage):
     @abstractmethod
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _get_storage_location(self, meta: dict) -> str:
+        """ Extracts the storage location from a meta data dictionary """
         raise NotImplementedError()
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
@@ -91,7 +96,8 @@ class BlobStorage(CloudStorage):
         else:
             model_meta_path = get_metadata_path(domain, model_id)
             model_meta = self._read_json_object(model_meta_path)
-        return self._pull(model_meta["storage"], local_path)
+        storage_path = self._get_storage_location(model_meta["storage"])
+        return self._pull(storage_path, local_path)
 
     def list_domains(self) -> list:
         """ Returns a list of all the existing model domains """
@@ -102,7 +108,7 @@ class BlobStorage(CloudStorage):
     def list_versions(
         self, domain: str, state_name: Optional[str] = None
     ) -> list:
-        if state_name and not self._state_exists(state_name):
+        if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
         versions_path = get_versions_path(domain, state_name)
         versions = self._read_json_objects(versions_path)
@@ -146,8 +152,9 @@ class BlobStorage(CloudStorage):
         if not self.state_exists(state_name):
             logger.debug("Model state '%s' does not exist", state_name)
             raise Exception(f"State '{state_name}' does not exist")
-        model_meta_data_path = get_metadata_path(domain, model_id)
+        model_meta = get_metadata_path(domain, model_id)
         versions_path = get_versions_path(domain, state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            meta_data = self._pull(model_meta_data_path, tmp_dir)
+            storage_path = self._get_storage_location(model_meta["storage"])
+            meta_data = self._pull(storage_path, tmp_dir)
             self._push(meta_data, versions_path)

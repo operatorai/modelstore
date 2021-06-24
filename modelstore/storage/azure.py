@@ -94,9 +94,8 @@ class AzureBlobStorage(BlobStorage):
             blob_client.upload_blob(data, overwrite=True)
         return destination
 
-    def _pull(self, source: dict, destination: str) -> str:
+    def _pull(self, source: str, destination: str) -> str:
         """ Pulls a model to a destination """
-        prefix = _get_location(self.container_name, source)
         logger.info("Downloading from: %s...", source)
         blob_client = self._blob_client(prefix)
         target = os.path.join(destination, os.path.split(prefix)[1])
@@ -112,6 +111,12 @@ class AzureBlobStorage(BlobStorage):
             "container": self.container_name,
             "prefix": prefix,
         }
+
+    def _get_storage_location(self, meta: dict) -> str:
+        """ Extracts the storage location from a meta data dictionary """
+        if self.container_name != meta.get("container"):
+            raise ValueError("Meta-data has a different container name")
+        return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -130,9 +135,3 @@ class AzureBlobStorage(BlobStorage):
         blob_client = self._blob_client(path)
         obj = blob_client.download_blob().readall()
         return json.loads(obj)
-
-
-def _get_location(container_name: str, meta: dict) -> str:
-    if container_name != meta["container"]:
-        raise ValueError("Meta-data has a different container name")
-    return meta["prefix"]
