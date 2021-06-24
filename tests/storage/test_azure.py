@@ -24,7 +24,7 @@ from azure.storage.blob import (
     ContainerClient,
     StorageStreamDownloader,
 )
-from modelstore.storage.azure import AzureBlobStorage, _get_location
+from modelstore.storage.azure import AzureBlobStorage
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -109,11 +109,7 @@ def test_push(azure_storage, temp_file):
 
 def test_pull(azure_storage, tmp_path):
     # Asserts that pulling a file results in a download
-    source = {
-        "container": _MOCK_CONTAINER_NAME,
-        "prefix": "source",
-    }
-    azure_storage._pull(source, tmp_path)
+    azure_storage._pull("source", tmp_path)
     blob_client = azure_storage._blob_client("destination")
     blob_client.download_blob.assert_called()
     with open(os.path.join(tmp_path, "source"), "r") as lines:
@@ -150,14 +146,31 @@ def test_storage_location(azure_storage):
     assert azure_storage._storage_location(prefix) == exp
 
 
-def test_get_location() -> str:
-    # Asserts that pulling the location out of meta data
-    # is correct
-    exp = "/path/to/file"
-    container_name = "my-container"
-    meta = {
-        "type": "azure:blob-storage",
-        "container": container_name,
-        "prefix": "/path/to/file",
-    }
-    assert _get_location(container_name, meta) == exp
+@pytest.mark.parametrize(
+    "meta_data,should_raise,result",
+    [
+        (
+            {
+                "container": _MOCK_CONTAINER_NAME,
+                "prefix": "/path/to/file",
+            },
+            False,
+            "/path/to/file",
+        ),
+        (
+            {
+                "container": "a-different-bucket",
+                "prefix": "/path/to/file",
+            },
+            True,
+            None,
+        ),
+    ],
+)
+def test_get_location(azure_storage, meta_data, should_raise, result):
+    # Asserts that pulling the location out of meta data is correct
+    if should_raise:
+        with pytest.raises(ValueError):
+            azure_storage._get_storage_location(meta_data)
+    else:
+        assert azure_storage._get_storage_location(meta_data) == result

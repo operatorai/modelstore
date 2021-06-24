@@ -15,7 +15,7 @@ import os
 
 import boto3
 import pytest
-from modelstore.storage.aws import AWSStorage, _get_location
+from modelstore.storage.aws import AWSStorage
 from moto import mock_s3
 
 # pylint: disable=redefined-outer-name
@@ -67,12 +67,8 @@ def test_push_and_pull(tmp_path, moto_boto, aws_model_store):
     assert get_file_contents(moto_boto, remote_destination) == "expected-result"
 
     # Pull the file back from storage
-    meta_data = {
-        "bucket": _MOCK_BUCKET_NAME,
-        "prefix": remote_destination,
-    }
     local_destination = os.path.join(tmp_path, "test-file-destination.txt")
-    result = aws_model_store._pull(meta_data, tmp_path)
+    result = aws_model_store._pull(remote_destination, tmp_path)
     assert result == local_destination
     assert os.path.exists(local_destination)
     with open(result, "r") as lines:
@@ -99,13 +95,31 @@ def test_storage_location(aws_model_store):
     assert aws_model_store._storage_location(prefix) == exp
 
 
-def test_get_location() -> str:
-    # Asserts that pulling the location out of meta data
-    # is correct
-    exp = "/path/to/file"
-    meta = {
-        "type": "aws:s3",
-        "bucket": _MOCK_BUCKET_NAME,
-        "prefix": exp,
-    }
-    assert _get_location(_MOCK_BUCKET_NAME, meta) == exp
+@pytest.mark.parametrize(
+    "meta_data,should_raise,result",
+    [
+        (
+            {
+                "bucket": _MOCK_BUCKET_NAME,
+                "prefix": "/path/to/file",
+            },
+            False,
+            "/path/to/file",
+        ),
+        (
+            {
+                "bucket": "a-different-bucket",
+                "prefix": "/path/to/file",
+            },
+            True,
+            None,
+        ),
+    ],
+)
+def test_get_location(aws_model_store, meta_data, should_raise, result):
+    # Asserts that pulling the location out of meta data is correct
+    if should_raise:
+        with pytest.raises(ValueError):
+            aws_model_store._get_storage_location(meta_data)
+    else:
+        assert aws_model_store._get_storage_location(meta_data) == result
