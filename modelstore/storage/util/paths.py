@@ -52,7 +52,9 @@ def get_versions_path(domain: str, state_name: Optional[str] = None) -> str:
     return os.path.join(MODELSTORE_ROOT, domain, "versions")
 
 
-def get_metadata_path(domain: str, model_id: str) -> str:
+def get_metadata_path(
+    domain: str, model_id: str, state_name: Optional[str] = None
+) -> str:
     """Creates a path where a meta-data file about a model is stored.
     I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
 
@@ -63,7 +65,7 @@ def get_metadata_path(domain: str, model_id: str) -> str:
         model_id (str): A UUID4 string that identifies this specific
         model.
     """
-    versions_path = get_versions_path(domain)
+    versions_path = get_versions_path(domain, state_name)
     return os.path.join(versions_path, f"{model_id}.json")
 
 

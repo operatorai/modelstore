@@ -112,6 +112,7 @@ class BlobStorage(CloudStorage):
             raise Exception(f"State: '{state_name}' does not exist")
         versions_path = get_versions_path(domain, state_name)
         versions = self._read_json_objects(versions_path)
+        # @TODO sort models by creation time stamp
         return [v["model"]["model_id"] for v in versions]
 
     def state_exists(self, state_name: str) -> bool:
@@ -153,7 +154,7 @@ class BlobStorage(CloudStorage):
             logger.debug("Model state '%s' does not exist", state_name)
             raise Exception(f"State '{state_name}' does not exist")
         model_path = get_metadata_path(domain, model_id)
-        versions_path = get_versions_path(domain, state_name)
+        model_state_path = get_metadata_path(domain, model_id, state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            meta_data = self._pull(model_path, tmp_dir)
-            self._push(meta_data, versions_path)
+            local_model_path = self._pull(model_path, tmp_dir)
+            self._push(local_model_path, model_state_path)
