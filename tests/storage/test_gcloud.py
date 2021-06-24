@@ -15,9 +15,10 @@ from unittest import mock
 
 import pytest
 from google.cloud import storage
-from modelstore.storage.gcloud import GoogleCloudStorage, _get_location
+from modelstore.storage.gcloud import GoogleCloudStorage
 
 # pylint: disable=redefined-outer-name
+# pylint: disable=protected-access
 _MOCK_BUCKET_NAME = "gcloud-bucket"
 
 
@@ -67,13 +68,31 @@ def test_storage_location(gcloud_model_store):
     assert gcloud_model_store._storage_location(prefix) == exp
 
 
-def test_get_location() -> str:
-    # Asserts that pulling the location out of meta data
-    # is correct
-    exp = "/path/to/file"
-    meta = {
-        "type": "google:cloud-storage",
-        "bucket": _MOCK_BUCKET_NAME,
-        "prefix": exp,
-    }
-    assert _get_location(_MOCK_BUCKET_NAME, meta) == exp
+@pytest.mark.parametrize(
+    "meta_data,should_raise,result",
+    [
+        (
+            {
+                "bucket": _MOCK_BUCKET_NAME,
+                "prefix": "/path/to/file",
+            },
+            False,
+            "/path/to/file",
+        ),
+        (
+            {
+                "bucket": "a-different-bucket",
+                "prefix": "/path/to/file",
+            },
+            True,
+            None,
+        ),
+    ],
+)
+def test_get_location(gcloud_model_store, meta_data, should_raise, result):
+    # Asserts that pulling the location out of meta data is correct
+    if should_raise:
+        with pytest.raises(ValueError):
+            gcloud_model_store._get_storage_location(meta_data)
+    else:
+        assert gcloud_model_store._get_storage_location(meta_data) == result

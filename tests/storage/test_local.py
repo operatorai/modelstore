@@ -33,3 +33,34 @@ def test_validate(fs_model_store):
 def test_list_versions_missing_domain(fs_model_store):
     versions = fs_model_store.list_versions("domain-that-doesnt-exist")
     assert len(versions) == 0
+
+
+def test_storage_location(fs_model_store):
+    # Asserts that the location meta data is correctly formatted
+    prefix = "/path/to/file"
+    exp = {
+        "type": "file_system",
+        "path": prefix,
+    }
+    assert fs_model_store._storage_location(prefix) == exp
+
+
+@pytest.mark.parametrize(
+    "meta_data,should_raise,result",
+    [
+        (
+            {
+                "path": "/path/to/file",
+            },
+            False,
+            "/path/to/file",
+        ),
+    ],
+)
+def test_get_location(fs_model_store, meta_data, should_raise, result):
+    # Asserts that pulling the location out of meta data is correct
+    if should_raise:
+        with pytest.raises(ValueError):
+            fs_model_store._get_storage_location(meta_data)
+    else:
+        assert fs_model_store._get_storage_location(meta_data) == result
