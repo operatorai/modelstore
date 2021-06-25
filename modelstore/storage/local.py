@@ -65,10 +65,9 @@ class FileSystemStorage(BlobStorage):
         shutil.copy(source, destination)
         return destination
 
-    def _pull(self, source: dict, destination: str) -> str:
-        path = _get_location(source)
-        file_name = os.path.split(path)[1]
-        shutil.copy(path, destination)
+    def _pull(self, source: str, destination: str) -> str:
+        file_name = os.path.split(source)[1]
+        shutil.copy(source, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
     def _read_json_objects(self, path: str) -> list:
@@ -99,13 +98,13 @@ class FileSystemStorage(BlobStorage):
             "path": os.path.abspath(archive_path),
         }
 
+    def _get_storage_location(self, meta: dict) -> str:
+        """ Extracts the storage location from a meta data dictionary """
+        return meta["path"]
+
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)
         return _read_json_file(path)
-
-
-def _get_location(meta: dict) -> str:
-    return meta["path"]
 
 
 def _read_json_file(path: str) -> dict:

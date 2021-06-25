@@ -68,12 +68,11 @@ class AWSStorage(BlobStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def _pull(self, source: dict, destination: str) -> str:
-        prefix = _get_location(self.bucket_name, source)
-        logger.info("Downloading from: %s...", prefix)
-        file_name = os.path.split(prefix)[1]
+    def _pull(self, source: str, destination: str) -> str:
+        logger.info("Downloading from: %s...", source)
+        file_name = os.path.split(source)[1]
         destination = os.path.join(destination, file_name)
-        self.client.download_file(self.bucket_name, prefix, destination)
+        self.client.download_file(self.bucket_name, source, destination)
         logger.debug("Finished: %s", destination)
         return destination
 
@@ -84,6 +83,12 @@ class AWSStorage(BlobStorage):
             "bucket": self.bucket_name,
             "prefix": prefix,
         }
+
+    def _get_storage_location(self, meta: dict) -> str:
+        """ Extracts the storage location from a meta data dictionary """
+        if self.bucket_name != meta.get("bucket"):
+            raise ValueError("Meta-data has a different bucket name")
+        return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
         results = []
@@ -102,9 +107,3 @@ class AWSStorage(BlobStorage):
         obj = self.client.get_object(Bucket=self.bucket_name, Key=path)
         body = obj["Body"].read()
         return json.loads(body)
-
-
-def _get_location(bucket_name, meta: dict) -> str:
-    if bucket_name != meta["bucket"]:
-        raise ValueError("Meta-data has a different bucket name")
-    return meta["prefix"]
