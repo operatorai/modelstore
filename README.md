@@ -6,7 +6,7 @@ The library's `ModelStore` will (a) version your models, (b) store them in a str
 
 For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
-This library has been developed using Python `3.6` and `3.7`. Please open an issue if you have any trouble!
+This library has been developed using Python `3.6`, `3.7` and `3.8`. Please open an issue if you have any trouble!
 
 
 ## Installation

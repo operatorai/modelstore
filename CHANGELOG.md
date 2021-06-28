@@ -6,7 +6,11 @@ Added Gensim support.
 
 Added Azure blob storage support.
 
+Added model states! You can now create a model state and add models to different states.
+
 Minor fixes to how modelstore uses env variables for the hosted storage, bug fixes for local file system storage.
+
+Downgraded the `requests` library because Google Colab uses `2.23.0` and so there was a `ContextualVersionConflict` error.
 
 ## modelstore 0.0.6
 
