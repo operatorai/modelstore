@@ -1,0 +1,13 @@
+scikit-learn==0.23.2
+xgboost==1.2.0
+click==7.1.2
+
+# To create a model store in AWS
+boto3==1.14.56
+
+# To create a model store in Azure
+azure-core==1.13.0
+azure-storage-blob==12.8.0
+
+# To create a model store in Google Cloud
+google-cloud-storage==1.31.0

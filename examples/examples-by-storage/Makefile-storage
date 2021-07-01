@@ -1,6 +1,0 @@
-include ../../Makefile-example
-
-.PHONY: run
-run:
-	@python main.py --model-type sklearn
-	@python main.py --model-type xgboost
