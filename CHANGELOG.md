@@ -20,13 +20,13 @@ Downgraded `requests` due to a version conflict with the version in Google Colab
 
 ## modelstore 0.0.52
 
-🆕  🆕  Added PyTorch Lightning and LightGBM support.
+🆕  Added PyTorch Lightning and LightGBM support.
 
-Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and do not want to manage your own storage, get in touch with me for an API key.
+🆕  Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and do not want to manage your own storage, get in touch with me for an API key.
 
 Fixed bugs related to listing domains and the models inside of a domain.
 
-Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models.
+🆕  Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models.
 
 ## modelstore 0.0.4
 
