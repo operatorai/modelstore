@@ -1,5 +1,5 @@
 VIRTUALENV_NAME=operatorai.example.$(shell pwd | rev | cut -d '/' -f 1 | rev)
-REPO_ROOT=$(shell cd ../../.. && pwd)
+REPO_ROOT=$(shell cd ../../ && pwd)
 
 .PHONY: name pyenv pyenv-local pyenv-prod pyenv-test pyenv-uninstall refresh-test
 
