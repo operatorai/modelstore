@@ -170,6 +170,12 @@ def test_create_model_state(mock_blob_storage):
     assert state_meta["state_name"] == "production"
 
 
+def test_set_model_state_unknown_state(mock_blob_storage):
+    with pytest.raises(Exception):
+        # Try to set a state without creating it first
+        mock_blob_storage.set_model_state("domain", "model-id", "a-new-state")
+
+
 def test_set_model_state(mock_blob_storage):
     # Create a model state
     mock_blob_storage.create_model_state("production")

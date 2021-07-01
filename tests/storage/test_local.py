@@ -64,3 +64,16 @@ def test_get_location(fs_model_store, meta_data, should_raise, result):
             fs_model_store._get_storage_location(meta_data)
     else:
         assert fs_model_store._get_storage_location(meta_data) == result
+
+
+@pytest.mark.parametrize(
+    "state_name,should_create,expect_exists",
+    [
+        ("state-1", False, False),
+        ("state-2", True, True),
+    ],
+)
+def test_state_exists(fs_model_store, state_name, should_create, expect_exists):
+    if should_create:
+        fs_model_store.create_model_state(state_name)
+    assert fs_model_store.state_exists(state_name) == expect_exists
