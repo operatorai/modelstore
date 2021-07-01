@@ -2,21 +2,25 @@
 
 ## Unreleased
 
-Added Gensim support.
+🆕  Added model states, and updated listing models to listing by state.
 
-Added Azure blob storage support.
+🆕  Added Gensim support.
+
+🆕  Added Azure blob storage support.
 
 Minor fixes to how modelstore uses env variables for the hosted storage, bug fixes for local file system storage.
 
+Downgraded `requests` due to a version conflict with the version in Google Colab.
+
 ## modelstore 0.0.6
 
-Added FastAI support.
+🆕  Added FastAI support.
 
-Add support for scikit-learn pipelines.
+🆕  Add support for scikit-learn pipelines.
 
 ## modelstore 0.0.52
 
-Added PyTorch Lightning and LightGBM support.
+🆕  🆕  Added PyTorch Lightning and LightGBM support.
 
 Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and do not want to manage your own storage, get in touch with me for an API key.
 
@@ -28,7 +32,7 @@ Added skeleton functions for summary stats about training data; implemented feat
 
 Clean up how meta-data is generated
 
-Add interactive authentication when using Google Colab
+🆕  Add interactive authentication when using Google Colab
 
 Upgraded dependencies to deal with an issue using `modelstore` in Colab
 
@@ -40,9 +44,9 @@ Simplied the API to just requiring `upload()` (no more `create_archive()`).
 
 ## modelstore 0.0.2
 
-Added models: `transformers`, `tensorflow`
+🆕  Added models: `transformers`, `tensorflow`
 
-Storage: downloading models via `download()`
+🆕  Storage: downloading models via `download()`
 
 Extended support to Python 3.6, 3.7, 3.8
 
