@@ -18,7 +18,12 @@ import warnings
 from pathlib import Path
 
 from modelstore.storage.blob_storage import BlobStorage
-from modelstore.storage.util.paths import MODELSTORE_ROOT
+from modelstore.storage.util.paths import (
+    MODELSTORE_ROOT,
+    get_metadata_path,
+    get_model_state_path,
+    is_valid_state_name,
+)
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
@@ -62,6 +67,7 @@ class FileSystemStorage(BlobStorage):
 
     def _push(self, source: str, destination: str) -> str:
         destination = self.relative_dir(destination)
+
         shutil.copy(source, destination)
         return destination
 
@@ -105,6 +111,24 @@ class FileSystemStorage(BlobStorage):
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)
         return _read_json_file(path)
+
+    def state_exists(self, state_name: str) -> bool:
+        """ Returns whether a model state with name state_name exists """
+        if not is_valid_state_name(state_name):
+            return False
+        state_path = self.relative_dir(get_model_state_path(state_name))
+        return os.path.exists(state_path)
+
+    def set_model_state(self, domain: str, model_id: str, state_name: str):
+        """ Adds the given model ID the set that are in the state_name path """
+        if not self.state_exists(state_name):
+            logger.debug("Model state '%s' does not exist", state_name)
+            raise Exception(f"State '{state_name}' does not exist")
+        model_path = self.relative_dir(get_metadata_path(domain, model_id))
+        model_state_path = self.relative_dir(
+            get_metadata_path(domain, model_id, state_name)
+        )
+        shutil.copy(model_path, model_state_path)
 
 
 def _read_json_file(path: str) -> dict:
