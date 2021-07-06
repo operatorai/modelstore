@@ -32,7 +32,26 @@ from modelstore.storage.util.paths import (
 
 @pytest.fixture
 def mock_blob_storage(tmp_path):
-    return FileSystemStorage(str(tmp_path))
+    mock_storage = FileSystemStorage(str(tmp_path))
+    # Adds two domains, each with two models
+    # Note: this only adds meta-data, doesn't add any artifacts
+    upload_time = datetime.now()
+    for domain in ["domain-1", "domain-2"]:
+        for model in ["model-1", "model-2"]:
+            created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
+            meta_data = {
+                "model": {
+                    "domain": domain,
+                    "model_id": model,
+                },
+                "code": {
+                    "created": created,
+                },
+                "modelstore": modelstore.__version__,
+            }
+            mock_storage.set_meta_data(domain, model, meta_data)
+            upload_time += timedelta(hours=1)
+    return mock_storage
 
 
 def get_file_contents(file_path: str):
@@ -105,25 +124,6 @@ def test_download(mock_blob_storage):
 
 
 def test_list_domains(mock_blob_storage):
-    # Create and set meta data for two domains
-    upload_time = datetime.now()
-    model = "test-model"
-    for domain in ["domain-1", "domain-2"]:
-        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        mock_blob_storage.set_meta_data(domain, model, meta_data)
-        upload_time += timedelta(hours=1)
-
-    # List back the domains; we expect two
     domains = mock_blob_storage.list_domains()
     assert len(domains) == 2
     # The results should be reverse time sorted
@@ -132,26 +132,8 @@ def test_list_domains(mock_blob_storage):
 
 
 def test_list_versions(mock_blob_storage):
-    # Create and set meta data for two models in the same domain
-    upload_time = datetime.now()
-    domain = "test-domain"
-    for model in ["model-1", "model-2"]:
-        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        mock_blob_storage.set_meta_data(domain, model, meta_data)
-        upload_time += timedelta(hours=1)
-
-    # List back the models; we expect two
-    versions = mock_blob_storage.list_versions(domain)
+    # List the models in domain-1; we expect two
+    versions = mock_blob_storage.list_versions("domain-1")
     assert len(versions) == 2
     # The results should be reverse time sorted
     assert versions[0] == "model-2"
@@ -170,6 +152,13 @@ def test_create_model_state(mock_blob_storage):
     assert state_meta["state_name"] == "production"
 
 
+def test_create_model_state_exists(mock_blob_storage):
+    # Create a model state
+    mock_blob_storage.create_model_state("production")
+    assert mock_blob_storage.state_exists("production")
+    assert not mock_blob_storage.state_exists("a-new-state")
+
+
 def test_set_model_state_unknown_state(mock_blob_storage):
     with pytest.raises(Exception):
         # Try to set a state without creating it first
@@ -177,17 +166,10 @@ def test_set_model_state_unknown_state(mock_blob_storage):
 
 
 def test_set_model_state(mock_blob_storage):
-    # Create a model state
     mock_blob_storage.create_model_state("production")
+    mock_blob_storage.set_model_state("domain-1", "model-1", "production")
 
-
-#     def set_model_state(self, domain: str, model_id: str, state_name: str):
-#         """ Adds the given model ID the set that are in the state_name path """
-#         if not self._state_exists(state_name):
-#             logger.debug("Model state '%s' does not exist", state_name)
-#             raise Exception(f"State '{state_name}' does not exist")
-#         model_meta_data_path = get_metadata_path(domain, model_id)
-#         versions_path = get_versions_path(domain, state_name)
-#         with tempfile.TemporaryDirectory() as tmp_dir:
-#             meta_data = self._pull(model_meta_data_path, tmp_dir)
-#             self._push(meta_data, versions_path)
+    # Listing versions
+    items = mock_blob_storage.list_versions("domain-1", "production")
+    assert len(items) == 1
+    assert items[0] == "model-1"

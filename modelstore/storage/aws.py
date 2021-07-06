@@ -97,13 +97,16 @@ class AWSStorage(BlobStorage):
         )
         for version in objects["Contents"]:
             if not version["Key"].endswith(".json"):
-                # @TODO tighter controls here
                 continue
             obj = self._read_json_object(version["Key"])
-            results.append(obj)
+            if obj is not None:
+                results.append(obj)
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
         obj = self.client.get_object(Bucket=self.bucket_name, Key=path)
         body = obj["Body"].read()
-        return json.loads(body)
+        try:
+            return json.loads(body)
+        except json.JSONDecodeError:
+            return None
