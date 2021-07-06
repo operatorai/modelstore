@@ -32,7 +32,25 @@ from modelstore.storage.util.paths import (
 
 @pytest.fixture
 def mock_blob_storage(tmp_path):
-    return FileSystemStorage(str(tmp_path))
+    mock_storage = FileSystemStorage(str(tmp_path))
+    # Adds two domains, each with two models
+    upload_time = datetime.now()
+    for domain in ["domain-1", "domain-2"]:
+        for model in ["model-1", "model-2"]:
+            created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
+            meta_data = {
+                "model": {
+                    "domain": domain,
+                    "model_id": model,
+                },
+                "code": {
+                    "created": created,
+                },
+                "modelstore": modelstore.__version__,
+            }
+            mock_storage.set_meta_data(domain, model, meta_data)
+            upload_time += timedelta(hours=1)
+    return mock_storage
 
 
 def get_file_contents(file_path: str):
@@ -105,25 +123,6 @@ def test_download(mock_blob_storage):
 
 
 def test_list_domains(mock_blob_storage):
-    # Create and set meta data for two domains
-    upload_time = datetime.now()
-    model = "test-model"
-    for domain in ["domain-1", "domain-2"]:
-        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        mock_blob_storage.set_meta_data(domain, model, meta_data)
-        upload_time += timedelta(hours=1)
-
-    # List back the domains; we expect two
     domains = mock_blob_storage.list_domains()
     assert len(domains) == 2
     # The results should be reverse time sorted
@@ -132,26 +131,8 @@ def test_list_domains(mock_blob_storage):
 
 
 def test_list_versions(mock_blob_storage):
-    # Create and set meta data for two models in the same domain
-    upload_time = datetime.now()
-    domain = "test-domain"
-    for model in ["model-1", "model-2"]:
-        created = upload_time.strftime("%Y/%m/%d/%H:%M:%S")
-        meta_data = {
-            "model": {
-                "domain": domain,
-                "model_id": model,
-            },
-            "code": {
-                "created": created,
-            },
-            "modelstore": modelstore.__version__,
-        }
-        mock_blob_storage.set_meta_data(domain, model, meta_data)
-        upload_time += timedelta(hours=1)
-
-    # List back the models; we expect two
-    versions = mock_blob_storage.list_versions(domain)
+    # List the models in domain-1; we expect two
+    versions = mock_blob_storage.list_versions("domain-1")
     assert len(versions) == 2
     # The results should be reverse time sorted
     assert versions[0] == "model-2"
