@@ -34,6 +34,7 @@ from modelstore.storage.util.paths import (
 def mock_blob_storage(tmp_path):
     mock_storage = FileSystemStorage(str(tmp_path))
     # Adds two domains, each with two models
+    # Note: this only adds meta-data, doesn't add any artifacts
     upload_time = datetime.now()
     for domain in ["domain-1", "domain-2"]:
         for model in ["model-1", "model-2"]:
