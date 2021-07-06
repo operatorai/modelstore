@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import json
 import os
 
 import boto3
@@ -76,12 +77,35 @@ def test_push_and_pull(tmp_path, moto_boto, aws_model_store):
         assert contents == "expected-result"
 
 
-# @TODO missing tests!
-# def test_read_json_objects(self, path: str) -> list:
-# pass
+def test_read_json_objects_ignores_non_json(tmp_path, aws_model_store):
+    # Create files with different suffixes
+    for file_type in ["txt", "json"]:
+        source = os.path.join(tmp_path, f"test-file-source.{file_type}")
+        with open(source, "w") as out:
+            out.write(json.dumps({"key": "value"}))
 
-# def test_read_json_object(self, path: str) -> dict:
-# pass
+        # Push the file to storage
+        remote_destination = f"prefix/to/file/test-file-destination.{file_type}"
+        aws_model_store._push(source, remote_destination)
+
+    # Read the json files at the prefix
+    items = aws_model_store._read_json_objects("prefix/to/file/")
+    assert len(items) == 1
+
+
+def test_read_json_object_fails_gracefully(tmp_path, aws_model_store):
+    # Create files with different suffixes
+    source = os.path.join(tmp_path, "test-file-source.json")
+    with open(source, "w") as out:
+        out.write("not-json-content")
+
+    # Push the file to storage
+    remote_destination = f"prefix/to/file/test-file-destination.json"
+    aws_model_store._push(source, remote_destination)
+
+    # Read the json files at the prefix
+    item = aws_model_store._read_json_object(remote_destination)
+    assert item is None
 
 
 def test_storage_location(aws_model_store):
