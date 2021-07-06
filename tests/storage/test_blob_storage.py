@@ -152,6 +152,13 @@ def test_create_model_state(mock_blob_storage):
     assert state_meta["state_name"] == "production"
 
 
+def test_create_model_state_exists(mock_blob_storage):
+    # Create a model state
+    mock_blob_storage.create_model_state("production")
+    assert mock_blob_storage.state_exists("production")
+    assert not mock_blob_storage.state_exists("a-new-state")
+
+
 def test_set_model_state_unknown_state(mock_blob_storage):
     with pytest.raises(Exception):
         # Try to set a state without creating it first
@@ -159,18 +166,10 @@ def test_set_model_state_unknown_state(mock_blob_storage):
 
 
 def test_set_model_state(mock_blob_storage):
-    # Create a model state
     mock_blob_storage.create_model_state("production")
-    assert mock_blob_storage.state_exists("production")
+    mock_blob_storage.set_model_state("domain-1", "model-1", "production")
 
-
-#     def set_model_state(self, domain: str, model_id: str, state_name: str):
-#         """ Adds the given model ID the set that are in the state_name path """
-#         if not self._state_exists(state_name):
-#             logger.debug("Model state '%s' does not exist", state_name)
-#             raise Exception(f"State '{state_name}' does not exist")
-#         model_meta_data_path = get_metadata_path(domain, model_id)
-#         versions_path = get_versions_path(domain, state_name)
-#         with tempfile.TemporaryDirectory() as tmp_dir:
-#             meta_data = self._pull(model_meta_data_path, tmp_dir)
-#             self._push(meta_data, versions_path)
+    # Listing versions
+    items = mock_blob_storage.list_versions("domain-1", "production")
+    assert len(items) == 1
+    assert items[0] == "model-1"
