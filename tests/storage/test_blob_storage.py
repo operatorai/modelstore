@@ -161,6 +161,7 @@ def test_set_model_state_unknown_state(mock_blob_storage):
 def test_set_model_state(mock_blob_storage):
     # Create a model state
     mock_blob_storage.create_model_state("production")
+    assert mock_blob_storage.state_exists("production")
 
 
 #     def set_model_state(self, domain: str, model_id: str, state_name: str):
