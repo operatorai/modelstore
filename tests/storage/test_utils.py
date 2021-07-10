@@ -15,6 +15,7 @@ import os
 
 import pytest
 
+# pylint: disable=redefined-outer-name
 TEST_FILE_NAME = "test-file.txt"
 TEST_FILE_CONTENTS = "expected-contents"
 
@@ -31,3 +32,13 @@ def file_contains_expected_contents(file_path):
     with open(file_path, "r") as lines:
         contents = lines.read()
     return contents == TEST_FILE_CONTENTS
+
+
+@pytest.fixture
+def remote_path():
+    return "prefix/to/file/"
+
+
+@pytest.fixture
+def remote_file_path(remote_path):
+    return os.path.join(remote_path, TEST_FILE_NAME)

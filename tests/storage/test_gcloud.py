@@ -11,11 +11,23 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import os
 from unittest import mock
 
 import pytest
 from google.cloud import storage
+from google.cloud.storage.blob import Blob
 from modelstore.storage.gcloud import GoogleCloudStorage
+
+# pylint: disable=unused-import
+from tests.storage.test_utils import (
+    TEST_FILE_CONTENTS,
+    TEST_FILE_NAME,
+    file_contains_expected_contents,
+    remote_file_path,
+    remote_path,
+    temp_file,
+)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -23,19 +35,26 @@ _MOCK_BUCKET_NAME = "gcloud-bucket"
 
 
 @pytest.fixture
-def gcloud_client():
+def gcloud_bucket():
+    mock_bucket = mock.create_autospec(storage.Bucket)
+    mock_bucket.name = _MOCK_BUCKET_NAME
+    return mock_bucket
+
+
+@pytest.fixture
+def gcloud_client(gcloud_bucket):
     mock_client = mock.create_autospec(storage.Client)
 
     # Buckets
-    mock_bucket = mock.create_autospec(storage.Bucket)
-    mock_bucket.name = _MOCK_BUCKET_NAME
-    mock_bucket.client = mock_client
+    gcloud_bucket.client = mock_client
+    mock_client.get_bucket.return_value = gcloud_bucket
+    mock_client.list_buckets.return_value = [gcloud_bucket]
 
     # Blobs
     mock_blob = mock.create_autospec(storage.Blob)
-    mock_bucket.blob.return_value = mock_blob
+    mock_blob.download_as_string.return_value = "file-contents"
+    gcloud_bucket.blob.return_value = mock_blob
 
-    mock_client.list_buckets.return_value = [mock_bucket]
     return mock_client
 
 
@@ -55,6 +74,40 @@ def test_validate_missing_bucket(gcloud_client):
         project_name="", bucket_name="missing-bucket", client=gcloud_client
     )
     assert not gcloud_model_store.validate()
+
+
+def test_push(temp_file, remote_file_path, gcloud_model_store):
+    result = gcloud_model_store._push(temp_file, remote_file_path)
+    assert result == remote_file_path
+
+
+def test_pull(temp_file, tmp_path, remote_file_path, gcloud_model_store):
+    # Push the file to storage
+    remote_destination = gcloud_model_store._push(temp_file, remote_file_path)
+
+    # Pull the file back from storage
+    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
+    result = gcloud_model_store._pull(remote_destination, tmp_path)
+    assert result == local_destination
+    assert os.path.exists(local_destination)
+    assert file_contains_expected_contents(local_destination)
+
+
+def test_read_json_objects_ignores_non_json(gcloud_bucket, gcloud_model_store):
+    gcloud_model_store.client.list_blobs.return_value = [
+        Blob(name="test-file-source-1.txt", bucket=gcloud_bucket),
+        Blob(name="test-file-source-2.txt", bucket=gcloud_bucket),
+    ]
+    # Argument (remote prefix) is ignored here because of mock above
+    items = gcloud_model_store._read_json_objects("")
+    assert len(items) == 0
+
+
+def test_read_json_object_fails_gracefully(gcloud_model_store):
+    # Read a file that does not contain any JSON
+    # Argument (remote prefix) is ignored here because of mock above
+    item = gcloud_model_store._read_json_object("")
+    assert item is None
 
 
 def test_storage_location(gcloud_model_store):
