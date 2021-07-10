@@ -11,10 +11,21 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import json
 import os
 
 import pytest
 from modelstore.storage.local import FileSystemStorage
+
+# pylint: disable=unused-import
+from tests.storage.test_utils import (
+    TEST_FILE_CONTENTS,
+    TEST_FILE_NAME,
+    file_contains_expected_contents,
+    remote_file_path,
+    remote_path,
+    temp_file,
+)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -28,6 +39,54 @@ def fs_model_store(tmp_path):
 def test_validate(fs_model_store):
     assert fs_model_store.validate()
     assert os.path.exists(fs_model_store.root_dir)
+
+
+def test_push(temp_file, remote_file_path, fs_model_store):
+    result = fs_model_store._push(temp_file, remote_file_path)
+    assert result == os.path.join(fs_model_store.root_dir, remote_file_path)
+
+
+def test_pull(temp_file, tmp_path, remote_file_path, fs_model_store):
+    # Push the file to storage
+    remote_destination = fs_model_store._push(temp_file, remote_file_path)
+
+    # Pull the file back from storage
+    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
+    result = fs_model_store._pull(remote_destination, tmp_path)
+    assert result == local_destination
+    assert os.path.exists(local_destination)
+    assert file_contains_expected_contents(local_destination)
+
+
+def test_read_json_objects_ignores_non_json(
+    tmp_path, remote_path, fs_model_store
+):
+    # Create files with different suffixes
+    for file_type in ["txt", "json"]:
+        source = os.path.join(tmp_path, f"test-file-source.{file_type}")
+        with open(source, "w") as out:
+            out.write(json.dumps({"key": "value"}))
+
+        # Push the file to storage
+        remote_destination = os.path.join(
+            remote_path, f"test-file-destination.{file_type}"
+        )
+        fs_model_store._push(source, remote_destination)
+
+    # Read the json files at the prefix
+    items = fs_model_store._read_json_objects(remote_path)
+    assert len(items) == 1
+
+
+def test_read_json_object_fails_gracefully(
+    temp_file, remote_file_path, fs_model_store
+):
+    # Push a file that doesn't contain JSON to storage
+    remote_path = fs_model_store._push(temp_file, remote_file_path)
+
+    # Read the json files at the prefix
+    item = fs_model_store._read_json_object(remote_path)
+    assert item is None
 
 
 def test_list_versions_missing_domain(fs_model_store):
