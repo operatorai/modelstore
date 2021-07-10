@@ -123,15 +123,18 @@ class AzureBlobStorage(BlobStorage):
         blobs = self._container_client().list_blobs(name_starts_with=path + "/")
         for blob in blobs:
             if not blob.name.endswith(".json"):
-                # @TODO tighter controls here
                 continue
             blob_client = self._blob_client(blob)
             obj = blob_client.download_blob().readall()
-            results.append(json.loads(obj))
+            if obj is not None:
+                results.append(json.loads(obj))
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
         """ Returns a dictionary of the JSON stored in a given path """
         blob_client = self._blob_client(path)
-        obj = blob_client.download_blob().readall()
-        return json.loads(obj)
+        body = blob_client.download_blob().readall()
+        try:
+            return json.loads(body)
+        except json.JSONDecodeError:
+            return None
