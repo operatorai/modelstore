@@ -83,11 +83,11 @@ class FileSystemStorage(BlobStorage):
         results = []
         for entry in os.listdir(path):
             if not entry.endswith(".json"):
-                # @TODO tighter controls
                 continue
             version_path = os.path.join(path, entry)
-            meta = _read_json_file(version_path)
-            results.append(meta)
+            body = _read_json_file(version_path)
+            if body is not None:
+                results.append(body)
         return sorted_by_created(results)
 
     def relative_dir(self, file_path: str) -> str:
@@ -132,6 +132,8 @@ class FileSystemStorage(BlobStorage):
 
 
 def _read_json_file(path: str) -> dict:
-    with open(path, "r") as lines:
-        meta = json.loads(lines.read())
-    return meta
+    try:
+        with open(path, "r") as lines:
+            return json.loads(lines.read())
+    except json.JSONDecodeError:
+        return None
