@@ -61,7 +61,7 @@ class KerasManager(ModelManager):
         if not self.matches_with(**kwargs):
             raise TypeError("model is not a keras.Model!")
         return [
-            partial(_save_model, model=model),
+            partial(_save_model, model=kwargs["model"]),
             partial(
                 save_json,
                 file_name=MODEL_CONFIG,
