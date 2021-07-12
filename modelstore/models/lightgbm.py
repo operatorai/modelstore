@@ -37,6 +37,12 @@ class LightGbmManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        import lightgbm as lgb
+
+        return isinstance(kwargs.get("model"), lgb.Booster)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "lightgbm", "type": type(kwargs["model"]).__name__}
@@ -46,6 +52,9 @@ class LightGbmManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
+        if not self.matches_with(**kwargs):
+            raise TypeError("Model is not a lgb.Booster!")
+
         return [
             partial(save_model, model=kwargs["model"]),
             partial(dump_model, model=kwargs["model"]),
@@ -61,11 +70,6 @@ class LightGbmManager(ModelManager):
 
 def save_model(tmp_dir: str, model: "lgb.Booster") -> str:
     """From the docs: dump model into JSON file"""
-    import lightgbm as lgb
-
-    if not isinstance(model, lgb.Booster):
-        raise TypeError("Model is not a lgb.Booster!")
-
     logger.debug("Saving lightgbm model")
     model_file = os.path.join(tmp_dir, MODEL_FILE)
     model.save_model(model_file)
@@ -74,11 +78,6 @@ def save_model(tmp_dir: str, model: "lgb.Booster") -> str:
 
 def dump_model(tmp_dir: str, model: "lgb.Booster") -> str:
     """From the docs: dump model into JSON file"""
-    import lightgbm as lgb
-
-    if not isinstance(model, lgb.Booster):
-        raise TypeError("Model is not a lgb.Booster!")
-
     logger.debug("Dumping lightgbm model as JSON")
     model_file = os.path.join(tmp_dir, MODEL_JSON)
     with open(model_file, "w") as out:

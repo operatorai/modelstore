@@ -45,6 +45,15 @@ class PyTorchLightningManager(ModelManager):
     def _required_kwargs(self):
         return ["trainer", "model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        from pytorch_lightning import Trainer
+        from pytorch_lightning.core.lightning import LightningModule
+
+        return isinstance(kwargs.get("trainer"), Trainer) and isinstance(
+            kwargs["model"], LightningModule
+        )
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {
@@ -57,6 +66,11 @@ class PyTorchLightningManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
+        if not self.matches_with(**kwargs):
+            raise TypeError(
+                "'trainer' or 'model' is not from pytorch_lightning!"
+            )
+
         return [
             partial(
                 _save_lightning_model,
@@ -77,14 +91,6 @@ class PyTorchLightningManager(ModelManager):
 def _save_lightning_model(
     tmp_dir: str, trainer: "Trainer", model: "LightningModule"
 ) -> str:
-    from pytorch_lightning import Trainer
-    from pytorch_lightning.core.lightning import LightningModule
-
-    if not isinstance(trainer, Trainer):
-        raise TypeError("'trainer' is not a pytorch_lightning.Trainer!")
-    if not isinstance(model, LightningModule):
-        raise TypeError("Model is not a LightningModule!")
-
     file_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
     trainer.save_checkpoint(file_path)
     return file_path

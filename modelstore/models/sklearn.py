@@ -43,6 +43,13 @@ class SKLearnManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        import sklearn
+
+        # @TODO make sure xgboost doesn't match here
+        return isinstance(kwargs["model"], sklearn.base.BaseEstimator)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {
@@ -64,13 +71,10 @@ class SKLearnManager(ModelManager):
         return data
 
     def _get_functions(self, **kwargs) -> list:
-        # pylint: disable=import-outside-toplevel
-        import sklearn
-
-        if not isinstance(kwargs["model"], sklearn.base.BaseEstimator):
+        if not self.matches_with(**kwargs):
             raise TypeError("This model is not an sklearn model!")
 
-        # @TODO: export/save in onnx format
+        # @TODO: export/save in onnx format?
         return [partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB)]
 
     def _get_params(self, **kwargs) -> dict:

@@ -14,9 +14,10 @@
 import os
 import tarfile
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 from modelstore.models.managers import iter_libraries
+from modelstore.models.modelmanager import ModelManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
@@ -94,8 +95,12 @@ class ModelStore:
                 f"Failed to set up the {type(self.storage).__name__} storage."
             )
         # Supported machine learning model libraries
+        managers = []
         for library, manager in iter_libraries(self.storage):
-            object.__setattr__(self, library, manager)
+            setattr(self, library, manager)
+            managers.append(manager)
+        setattr(self, "_managers", managers)
+        object.__setattr__(self, "_managers", managers)
 
     def list_domains(self) -> list:
         """Returns a list of dicts, containing info about all
@@ -109,6 +114,13 @@ class ModelStore:
         models that have been uploaded to a domain; if state_name
         is given results are filtered to models set to that state"""
         return self.storage.list_versions(domain, state_name)
+
+    def upload(self, domain: str, **kwargs) -> dict:
+        # pylint: disable=no-member
+        for manager in self._managers:
+            if manager.matches_with(**kwargs):
+                return manager.upload(domain, kwargs)
+        # TODO: what if none match
 
     def download(
         self, local_path: str, domain: str, model_id: str = None

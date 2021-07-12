@@ -46,6 +46,14 @@ class PyTorchManager(ModelManager):
     def _required_kwargs(self):
         return ["model", "optimizer"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        import torch
+
+        return isinstance(kwargs.get("model"), torch.nn.Module) and isinstance(
+            kwargs.get("optimizer"), torch.optim.Optimizer
+        )
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "pytorch"}
@@ -55,6 +63,8 @@ class PyTorchManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
+        if not self.matches_with(**kwargs):
+            raise TypeError("model/optimizer is not from torch!")
         return [
             partial(
                 _save_state_dict,
@@ -78,11 +88,6 @@ def _save_state_dict(
     tmp_dir: str, model: "nn.Module", optimizer: "optim.Optimizer"
 ) -> str:
     import torch
-
-    if not isinstance(model, torch.nn.Module):
-        raise TypeError("Model is not a torch.nn.Module!")
-    if not isinstance(optimizer, torch.optim.Optimizer):
-        raise TypeError("Optimizer is not a torch.optim.Optimizer!")
 
     file_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
     torch.save(

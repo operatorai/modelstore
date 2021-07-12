@@ -40,6 +40,12 @@ class TensorflowManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        from tensorflow import keras
+
+        return isinstance(kwargs.get("model"), keras.Model)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "tensorflow"}

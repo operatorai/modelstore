@@ -45,6 +45,12 @@ class XGBoostManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        import xgboost as xgb
+
+        return isinstance(kwargs.get("model"), xgb.XGBModel)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "xgboost", "type": type(kwargs["model"]).__name__}

@@ -42,6 +42,12 @@ class GensimManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        import gensim
+
+        return isinstance(kwargs.get("model"), gensim.utils.SaveLoad)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {
@@ -55,10 +61,8 @@ class GensimManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
-        import gensim
-
-        if not isinstance(kwargs["model"], gensim.utils.SaveLoad):
-            raise TypeError("This model is not an gensim SaveLoad model")
+        if not self.matches_with(**kwargs):
+            raise TypeError("This model is not a gensim SaveLoad model")
 
         funcs = [partial(_save_model, model=kwargs["model"])]
         if hasattr(kwargs["model"], "wv"):

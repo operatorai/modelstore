@@ -37,6 +37,9 @@ class MissingDepManager(ModelManager):
     def required_dependencies(cls) -> list:
         return []
 
+    def matches_with(self, **kwargs) -> bool:
+        return False
+
     def _get_functions(self, **kwargs) -> list:
         return []
 
