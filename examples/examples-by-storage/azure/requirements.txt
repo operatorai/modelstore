@@ -1,5 +1,0 @@
-azure-core==1.13.0
-azure-storage-blob==12.8.0
-scikit-learn==0.23.2
-xgboost==1.2.0
-click==7.1.2

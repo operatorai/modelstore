@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import json
 import os
 
 import boto3
@@ -18,18 +19,19 @@ import pytest
 from modelstore.storage.aws import AWSStorage
 from moto import mock_s3
 
+# pylint: disable=unused-import
+from tests.storage.test_utils import (
+    TEST_FILE_CONTENTS,
+    TEST_FILE_NAME,
+    file_contains_expected_contents,
+    remote_file_path,
+    remote_path,
+    temp_file,
+)
+
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 _MOCK_BUCKET_NAME = "existing-bucket"
-
-
-def get_file_contents(conn, prefix):
-    return (
-        conn.Object(_MOCK_BUCKET_NAME, prefix)
-        .get()["Body"]
-        .read()
-        .decode("utf-8")
-    )
 
 
 @pytest.fixture(autouse=True)
@@ -54,45 +56,71 @@ def test_validate_missing_bucket():
     assert not aws_model_store.validate()
 
 
-def test_push_and_pull(tmp_path, moto_boto, aws_model_store):
-    # Create a file
-    source = os.path.join(tmp_path, "test-file-source.txt")
-    with open(source, "w") as out:
-        out.write("expected-result")
+def test_push(temp_file, remote_file_path, moto_boto, aws_model_store):
+    def get_file_contents(prefix):
+        return (
+            moto_boto.Object(_MOCK_BUCKET_NAME, prefix)
+            .get()["Body"]
+            .read()
+            .decode("utf-8")
+        )
 
+    result = aws_model_store._push(temp_file, remote_file_path)
+    assert result == remote_file_path
+    assert get_file_contents(result) == TEST_FILE_CONTENTS
+
+
+def test_pull(temp_file, tmp_path, remote_file_path, aws_model_store):
     # Push the file to storage
-    remote_destination = "prefix/to/file/test-file-destination.txt"
-    result = aws_model_store._push(source, remote_destination)
-    assert result == remote_destination
-    assert get_file_contents(moto_boto, remote_destination) == "expected-result"
+    remote_destination = aws_model_store._push(temp_file, remote_file_path)
 
     # Pull the file back from storage
-    local_destination = os.path.join(tmp_path, "test-file-destination.txt")
+    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
     result = aws_model_store._pull(remote_destination, tmp_path)
     assert result == local_destination
     assert os.path.exists(local_destination)
-    with open(result, "r") as lines:
-        contents = lines.read()
-        assert contents == "expected-result"
+    assert file_contains_expected_contents(local_destination)
 
 
-# @TODO missing tests!
-# def test_read_json_objects(self, path: str) -> list:
-# pass
+def test_read_json_objects_ignores_non_json(
+    tmp_path, remote_path, aws_model_store
+):
+    # Create files with different suffixes
+    for file_type in ["txt", "json"]:
+        source = os.path.join(tmp_path, f"test-file-source.{file_type}")
+        with open(source, "w") as out:
+            out.write(json.dumps({"key": "value"}))
 
-# def test_read_json_object(self, path: str) -> dict:
-# pass
+        # Push the file to storage
+        remote_destination = os.path.join(
+            remote_path, f"test-file-destination.{file_type}"
+        )
+        aws_model_store._push(source, remote_destination)
+
+    # Read the json files at the prefix
+    items = aws_model_store._read_json_objects(remote_path)
+    assert len(items) == 1
 
 
-def test_storage_location(aws_model_store):
+def test_read_json_object_fails_gracefully(
+    temp_file, remote_file_path, aws_model_store
+):
+    # Push a file that doesn't contain JSON to storage
+    remote_path = aws_model_store._push(temp_file, remote_file_path)
+
+    # Read the json files at the prefix
+    item = aws_model_store._read_json_object(remote_path)
+    assert item is None
+
+
+def test_storage_location(aws_model_store, remote_path):
     # Asserts that the location meta data is correctly formatted
-    prefix = "/path/to/file"
     exp = {
         "type": "aws:s3",
         "bucket": _MOCK_BUCKET_NAME,
-        "prefix": prefix,
+        "prefix": remote_path,
     }
-    assert aws_model_store._storage_location(prefix) == exp
+    assert aws_model_store._storage_location(remote_path) == exp
 
 
 @pytest.mark.parametrize(

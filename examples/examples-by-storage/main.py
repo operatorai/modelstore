@@ -4,17 +4,12 @@ import os
 import click
 import numpy as np
 import xgboost as xgb
-from modelstore import ModelStore
 from sklearn.datasets import load_diabetes
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
-
-def create_model_store() -> ModelStore:
-    # The modelstore library assumes you have already created
-    # an s3 bucket and will raise an exception if it doesn't exist
-    return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+from modelstores import create_model_store
 
 
 def train(model_type):
@@ -53,9 +48,17 @@ def train(model_type):
 
 
 @click.command()
-def main():
+@click.option(
+    "--modelstore-in",
+    type=click.Choice(
+        ["aws", "azure", "gcloud", "filesystem", "hosted"], case_sensitive=False
+    ),
+)
+def main(modelstore_in):
+    print(f"\n🆕  Running modelstore example with {modelstore_in} backend.")
+
     # Create a model store instance
-    modelstore = create_model_store()
+    modelstore = create_model_store(modelstore_in)
     model_domain = "diabetes-boosting-demo"
 
     # In this demo, we train two models, so that we can demonstrate
@@ -78,7 +81,7 @@ def main():
         print(json.dumps(meta_data, indent=4))
 
         # Download the model back!
-        target = f"downloaded-{model_type}-model"
+        target = os.path.join(modelstore_in, f"downloaded-{model_type}-model")
         os.makedirs(target, exist_ok=True)
         model_path = modelstore.download(
             local_path=target,
@@ -98,6 +101,11 @@ def main():
     versions = modelstore.list_versions(domain=model_domain)
     for version in versions:
         print(f"\t  Domain: {model_domain} has model with id={version}")
+
+    if modelstore_in == "hosted":
+        # The rest is currently not implemented in the 'hosted'
+        # modelstore
+        return
 
     # Create a new model state
     state_prod = "production"

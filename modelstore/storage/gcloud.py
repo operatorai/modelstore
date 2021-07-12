@@ -129,10 +129,13 @@ class GoogleCloudStorage(BlobStorage):
         )
         for blob in blobs:
             if not blob.name.endswith(".json"):
-                # @TODO tighter controls here
                 continue
             obj = blob.download_as_string()
-            results.append(json.loads(obj))
+            try:
+                obj = json.loads(obj)
+                results.append(obj)
+            except json.JSONDecodeError:
+                continue
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
@@ -140,4 +143,7 @@ class GoogleCloudStorage(BlobStorage):
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(path)
         obj = blob.download_as_string()
-        return json.loads(obj)
+        try:
+            return json.loads(obj)
+        except json.JSONDecodeError:
+            return None

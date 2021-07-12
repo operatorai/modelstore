@@ -71,6 +71,7 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
+        # @TODO model_id is unused
         bucket_path = get_archive_path(domain, local_path)
         prefix = self._push(local_path, bucket_path)
         return self._storage_location(prefix)

@@ -13,7 +13,6 @@
 #    limitations under the License.
 import json
 import os
-from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -25,6 +24,9 @@ from azure.storage.blob import (
     StorageStreamDownloader,
 )
 from modelstore.storage.azure import AzureBlobStorage
+
+# pylint: disable=unused-import
+from tests.storage.test_utils import temp_file
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -66,13 +68,6 @@ def azure_client(mock_blob_client):
     mock_client = mock.create_autospec(BlobServiceClient)
     mock_client.get_container_client.return_value = mock_container_client
     return mock_client
-
-
-@pytest.fixture
-def temp_file(tmp_path):
-    source = os.path.join(tmp_path, "test-file.txt")
-    Path(source).touch()
-    return source
 
 
 @pytest.fixture
