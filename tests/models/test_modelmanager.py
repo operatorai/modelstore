@@ -64,6 +64,9 @@ class MockModelManager(ModelManager):
     def _required_kwargs(self) -> list:
         return ["model", "config"]
 
+    def matches_with(self, **kwargs) -> bool:
+        return True
+
 
 def mock_save_model(tmp_dir: str) -> str:
     path = os.path.join(tmp_dir, "model.joblib")

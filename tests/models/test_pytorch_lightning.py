@@ -105,11 +105,13 @@ def test_required_kwargs(pytorchlightning_manager):
     assert pytorchlightning_manager._required_kwargs() == ["trainer", "model"]
 
 
-def test_get_functions(pytorchlightning_manager):
+def test_get_functions(
+    pytorchlightning_manager, pytorchlightning_model, pytorchlightning_trainer
+):
     assert (
         len(
             pytorchlightning_manager._get_functions(
-                trainer="trainer", model="model"
+                trainer=pytorchlightning_trainer, model=pytorchlightning_model
             )
         )
         == 1

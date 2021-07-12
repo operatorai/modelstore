@@ -53,8 +53,8 @@ def test_required_kwargs(lightgbm_manager):
     assert lightgbm_manager._required_kwargs() == ["model"]
 
 
-def test_get_functions(lightgbm_manager):
-    assert len(lightgbm_manager._get_functions(model="model")) == 2
+def test_get_functions(lightgbm_manager, lgb_model):
+    assert len(lightgbm_manager._get_functions(model=lgb_model)) == 2
 
 
 def test_get_params(lightgbm_manager, lgb_model):

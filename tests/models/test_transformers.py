@@ -80,9 +80,13 @@ def test_required_kwargs(tr_manager):
     assert tr_manager._required_kwargs() == ["model", "tokenizer"]
 
 
-def test_get_functions(tr_manager):
+def test_get_functions(tr_manager, model_config, tr_model, tokenizer):
     assert (
-        len(tr_manager._get_functions(config="c", model="m", tokenizer="t"))
+        len(
+            tr_manager._get_functions(
+                config=model_config, model=tr_model, tokenizer=tokenizer
+            )
+        )
         == 1
     )
 
