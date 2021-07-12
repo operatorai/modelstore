@@ -14,10 +14,9 @@
 import os
 import tarfile
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 from modelstore.models.managers import iter_libraries
-from modelstore.models.modelmanager import ModelManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
@@ -97,9 +96,8 @@ class ModelStore:
         # Supported machine learning model libraries
         managers = []
         for library, manager in iter_libraries(self.storage):
-            setattr(self, library, manager)
+            object.__setattr__(self, library, manager)
             managers.append(manager)
-        setattr(self, "_managers", managers)
         object.__setattr__(self, "_managers", managers)
 
     def list_domains(self) -> list:
