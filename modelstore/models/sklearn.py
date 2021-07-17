@@ -48,6 +48,9 @@ class SKLearnManager(ModelManager):
         try:
             import xgboost as xgb
 
+            # xgboost models are an instance of sklearn.base.BaseEstimator
+            # but we want to upload them using the xgboost manager
+            # we therefore check specifically for this case
             if isinstance(kwargs.get("model"), xgb.XGBModel):
                 return False
         except ImportError:
