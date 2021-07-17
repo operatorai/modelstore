@@ -66,6 +66,12 @@ def test_required_kwargs(fastai_manager):
     assert fastai_manager._required_kwargs() == ["learner"]
 
 
+def test_matches_with(fastai_manager, fastai_learner):
+    assert fastai_manager.matches_with(learner=fastai_learner)
+    assert not fastai_manager.matches_with(learner="a-string-value")
+    assert not fastai_manager.matches_with(model=fastai_learner)
+
+
 def test_get_functions(fastai_manager, fastai_learner):
     assert len(fastai_manager._get_functions(learner=fastai_learner)) == 2
 

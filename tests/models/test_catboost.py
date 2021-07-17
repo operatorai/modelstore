@@ -58,6 +58,7 @@ def test_required_kwargs(catboost_manager):
 def test_matches_with(catboost_manager, catb_model):
     assert catboost_manager.matches_with(model=catb_model)
     assert not catboost_manager.matches_with(model="a-string-value")
+    assert not catboost_manager.matches_with(catboost_model=catb_model)
 
 
 def test_get_functions(catboost_manager, catb_model):
