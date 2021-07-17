@@ -80,6 +80,16 @@ def test_required_kwargs(tr_manager):
     assert tr_manager._required_kwargs() == ["model", "tokenizer"]
 
 
+def test_matches_with(tr_manager, model_config, tr_model, tokenizer):
+    assert tr_manager.matches_with(
+        config=model_config, model=tr_model, tokenizer=tokenizer
+    )
+    assert not tr_manager.matches_with(
+        config=model_config, model="a-string-value", tokenizer=tokenizer
+    )
+    assert not tr_manager.matches_with(classifier=tr_model)
+
+
 def test_get_functions(tr_manager, model_config, tr_model, tokenizer):
     assert (
         len(
