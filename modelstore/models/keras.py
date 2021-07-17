@@ -43,6 +43,12 @@ class KerasManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        from tensorflow import keras
+
+        return isinstance(kwargs.get("model"), keras.Model)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "keras"}
@@ -52,13 +58,14 @@ class KerasManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
-        model = kwargs["model"]
+        if not self.matches_with(**kwargs):
+            raise TypeError("model is not a keras.Model!")
         return [
-            partial(_save_model, model=model),
+            partial(_save_model, model=kwargs["model"]),
             partial(
                 save_json,
                 file_name=MODEL_CONFIG,
-                data=model.to_json(),
+                data=kwargs["model"].to_json(),
             ),
         ]
 
@@ -71,10 +78,6 @@ class KerasManager(ModelManager):
 
 
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:
-    from tensorflow import keras
-
-    if model and not isinstance(model, keras.Model):
-        raise TypeError("model is not a keras.Model!")
     file_path = os.path.join(tmp_dir, MODEL_DIRECTORY)
     model.save(file_path)
     return file_path

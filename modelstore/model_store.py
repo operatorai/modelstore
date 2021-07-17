@@ -94,8 +94,11 @@ class ModelStore:
                 f"Failed to set up the {type(self.storage).__name__} storage."
             )
         # Supported machine learning model libraries
+        managers = []
         for library, manager in iter_libraries(self.storage):
             object.__setattr__(self, library, manager)
+            managers.append(manager)
+        object.__setattr__(self, "_managers", managers)
 
     def list_domains(self) -> list:
         """Returns a list of dicts, containing info about all
@@ -109,6 +112,13 @@ class ModelStore:
         models that have been uploaded to a domain; if state_name
         is given results are filtered to models set to that state"""
         return self.storage.list_versions(domain, state_name)
+
+    def upload(self, domain: str, **kwargs) -> dict:
+        # pylint: disable=no-member
+        for manager in self._managers:
+            if manager.matches_with(**kwargs):
+                return manager.upload(domain, kwargs)
+        raise ValueError("unable to upload: %s", **kwargs)
 
     def download(
         self, local_path: str, domain: str, model_id: str = None

@@ -15,8 +15,18 @@
 import pytest
 from modelstore.models.missingmanager import MissingDepManager
 
+# pylint: disable=redefined-outer-name
 
-def test_missing_dep_create():
-    mngr = MissingDepManager("some-missing-library")
+
+@pytest.fixture
+def missing_library_manager():
+    return MissingDepManager("some-missing-library")
+
+
+def test_missing_dep_create(missing_library_manager):
     with pytest.raises(ModuleNotFoundError):
-        mngr.upload("test-domain")
+        missing_library_manager.upload("test-domain")
+
+
+def test_missing_manager_matches_with(missing_library_manager):
+    assert not missing_library_manager.matches_with(model="value")

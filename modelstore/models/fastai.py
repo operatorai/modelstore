@@ -52,6 +52,12 @@ class FastAIManager(ModelManager):
     def _required_kwargs(self):
         return ["learner"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        from fastai.learner import Learner
+
+        return isinstance(kwargs.get("learner"), Learner)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "fastai"}
@@ -61,10 +67,12 @@ class FastAIManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
-        learn = kwargs["learner"]
+        if not self.matches_with(**kwargs):
+            raise TypeError("learner is not a fastai.learner.Learner!")
+
         return [
-            partial(_save_model, learner=learn),
-            partial(_export_model, learner=learn),
+            partial(_save_model, learner=kwargs["learner"]),
+            partial(_export_model, learner=kwargs["learner"]),
         ]
 
     def _get_params(self, **kwargs) -> dict:
@@ -76,11 +84,6 @@ class FastAIManager(ModelManager):
 
 
 def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
-    from fastai.learner import Learner
-
-    if not isinstance(learner, Learner):
-        raise TypeError("learner is not a fastai.learner.Learner!")
-
     # learner.save(file) will write to: self.path/self.model_dir/file;
     learner_path = learner.path
     learner.path = Path(tmp_dir)
@@ -93,11 +96,6 @@ def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
 
 
 def _export_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
-    from fastai.learner import Learner
-
-    if not isinstance(learner, Learner):
-        raise TypeError("learner is not a fastai.learner.Learner!")
-
     file_name = LEARNER + ".pkl"
     # learner.export(file) will write to: self.path/fname
     learner_path = learner.path

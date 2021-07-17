@@ -46,6 +46,12 @@ class CatBoostManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        import catboost
+
+        return isinstance(kwargs.get("model"), catboost.CatBoost)
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "catboost", "type": type(kwargs["model"]).__name__}
@@ -55,9 +61,7 @@ class CatBoostManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
-        import catboost
-
-        if not isinstance(kwargs["model"], catboost.CatBoost):
+        if not self.matches_with(**kwargs):
             raise TypeError("Model is not a CatBoost model!")
 
         return [

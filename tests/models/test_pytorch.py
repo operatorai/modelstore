@@ -79,9 +79,22 @@ def test_required_kwargs(torch_manager):
     assert torch_manager._required_kwargs() == ["model", "optimizer"]
 
 
-def test_get_functions(torch_manager):
+def test_matches_with(torch_manager, pytorch_model, pytorch_optim):
+    assert torch_manager.matches_with(
+        model=pytorch_model, optimizer=pytorch_optim
+    )
+    assert not torch_manager.matches_with(model="a-string-value")
+    assert not torch_manager.matches_with(classifier=pytorch_model)
+
+
+def test_get_functions(torch_manager, pytorch_model, pytorch_optim):
     assert (
-        len(torch_manager._get_functions(model="model", optimizer="optim")) == 2
+        len(
+            torch_manager._get_functions(
+                model=pytorch_model, optimizer=pytorch_optim
+            )
+        )
+        == 2
     )
 
 

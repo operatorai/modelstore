@@ -22,6 +22,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from tests.models.test_xgboost import xgb_model
 from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
@@ -93,6 +94,13 @@ def test_model_data(sklearn_manager, sklearn_tree):
 
 def test_required_kwargs(sklearn_manager):
     assert sklearn_manager._required_kwargs() == ["model"]
+
+
+def test_matches_with(sklearn_manager, sklearn_tree, xgb_model):
+    assert sklearn_manager.matches_with(model=sklearn_tree)
+    assert not sklearn_manager.matches_with(model="a-string-value")
+    assert not sklearn_manager.matches_with(classifier=sklearn_tree)
+    assert not sklearn_manager.matches_with(model=xgb_model)
 
 
 def test_get_functions(sklearn_manager, sklearn_tree):

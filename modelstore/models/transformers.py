@@ -43,6 +43,18 @@ class TransformersManager(ModelManager):
     def _required_kwargs(self):
         return ["model", "tokenizer"]
 
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        import transformers
+
+        return (
+            isinstance(kwargs.get("config"), transformers.PretrainedConfig)
+            and isinstance(kwargs.get("model"), transformers.PreTrainedModel)
+            and isinstance(
+                kwargs.get("tokenizer"), transformers.PreTrainedTokenizerBase
+            )
+        )
+
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
         return {"library": "transformers"}
@@ -52,6 +64,10 @@ class TransformersManager(ModelManager):
         return {}
 
     def _get_functions(self, **kwargs) -> list:
+        if not self.matches_with(**kwargs):
+            raise TypeError(
+                "Model/config/tokenizer is not a transformers.PretrainedConfig!"
+            )
         return [
             partial(
                 _save_transformers,
@@ -75,18 +91,6 @@ def _save_transformers(
     model: "transformers.PreTrainedModel",
     tokenizer: "transformers.PreTrainedTokenizerBase",
 ) -> str:
-    import transformers
-
-    if config and not isinstance(config, transformers.PretrainedConfig):
-        raise TypeError("Config is not a transformers.PretrainedConfig!")
-    if not isinstance(model, transformers.PreTrainedModel):
-        raise TypeError("Model is not a transformers.PreTrainedModel!")
-    if tokenizer and not isinstance(
-        tokenizer, transformers.PreTrainedTokenizerBase
-    ):
-        raise TypeError(
-            "Tokenizer is not a transformers.PreTrainedTokenizerBase!"
-        )
 
     model_dir = os.path.join(tmp_dir, MODEL_DIRECTORY)
     model.save_pretrained(model_dir)

@@ -37,6 +37,12 @@ class ModelManager(ABC):
         super().__init__()
         self.storage = storage
 
+    @abstractmethod
+    def matches_with(self, **kwargs) -> bool:
+        """Returns whether the kwargs being uploaded
+        are an instance of the current manager"""
+        raise NotImplementedError()
+
     @classmethod
     def required_dependencies(cls) -> list:
         """Returns a list of dependencies that

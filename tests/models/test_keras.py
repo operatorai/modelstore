@@ -54,6 +54,12 @@ def test_required_kwargs(keras_manager):
     assert keras_manager._required_kwargs() == ["model"]
 
 
+def test_matches_with(keras_manager, keras_model):
+    assert keras_manager.matches_with(model=keras_model)
+    assert not keras_manager.matches_with(model="a-string-value")
+    assert not keras_manager.matches_with(network=keras_model)
+
+
 def test_get_functions(keras_manager, keras_model):
     assert len(keras_manager._get_functions(model=keras_model)) == 2
 

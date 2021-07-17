@@ -17,10 +17,8 @@ import pytest
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-from modelstore.models.pytorch_lightning import (
-    PyTorchLightningManager,
-    _save_lightning_model,
-)
+from modelstore.models.pytorch_lightning import (PyTorchLightningManager,
+                                                 _save_lightning_model)
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -105,11 +103,25 @@ def test_required_kwargs(pytorchlightning_manager):
     assert pytorchlightning_manager._required_kwargs() == ["trainer", "model"]
 
 
-def test_get_functions(pytorchlightning_manager):
+def test_matches_with(
+    pytorchlightning_manager, pytorchlightning_model, pytorchlightning_trainer
+):
+    assert pytorchlightning_manager.matches_with(
+        model=pytorchlightning_model, trainer=pytorchlightning_trainer
+    )
+    assert not pytorchlightning_manager.matches_with(model="a-string-value")
+    assert not pytorchlightning_manager.matches_with(
+        classifier=pytorchlightning_model
+    )
+
+
+def test_get_functions(
+    pytorchlightning_manager, pytorchlightning_model, pytorchlightning_trainer
+):
     assert (
         len(
             pytorchlightning_manager._get_functions(
-                trainer="trainer", model="model"
+                trainer=pytorchlightning_trainer, model=pytorchlightning_model
             )
         )
         == 1

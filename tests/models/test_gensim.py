@@ -55,6 +55,12 @@ def test_required_kwargs(gensim_manager):
     assert gensim_manager._required_kwargs() == ["model"]
 
 
+def test_matches_with(gensim_manager, word2vec_model):
+    assert gensim_manager.matches_with(model=word2vec_model)
+    assert not gensim_manager.matches_with(model="a-string-value")
+    assert not gensim_manager.matches_with(gensim_model=word2vec_model)
+
+
 def test_get_functions(gensim_manager, word2vec_model):
     assert len(gensim_manager._get_functions(model=word2vec_model)) == 2
     with pytest.raises(TypeError):
