@@ -51,6 +51,12 @@ def test_required_kwargs(xgboost_manager):
     assert xgboost_manager._required_kwargs() == ["model"]
 
 
+def test_matches_with(xgboost_manager, xgb_model):
+    assert xgboost_manager.matches_with(model=xgb_model)
+    assert not xgboost_manager.matches_with(model="a-string-value")
+    assert not xgboost_manager.matches_with(classifier=xgb_model)
+
+
 def test_get_functions(xgboost_manager):
     assert len(xgboost_manager._get_functions(model="model")) == 3
 
