@@ -105,6 +105,18 @@ def test_required_kwargs(pytorchlightning_manager):
     assert pytorchlightning_manager._required_kwargs() == ["trainer", "model"]
 
 
+def test_matches_with(
+    pytorchlightning_manager, pytorchlightning_model, pytorchlightning_trainer
+):
+    assert pytorchlightning_manager.matches_with(
+        model=pytorchlightning_model, trainer=pytorchlightning_trainer
+    )
+    assert not pytorchlightning_manager.matches_with(model="a-string-value")
+    assert not pytorchlightning_manager.matches_with(
+        classifier=pytorchlightning_model
+    )
+
+
 def test_get_functions(
     pytorchlightning_manager, pytorchlightning_model, pytorchlightning_trainer
 ):
