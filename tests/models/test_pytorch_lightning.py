@@ -17,10 +17,8 @@ import pytest
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-from modelstore.models.pytorch_lightning import (
-    PyTorchLightningManager,
-    _save_lightning_model,
-)
+from modelstore.models.pytorch_lightning import (PyTorchLightningManager,
+                                                 _save_lightning_model)
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
