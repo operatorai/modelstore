@@ -21,7 +21,11 @@ from sklearn.datasets import make_classification
 @pytest.fixture
 def classification_data():
     X_train, y_train = make_classification(
-        n_features=10, n_redundant=0, n_informative=3, n_clusters_per_class=1
+        n_samples=50,
+        n_features=5,
+        n_redundant=0,
+        n_informative=3,
+        n_clusters_per_class=1,
     )
     return X_train, y_train
 
