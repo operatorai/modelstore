@@ -60,6 +60,12 @@ def test_required_kwargs(tf_manager):
     assert tf_manager._required_kwargs() == ["model"]
 
 
+def test_matches_with(tf_manager, tf_model):
+    assert tf_manager.matches_with(model=tf_model)
+    assert not tf_manager.matches_with(model="a-string-value")
+    assert not tf_manager.matches_with(classifier=tf_model)
+
+
 def test_get_functions(tf_manager, tf_model):
     assert len(tf_manager._get_functions(model=tf_model)) == 2
 
