@@ -50,7 +50,7 @@ class CatBoostManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         import catboost
 
-        return isinstance(kwargs["model"], catboost.CatBoost)
+        return isinstance(kwargs.get("model"), catboost.CatBoost)
 
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """

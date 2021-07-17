@@ -51,7 +51,7 @@ class PyTorchLightningManager(ModelManager):
         from pytorch_lightning.core.lightning import LightningModule
 
         return isinstance(kwargs.get("trainer"), Trainer) and isinstance(
-            kwargs["model"], LightningModule
+            kwargs.get("model"), LightningModule
         )
 
     def _model_info(self, **kwargs) -> dict:
