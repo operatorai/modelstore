@@ -45,10 +45,17 @@ class SKLearnManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
+        try:
+            import xgboost as xgb
+
+            if isinstance(kwargs.get("model"), xgb.XGBModel):
+                return False
+        except ImportError:
+            pass
+
         import sklearn
 
-        # @TODO make sure xgboost doesn't match here
-        return isinstance(kwargs["model"], sklearn.base.BaseEstimator)
+        return isinstance(kwargs.get("model"), sklearn.base.BaseEstimator)
 
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
