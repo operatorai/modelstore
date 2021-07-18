@@ -14,3 +14,4 @@ python-Levenshtein==0.12.2
 tensorflow==2.5.0
 Keras==2.4.3
 lightgbm==3.1.1
+torch==1.6.0

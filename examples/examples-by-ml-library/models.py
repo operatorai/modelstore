@@ -1,17 +1,19 @@
 import catboost as ctb
 import keras
+import lightgbm as lgb
 from fastai.tabular.all import *
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
+from torch import nn
 
-import lightgbm as lgb
 from datasets import (
     load_diabetes_dataframe,
     load_diabetes_dataset,
     load_newsgroup_sentences,
 )
 
-_DIABETES_MODEL_DOMAIN = "diabetes-boosting-demo"
+# pylint: disable=invalid-name
+_DIABETES_DOMAIN = "diabetes-boosting-demo"
 _NEWSGROUP_EMBEDDINGS_DOMAIN = "newsgroups-embeddings"
 
 
@@ -26,10 +28,10 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
 
     # Upload the model to the model store
     print(
-        f'⤴️  Uploading the catboost model to the "{_DIABETES_MODEL_DOMAIN}" domain.'
+        f'⤴️  Uploading the catboost model to the "{_DIABETES_DOMAIN}" domain.'
     )
     # Alternative: modelstore.catboost.upload(model_domain, model=model)
-    return modelstore.upload(_DIABETES_MODEL_DOMAIN, model=model)
+    return modelstore.upload(_DIABETES_DOMAIN, model=model)
 
 
 def run_fastai_example(modelstore: ModelStore) -> dict:
@@ -43,10 +45,8 @@ def run_fastai_example(modelstore: ModelStore) -> dict:
     learner.fit_one_cycle(n_epoch=1)
 
     # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the fastai model to the "{_DIABETES_MODEL_DOMAIN}" domain.'
-    )
-    return modelstore.upload(_DIABETES_MODEL_DOMAIN, learner=learner)
+    print(f'⤴️  Uploading the fastai model to the "{_DIABETES_DOMAIN}" domain.')
+    return modelstore.upload(_DIABETES_DOMAIN, learner=learner)
 
 
 def run_gensim_example(modelstore: ModelStore) -> dict:
@@ -77,10 +77,8 @@ def run_keras_example(modelstore: ModelStore) -> dict:
     model.fit(X_train, y_train, epochs=10)
 
     # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the keras model to the "{_DIABETES_MODEL_DOMAIN}" domain.'
-    )
-    return modelstore.upload(_DIABETES_MODEL_DOMAIN, model=model)
+    print(f'⤴️  Uploading the keras model to the "{_DIABETES_DOMAIN}" domain.')
+    return modelstore.upload(_DIABETES_DOMAIN, model=model)
 
 
 def run_lightgbm_example(modelstore: ModelStore) -> dict:
@@ -88,7 +86,7 @@ def run_lightgbm_example(modelstore: ModelStore) -> dict:
     X_train, X_test, y_train, y_test = load_diabetes_dataset()
 
     # Train a model
-    print(f"🤖  Training a light GBM model...")
+    print("🤖  Training a light GBM model...")
     train_data = lgb.Dataset(X_train, label=y_train)
     validation_data = lgb.Dataset(X_test, y_test)
     num_round = 5
@@ -99,6 +97,41 @@ def run_lightgbm_example(modelstore: ModelStore) -> dict:
 
     # Upload the model to the model store
     print(
-        f'⤴️  Uploading the light GBM model to the "{_DIABETES_MODEL_DOMAIN}" domain.'
+        f'⤴️  Uploading the light GBM model to the "{_DIABETES_DOMAIN}" domain.'
     )
-    return modelstore.upload(_DIABETES_MODEL_DOMAIN, model=model)
+    return modelstore.upload(_DIABETES_DOMAIN, model=model)
+
+
+def run_pytorch_example(modelstore: ModelStore) -> dict:
+    # Model defined inline for the purpose of this example
+    class ExampleNet(nn.Module):
+        def __init__(self):
+            super(ExampleNet, self).__init__()
+            self.linear = nn.Linear(10, 1)
+
+        def forward(self, x):
+            return self.linear(x)
+
+    # Load the data
+    X_train, _, y_train, _ = load_diabetes_dataset()
+    X_train = torch.from_numpy(X_train).float()
+    y_train = torch.from_numpy(y_train).float().view(-1, 1)
+
+    # Train the model
+    model = ExampleNet()
+    criterion = torch.nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters())
+
+    for epoch in range(5):
+        print(f"🤖  Training epoch: {epoch}...")
+        optimizer.zero_grad()
+        outputs = model(X_train)
+        loss = criterion(outputs, y_train)
+        loss.backward()
+        optimizer.step()
+
+    # Upload the model to the model store
+    print(
+        f'⤴️  Uploading the pytorch model to the "{_DIABETES_DOMAIN}" domain.'
+    )
+    return modelstore.upload(_DIABETES_DOMAIN, model=model, optimizer=optimizer)
