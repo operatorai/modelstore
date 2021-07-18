@@ -2,11 +2,12 @@ import json
 
 import click
 
-from catboost_example import run_catboost_example
+from models import run_catboost_example, run_fastai_example
 from modelstores import create_model_store
 
 EXAMPLES = {
     "catboost": run_catboost_example,
+    "fastai": run_fastai_example,
 }
 
 
