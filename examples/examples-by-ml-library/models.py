@@ -7,17 +7,18 @@ import pytorch_lightning as pl
 from fastai.tabular.all import *
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
+import tensorflow as tf
 from datasets import (
     load_diabetes_dataframe,
     load_diabetes_dataset,
     load_newsgroup_sentences,
 )
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 
 # pylint: disable=invalid-name
 _DIABETES_DOMAIN = "diabetes-boosting-demo"
@@ -220,3 +221,23 @@ def run_sklearn_example(modelstore: ModelStore) -> dict:
         f'⤴️  Uploading the sklearn pipeline to the "{_DIABETES_DOMAIN}" domain.'
     )
     return modelstore.upload(_DIABETES_DOMAIN, model=pipeline)
+
+
+def run_tensorflow_example(modelstore: ModelStore) -> dict:
+    # Load the data
+    X_train, _, y_train, _ = load_diabetes_dataset()
+
+    # Train a model
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Dense(5, activation="relu", input_shape=(10,)),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(1),
+        ]
+    )
+    model.compile(optimizer="adam", loss="mean_squared_error")
+    model.fit(X_train, y_train, epochs=10)
+
+    # Upload the model to the model store
+    print(f'⤴️  Uploading the tf model to the "{_DIABETES_DOMAIN}" domain.')
+    return modelstore.upload(_DIABETES_DOMAIN, model=model)
