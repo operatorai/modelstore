@@ -117,7 +117,7 @@ class ModelStore:
         # pylint: disable=no-member
         for manager in self._managers:
             if manager.matches_with(**kwargs):
-                return manager.upload(domain, kwargs)
+                return manager.upload(domain, **kwargs)
         raise ValueError("unable to upload: %s", **kwargs)
 
     def download(

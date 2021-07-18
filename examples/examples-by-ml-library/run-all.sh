@@ -1,16 +1,14 @@
-function run {
-	cd $1
-	make pyenv-test
-	make run
-	cd ..
-}
-
 set -e
-run catboost
-run fastai
-run keras
-run pytorch
-run sklearn
-run tensorflow
-run transformers
-run xgboost
+backends=( filesystem aws azure gcloud hosted )
+frameworks=( catboost fastai gensim keras lightgbm pytorch pytorch-lightning sklearn tensorflow transformers xgboost )
+
+for framework in "${frameworks[@]}"
+do
+	for backend in "${backends[@]}"
+	do
+		echo "\n 🔵  Running the $framework example in a $backend modelstore."
+		python main.py --modelstore-in $backend --ml-framework $framework
+		echo "\n ✅  Finished running the $framework example in $backend."
+	done
+done
+

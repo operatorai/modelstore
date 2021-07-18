@@ -1,5 +1,0 @@
-lightgbm==3.1.1
-scikit-learn==0.23.2
-google-cloud-storage==1.32.0
-boto3==1.14.56
-click==7.1.2
