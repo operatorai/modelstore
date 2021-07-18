@@ -234,7 +234,9 @@ def run_transformers_example(modelstore: ModelStore) -> dict:
 
     # Upload the model to the model store
     model_domain = "example-distilbert-model"
-    print(f'⤴️  Uploading the tf model to the "{model_domain}" domain.')
+    print(
+        f'⤴️  Uploading the transformers model to the "{model_domain}" domain.'
+    )
     return modelstore.upload(
         model_domain,
         config=config,
@@ -262,4 +264,4 @@ def run_xgboost_example(modelstore: ModelStore) -> dict:
     print(
         f'⤴️  Uploading the xgboost model to the "{_DIABETES_DOMAIN}" domain.'
     )
-    return modelstore.upload(_DIABETES_DOMAIN, model=model)
+    return modelstore.upload(_DIABETES_DOMAIN, model=xg_reg)
