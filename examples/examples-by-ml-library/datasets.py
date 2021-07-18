@@ -6,11 +6,11 @@ from sklearn.model_selection import train_test_split
 
 def load_diabetes_dataset():
     diabetes = load_diabetes()
-    X_train, _, y_train, _ = train_test_split(
+    X_train, X_test, y_train, y_test = train_test_split(
         diabetes.data, diabetes.target, test_size=0.1, random_state=13
     )
 
-    return X_train, y_train
+    return X_train, X_test, y_train, y_test
 
 
 def load_diabetes_dataframe():
