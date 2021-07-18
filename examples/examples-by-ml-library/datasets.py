@@ -1,6 +1,6 @@
 import pandas as pd
 
-from sklearn.datasets import load_diabetes
+from sklearn.datasets import fetch_20newsgroups, load_diabetes
 from sklearn.model_selection import train_test_split
 
 
@@ -18,3 +18,17 @@ def load_diabetes_dataframe():
     df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
     df["y"] = diabetes.target
     return df
+
+
+def load_newsgroup_sentences():
+    categories = [
+        "alt.atheism",
+        "soc.religion.christian",
+        "comp.graphics",
+        "sci.med",
+    ]
+    print(f"⏳  Fetching the newsgroups data...")
+    newsgroups = fetch_20newsgroups(
+        subset="train", categories=categories, shuffle=True, random_state=42
+    )
+    return [doc.strip().split() for doc in newsgroups.data]
