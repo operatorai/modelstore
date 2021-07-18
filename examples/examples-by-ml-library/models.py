@@ -4,6 +4,7 @@ import catboost as ctb
 import keras
 import lightgbm as lgb
 import pytorch_lightning as pl
+import tensorflow as tf
 from fastai.tabular.all import *
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
@@ -13,11 +14,15 @@ from sklearn.preprocessing import StandardScaler
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-import tensorflow as tf
 from datasets import (
     load_diabetes_dataframe,
     load_diabetes_dataset,
     load_newsgroup_sentences,
+)
+from transformers import (
+    AutoConfig,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
 )
 
 # pylint: disable=invalid-name
@@ -241,3 +246,37 @@ def run_tensorflow_example(modelstore: ModelStore) -> dict:
     # Upload the model to the model store
     print(f'⤴️  Uploading the tf model to the "{_DIABETES_DOMAIN}" domain.')
     return modelstore.upload(_DIABETES_DOMAIN, model=model)
+
+
+def run_transformers_example(modelstore: ModelStore) -> dict:
+    model_name = "distilbert-base-cased"
+    config = AutoConfig.from_pretrained(
+        model_name,
+        num_labels=2,
+        finetuning_task="mnli",
+    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        config=config,
+    )
+
+    # Skipped for brevity!
+    # trainer = Trainer(
+    #     model=model,
+    #     args=training_args,
+    #     train_dataset=train_dataset,
+    #     eval_dataset=eval_dataset,
+    #     compute_metrics=build_compute_metrics_fn(data_args.task_name),
+    # )
+    # trainer.train()
+
+    # Upload the model to the model store
+    model_domain = "example-distilbert-model"
+    print(f'⤴️  Uploading the tf model to the "{model_domain}" domain.')
+    return modelstore.upload(
+        model_domain,
+        config=config,
+        model=model,
+        tokenizer=tokenizer,
+    )
