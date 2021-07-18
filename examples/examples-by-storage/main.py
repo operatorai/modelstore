@@ -68,12 +68,7 @@ def main(modelstore_in):
         model = train(model_type)
 
         print(f"⤴️  Uploading to the {model_domain} domain.")
-        if model_type == "sklearn":
-            meta_data = modelstore.sklearn.upload(model_domain, model=model)
-        elif model_type == "xgboost":
-            meta_data = modelstore.xgboost.upload(model_domain, model=model)
-        else:
-            raise NotImplementedError(f"Not implemented for: {model_type}")
+        meta_data = modelstore.upload(model_domain, model=model)
 
         # The upload returns meta-data about the model that was uploaded
         # This meta-data has also been sync'ed into the s3 bucket

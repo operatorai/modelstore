@@ -4,6 +4,8 @@
 
 🆕  Added model states, and updated listing models to listing by state.
 
+🆕  Created a unified upload function. You can now use `modelstore.upload()` for all ML frameworks.
+
 🆕  Added Gensim support.
 
 🆕  Added Azure blob storage support.

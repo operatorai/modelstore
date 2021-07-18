@@ -2,14 +2,16 @@
 
 This directory contains examples of training models and storing them into a model store.
 
-## Running the examples
+## Pre-requisites
 
 As with the main library, these scripts have been developed using [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv).
 
-Once you have those installed, `cd` into the directory containing the example you want to run:
+## Set up
+
+Start by `cd`'ing into the directory containing the example you want to run:
 
 ```bash
-❯ cd examples-by-ml-model/sklearn
+❯ cd examples-by-ml-model/
 ```
 
 And then you can use this `Makefile` command that creates a new virtual environment
@@ -19,9 +21,16 @@ and installs all of the requirements:
 ❯ make pyenv
 ```
 
-Finally, to run the example itself, run `main.py` with the type of backend storage you want
-the model store to use:
+## Running all of the examples
 
-```bath
-❯ python main.py --storage [filestore|gcloud|aws]
+Start by `cd`'ing into the directory containing the example you want to run:
+
+```bash
+❯ cd examples-by-ml-model/
+```
+
+After creating a virtual environment, you can run all of the examples using:
+
+```bash
+❯ make run
 ```
