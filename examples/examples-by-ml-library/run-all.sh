@@ -6,8 +6,9 @@ for framework in "${frameworks[@]}"
 do
 	for backend in "${backends[@]}"
 	do
+		echo "\n 🔵  Running a $framework example in a $backend modelstore."
 		python main.py --modelstore-in $backend --ml-framework $framework
-		echo "\n"
+		echo "\n ✅  Finished running $framework in $backend."
 	done
 done
 

@@ -4,6 +4,8 @@ click==7.1.2
 # Storage requirements
 google-cloud-storage==1.32.0
 boto3==1.14.56
+azure-core==1.13.0
+azure-storage-blob==12.8.0
 
 # Machine learning libraries
 catboost==0.24.1

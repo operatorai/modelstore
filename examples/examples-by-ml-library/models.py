@@ -5,13 +5,13 @@ import keras
 import lightgbm as lgb
 import pytorch_lightning as pl
 import tensorflow as tf
+import xgboost as xgb
 from fastai.tabular.all import *
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 from transformers import (
     AutoConfig,
@@ -19,12 +19,12 @@ from transformers import (
     AutoTokenizer,
 )
 
-import xgboost as xgb
 from datasets import (
     load_diabetes_dataframe,
     load_diabetes_dataset,
     load_newsgroup_sentences,
 )
+from networks import ExampleLightningNet, ExampleNet
 
 # pylint: disable=invalid-name
 _DIABETES_DOMAIN = "diabetes-boosting-demo"
@@ -37,7 +37,7 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
 
     # Train the model
     print("🤖  Training a CatBoostRegressor")
-    model = ctb.CatBoostRegressor()
+    model = ctb.CatBoostRegressor(allow_writing_files=False)
     model.fit(X_train, y_train)
 
     # Upload the model to the model store
@@ -121,16 +121,6 @@ def run_pytorch_example(modelstore: ModelStore) -> dict:
     X_train, _, y_train, _ = load_diabetes_dataset(as_numpy=True)
 
     # Train the model
-    # Model defined inline for the purpose of this example
-    # pylint: disable=missing-class-docstring
-    class ExampleNet(nn.Module):
-        def __init__(self):
-            super(ExampleNet, self).__init__()
-            self.linear = nn.Linear(10, 1)
-
-        def forward(self, x):
-            return self.linear(x)
-
     model = ExampleNet()
     criterion = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters())
@@ -161,36 +151,6 @@ def run_pytorch_lightning_example(modelstore: ModelStore) -> dict:
     train_dataloader = DataLoader(data_set)
 
     # Train the model
-    # Model defined inline for the purpose of this example
-    # pylint: disable=missing-class-docstring
-    class ExampleLightningNet(pl.LightningModule):
-        def __init__(self):
-            super(ExampleLightningNet, self).__init__()
-            self.linear = nn.Linear(10, 1)
-
-        def forward(self, x):
-            return self.linear(x)
-
-        def training_step(self, batch, batch_idx):
-            x, y = batch
-            y_hat = self.linear(x)
-            train_loss = F.mse_loss(y_hat, y)
-            self.log("train_loss", train_loss, on_epoch=True, prog_bar=True)
-            return train_loss
-
-        def validation_step(self, batch, batch_idx):
-            x, y = batch
-            y_hat = self.linear(x)
-            val_loss = F.mse_loss(y_hat, y)
-            return val_loss
-
-        def configure_optimizers(self):
-            optimizer = torch.optim.Adam(self.parameters())
-            scheduler = torch.optim.lr_scheduler.StepLR(
-                optimizer, step_size=3, gamma=0.05
-            )
-            return [optimizer], [scheduler]
-
     model = ExampleLightningNet()
     trainer = pl.Trainer(max_epochs=5, default_root_dir=mkdtemp())
     trainer.fit(model, train_dataloader, val_dataloader)
