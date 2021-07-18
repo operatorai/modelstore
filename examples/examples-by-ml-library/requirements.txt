@@ -7,11 +7,12 @@ boto3==1.14.56
 
 # Machine learning libraries
 catboost==0.24.1
-scikit-learn==0.23.2
 fastai==2.2.7
 gensim==4.0.1
-python-Levenshtein==0.12.2
-tensorflow==2.5.0
 Keras==2.4.3
 lightgbm==3.1.1
+python-Levenshtein==0.12.2
+pytorch-lightning==1.1.1
+scikit-learn==0.23.2
+tensorflow==2.5.0
 torch==1.6.0

@@ -2,12 +2,28 @@ import json
 
 import click
 
-from models import run_catboost_example, run_fastai_example
+from models import (
+    run_catboost_example,
+    run_fastai_example,
+    run_gensim_example,
+    run_keras_example,
+    run_lightgbm_example,
+    run_pytorch_example,
+)
 from modelstores import create_model_store
 
 EXAMPLES = {
     "catboost": run_catboost_example,
     "fastai": run_fastai_example,
+    "gensim": run_gensim_example,
+    "keras": run_keras_example,
+    "lightgbm": run_lightgbm_example,
+    "pytorch": run_pytorch_example,
+    "pytorch-lightning": None,
+    "sklearn": None,
+    "tensorflow": None,
+    "transformers": None,
+    "xgboost": None,
 }
 
 
