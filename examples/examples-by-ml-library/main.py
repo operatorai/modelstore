@@ -9,6 +9,11 @@ from models import (
     run_keras_example,
     run_lightgbm_example,
     run_pytorch_example,
+    run_pytorch_lightning_example,
+    run_sklearn_example,
+    run_tensorflow_example,
+    run_transformers_example,
+    run_xgboost_example,
 )
 from modelstores import create_model_store
 
@@ -19,11 +24,11 @@ EXAMPLES = {
     "keras": run_keras_example,
     "lightgbm": run_lightgbm_example,
     "pytorch": run_pytorch_example,
-    "pytorch-lightning": None,
-    "sklearn": None,
-    "tensorflow": None,
-    "transformers": None,
-    "xgboost": None,
+    "pytorch-lightning": run_pytorch_lightning_example,
+    "sklearn": run_sklearn_example,
+    "tensorflow": run_tensorflow_example,
+    "transformers": run_transformers_example,
+    "xgboost": run_xgboost_example,
 }
 
 
@@ -37,19 +42,7 @@ EXAMPLES = {
 @click.option(
     "--ml-framework",
     type=click.Choice(
-        [
-            "catboost",
-            "fastai",
-            "gensim",
-            "keras",
-            "lightgbm",
-            "pytorch",
-            "pytorch-lightning",
-            "sklearn",
-            "tensorflow",
-            "transformers",
-            "xgboost",
-        ],
+        EXAMPLES.keys(),
         case_sensitive=False,
     ),
 )
