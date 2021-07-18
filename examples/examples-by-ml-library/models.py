@@ -13,16 +13,17 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
-
-from datasets import (
-    load_diabetes_dataframe,
-    load_diabetes_dataset,
-    load_newsgroup_sentences,
-)
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
     AutoTokenizer,
+)
+
+import xgboost as xgb
+from datasets import (
+    load_diabetes_dataframe,
+    load_diabetes_dataset,
+    load_newsgroup_sentences,
 )
 
 # pylint: disable=invalid-name
@@ -280,3 +281,25 @@ def run_transformers_example(modelstore: ModelStore) -> dict:
         model=model,
         tokenizer=tokenizer,
     )
+
+
+def run_xgboost_example(modelstore: ModelStore) -> dict:
+    # Load the data
+    X_train, _, y_train, _ = load_diabetes_dataset()
+
+    # Train a model
+    xg_reg = xgb.XGBRegressor(
+        objective="reg:squarederror",
+        colsample_bytree=0.3,
+        learning_rate=0.1,
+        max_depth=5,
+        alpha=10,
+        n_estimators=10,
+    )
+    xg_reg.fit(X_train, y_train)
+
+    # Upload the model to the model store
+    print(
+        f'⤴️  Uploading the xgboost model to the "{_DIABETES_DOMAIN}" domain.'
+    )
+    return modelstore.upload(_DIABETES_DOMAIN, model=model)
