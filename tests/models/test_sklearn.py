@@ -29,7 +29,7 @@ from tests.models.utils import classification_data
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def sklearn_tree():
     params = {
         "n_estimators": 500,
@@ -41,12 +41,12 @@ def sklearn_tree():
     return GradientBoostingRegressor(**params)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def sklearn_logistic():
     return LogisticRegression()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def sklearn_pipeline(sklearn_tree):
     return Pipeline(
         [

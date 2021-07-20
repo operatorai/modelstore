@@ -24,12 +24,14 @@ from tests.models.utils import classification_data
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def lgb_model(classification_data):
     X_train, y_train = classification_data
     train_data = lgb.Dataset(X_train, label=y_train)
     param = {"num_leaves": 31, "objective": "binary"}
-    return lgb.train(param, train_data, 3)
+    model = lgb.train(param, train_data, 3)
+    yield model
+    del model
 
 
 @pytest.fixture

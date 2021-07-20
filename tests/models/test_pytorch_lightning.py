@@ -52,12 +52,12 @@ class ExampleLightningNet(pl.LightningModule):
         return [optimizer], []
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def pytorchlightning_model():
     return ExampleLightningNet()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def train_loader():
     x = torch.rand(20, 10)
     y = torch.rand(20).view(-1, 1)
@@ -65,7 +65,7 @@ def train_loader():
     return DataLoader(data_set, num_workers=0)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def val_loader():
     x = torch.rand(2, 10)
     y = torch.rand(2).view(-1, 1)
@@ -73,7 +73,7 @@ def val_loader():
     return DataLoader(data_set, num_workers=0)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def pytorchlightning_trainer(
     tmp_path, pytorchlightning_model, train_loader, val_loader
 ):

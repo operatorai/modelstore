@@ -15,17 +15,11 @@ import json
 import os
 
 import pytest
-from modelstore.models.transformers import (
-    TransformersManager,
-    _save_transformers,
-)
-from transformers import (
-    AutoConfig,
-    AutoModelForSequenceClassification,
-    AutoTokenizer,
-    DistilBertForSequenceClassification,
-    PreTrainedTokenizerFast,
-)
+from modelstore.models.transformers import (TransformersManager,
+                                            _save_transformers)
+from transformers import (AutoConfig, AutoModelForSequenceClassification,
+                          AutoTokenizer, DistilBertForSequenceClassification,
+                          PreTrainedTokenizerFast)
 from transformers.file_utils import CONFIG_NAME
 
 # pylint: disable=protected-access
@@ -37,7 +31,7 @@ def model_name():
     return "distilbert-base-cased"
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def model_config(model_name):
     return AutoConfig.from_pretrained(
         model_name,
@@ -46,12 +40,12 @@ def model_config(model_name):
     )
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def tokenizer(model_name):
     return AutoTokenizer.from_pretrained(model_name)
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def tr_model(model_name, model_config):
     return AutoModelForSequenceClassification.from_pretrained(
         model_name,

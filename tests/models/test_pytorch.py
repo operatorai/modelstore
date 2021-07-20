@@ -48,12 +48,12 @@ class ExampleNet(nn.Module):
         return x
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def pytorch_model():
     return ExampleNet()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def pytorch_optim(pytorch_model):
     return optim.SGD(pytorch_model.parameters(), lr=0.001, momentum=0.9)
 
