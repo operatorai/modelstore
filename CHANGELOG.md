@@ -1,6 +1,6 @@
 # Change log
 
-## Unreleased
+## modelstore 0.0.7
 
 🆕  Added model states, and updated listing models to listing by state.
 

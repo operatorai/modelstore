@@ -1,8 +1,6 @@
 # modelstore
 
-`modelstore` is a Python library that allows you to version, export, save and download machine learning models.
-
-The library's `ModelStore` will (a) version your models, (b) store them in a structured way, and (c) collect meta-data about the Python runtime that was used to train them.
+`modelstore` is a Python library that allows you to version, export, save and download machine learning models in your choice of storage.
 
 For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
@@ -41,7 +39,17 @@ pip install modelstore
 
 Is there a machine learning framework that is missing? Feel free to [open an issue](https://github.com/operatorai/modelstore/issues) or send us a pull request!
 
-## Usage
+## Features
+
+* Model versioning on each upload
+* Replaces all the boiler plate code you need to save models
+* Support for multiple clouds (AWS, GCP, Azure)
+* List models in a domain
+* Download model archives by id
+* Create model states and manage which state a model is in
+
+
+## Example Usage
 
 ### Colab Notebook
 
@@ -66,7 +74,7 @@ model_store = ModelStore.from_gcloud(
 
 # Upload the archive to your model store
 domain = "example-model"
-meta_data = model_store.sklearn.upload(domain, model=clf)
+meta_data = model_store.upload(domain, model=clf)
 
 # Print the meta-data about the model
 print(json.dumps(meta_data, indent=4))
