@@ -13,7 +13,7 @@ build : test
 	@./bin/_build_library
 
 test:
-	@pytest
+	@python -m pytest tests/
 
 release-test: build
 	@./bin/_release_test

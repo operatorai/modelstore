@@ -36,7 +36,7 @@ def test_generate_for_code():
     res = metadata.generate_for_code(deps_list)
     assert res["runtime"].startswith("python")
     assert all(k in res for k in ["user", "created", "dependencies", "git"])
-    assert res["dependencies"]["pytest"] == "6.2.1"
+    assert res["dependencies"]["pytest"] == "6.2.4"
     assert res["git"]["repository"] == "modelstore"
 
 

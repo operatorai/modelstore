@@ -18,7 +18,7 @@ import pytest
 from sklearn.datasets import make_classification
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def classification_data():
     X_train, y_train = make_classification(
         n_samples=50,
@@ -30,7 +30,7 @@ def classification_data():
     return X_train, y_train
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def classification_df(classification_data):
     X_train, y_train = classification_data
     df = pd.DataFrame(
@@ -41,6 +41,6 @@ def classification_df(classification_data):
     return df
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def classification_row(classification_df):
     return classification_df.iloc[randint(0, classification_df.shape[0] - 1)]
