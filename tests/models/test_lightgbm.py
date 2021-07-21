@@ -24,14 +24,12 @@ from tests.models.utils import classification_data
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def lgb_model(classification_data):
     X_train, y_train = classification_data
     train_data = lgb.Dataset(X_train, label=y_train)
-    param = {"num_leaves": 31, "objective": "binary"}
-    model = lgb.train(param, train_data, 3)
-    yield model
-    del model
+    param = {"num_leaves": 31, "objective": "binary", "num_threads": 1}
+    return lgb.train(param, train_data, num_boost_round=1)
 
 
 @pytest.fixture
@@ -69,8 +67,9 @@ def test_get_params(lightgbm_manager, lgb_model):
     exp = {
         "num_leaves": 31,
         "objective": "binary",
-        "num_iterations": 3,
+        "num_iterations": 1,
         "early_stopping_round": None,
+        "num_threads": 1,
     }
     res = lightgbm_manager._get_params(model=lgb_model)
     assert exp == res

@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from modelstore.models.sklearn import SKLearnManager, _feature_importances
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -29,19 +29,23 @@ from tests.models.utils import classification_data
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def sklearn_tree():
     params = {
-        "n_estimators": 500,
+        "n_estimators": 5,
         "max_depth": 4,
         "min_samples_split": 5,
-        "learning_rate": 0.01,
-        "loss": "ls",
+        "n_jobs": 1,
     }
-    return GradientBoostingRegressor(**params)
+    return RandomForestRegressor(**params)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
+def sklearn_logistic():
+    return LogisticRegression()
+
+
+@pytest.fixture
 def sklearn_pipeline(sklearn_tree):
     return Pipeline(
         [
@@ -60,8 +64,8 @@ def sklearn_manager():
     "model_type,expected",
     [
         (
-            GradientBoostingRegressor,
-            {"library": "sklearn", "type": "GradientBoostingRegressor"},
+            RandomForestRegressor,
+            {"library": "sklearn", "type": "RandomForestRegressor"},
         ),
         (
             LogisticRegression,
@@ -69,7 +73,7 @@ def sklearn_manager():
         ),
         (
             partial(
-                Pipeline, steps=[("regressor", GradientBoostingRegressor())]
+                Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]
             ),
             {"library": "sklearn", "type": "Pipeline"},
         ),
@@ -107,9 +111,11 @@ def test_get_functions(sklearn_manager, sklearn_tree):
 @pytest.mark.parametrize(
     "model_type",
     [
-        GradientBoostingRegressor,
+        RandomForestRegressor,
         LogisticRegression,
-        partial(Pipeline, steps=[("regressor", GradientBoostingRegressor())]),
+        partial(
+            Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]
+        ),
     ],
 )
 def test_get_params(sklearn_manager, model_type):

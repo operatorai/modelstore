@@ -22,11 +22,9 @@ from modelstore.models.gensim import GensimManager
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def word2vec_model():
-    model = word2vec.Word2Vec(common_texts, min_count=1)
-    yield model
-    del model
+    return word2vec.Word2Vec(common_texts, min_count=1)
 
 
 @pytest.fixture

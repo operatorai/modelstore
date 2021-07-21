@@ -22,13 +22,12 @@ from tests.models.utils import classification_data
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def xgb_model(classification_data):
     X_train, y_train = classification_data
-    model = xgb.XGBClassifier(use_label_encoder=False)
+    model = xgb.XGBClassifier(use_label_encoder=False, n_jobs=1)
     model.fit(X_train, y_train)
-    yield model
-    del model
+    return model
 
 
 @pytest.fixture

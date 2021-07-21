@@ -13,7 +13,6 @@
 #    limitations under the License.
 
 import os
-from tempfile import mkdtemp
 
 import numpy as np
 import pytest
@@ -31,20 +30,19 @@ from tests.models.utils import *
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
-def fastai_dl(classification_df):
+@pytest.fixture
+def fastai_dl(classification_df, tmp_path):
     return TabularDataLoaders.from_df(
-        classification_df, path=mkdtemp(), y_names=["y"]
+        classification_df, path=tmp_path, y_names=["y"]
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def fastai_learner(fastai_dl):
     learner = tabular_learner(fastai_dl)
     # The optimizer is not initialized until learn is called
     learner.fit_one_cycle(n_epoch=1)
-    yield learner
-    del learner
+    return learner
 
 
 @pytest.fixture

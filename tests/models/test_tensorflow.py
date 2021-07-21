@@ -26,7 +26,7 @@ from modelstore.models.tensorflow import (
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def tf_model():
     model = tf.keras.models.Sequential(
         [
@@ -36,8 +36,7 @@ def tf_model():
         ]
     )
     model.compile(optimizer="adam", loss="mean_squared_error")
-    yield model
-    del model
+    return model
 
 
 @pytest.fixture

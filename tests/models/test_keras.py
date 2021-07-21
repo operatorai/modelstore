@@ -24,14 +24,13 @@ from tensorflow import keras
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def keras_model():
     inputs = keras.Input(shape=(10,))
     outputs = keras.layers.Dense(1)(inputs)
     model = keras.Model(inputs, outputs)
     model.compile(optimizer="adam", loss="mean_squared_error")
-    yield model
-    del model
+    return model
 
 
 @pytest.fixture

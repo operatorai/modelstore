@@ -11,9 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+
 import json
 import os
-from tempfile import mkdtemp
 
 import catboost as ctb
 import pytest
@@ -24,15 +24,14 @@ from tests.models.utils import classification_data
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
-def catb_model(classification_data):
+@pytest.fixture
+def catb_model(tmpdir, classification_data):
     model = ctb.CatBoostClassifier(
-        loss_function="MultiClass", train_dir=str(mkdtemp())
+        loss_function="MultiClass", train_dir=str(tmpdir)
     )
     X_train, y_train = classification_data
     model.fit(X_train, y_train)
-    yield model
-    del model
+    return model
 
 
 @pytest.fixture

@@ -32,37 +32,31 @@ from transformers.file_utils import CONFIG_NAME
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def model_name():
     return "distilbert-base-cased"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def model_config(model_name):
-    config = AutoConfig.from_pretrained(
+    return AutoConfig.from_pretrained(
         model_name,
         num_labels=3,
         finetuning_task="mnli",
     )
-    yield config
-    del config
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def tokenizer(model_name):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    yield tokenizer
-    del tokenizer
+    return AutoTokenizer.from_pretrained(model_name)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def tr_model(model_name, model_config):
-    model = AutoModelForSequenceClassification.from_pretrained(
+    return AutoModelForSequenceClassification.from_pretrained(
         model_name,
         config=model_config,
     )
-    yield model
-    del model
 
 
 @pytest.fixture
