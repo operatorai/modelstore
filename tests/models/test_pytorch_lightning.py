@@ -12,13 +12,16 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+from tempfile import mkdtemp
 
 import pytest
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-from modelstore.models.pytorch_lightning import (PyTorchLightningManager,
-                                                 _save_lightning_model)
+from modelstore.models.pytorch_lightning import (
+    PyTorchLightningManager,
+    _save_lightning_model,
+)
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -74,10 +77,8 @@ def val_loader():
 
 
 @pytest.fixture(scope="session")
-def pytorchlightning_trainer(
-    tmp_path, pytorchlightning_model, train_loader, val_loader
-):
-    trainer = pl.Trainer(max_epochs=5, default_root_dir=tmp_path)
+def pytorchlightning_trainer(pytorchlightning_model, train_loader, val_loader):
+    trainer = pl.Trainer(max_epochs=5, default_root_dir=mkdtemp())
     trainer.fit(pytorchlightning_model, train_loader, val_loader)
     return trainer
 

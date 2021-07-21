@@ -42,11 +42,6 @@ def sklearn_tree():
 
 
 @pytest.fixture(scope="session")
-def sklearn_logistic():
-    return LogisticRegression()
-
-
-@pytest.fixture(scope="session")
 def sklearn_pipeline(sklearn_tree):
     return Pipeline(
         [
