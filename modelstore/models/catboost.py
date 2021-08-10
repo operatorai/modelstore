@@ -17,6 +17,7 @@ from typing import Any
 
 from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
 _MODEL_PREFIX = "model.{}"
@@ -39,6 +40,9 @@ class CatBoostManager(ModelManager):
     https://catboost.ai/docs/concepts/apply-onnx-ml.html
     """
 
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("catboost", storage)
+
     @classmethod
     def required_dependencies(cls) -> list:
         return ["catboost", "onnxruntime"]
@@ -51,14 +55,6 @@ class CatBoostManager(ModelManager):
         import catboost
 
         return isinstance(kwargs.get("model"), catboost.CatBoost)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "catboost", "type": type(kwargs["model"]).__name__}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

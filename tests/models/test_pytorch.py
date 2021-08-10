@@ -64,9 +64,20 @@ def torch_manager():
 
 
 def test_model_info(torch_manager, pytorch_model):
-    exp = {"library": "pytorch"}
+    exp = {"library": "pytorch", "type": "ExampleNet"}
     res = torch_manager._model_info(model=pytorch_model)
     assert exp == res
+
+
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("pytorch", True),
+        ("sklearn", False),
+    ],
+)
+def test_is_model_type(torch_manager, ml_library, should_match):
+    assert torch_manager._is_model_type({"library": ml_library}) == should_match
 
 
 def test_model_data(torch_manager, pytorch_model):

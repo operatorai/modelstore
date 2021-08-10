@@ -41,6 +41,19 @@ def test_model_info(xgboost_manager, xgb_model):
     assert exp == res
 
 
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("xgboost", True),
+        ("sklearn", False),
+    ],
+)
+def test_is_model_type(xgboost_manager, ml_library, should_match):
+    assert (
+        xgboost_manager._is_model_type({"library": ml_library}) == should_match
+    )
+
+
 def test_model_data(xgboost_manager, xgb_model):
     exp = {}
     res = xgboost_manager._model_data(model=xgb_model)

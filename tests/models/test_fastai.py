@@ -56,6 +56,19 @@ def test_model_info(fastai_manager):
     assert exp == res
 
 
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("fastai", True),
+        ("sklearn", False),
+    ],
+)
+def test_is_model_type(fastai_manager, ml_library, should_match):
+    assert (
+        fastai_manager._is_model_type({"library": ml_library}) == should_match
+    )
+
+
 def test_model_data(fastai_manager, fastai_learner):
     exp = {}
     res = fastai_manager._model_data(learner=fastai_learner)

@@ -15,7 +15,7 @@ import os
 from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
-from modelstore.models.util import convert_numpy
+from modelstore.storage.storage import CloudStorage
 
 GENSIM_MODEL = "gensim.model"
 GENSIM_KEYED_VECTORS = "gensim.wordvectors"
@@ -27,6 +27,9 @@ class GensimManager(ModelManager):
     Model persistence for scikit-learn models:
     https://scikit-learn.org/stable/modules/model_persistence.html
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("gensim", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -47,18 +50,6 @@ class GensimManager(ModelManager):
         import gensim
 
         return isinstance(kwargs.get("model"), gensim.utils.SaveLoad)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {
-            "library": "gensim",
-            "type": type(kwargs["model"]).__name__,
-        }
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        # @ Future
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

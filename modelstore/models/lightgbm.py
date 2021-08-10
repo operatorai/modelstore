@@ -17,6 +17,7 @@ import os
 from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
 MODEL_JSON = "model.json"
@@ -30,6 +31,9 @@ class LightGbmManager(ModelManager):
     https://lightgbm.readthedocs.io/en/latest/Python-Intro.html#training
     """
 
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("lightgbm", storage)
+
     @classmethod
     def required_dependencies(cls) -> list:
         return ["lightgbm"]
@@ -42,14 +46,6 @@ class LightGbmManager(ModelManager):
         import lightgbm as lgb
 
         return isinstance(kwargs.get("model"), lgb.Booster)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "lightgbm", "type": type(kwargs["model"]).__name__}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

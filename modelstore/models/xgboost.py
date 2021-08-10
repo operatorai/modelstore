@@ -17,6 +17,7 @@ from functools import partial
 
 from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
 MODEL_FILE = "model.xgboost"
@@ -30,6 +31,9 @@ class XGBoostManager(ModelManager):
     Model persistence for xgboost models:
     https://xgboost.readthedocs.io/en/latest/tutorials/saving_model.html
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("xgboost", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -50,14 +54,6 @@ class XGBoostManager(ModelManager):
         import xgboost as xgb
 
         return isinstance(kwargs.get("model"), xgb.XGBModel)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "xgboost", "type": type(kwargs["model"]).__name__}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         return [

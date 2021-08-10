@@ -84,6 +84,19 @@ def test_model_info(sklearn_manager, model_type, expected):
     assert expected == res
 
 
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("sklearn", True),
+        ("xgboost", False),
+    ],
+)
+def test_is_model_type(sklearn_manager, ml_library, should_match):
+    assert (
+        sklearn_manager._is_model_type({"library": ml_library}) == should_match
+    )
+
+
 def test_model_data(sklearn_manager, sklearn_tree):
     labels = np.array([0, 1, 1, 0, 1])
     exp = {"labels": {"shape": [5], "values": {0: 2, 1: 3}}}

@@ -16,6 +16,7 @@ import os
 from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 
 MODEL_CHECKPOINT = "checkpoint"
 MODEL_DIRECTORY = "model"
@@ -27,6 +28,9 @@ class TensorflowManager(ModelManager):
     Model persistence for tensoflow models:
     https://www.tensorflow.org/tutorials/keras/save_and_load
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("tensorflow", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -45,14 +49,6 @@ class TensorflowManager(ModelManager):
         from tensorflow import keras
 
         return isinstance(kwargs.get("model"), keras.Model)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "tensorflow"}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         model = kwargs["model"]

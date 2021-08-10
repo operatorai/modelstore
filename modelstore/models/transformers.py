@@ -16,6 +16,7 @@ import os
 from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 
 # pylint disable=import-outside-toplevel
 MODEL_DIRECTORY = "transformers"
@@ -28,6 +29,9 @@ class TransformersManager(ModelManager):
     https://huggingface.co/transformers/main_classes/model.html#transformers.TFPreTrainedModel.save_pretrained
     https://github.com/huggingface/transformers/blob/e50a931c118b9f55f77a743bf703f436bf7a7c29/src/transformers/modeling_utils.py#L676
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("transformers", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -54,14 +58,6 @@ class TransformersManager(ModelManager):
                 kwargs.get("tokenizer"), transformers.PreTrainedTokenizerBase
             )
         )
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "transformers"}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

@@ -17,8 +17,10 @@ import pytest
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-from modelstore.models.pytorch_lightning import (PyTorchLightningManager,
-                                                 _save_lightning_model)
+from modelstore.models.pytorch_lightning import (
+    PyTorchLightningManager,
+    _save_lightning_model,
+)
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -91,6 +93,20 @@ def test_model_info(pytorchlightning_manager, pytorchlightning_model):
     exp = {"library": "pytorch_lightning", "type": "ExampleLightningNet"}
     res = pytorchlightning_manager._model_info(model=pytorchlightning_model)
     assert exp == res
+
+
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("pytorch_lightning", True),
+        ("sklearn", False),
+    ],
+)
+def test_is_model_type(pytorchlightning_manager, ml_library, should_match):
+    assert (
+        pytorchlightning_manager._is_model_type({"library": ml_library})
+        == should_match
+    )
 
 
 def test_model_data(pytorchlightning_manager, pytorchlightning_model):

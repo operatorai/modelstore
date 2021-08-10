@@ -45,6 +45,19 @@ def test_model_info(catboost_manager, catb_model):
     assert exp == res
 
 
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("catboost", True),
+        ("sklearn", False),
+    ],
+)
+def test_is_model_type(catboost_manager, ml_library, should_match):
+    assert (
+        catboost_manager._is_model_type({"library": ml_library}) == should_match
+    )
+
+
 def test_model_data(catboost_manager, catb_model):
     exp = {}
     res = catboost_manager._model_data(model=catb_model)
