@@ -114,6 +114,10 @@ class ModelStore:
         return self.storage.list_versions(domain, state_name)
 
     def upload(self, domain: str, **kwargs) -> dict:
+        """Figures out how to upload a model without specifying the ML
+        framework by inspecting the types given in the kwargs.
+        E.g. instead of modelstore.sklearn.upload(domain, model=clf)
+        you can use modelstore.upload(domain, model=clf)"""
         # pylint: disable=no-member
         for manager in self._managers:
             if manager.matches_with(**kwargs):
@@ -123,12 +127,25 @@ class ModelStore:
     def download(
         self, local_path: str, domain: str, model_id: str = None
     ) -> str:
+        """Downloads a model artifact archive from the storage,
+        extracts everything from the archive, and returns a path
+        to the artifact files."""
         local_path = os.path.abspath(local_path)
         archive_path = self.storage.download(local_path, domain, model_id)
         with tarfile.open(archive_path, "r:gz") as tar:
             tar.extractall(local_path)
         os.remove(archive_path)
         return local_path
+
+    def load(self, domain: str, model_id: str = None):
+        """Loads a given model directly into memory. This calls download()
+        above and then inspects the artifact meta-data to figure out how
+        to load the model."""
+        # @TODO create a tmp_dir for the model artifacts
+        local_path = self.download(tmp_dir, domain, model_id)
+        # @TODO figure out what type of model it is
+        # @TODO get the model manager
+        # @TODO call the load() function in the manager
 
     def create_model_state(self, state_name: str):
         """ Creates a state label models (e.g., shadow/prod/archived) """
