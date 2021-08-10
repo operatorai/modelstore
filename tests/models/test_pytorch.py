@@ -15,8 +15,11 @@ import os
 
 import pytest
 import torch
-from modelstore.models.pytorch import (PyTorchManager, _save_model,
-                                       _save_state_dict)
+from modelstore.models.pytorch import (
+    PyTorchManager,
+    _save_model,
+    _save_state_dict,
+)
 from torch import nn, optim
 from torch.nn import functional as F
 
