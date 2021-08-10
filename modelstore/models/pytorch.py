@@ -17,6 +17,7 @@ from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
 from modelstore.models.util import convert_numpy, convert_tensors
+from modelstore.storage.storage import CloudStorage
 
 # pylint disable=import-outside-toplevel
 MODEL_CHECKPOINT = "checkpoint.pt"
@@ -31,6 +32,9 @@ class PyTorchManager(ModelManager):
     https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_a_general_checkpoint.html
     https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_models_for_inference.html
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("pytorch", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -53,14 +57,6 @@ class PyTorchManager(ModelManager):
         return isinstance(kwargs.get("model"), torch.nn.Module) and isinstance(
             kwargs.get("optimizer"), torch.optim.Optimizer
         )
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "pytorch"}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

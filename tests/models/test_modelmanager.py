@@ -36,7 +36,7 @@ class MockCloudStorage(FileSystemStorage):
 
 class MockModelManager(ModelManager):
     def __init__(self, tmpdir):
-        super().__init__(storage=MockCloudStorage(tmpdir))
+        super().__init__("mock", storage=MockCloudStorage(tmpdir))
 
     @classmethod
     def name(cls) -> str:

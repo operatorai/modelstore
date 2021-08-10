@@ -18,6 +18,7 @@ from modelstore.meta import datasets
 from modelstore.models.common import save_joblib
 from modelstore.models.modelmanager import ModelManager
 from modelstore.models.util import convert_numpy
+from modelstore.storage.storage import CloudStorage
 
 MODEL_JOBLIB = "model.joblib"
 
@@ -28,6 +29,9 @@ class SKLearnManager(ModelManager):
     Model persistence for scikit-learn models:
     https://scikit-learn.org/stable/modules/model_persistence.html
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("sklearn", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -59,13 +63,6 @@ class SKLearnManager(ModelManager):
         import sklearn
 
         return isinstance(kwargs.get("model"), sklearn.base.BaseEstimator)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {
-            "library": "sklearn",
-            "type": type(kwargs["model"]).__name__,
-        }
 
     def _model_data(self, **kwargs) -> dict:
         """ Returns meta-data about the data used to train the model """

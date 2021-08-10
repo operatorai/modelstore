@@ -17,6 +17,7 @@ from functools import partial
 
 from modelstore.models.common import save_json
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 
 MODEL_CONFIG = "model_config.json"
 MODEL_DIRECTORY = "model"
@@ -29,6 +30,9 @@ class KerasManager(ModelManager):
     https://keras.io/api/models/model_saving_apis/
     https://keras.io/guides/serialization_and_saving/
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("keras", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -48,14 +52,6 @@ class KerasManager(ModelManager):
         from tensorflow import keras
 
         return isinstance(kwargs.get("model"), keras.Model)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "keras"}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

@@ -33,8 +33,9 @@ class ModelManager(ABC):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, storage: CloudStorage = None):
+    def __init__(self, ml_library: str, storage: CloudStorage = None):
         super().__init__()
+        self.ml_library = ml_library
         self.storage = storage
 
     @abstractmethod
@@ -89,15 +90,21 @@ class ModelManager(ABC):
             if arg not in kwargs:
                 raise TypeError(f"Please specify {arg}=<value>")
 
-    @abstractmethod
     def _model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the model's type """
-        raise NotImplementedError()
+        model_info = {"library": self.ml_library}
+        if "model" in kwargs:
+            model_info["type"] = type(kwargs["model"]).__name__
+        return model_info
 
-    @abstractmethod
+    def _is_model_type(self, meta_data: dict) -> bool:
+        """ Whether the meta-data of a model artifact matches a model manager """
+        return meta_data.get("library") == self.ml_library
+
     def _model_data(self, **kwargs) -> dict:
         """ Returns meta-data about the data used to train the model """
-        raise NotImplementedError()
+        # @ Future
+        return {}
 
     def _collect_files(self, tmp_dir: str, **kwargs) -> list:
         """Returns a list of files created in tmp_dir that will form

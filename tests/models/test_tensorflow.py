@@ -50,6 +50,17 @@ def test_model_info(tf_manager):
     assert exp == res
 
 
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("tensorflow", True),
+        ("xgboost", False),
+    ],
+)
+def test_is_model_type(tf_manager, ml_library, should_match):
+    assert tf_manager._is_model_type({"library": ml_library}) == should_match
+
+
 def test_model_data(tf_manager, tf_model):
     exp = {}
     res = tf_manager._model_data(model=tf_model)

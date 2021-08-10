@@ -43,6 +43,19 @@ def test_model_info(lightgbm_manager, lgb_model):
     assert exp == res
 
 
+@pytest.mark.parametrize(
+    "ml_library,should_match",
+    [
+        ("lightgbm", True),
+        ("sklearn", False),
+    ],
+)
+def test_is_model_type(lightgbm_manager, ml_library, should_match):
+    assert (
+        lightgbm_manager._is_model_type({"library": ml_library}) == should_match
+    )
+
+
 def test_model_data(lightgbm_manager, lgb_model):
     exp = {}
     res = lightgbm_manager._model_data(model=lgb_model)

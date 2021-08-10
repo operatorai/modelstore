@@ -16,6 +16,7 @@ import os
 from functools import partial
 
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 
 # pylint disable=import-outside-toplevel
 MODEL_CHECKPOINT = "checkpoint.pt"
@@ -30,6 +31,9 @@ class PyTorchLightningManager(ModelManager):
     // @TODO: export as for onnx & torchscript
     https://pytorch-lightning.readthedocs.io/en/latest/new-project.html#predict-or-deploy
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("pytorch_lightning", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -53,17 +57,6 @@ class PyTorchLightningManager(ModelManager):
         return isinstance(kwargs.get("trainer"), Trainer) and isinstance(
             kwargs.get("model"), LightningModule
         )
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {
-            "library": "pytorch_lightning",
-            "type": type(kwargs["model"]).__name__,
-        }
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

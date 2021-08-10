@@ -17,6 +17,7 @@ from functools import partial
 from pathlib import Path
 
 from modelstore.models.modelmanager import ModelManager
+from modelstore.storage.storage import CloudStorage
 
 LEARNER = "learner"
 
@@ -28,6 +29,9 @@ class FastAIManager(ModelManager):
     https://docs.fast.ai/learner.html#Learner.save
     https://docs.fast.ai/learner.html#Learner.export
     """
+
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__("fastai", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -57,14 +61,6 @@ class FastAIManager(ModelManager):
         from fastai.learner import Learner
 
         return isinstance(kwargs.get("learner"), Learner)
-
-    def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
-        return {"library": "fastai"}
-
-    def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
-        return {}
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
