@@ -77,7 +77,7 @@ def test_model_info(torch_manager, pytorch_model):
     ],
 )
 def test_is_model_type(torch_manager, ml_library, should_match):
-    assert torch_manager._is_model_type({"pytorch": ml_library}) == should_match
+    assert torch_manager._is_model_type({"library": ml_library}) == should_match
 
 
 def test_model_data(torch_manager, pytorch_model):
