@@ -25,17 +25,17 @@ pip install modelstore
 
 ## Supported machine learning libraries
 
-* [Catboost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/catboost/main.py)
-* [Fast.AI](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/fastai/main.py)
-* [Gensim](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/gensim/main.py)
-* [Keras](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/keras/main.py)
-* [LightGBM](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/lightgbm/main.py)
-* [PyTorch](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/pytorch/main.py)
-* [PyTorch Lightning](https://github.com/operatorai/modelstore/tree/master/examples/examples-by-ml-library/pytorch-lightning/main.py)
-* [Scikit Learn](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/sklearn/main.py)
-* [Tensorflow](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/tensorflow/main.py)
-* [Transformers](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/transformers/main.py)
-* [XGBoost](https://github.com/operatorai/modelstore/blob/master/examples/examples-by-ml-library/xgboost/main.py)
+* [Catboost](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L34-L48)
+* [Fast.AI](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L51-L63)
+* [Gensim](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L66-L78)
+* [Keras](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L81-L95)
+* [LightGBM](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L98-L116)
+* [PyTorch](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L119-L140)
+* [PyTorch Lightning](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L143-L162)
+* [Scikit Learn](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L165-L189)
+* [Tensorflow](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L192-L209)
+* [Transformers](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L212-L245)
+* [XGBoost](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L248-L267)
 
 Is there a machine learning framework that is missing? Feel free to [open an issue](https://github.com/operatorai/modelstore/issues) or send us a pull request!
 
