@@ -87,6 +87,7 @@ class BlobStorage(CloudStorage):
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
         """ Returns a model's meta data """
+        # @TODO make sure that domain & model_id are not None
         remote_path = get_metadata_path(domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = os.path.join(tmp_dir, f"{model_id}.json")

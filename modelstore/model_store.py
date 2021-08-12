@@ -105,6 +105,10 @@ class ModelStore:
         of the domains"""
         return self.storage.list_domains()
 
+    def get_model_info(self, domain: str, model_id: str) -> dict:
+        """ Returns the meta-data for a given model """
+        return self.storage.get_meta_data(domain, model_id)
+
     def list_versions(
         self, domain: str, state_name: Optional[str] = None
     ) -> list:
