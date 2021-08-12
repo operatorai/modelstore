@@ -48,6 +48,11 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def get_meta_data(self, domain: str, model_id: str) -> dict:
+        """ Returns a model's meta data """
+        raise NotImplementedError()
+
+    @abstractmethod
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that

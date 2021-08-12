@@ -79,11 +79,20 @@ class BlobStorage(CloudStorage):
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         logger.debug("Copying meta-data: %s", meta_data)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            version_path = os.path.join(tmp_dir, f"{model_id}.json")
-            with open(version_path, "w") as out:
+            local_path = os.path.join(tmp_dir, f"{model_id}.json")
+            with open(local_path, "w") as out:
                 out.write(json.dumps(meta_data))
-            self._push(version_path, get_metadata_path(domain, model_id))
-            self._push(version_path, get_domain_path(domain))
+            self._push(local_path, get_metadata_path(domain, model_id))
+            self._push(local_path, get_domain_path(domain))
+
+    def get_meta_data(self, domain: str, model_id: str) -> dict:
+        """ Returns a model's meta data """
+        remote_path = get_metadata_path(domain, model_id)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_path = os.path.join(tmp_dir, f"{model_id}.json")
+            self._pull(remote_path, local_path)
+            with open(local_path, "r") as lines:
+                return json.loads(lines.read())
 
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
