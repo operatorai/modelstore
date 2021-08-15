@@ -28,7 +28,7 @@ class ModelFileManager(ModelManager):
     """
 
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("persisted_files", storage)
+        super().__init__("model_file", storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
@@ -62,6 +62,8 @@ class ModelFileManager(ModelManager):
         Return a function that when called copies
         the model file to the tmp_dir
         """
+        if not self.matches_with(**kwargs):
+            raise TypeError("model is not a path to a file!")
         return [
             partial(copy_file, source=kwargs["model"]),
         ]
