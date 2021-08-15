@@ -1,5 +1,9 @@
 # Change log
 
+## Unrelease
+
+🆕  Read a specific model's metadata with `modelstore.get_model_info()`
+
 ## modelstore 0.0.65
 
 🆕  Added model states, and updated listing models to listing by state.

@@ -20,9 +20,9 @@ import modelstore
 import pytest
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
+    MODELSTORE_ROOT,
     get_archive_path,
     get_domain_path,
-    get_metadata_path,
     get_model_state_path,
 )
 
@@ -63,6 +63,18 @@ def test_state_exists(mock_blob_storage):
     assert not mock_blob_storage.state_exists("foo")
 
 
+def test_get_metadata_path(mock_blob_storage):
+    exp = os.path.join(
+        mock_blob_storage.root_dir,
+        MODELSTORE_ROOT,
+        "domain",
+        "versions",
+        "model-id.json",
+    )
+    res = mock_blob_storage._get_metadata_path("domain", "model-id")
+    assert exp == res
+
+
 def test_set_meta_data(mock_blob_storage):
     # Create a meta data string
     meta_dict = {"key": "value"}
@@ -72,18 +84,32 @@ def test_set_meta_data(mock_blob_storage):
     mock_blob_storage.set_meta_data("test-domain", "model-123", meta_dict)
 
     # Expected two uploads
-    # The meta data for the 'latest' model
+    # (1) The meta data for the 'latest' model
     meta_data = os.path.join(
         mock_blob_storage.root_dir, get_domain_path("test-domain")
     )
     assert get_file_contents(meta_data) == meta_str
 
-    # The meta data for a specific model
-    meta_data = os.path.join(
-        mock_blob_storage.root_dir,
-        get_metadata_path("test-domain", "model-123"),
+    # (2) The meta data for a specific model
+    meta_data_path = mock_blob_storage._get_metadata_path(
+        "test-domain", "model-123"
     )
-    assert get_file_contents(meta_data) == meta_str
+    assert get_file_contents(meta_data_path) == meta_str
+
+
+def test_get_meta_data(mock_blob_storage):
+    exp = {"domain": "domain-1", "model_id": "model-2"}
+    res = mock_blob_storage.get_meta_data("domain-1", "model-2")
+    assert res["model"] == exp
+
+
+@pytest.mark.parametrize(
+    "domain,model_id",
+    [(None, "model-2"), ("", "model-2"), ("domain-1", None), ("domain-1", "")],
+)
+def test_get_meta_data_undefined_input(mock_blob_storage, domain, model_id):
+    with pytest.raises(ValueError):
+        mock_blob_storage.get_meta_data(domain, model_id)
 
 
 def test_upload(mock_blob_storage, tmp_path):

@@ -23,7 +23,6 @@ from modelstore.storage.util.paths import (
     get_archive_path,
     get_domain_path,
     get_domains_path,
-    get_metadata_path,
     get_model_state_path,
     get_versions_path,
     is_valid_state_name,
@@ -70,6 +69,22 @@ class BlobStorage(CloudStorage):
         """ Extracts the storage location from a meta data dictionary """
         raise NotImplementedError()
 
+    def _get_metadata_path(
+        self, domain: str, model_id: str, state_name: Optional[str] = None
+    ) -> str:
+        """Creates a path where a meta-data file about a model is stored.
+        I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
+
+        Args:
+            domain (str): A group of models that are trained for the
+            same end-use are given the same domain.
+
+            model_id (str): A UUID4 string that identifies this specific
+            model.
+        """
+        versions_path = get_versions_path(domain, state_name)
+        return os.path.join(versions_path, f"{model_id}.json")
+
     def upload(self, domain: str, model_id: str, local_path: str) -> dict:
         # @TODO model_id is unused
         bucket_path = get_archive_path(domain, local_path)
@@ -79,11 +94,22 @@ class BlobStorage(CloudStorage):
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
         logger.debug("Copying meta-data: %s", meta_data)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            version_path = os.path.join(tmp_dir, f"{model_id}.json")
-            with open(version_path, "w") as out:
+            local_path = os.path.join(tmp_dir, f"{model_id}.json")
+            with open(local_path, "w") as out:
                 out.write(json.dumps(meta_data))
-            self._push(version_path, get_metadata_path(domain, model_id))
-            self._push(version_path, get_domain_path(domain))
+            self._push(local_path, self._get_metadata_path(domain, model_id))
+            self._push(local_path, get_domain_path(domain))
+
+    def get_meta_data(self, domain: str, model_id: str) -> dict:
+        """ Returns a model's meta data """
+        if any(x in [None, ""] for x in [domain, model_id]):
+            raise ValueError("domain and model_id must be set")
+        remote_path = self._get_metadata_path(domain, model_id)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_path = os.path.join(tmp_dir, f"{model_id}.json")
+            self._pull(remote_path, local_path)
+            with open(local_path, "r") as lines:
+                return json.loads(lines.read())
 
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
@@ -95,7 +121,7 @@ class BlobStorage(CloudStorage):
             model_meta = self._read_json_object(model_domain)
             logger.info("Latest model is: %f", model_meta["model"]["model_id"])
         else:
-            model_meta_path = get_metadata_path(domain, model_id)
+            model_meta_path = self._get_metadata_path(domain, model_id)
             model_meta = self._read_json_object(model_meta_path)
         storage_path = self._get_storage_location(model_meta["storage"])
         return self._pull(storage_path, local_path)
@@ -154,8 +180,8 @@ class BlobStorage(CloudStorage):
         if not self.state_exists(state_name):
             logger.debug("Model state '%s' does not exist", state_name)
             raise Exception(f"State '{state_name}' does not exist")
-        model_path = get_metadata_path(domain, model_id)
-        model_state_path = get_metadata_path(domain, model_id, state_name)
+        model_path = self._get_metadata_path(domain, model_id)
+        model_state_path = self._get_metadata_path(domain, model_id, state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_model_path = self._pull(model_path, tmp_dir)
             self._push(local_model_path, model_state_path)

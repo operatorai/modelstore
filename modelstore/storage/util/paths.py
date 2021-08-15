@@ -19,6 +19,8 @@ from modelstore.utils.log import logger
 
 MODELSTORE_ROOT = "operatorai-model-store"
 
+# @TODO move into blob_storage / override in local
+
 
 def get_archive_path(domain: str, local_path: str) -> str:
     """Creates a bucket prefix where a model archive will be stored.
@@ -50,23 +52,6 @@ def get_versions_path(domain: str, state_name: Optional[str] = None) -> str:
     if state_name is not None:
         return os.path.join(MODELSTORE_ROOT, domain, "versions", state_name)
     return os.path.join(MODELSTORE_ROOT, domain, "versions")
-
-
-def get_metadata_path(
-    domain: str, model_id: str, state_name: Optional[str] = None
-) -> str:
-    """Creates a path where a meta-data file about a model is stored.
-    I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
-
-    Args:
-        domain (str): A group of models that are trained for the
-        same end-use are given the same domain.
-
-        model_id (str): A UUID4 string that identifies this specific
-        model.
-    """
-    versions_path = get_versions_path(domain, state_name)
-    return os.path.join(versions_path, f"{model_id}.json")
 
 
 def get_domains_path() -> str:
