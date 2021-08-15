@@ -19,11 +19,14 @@ from datetime import datetime
 from typing import Optional
 
 from modelstore.storage.storage import CloudStorage
-from modelstore.storage.util.paths import (get_archive_path, get_domain_path,
-                                           get_domains_path,
-                                           get_model_state_path,
-                                           get_versions_path,
-                                           is_valid_state_name)
+from modelstore.storage.util.paths import (
+    get_archive_path,
+    get_domain_path,
+    get_domains_path,
+    get_model_state_path,
+    get_versions_path,
+    is_valid_state_name,
+)
 from modelstore.utils.log import logger
 
 
