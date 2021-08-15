@@ -16,7 +16,7 @@ from functools import partial
 from typing import Any
 
 from modelstore.models.common import save_json
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 

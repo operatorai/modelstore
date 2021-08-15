@@ -11,12 +11,11 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import os
 from functools import partial
 
 from modelstore.models.common import save_json
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 

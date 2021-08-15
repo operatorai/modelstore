@@ -11,13 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import os
 import tarfile
 from pathlib import Path
 
 import pytest
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=protected-access

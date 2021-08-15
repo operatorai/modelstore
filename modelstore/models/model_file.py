@@ -15,7 +15,7 @@ import os
 import shutil
 from functools import partial
 
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
 
