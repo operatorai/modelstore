@@ -41,14 +41,6 @@ def test_get_versions_path_with_state():
     assert exp == res
 
 
-def test_get_metadata_path():
-    exp = os.path.join(
-        paths.MODELSTORE_ROOT, "domain", "versions", "model-id.json"
-    )
-    res = paths.get_metadata_path("domain", "model-id")
-    assert exp == res
-
-
 def test_get_domains_path():
     exp = os.path.join(paths.MODELSTORE_ROOT, "domains")
     res = paths.get_domains_path()

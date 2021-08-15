@@ -16,11 +16,11 @@ import os
 import shutil
 import warnings
 from pathlib import Path
+from typing import Optional
 
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT,
-    get_metadata_path,
     get_model_state_path,
     is_valid_state_name,
 )
@@ -65,6 +65,24 @@ class FileSystemStorage(BlobStorage):
             logger.error("Error=%s...", str(ex))
             return False
 
+    def _get_metadata_path(
+        self, domain: str, model_id: str, state_name: Optional[str] = None
+    ) -> str:
+        """Creates a path where a meta-data file about a model is stored.
+        I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
+
+        Args:
+            domain (str): A group of models that are trained for the
+            same end-use are given the same domain.
+
+            model_id (str): A UUID4 string that identifies this specific
+            model.
+        """
+        meta_data_path = super()._get_metadata_path(
+            domain, model_id, state_name
+        )
+        return self.relative_dir(meta_data_path)
+
     def _push(self, source: str, destination: str) -> str:
         destination = self.relative_dir(destination)
 
@@ -97,11 +115,11 @@ class FileSystemStorage(BlobStorage):
             os.makedirs(parent_dir)
         return os.path.join(parent_dir, paths[1])
 
-    def _storage_location(self, archive_path: str) -> dict:
+    def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """
         return {
             "type": "file_system",
-            "path": os.path.abspath(archive_path),
+            "path": os.path.abspath(prefix),
         }
 
     def _get_storage_location(self, meta: dict) -> str:
@@ -116,19 +134,10 @@ class FileSystemStorage(BlobStorage):
         """ Returns whether a model state with name state_name exists """
         if not is_valid_state_name(state_name):
             return False
+        # @TODO this function can be removed once get_model_state_path
+        # doesn't need to be called with relative_dir()
         state_path = self.relative_dir(get_model_state_path(state_name))
         return os.path.exists(state_path)
-
-    def set_model_state(self, domain: str, model_id: str, state_name: str):
-        """ Adds the given model ID the set that are in the state_name path """
-        if not self.state_exists(state_name):
-            logger.debug("Model state '%s' does not exist", state_name)
-            raise Exception(f"State '{state_name}' does not exist")
-        model_path = self.relative_dir(get_metadata_path(domain, model_id))
-        model_state_path = self.relative_dir(
-            get_metadata_path(domain, model_id, state_name)
-        )
-        shutil.copy(model_path, model_state_path)
 
 
 def _read_json_file(path: str) -> dict:
