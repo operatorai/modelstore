@@ -19,14 +19,11 @@ from datetime import datetime
 from typing import Optional
 
 from modelstore.storage.storage import CloudStorage
-from modelstore.storage.util.paths import (
-    get_archive_path,
-    get_domain_path,
-    get_domains_path,
-    get_model_state_path,
-    get_versions_path,
-    is_valid_state_name,
-)
+from modelstore.storage.util.paths import (get_archive_path, get_domain_path,
+                                           get_domains_path,
+                                           get_model_state_path,
+                                           get_versions_path,
+                                           is_valid_state_name)
 from modelstore.utils.log import logger
 
 
@@ -102,7 +99,8 @@ class BlobStorage(CloudStorage):
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
         """ Returns a model's meta data """
-        # @TODO make sure that domain & model_id are not None
+        if any(x in [None, ""] for x in [domain, model_id]):
+            raise ValueError("domain and model_id must be set")
         remote_path = self._get_metadata_path(domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = os.path.join(tmp_dir, f"{model_id}.json")

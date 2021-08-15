@@ -103,6 +103,15 @@ def test_get_meta_data(mock_blob_storage):
     assert res["model"] == exp
 
 
+@pytest.mark.parametrize(
+    "domain,model_id",
+    [(None, "model-2"), ("", "model-2"), ("domain-1", None), ("domain-1", "")],
+)
+def test_get_meta_data_undefined_input(mock_blob_storage, domain, model_id):
+    with pytest.raises(ValueError):
+        mock_blob_storage.get_meta_data(domain, model_id)
+
+
 def test_upload(mock_blob_storage, tmp_path):
     source = os.path.join(tmp_path, "test-file.txt")
     Path(source).touch()
