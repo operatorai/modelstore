@@ -116,6 +116,20 @@ def run_lightgbm_example(modelstore: ModelStore) -> dict:
     return modelstore.upload(_DIABETES_DOMAIN, model=model)
 
 
+def run_model_file_example(modelstore: ModelStore) -> dict:
+    # Create a file with a "model" -- in this case it is a json file,
+    # but modelstore can handle any file type
+    tmp_dir = mkdtemp()
+    model_path = os.path.join(tmp_dir, "model.json")
+    with open(model_path, "w") as out:
+        out.write(json.dumps({"weights": [0.1, 0.2, 0.3]}))
+
+    model_domain = "example-model-file"
+
+    print(f'⤴️  Uploading the model file to the "{model_domain}" domain.')
+    return modelstore.upload(model_domain, model=model)
+
+
 def run_pytorch_example(modelstore: ModelStore) -> dict:
     # Load the data
     X_train, _, y_train, _ = load_diabetes_dataset(as_numpy=True)
