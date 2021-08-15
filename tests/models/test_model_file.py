@@ -11,14 +11,11 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import json
 import os
-from functools import partial
+from tempfile import TemporaryDirectory
 
-import numpy as np
-import pandas as pd
 import pytest
-from modelstore.models.model_file import ModelFileManager
+from modelstore.models.model_file import ModelFileManager, copy_file
 from tests.models.test_xgboost import xgb_model
 
 # pylint: disable=protected-access
@@ -77,3 +74,11 @@ def test_get_functions(model_file_manager, model_file):
 
 def test_get_params(model_file_manager, model_file):
     assert model_file_manager._get_params(model=model_file) == {}
+
+
+def test_copy_file(model_file):
+    with TemporaryDirectory() as target_dir:
+        target_file = os.path.join(target_dir, os.path.split(model_file)[1])
+        assert not os.path.exists(target_file)
+        copy_file(target_dir, source=model_file)
+        assert os.path.exists(target_file)

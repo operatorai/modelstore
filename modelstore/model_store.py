@@ -122,7 +122,7 @@ class ModelStore:
         for manager in self._managers:
             if manager.matches_with(**kwargs):
                 return manager.upload(domain, **kwargs)
-        raise ValueError("unable to upload: %s", **kwargs)
+        raise ValueError("unable to upload: could not find matching manager")
 
     def download(
         self, local_path: str, domain: str, model_id: str = None

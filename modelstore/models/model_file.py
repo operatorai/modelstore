@@ -78,7 +78,7 @@ class ModelFileManager(ModelManager):
         return {"library": self.ml_library}
 
 
-def copy_file(source, tmp_dir) -> str:
+def copy_file(tmp_dir, source) -> str:
     destination = os.path.join(
         tmp_dir,
         os.path.split(source)[1],
