@@ -125,9 +125,8 @@ def run_model_file_example(modelstore: ModelStore) -> dict:
         out.write(json.dumps({"weights": [0.1, 0.2, 0.3]}))
 
     model_domain = "example-model-file"
-
     print(f'⤴️  Uploading the model file to the "{model_domain}" domain.')
-    return modelstore.upload(model_domain, model=model)
+    return modelstore.upload(model_domain, model=model_path)
 
 
 def run_pytorch_example(modelstore: ModelStore) -> dict:
