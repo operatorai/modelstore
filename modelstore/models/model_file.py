@@ -14,6 +14,7 @@
 import os
 import shutil
 from functools import partial
+from pathlib import PosixPath
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -48,7 +49,12 @@ class ModelFileManager(ModelManager):
     def matches_with(self, **kwargs) -> bool:
         if "model" in kwargs:
             # model is a path to a file
-            return os.path.exists(kwargs["model"])
+            model_path = kwargs["model"]
+            if isinstance(model_path, PosixPath) or isinstance(model_path, str):
+                if os.path.isdir(model_path):
+                    # @Future - support adding directories
+                    return False
+                return os.path.exists(kwargs["model"])
         return False
 
     def _get_functions(self, **kwargs) -> list:
@@ -75,5 +81,5 @@ def copy_file(source, tmp_dir) -> str:
         tmp_dir,
         os.path.split(source)[1],
     )
-    shutil.copy2(source, destination)
+    shutil.copy2(str(source), str(destination))
     return destination
