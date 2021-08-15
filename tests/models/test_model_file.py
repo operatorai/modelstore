@@ -26,8 +26,8 @@ from tests.models.test_xgboost import xgb_model
 
 
 @pytest.fixture
-def model_file(tmp_dir):
-    file_path = os.path.join(tmp_dir, "model.txt")
+def model_file(tmpdir):
+    file_path = os.path.join(tmpdir, "model.txt")
     with open(file_path, "w") as out:
         out.write("example-model-content")
     return file_path
