@@ -2,6 +2,8 @@
 
 ## Unrelease
 
+🆕  Upload models from frameworks that are not (yet) supported by modelstore! The `modelstore.upload()` function now works if you give it a `model=` kwarg that is a path to a file.
+
 🆕  Read a specific model's metadata with `modelstore.get_model_info()`
 
 ## modelstore 0.0.65
