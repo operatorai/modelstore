@@ -133,7 +133,7 @@ class ModelStore:
             if manager.ml_library == ml_library:
                 with tempfile.TemporaryDirectory() as tmp_dir:
                     model_files = self.download(tmp_dir, domain, model_id)
-                    return manager.load(model_files)
+                    return manager.load(model_files, meta_data)
         raise ValueError("unable to load model with type: ", ml_library)
 
     def download(
