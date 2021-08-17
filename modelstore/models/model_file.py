@@ -24,7 +24,8 @@ class ModelFileManager(ModelManager):
 
     """
     Upload model files that have already been persisted to disk
-    to the model store
+    to the model store. This approach is intended for usage with
+    any ML framework that is not (yet) supported by modelstore
     """
 
     def __init__(self, storage: CloudStorage = None):
