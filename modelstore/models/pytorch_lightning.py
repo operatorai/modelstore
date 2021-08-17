@@ -80,6 +80,14 @@ class PyTorchLightningManager(ModelManager):
         """
         return {}
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _save_lightning_model(
     tmp_dir: str, trainer: "Trainer", model: "LightningModule"

@@ -72,6 +72,14 @@ class GensimManager(ModelManager):
         }
         return params
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _save_model(tmp_dir: str, model: "gensim.utils.SaveLoad") -> str:
     file_path = os.path.join(tmp_dir, GENSIM_MODEL)

@@ -84,6 +84,14 @@ class ModelManager(ABC):
         """
         raise NotImplementedError()
 
+    @abstractmethod
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        raise NotImplementedError()
+
     def _validate_kwargs(self, **kwargs):
         """Ensures that the required kwargs are set"""
         for arg in self._required_kwargs():

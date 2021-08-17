@@ -101,6 +101,14 @@ class SKLearnManager(ModelManager):
             params.pop("steps", None)
         return convert_numpy(params)
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _feature_importances(
     model: "BaseEstimator", x_train: "pandas.DataFrame"

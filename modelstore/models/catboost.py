@@ -75,6 +75,14 @@ class CatBoostManager(ModelManager):
         """
         return kwargs["model"].get_params()
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def save_model(
     tmp_dir: str, model: "catboost.CatBoost", fmt: str, pool: Any = None

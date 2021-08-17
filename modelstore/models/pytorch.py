@@ -78,6 +78,14 @@ class PyTorchManager(ModelManager):
         params = convert_numpy(params)
         return convert_tensors(params)
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _save_state_dict(
     tmp_dir: str, model: "nn.Module", optimizer: "optim.Optimizer"

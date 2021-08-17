@@ -71,6 +71,14 @@ class KerasManager(ModelManager):
         """
         return kwargs["model"].optimizer.get_config()
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:
     file_path = os.path.join(tmp_dir, MODEL_DIRECTORY)

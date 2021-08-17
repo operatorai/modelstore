@@ -63,6 +63,14 @@ class TensorflowManager(ModelManager):
         """
         return kwargs["model"].optimizer.get_config()
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
     # https://www.tensorflow.org/api_docs/python/tf/keras/Model#save_weights

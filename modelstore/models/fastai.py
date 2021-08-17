@@ -77,6 +77,14 @@ class FastAIManager(ModelManager):
         """
         return {}
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
     # learner.save(file) will write to: self.path/self.model_dir/file;

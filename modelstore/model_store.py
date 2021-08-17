@@ -13,6 +13,7 @@
 #    limitations under the License.
 import os
 import tarfile
+import tempfile
 from dataclasses import dataclass
 from typing import Optional
 
@@ -123,6 +124,17 @@ class ModelStore:
             if manager.matches_with(**kwargs):
                 return manager.upload(domain, **kwargs)
         raise ValueError("unable to upload: could not find matching manager")
+
+    def load(self, domain: str, model_id: str = None):
+        meta_data = self.get_model_info(domain, model_id)
+        ml_library = meta_data["model"]["model_type"]["library"]
+        # pylint: disable=no-member
+        for manager in self._managers:
+            if manager.ml_library == ml_library:
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    model_files = self.download(tmp_dir, domain, model_id)
+                    return manager.load(model_files)
+        raise ValueError("unable to load model with type: ", ml_library)
 
     def download(
         self, local_path: str, domain: str, model_id: str = None

@@ -62,6 +62,14 @@ class LightGbmManager(ModelManager):
         """
         return kwargs["model"].params
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def save_model(tmp_dir: str, model: "lgb.Booster") -> str:
     """From the docs: dump model into JSON file"""

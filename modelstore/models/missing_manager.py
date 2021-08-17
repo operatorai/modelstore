@@ -59,3 +59,8 @@ class MissingDepManager(ModelManager):
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")
+
+    def load(self, model_path: str):
+        logger.error("Error: %s is not installed", self.library)
+        logger.error("Please install it and try again")
+        raise ModuleNotFoundError(f"{self.library} is not installed")

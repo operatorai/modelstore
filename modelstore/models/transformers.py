@@ -79,6 +79,14 @@ class TransformersManager(ModelManager):
         """
         return kwargs["config"].to_dict()
 
+    def load(self, model_path: str):
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
+
 
 def _save_transformers(
     tmp_dir: str,
