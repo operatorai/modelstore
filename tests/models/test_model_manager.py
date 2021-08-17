@@ -14,6 +14,7 @@
 import os
 import tarfile
 from pathlib import Path
+from typing import Any
 
 import pytest
 from modelstore.models.model_manager import ModelManager
@@ -65,6 +66,9 @@ class MockModelManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         return True
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        raise NotImplementedError()
 
 
 def mock_save_model(tmp_dir: str) -> str:
