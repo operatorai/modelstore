@@ -37,7 +37,9 @@ pip install modelstore
 * [Transformers](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L212-L245)
 * [XGBoost](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L248-L267)
 
-Is there a machine learning framework that is missing? Feel free to [open an issue](https://github.com/operatorai/modelstore/issues) or send us a pull request!
+Is there a machine learning framework that is missing? 
+* You can store your model locally, and then use `modelstore` to upload it
+* Feel free to [open an issue](https://github.com/operatorai/modelstore/issues)
 
 ## Features
 
