@@ -19,8 +19,9 @@ from modelstore.models.fastai import FastAIManager
 from modelstore.models.gensim import GensimManager
 from modelstore.models.keras import KerasManager
 from modelstore.models.lightgbm import LightGbmManager
-from modelstore.models.missingmanager import MissingDepManager
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.missing_manager import MissingDepManager
+from modelstore.models.model_file import ModelFileManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.pytorch_lightning import PyTorchLightningManager
 from modelstore.models.sklearn import SKLearnManager
@@ -33,6 +34,7 @@ from modelstore.utils.log import logger
 ML_LIBRARIES = {
     "catboost": CatBoostManager,
     "fastai": FastAIManager,
+    "file": ModelFileManager,
     "gensim": GensimManager,
     "keras": KerasManager,
     "lightgbm": LightGbmManager,

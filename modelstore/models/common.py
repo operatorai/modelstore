@@ -11,7 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import json
 import os
 from typing import Any
@@ -26,7 +25,7 @@ def save_json(tmp_dir: str, file_name: str, data: dict) -> str:
     return target
 
 
-def save_joblib(tmp_dir: str, model: Any, fn: str) -> str:
-    model_path = os.path.join(tmp_dir, fn)
+def save_joblib(tmp_dir: str, model: Any, file_name: str) -> str:
+    model_path = os.path.join(tmp_dir, file_name)
     joblib.dump(model, model_path)
     return model_path

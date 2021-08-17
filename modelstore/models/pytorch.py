@@ -11,11 +11,10 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import os
 from functools import partial
 
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.models.util import convert_numpy, convert_tensors
 from modelstore.storage.storage import CloudStorage
 

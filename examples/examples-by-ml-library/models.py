@@ -1,4 +1,4 @@
-from tempfile import mkdtemp
+import tempfile
 
 import catboost as ctb
 import keras
@@ -114,6 +114,23 @@ def run_lightgbm_example(modelstore: ModelStore) -> dict:
         f'⤴️  Uploading the light GBM model to the "{_DIABETES_DOMAIN}" domain.'
     )
     return modelstore.upload(_DIABETES_DOMAIN, model=model)
+
+
+def run_model_file_example(modelstore: ModelStore) -> dict:
+    # For this demo, we use a temporary directory. This is not required
+    #  in your code -- just point modelstore directly to the model file
+    # that you want to persist
+    with tempfile.TemporaryDirectory() as tmp_dir:
+
+        # Create a file with a "model" -- in this case it is a json file,
+        # but modelstore can handle any file type
+        model_path = os.path.join(tmp_dir, "model.json")
+        with open(model_path, "w") as out:
+            out.write(json.dumps({"weights": [0.1, 0.2, 0.3]}))
+
+        model_domain = "example-model-file"
+        print(f'⤴️  Uploading the model file to the "{model_domain}" domain.')
+        return modelstore.upload(model_domain, model=model_path)
 
 
 def run_pytorch_example(modelstore: ModelStore) -> dict:

@@ -11,7 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 from modelstore.models import managers
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.pytorch import PyTorchManager
@@ -22,7 +21,7 @@ from modelstore.models.xgboost import XGBoostManager
 
 def test_iter_libraries():
     mgrs = {library: manager for library, manager in managers.iter_libraries()}
-    assert len(mgrs) == 11
+    assert len(mgrs) == 12
     assert isinstance(mgrs["sklearn"], SKLearnManager)
     assert isinstance(mgrs["pytorch"], PyTorchManager)
     assert isinstance(mgrs["xgboost"], XGBoostManager)

@@ -17,8 +17,8 @@ from unittest.mock import patch
 import pytest
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import ML_LIBRARIES
-from modelstore.models.missingmanager import MissingDepManager
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.missing_manager import MissingDepManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=protected-access

@@ -11,12 +11,11 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 from functools import partial
 
 from modelstore.meta import datasets
 from modelstore.models.common import save_joblib
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.models.util import convert_numpy
 from modelstore.storage.storage import CloudStorage
 
@@ -82,7 +81,9 @@ class SKLearnManager(ModelManager):
             raise TypeError("This model is not an sklearn model!")
 
         # @TODO: export/save in onnx format?
-        return [partial(save_joblib, model=kwargs["model"], fn=MODEL_JOBLIB)]
+        return [
+            partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB)
+        ]
 
     def _get_params(self, **kwargs) -> dict:
         """

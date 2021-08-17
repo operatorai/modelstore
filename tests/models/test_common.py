@@ -11,7 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import json
 import os
 
@@ -30,7 +29,7 @@ def test_save_json(tmp_path):
 def test_save_joblib(tmp_path):
     exp = {"key": "value"}
     exp_path = os.path.join(tmp_path, "model.joblib")
-    target = common.save_joblib(tmp_path, exp, fn="model.joblib")
+    target = common.save_joblib(tmp_path, exp, file_name="model.joblib")
     assert os.path.exists(exp_path)
     with open(target, "rb") as f:
         res = joblib.load(f)

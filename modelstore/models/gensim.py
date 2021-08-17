@@ -14,7 +14,7 @@
 import os
 from functools import partial
 
-from modelstore.models.modelmanager import ModelManager
+from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
 GENSIM_MODEL = "gensim.model"

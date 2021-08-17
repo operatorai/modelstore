@@ -1,6 +1,6 @@
 set -e
 backends=( filesystem aws azure gcloud hosted )
-frameworks=( catboost fastai gensim keras lightgbm pytorch pytorch-lightning sklearn tensorflow transformers xgboost )
+frameworks=( catboost fastai gensim keras lightgbm file pytorch pytorch-lightning sklearn tensorflow transformers xgboost )
 
 for framework in "${frameworks[@]}"
 do
