@@ -17,6 +17,7 @@ import tarfile
 import tempfile
 import uuid
 from abc import ABC, ABCMeta, abstractmethod
+from typing import Any
 
 import numpy as np
 from modelstore.meta import metadata
@@ -85,7 +86,7 @@ class ModelManager(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def load(self, model_path: str):
+    def load(self, model_path: str, meta_data: dict) -> Any:
         """
         Loads a model, stored in model_path,
         back into memory

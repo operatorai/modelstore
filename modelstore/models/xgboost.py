@@ -13,6 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
+from typing import Any
 
 from modelstore.models.common import save_json
 from modelstore.models.model_manager import ModelManager
@@ -68,7 +69,7 @@ class XGBoostManager(ModelManager):
         """
         return kwargs["model"].get_xgb_params()
 
-    def load(self, model_path: str):
+    def load(self, model_path: str, meta_data: dict) -> Any:
         """
         Loads a model, stored in model_path,
         back into memory

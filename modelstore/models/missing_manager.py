@@ -11,6 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import Any
+
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -60,7 +62,7 @@ class MissingDepManager(ModelManager):
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")
 
-    def load(self, model_path: str):
+    def load(self, model_path: str, meta_data: dict) -> Any:
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")

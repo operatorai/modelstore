@@ -75,7 +75,7 @@ class CatBoostManager(ModelManager):
         """
         return kwargs["model"].get_params()
 
-    def load(self, model_path: str):
+    def load(self, model_path: str, meta_data: dict) -> Any:
         """
         Loads a model, stored in model_path,
         back into memory

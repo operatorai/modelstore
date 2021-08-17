@@ -14,6 +14,7 @@
 import os
 from functools import partial
 from pathlib import Path
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -77,7 +78,7 @@ class FastAIManager(ModelManager):
         """
         return {}
 
-    def load(self, model_path: str):
+    def load(self, model_path: str, meta_data: dict) -> Any:
         """
         Loads a model, stored in model_path,
         back into memory

@@ -11,9 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import os
 from functools import partial
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -80,7 +80,7 @@ class PyTorchLightningManager(ModelManager):
         """
         return {}
 
-    def load(self, model_path: str):
+    def load(self, model_path: str, meta_data: dict) -> Any:
         """
         Loads a model, stored in model_path,
         back into memory
