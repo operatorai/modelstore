@@ -164,3 +164,9 @@ def test_save_model(pytorchlightning_model, pytorchlightning_trainer, tmp_path):
 
     model = ExampleLightningNet.load_from_checkpoint(file_path)
     models_equal(pytorchlightning_model, model)
+
+
+def test_load_model(pytorchlightning_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        pytorchlightning_manager.load("model-path", {})

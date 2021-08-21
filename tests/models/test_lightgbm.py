@@ -109,3 +109,9 @@ def test_dump_model(lgb_model, tmp_path):
     except:
         # Fail if we cannot load
         assert False
+
+
+def test_load_model(lightgbm_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        lightgbm_manager.load("model-path", {})

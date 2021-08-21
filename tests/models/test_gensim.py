@@ -92,3 +92,9 @@ def test_get_params(gensim_manager, model_type):
         json.dumps(result)
     except Exception as e:
         pytest.fail(f"Exception when dumping params: {str(e)}")
+
+
+def test_load_model(gensim_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        gensim_manager.load("model-path", {})

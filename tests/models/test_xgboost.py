@@ -31,13 +31,13 @@ def xgb_model(classification_data):
 
 
 @pytest.fixture
-def xgboost_manager():
+def xgb_manager():
     return xgboost.XGBoostManager()
 
 
-def test_model_info(xgboost_manager, xgb_model):
+def test_model_info(xgb_manager, xgb_model):
     exp = {"library": "xgboost", "type": "XGBClassifier"}
-    res = xgboost_manager._model_info(model=xgb_model)
+    res = xgb_manager._model_info(model=xgb_model)
     assert exp == res
 
 
@@ -48,35 +48,33 @@ def test_model_info(xgboost_manager, xgb_model):
         ("sklearn", False),
     ],
 )
-def test_is_model_type(xgboost_manager, ml_library, should_match):
-    assert (
-        xgboost_manager._is_model_type({"library": ml_library}) == should_match
-    )
+def test_is_model_type(xgb_manager, ml_library, should_match):
+    assert xgb_manager._is_model_type({"library": ml_library}) == should_match
 
 
-def test_model_data(xgboost_manager, xgb_model):
+def test_model_data(xgb_manager, xgb_model):
     exp = {}
-    res = xgboost_manager._model_data(model=xgb_model)
+    res = xgb_manager._model_data(model=xgb_model)
     assert exp == res
 
 
-def test_required_kwargs(xgboost_manager):
-    assert xgboost_manager._required_kwargs() == ["model"]
+def test_required_kwargs(xgb_manager):
+    assert xgb_manager._required_kwargs() == ["model"]
 
 
-def test_matches_with(xgboost_manager, xgb_model):
-    assert xgboost_manager.matches_with(model=xgb_model)
-    assert not xgboost_manager.matches_with(model="a-string-value")
-    assert not xgboost_manager.matches_with(classifier=xgb_model)
+def test_matches_with(xgb_manager, xgb_model):
+    assert xgb_manager.matches_with(model=xgb_model)
+    assert not xgb_manager.matches_with(model="a-string-value")
+    assert not xgb_manager.matches_with(classifier=xgb_model)
 
 
-def test_get_functions(xgboost_manager):
-    assert len(xgboost_manager._get_functions(model="model")) == 3
+def test_get_functions(xgb_manager):
+    assert len(xgb_manager._get_functions(model="model")) == 3
 
 
-def test_get_params(xgboost_manager, xgb_model):
+def test_get_params(xgb_manager, xgb_model):
     exp = xgb_model.get_xgb_params()
-    res = xgboost_manager._get_params(model=xgb_model)
+    res = xgb_manager._get_params(model=xgb_model)
     assert exp == res
 
 
@@ -99,3 +97,9 @@ def test_model_config(xgb_model, tmp_path):
     exp = os.path.join(tmp_path, "config.json")
     assert os.path.exists(exp)
     assert res == exp
+
+
+def test_load_model(xgb_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        xgb_manager.load("model-path", {})
