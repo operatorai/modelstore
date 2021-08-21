@@ -29,3 +29,8 @@ def test_missing_dep_create(missing_library_manager):
 
 def test_missing_manager_matches_with(missing_library_manager):
     assert not missing_library_manager.matches_with(model="value")
+
+
+def test_load_model(missing_library_manager):
+    with pytest.raises(ModuleNotFoundError):
+        missing_library_manager.load("model-path", {})

@@ -13,6 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -62,6 +63,14 @@ class TensorflowManager(ModelManager):
         that are available
         """
         return kwargs["model"].optimizer.get_config()
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
 
 
 def _save_weights(tmp_dir: str, model: "keras.Model") -> str:

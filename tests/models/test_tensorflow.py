@@ -110,3 +110,9 @@ def test_save_weights(tf_model, tmp_path):
     tf_model.load_weights(file_path)
     post_preds = tf_model.predict(test_input)
     np.testing.assert_allclose(pre_preds, post_preds)
+
+
+def test_load_model(tf_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        tf_manager.load("model-path", {})

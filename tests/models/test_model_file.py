@@ -82,3 +82,8 @@ def test_copy_file(model_file):
         assert not os.path.exists(target_file)
         copy_file(target_dir, source=model_file)
         assert os.path.exists(target_file)
+
+
+def test_load_model(model_file_manager):
+    with pytest.raises(ValueError):
+        model_file_manager.load("model-path", {})

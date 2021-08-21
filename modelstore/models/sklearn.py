@@ -11,10 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import os
 from functools import partial
+from typing import Any
 
 from modelstore.meta import datasets
-from modelstore.models.common import save_joblib
+from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.util import convert_numpy
 from modelstore.storage.storage import CloudStorage
@@ -80,7 +82,7 @@ class SKLearnManager(ModelManager):
         if not self.matches_with(**kwargs):
             raise TypeError("This model is not an sklearn model!")
 
-        # @TODO: export/save in onnx format?
+        # @Future idea: export/save in onnx format?
         return [
             partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB)
         ]
@@ -100,6 +102,15 @@ class SKLearnManager(ModelManager):
                 params.pop(key, None)
             params.pop("steps", None)
         return convert_numpy(params)
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        Loads a joblib model, stored in model_path, back into memory
+        """
+        # @Future: check if loading into same version of joblib
+        # as was used for saving
+        file_name = os.path.join(model_path, MODEL_JOBLIB)
+        return load_joblib(file_name)
 
 
 def _feature_importances(

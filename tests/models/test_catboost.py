@@ -34,13 +34,13 @@ def catb_model(tmpdir, classification_data):
 
 
 @pytest.fixture
-def catboost_manager():
+def catb_manager():
     return catboost.CatBoostManager()
 
 
-def test_model_info(catboost_manager, catb_model):
+def test_model_info(catb_manager, catb_model):
     exp = {"library": "catboost", "type": "CatBoostClassifier"}
-    res = catboost_manager._model_info(model=catb_model)
+    res = catb_manager._model_info(model=catb_model)
     assert exp == res
 
 
@@ -51,35 +51,33 @@ def test_model_info(catboost_manager, catb_model):
         ("sklearn", False),
     ],
 )
-def test_is_model_type(catboost_manager, ml_library, should_match):
-    assert (
-        catboost_manager._is_model_type({"library": ml_library}) == should_match
-    )
+def test_is_model_type(catb_manager, ml_library, should_match):
+    assert catb_manager._is_model_type({"library": ml_library}) == should_match
 
 
-def test_model_data(catboost_manager, catb_model):
+def test_model_data(catb_manager, catb_model):
     exp = {}
-    res = catboost_manager._model_data(model=catb_model)
+    res = catb_manager._model_data(model=catb_model)
     assert exp == res
 
 
-def test_required_kwargs(catboost_manager):
-    assert catboost_manager._required_kwargs() == ["model"]
+def test_required_kwargs(catb_manager):
+    assert catb_manager._required_kwargs() == ["model"]
 
 
-def test_matches_with(catboost_manager, catb_model):
-    assert catboost_manager.matches_with(model=catb_model)
-    assert not catboost_manager.matches_with(model="a-string-value")
-    assert not catboost_manager.matches_with(catboost_model=catb_model)
+def test_matches_with(catb_manager, catb_model):
+    assert catb_manager.matches_with(model=catb_model)
+    assert not catb_manager.matches_with(model="a-string-value")
+    assert not catb_manager.matches_with(catboost_model=catb_model)
 
 
-def test_get_functions(catboost_manager, catb_model):
-    assert len(catboost_manager._get_functions(model=catb_model)) == 4
+def test_get_functions(catb_manager, catb_model):
+    assert len(catb_manager._get_functions(model=catb_model)) == 4
 
 
-def test_get_params(catboost_manager, catb_model):
+def test_get_params(catb_manager, catb_model):
     exp = catb_model.get_params()
-    res = catboost_manager._get_params(model=catb_model)
+    res = catb_manager._get_params(model=catb_model)
     assert exp == res
 
 
@@ -109,3 +107,9 @@ def test_dump_attributes(catb_model, tmp_path):
     with open(res, "r") as lines:
         data = json.loads(lines.read())
     assert all(x in data for x in config_keys)
+
+
+def test_load_model(catb_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        catb_manager.load("model-path", {})

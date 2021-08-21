@@ -12,12 +12,18 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json
+import os
 from functools import partial
 
 import numpy as np
 import pandas as pd
 import pytest
-from modelstore.models.sklearn import SKLearnManager, _feature_importances
+from modelstore.models.common import save_joblib
+from modelstore.models.sklearn import (
+    MODEL_JOBLIB,
+    SKLearnManager,
+    _feature_importances,
+)
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
@@ -159,3 +165,16 @@ def test_feature_importances_pipeline(sklearn_pipeline, classification_data):
     exp = {"regressor": sklearn_pipeline.steps[1][1].feature_importances_}
     res = _feature_importances(sklearn_pipeline, df)
     assert (exp["regressor"] == res["regressor"]).all()
+
+
+def test_load_model(tmp_path, sklearn_manager, sklearn_tree):
+    # Save the model to a tmp directory
+    model_path = save_joblib(tmp_path, sklearn_tree, MODEL_JOBLIB)
+    assert model_path == os.path.join(tmp_path, MODEL_JOBLIB)
+
+    #  Load the model
+    loaded_model = sklearn_manager.load(tmp_path, {})
+
+    # Expect the two to be the same
+    assert type(loaded_model) == type(sklearn_tree)
+    assert loaded_model.get_params() == sklearn_tree.get_params()

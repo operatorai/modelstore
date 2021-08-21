@@ -141,3 +141,9 @@ def test_save_state_dict(pytorch_model, pytorch_optim, tmp_path):
 
     model.load_state_dict(state_dict["model_state_dict"])
     models_equal(pytorch_model, model)
+
+
+def test_load_model(torch_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        torch_manager.load("model-path", {})

@@ -13,6 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -71,6 +72,14 @@ class GensimManager(ModelManager):
             k: v for k, v in params.items() if type(v) in [int, str, float]
         }
         return params
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
 
 
 def _save_model(tmp_dir: str, model: "gensim.utils.SaveLoad") -> str:

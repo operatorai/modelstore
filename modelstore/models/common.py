@@ -29,3 +29,7 @@ def save_joblib(tmp_dir: str, model: Any, file_name: str) -> str:
     model_path = os.path.join(tmp_dir, file_name)
     joblib.dump(model, model_path)
     return model_path
+
+
+def load_joblib(model_path: str) -> Any:
+    return joblib.load(model_path)

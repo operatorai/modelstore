@@ -15,6 +15,7 @@ import os
 import shutil
 from functools import partial
 from pathlib import PosixPath
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -77,6 +78,14 @@ class ModelFileManager(ModelManager):
 
     def _model_info(self, **kwargs) -> dict:
         return {"library": self.ml_library}
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        If a model was saved to disk and uploaded with this manager,
+        then we can't load it back into memory because we don't know
+        how to!
+        """
+        raise ValueError("cannot load model_file models into memory")
 
 
 def copy_file(tmp_dir, source) -> str:

@@ -10,6 +10,7 @@ from fastai.tabular.all import *
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
@@ -181,7 +182,7 @@ def run_pytorch_lightning_example(modelstore: ModelStore) -> dict:
 
 def run_sklearn_example(modelstore: ModelStore) -> dict:
     # Load the data
-    X_train, _, y_train, _ = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_diabetes_dataset()
 
     # Train a model using an sklearn pipeline
     params = {
@@ -198,12 +199,26 @@ def run_sklearn_example(modelstore: ModelStore) -> dict:
         ]
     )
     pipeline.fit(X_train, y_train)
+    mse = mean_squared_error(y_test, pipeline.predict(X_test))
+    print(f"⤴️  Trained model MSE={mse}.")
 
     # Upload the model to the model store
     print(
         f'⤴️  Uploading the sklearn pipeline to the "{_DIABETES_DOMAIN}" domain.'
     )
-    return modelstore.upload(_DIABETES_DOMAIN, model=pipeline)
+    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=pipeline)
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the sklearn "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_DIABETES_DOMAIN, model_id)
+
+    mse = mean_squared_error(y_test, model.predict(X_test))
+    print(f"⤴️  Loaded model MSE={mse}.")
+
+    return meta_data
 
 
 def run_tensorflow_example(modelstore: ModelStore) -> dict:

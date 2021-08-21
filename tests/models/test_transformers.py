@@ -140,3 +140,9 @@ def test_save_transformers(model_config, tr_model, tokenizer, tmp_path):
     # Validate tokenizer
     token = AutoTokenizer.from_pretrained(file_path)
     assert isinstance(token, PreTrainedTokenizerFast)
+
+
+def test_load_model(tr_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        tr_manager.load("model-path", {})

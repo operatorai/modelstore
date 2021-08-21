@@ -13,6 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.util import convert_numpy, convert_tensors
@@ -77,6 +78,14 @@ class PyTorchManager(ModelManager):
         params = kwargs["optimizer"].state_dict()
         params = convert_numpy(params)
         return convert_tensors(params)
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
 
 
 def _save_state_dict(

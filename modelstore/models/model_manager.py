@@ -17,6 +17,7 @@ import tarfile
 import tempfile
 import uuid
 from abc import ABC, ABCMeta, abstractmethod
+from typing import Any
 
 import numpy as np
 from modelstore.meta import metadata
@@ -81,6 +82,14 @@ class ModelManager(ABC):
         """
         The kwargs that must be set when calling
         create_archive()
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        Loads a model, stored in model_path,
+        back into memory
         """
         raise NotImplementedError()
 

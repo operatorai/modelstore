@@ -123,3 +123,9 @@ def test_export_model(fastai_learner, classification_row, tmp_path):
     _, _, loaded_probs = learner.predict(classification_row)
 
     np.testing.assert_allclose(saved_probs.numpy(), loaded_probs.numpy())
+
+
+def test_load_model(fastai_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        fastai_manager.load("model-path", {})

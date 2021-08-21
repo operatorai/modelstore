@@ -1,6 +1,8 @@
 # Change log
 
-## Unrelease
+## Unreleased
+
+🆕  Load models straight into memory! Model Store previously had `modelstore.download()` to download an artifact archive to a local path, it now also has `modelstore.load()` to load a model straight into memory. Currently works with `scikit-learn` models only.
 
 🆕  Upload models from frameworks that are not (yet) supported by modelstore! The `modelstore.upload()` function now works if you give it a `model=` kwarg that is a path to a file.
 

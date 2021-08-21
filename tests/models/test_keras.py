@@ -109,3 +109,9 @@ def test_model_json(keras_model, tmp_path):
             == keras_model.layers[i].__class__.__name__
         )
         assert model.layers[i].name == keras_model.layers[i].name
+
+
+def test_load_model(keras_manager):
+    # Placeholder - to be implemented
+    with pytest.raises(NotImplementedError):
+        keras_manager.load("model-path", {})

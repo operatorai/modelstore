@@ -14,23 +14,33 @@
 import json
 import os
 
-import joblib
+import pytest
 from modelstore.models import common
 
+# pylint: disable=redefined-outer-name
 
-def test_save_json(tmp_path):
-    exp = {"key": "value"}
-    target = common.save_json(tmp_path, "data.json", exp)
+
+@pytest.fixture
+def value_to_save():
+    return {"key": "value"}
+
+
+def test_save_json(tmp_path, value_to_save):
+    target = common.save_json(tmp_path, "data.json", value_to_save)
     with open(target, "r") as lines:
         res = json.loads(lines.read())
-    assert exp == res
+    assert value_to_save == res
 
 
-def test_save_joblib(tmp_path):
-    exp = {"key": "value"}
+def test_save_joblib(tmp_path, value_to_save):
     exp_path = os.path.join(tmp_path, "model.joblib")
-    target = common.save_joblib(tmp_path, exp, file_name="model.joblib")
+    # Save returns the full path
+    target = common.save_joblib(
+        tmp_path, value_to_save, file_name="model.joblib"
+    )
+    assert target == exp_path
     assert os.path.exists(exp_path)
-    with open(target, "rb") as f:
-        res = joblib.load(f)
-    assert exp == res
+
+    # Load takes the full path
+    res = common.load_joblib(exp_path)
+    assert value_to_save == res

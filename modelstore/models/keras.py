@@ -13,6 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
+from typing import Any
 
 from modelstore.models.common import save_json
 from modelstore.models.model_manager import ModelManager
@@ -70,6 +71,14 @@ class KerasManager(ModelManager):
         parameters
         """
         return kwargs["model"].optimizer.get_config()
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
 
 
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:

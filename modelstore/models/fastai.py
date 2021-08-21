@@ -14,6 +14,7 @@
 import os
 from functools import partial
 from pathlib import Path
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -76,6 +77,14 @@ class FastAIManager(ModelManager):
         kwargs["learner"].opt.state_dict()
         """
         return {}
+
+    def load(self, model_path: str, meta_data: dict) -> Any:
+        """
+        Loads a model, stored in model_path,
+        back into memory
+        """
+        # @TODO
+        raise NotImplementedError()
 
 
 def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
