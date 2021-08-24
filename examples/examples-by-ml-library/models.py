@@ -46,7 +46,19 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
         f'⤴️  Uploading the catboost model to the "{_DIABETES_DOMAIN}" domain.'
     )
     # Alternative: modelstore.catboost.upload(model_domain, model=model)
-    return modelstore.upload(_DIABETES_DOMAIN, model=model)
+    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=pipeline)
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the catboost "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_DIABETES_DOMAIN, model_id)
+
+    mse = mean_squared_error(y_test, model.predict(X_test))
+    print(f"⤴️  Loaded model MSE={mse}.")
+
+    return meta_data
 
 
 def run_fastai_example(modelstore: ModelStore) -> dict:
