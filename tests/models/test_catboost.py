@@ -15,6 +15,7 @@ import json
 import os
 
 import catboost as ctb
+import numpy as np
 import pytest
 from modelstore.models import catboost
 from tests.models.utils import classification_data
@@ -82,11 +83,16 @@ def test_get_params(catb_manager, catb_model):
 
 
 @pytest.mark.parametrize("fmt", ["json", "cbm", "onnx"])
-def test_save_model(fmt, catb_model, tmp_path):
+def test_save_model(fmt, catb_model, tmp_path, classification_data):
     exp = os.path.join(tmp_path, f"model.{fmt}")
     res = catboost.save_model(tmp_path, model=catb_model, fmt=fmt)
     assert os.path.exists(exp)
     assert res == exp
+
+    model = ctb.CatBoostClassifier()
+    model.load_model(res, format=fmt)
+    X_train, _ = classification_data
+    assert np.allclose(catb_model.predict(X_train), model.predict(X_train))
 
 
 def test_dump_attributes(catb_model, tmp_path):
@@ -109,7 +115,25 @@ def test_dump_attributes(catb_model, tmp_path):
     assert all(x in data for x in config_keys)
 
 
-def test_load_model(catb_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        catb_manager.load("model-path", {})
+def test_load_model(tmp_path, catb_manager, catb_model):
+    # Save the model to a tmp directory
+    model_path = catboost.save_model(tmp_path, catb_model, fmt="cbm")
+    assert model_path == os.path.join(
+        tmp_path, catboost._MODEL_PREFIX.format("cbm")
+    )
+
+    #  Load the model
+    loaded_model = catb_manager.load(
+        tmp_path,
+        {
+            "model": {
+                "model_type": {
+                    "type": "CatBoostClassifier",
+                },
+            }
+        },
+    )
+
+    # Expect the two to be the same
+    assert type(loaded_model) == type(catb_model)
+    assert loaded_model.get_params() == catb_model.get_params()

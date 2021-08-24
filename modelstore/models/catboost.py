@@ -21,9 +21,6 @@ from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
 _MODEL_PREFIX = "model.{}"
-MODEL_JSON = _MODEL_PREFIX.format("json")
-MODEL_CBM = _MODEL_PREFIX.format(".cbm")
-MODEL_ONNX = _MODEL_PREFIX.format("onnx")
 MODEL_ATTRIBUTES = "model_attributes.json"
 
 
@@ -60,10 +57,29 @@ class CatBoostManager(ModelManager):
         if not self.matches_with(**kwargs):
             raise TypeError("Model is not a CatBoost model!")
 
+        # pool parameter, from the catboost docs:
+        # The dataset previously used for training.
+        # This parameter is required if the model contains categorical features and the output format is cpp, python, or JSON.
         return [
-            partial(save_model, model=kwargs["model"], fmt="json"),
-            partial(save_model, model=kwargs["model"], fmt="cbm"),
-            partial(save_model, model=kwargs["model"], fmt="onnx"),
+            partial(
+                save_model,
+                model=kwargs["model"],
+                fmt="json",
+                pool=kwargs.get("pool"),
+            ),
+            partial(
+                save_model,
+                model=kwargs["model"],
+                fmt="cbm",
+                pool=kwargs.get("pool"),
+            ),
+            # onnx: only datasets without categorical features are currently supported
+            partial(
+                save_model,
+                model=kwargs["model"],
+                fmt="onnx",
+                pool=kwargs.get("pool"),
+            ),
             partial(dump_attributes, model=kwargs["model"]),
         ]
 
@@ -80,8 +96,21 @@ class CatBoostManager(ModelManager):
         Loads a model, stored in model_path,
         back into memory
         """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        import catboost
+
+        model_types = {
+            "CatBoostRegressor": catboost.CatBoostRegressor,
+            "CatBoostClassifier": catboost.CatBoostClassifier,
+        }
+        model_type = meta_data["model"]["model_type"]["type"]
+        if model_type not in model_types:
+            raise ValueError(f"Cannot load catboost model type: {model_type}")
+
+        logger.debug("Loading catboost model from %s", model_path)
+        target = os.path.join(model_path, _MODEL_PREFIX.format("cbm"))
+        model = model_types[model_type]()
+        return model.load_model(target, format="cbm")
 
 
 def save_model(
