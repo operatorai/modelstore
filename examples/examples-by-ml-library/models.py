@@ -34,7 +34,7 @@ _NEWSGROUP_EMBEDDINGS_DOMAIN = "newsgroups-embeddings"
 
 def run_catboost_example(modelstore: ModelStore) -> dict:
     # Load the data
-    X_train, _, y_train, _ = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_diabetes_dataset()
 
     # Train the model
     print("🤖  Training a CatBoostRegressor")
@@ -46,7 +46,7 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
         f'⤴️  Uploading the catboost model to the "{_DIABETES_DOMAIN}" domain.'
     )
     # Alternative: modelstore.catboost.upload(model_domain, model=model)
-    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=pipeline)
+    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
 
     # Load the model back into memory!
     model_id = meta_data["model"]["model_id"]
