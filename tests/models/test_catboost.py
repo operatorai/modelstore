@@ -126,8 +126,10 @@ def test_load_model(tmp_path, catb_manager, catb_model):
     loaded_model = catb_manager.load(
         tmp_path,
         {
-            "model_type": {
-                "type": "CatBoostClassifier",
+            "model": {
+                "model_type": {
+                    "type": "CatBoostClassifier",
+                },
             }
         },
     )

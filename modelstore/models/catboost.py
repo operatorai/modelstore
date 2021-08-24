@@ -61,10 +61,25 @@ class CatBoostManager(ModelManager):
         # The dataset previously used for training.
         # This parameter is required if the model contains categorical features and the output format is cpp, python, or JSON.
         return [
-            partial(save_model, model=kwargs["model"], fmt="json", pool=kwargs.get("pool")),
-            partial(save_model, model=kwargs["model"], fmt="cbm", pool=kwargs.get("pool")),
+            partial(
+                save_model,
+                model=kwargs["model"],
+                fmt="json",
+                pool=kwargs.get("pool"),
+            ),
+            partial(
+                save_model,
+                model=kwargs["model"],
+                fmt="cbm",
+                pool=kwargs.get("pool"),
+            ),
             # onnx: only datasets without categorical features are currently supported
-            partial(save_model, model=kwargs["model"], fmt="onnx", pool=kwargs.get("pool")),
+            partial(
+                save_model,
+                model=kwargs["model"],
+                fmt="onnx",
+                pool=kwargs.get("pool"),
+            ),
             partial(dump_attributes, model=kwargs["model"]),
         ]
 
@@ -88,7 +103,7 @@ class CatBoostManager(ModelManager):
             "CatBoostRegressor": catboost.CatBoostRegressor,
             "CatBoostClassifier": catboost.CatBoostClassifier,
         }
-        model_type = meta_data["model_type"]["type"]
+        model_type = meta_data["model"]["model_type"]["type"]
         if model_type not in model_types:
             raise ValueError(f"Cannot load catboost model type: {model_type}")
 
