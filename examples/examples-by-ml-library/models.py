@@ -41,6 +41,9 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
     model = ctb.CatBoostRegressor(allow_writing_files=False)
     model.fit(X_train, y_train)
 
+    mse = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Fit model MSE={mse}.")
+
     # Upload the model to the model store
     print(
         f'⤴️  Uploading the catboost model to the "{_DIABETES_DOMAIN}" domain.'
@@ -56,7 +59,7 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
 
     mse = mean_squared_error(y_test, model.predict(X_test))
-    print(f"⤴️  Loaded model MSE={mse}.")
+    print(f"🔍  Loaded model MSE={mse}.")
 
     return meta_data
 
@@ -291,7 +294,7 @@ def run_transformers_example(modelstore: ModelStore) -> dict:
 
 def run_xgboost_example(modelstore: ModelStore) -> dict:
     # Load the data
-    X_train, _, y_train, _ = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_diabetes_dataset()
 
     # Train a model
     xg_reg = xgb.XGBRegressor(
@@ -304,8 +307,23 @@ def run_xgboost_example(modelstore: ModelStore) -> dict:
     )
     xg_reg.fit(X_train, y_train)
 
+    mse = mean_squared_error(y_test, xg_reg.predict(X_test))
+    print(f"🔍  Fit model MSE={mse}.")
+
     # Upload the model to the model store
     print(
         f'⤴️  Uploading the xgboost model to the "{_DIABETES_DOMAIN}" domain.'
     )
+    # Alternative: modelstore.catboost.upload(model_domain, model=model)
+    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=xg_reg)
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the xgboost "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    xg_reg = modelstore.load(_DIABETES_DOMAIN, model_id)
+
+    mse = mean_squared_error(y_test, xg_reg.predict(X_test))
+    print(f"🔍  Loaded model MSE={mse}.")
     return modelstore.upload(_DIABETES_DOMAIN, model=xg_reg)
