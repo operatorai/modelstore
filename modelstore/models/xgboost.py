@@ -74,8 +74,24 @@ class XGBoostManager(ModelManager):
         Loads a model, stored in model_path,
         back into memory
         """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        import xgboost as xgb
+
+        model_types = {
+            "XGBRegressor": xgb.XGBRegressor,
+            "XGBClassifier": xgb.XGBClassifier,
+            "XGBModel": xgb.XGBModel,
+            # Future: other types
+        }
+        model_type = meta_data["model"]["model_type"]["type"]
+        if model_type not in model_types:
+            raise ValueError(f"Cannot load xgboost model type: {model_type}")
+
+        logger.debug("Loading xgboost model from %s", model_path)
+        target = os.path.join(model_path, MODEL_FILE)
+        model = model_types[model_type]()
+        model.load_model(target)
+        return model
 
 
 def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
