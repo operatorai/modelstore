@@ -11,8 +11,10 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import math
 import os
 
+import numpy as np
 import pytest
 import xgboost as xgb
 from modelstore.models import xgboost
@@ -99,7 +101,36 @@ def test_model_config(xgb_model, tmp_path):
     assert res == exp
 
 
-def test_load_model(xgb_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        xgb_manager.load("model-path", {})
+def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
+    def clear_nan(x):
+        # Because (nan != nan)
+        if math.isnan(x):
+            return 0
+        return x
+
+    # Save the model to a tmp directory
+    model_path = os.path.join(tmp_path, xgboost.MODEL_FILE)
+    xgb_model.save_model(model_path)
+
+    #  Load the model
+    loaded_model = xgb_manager.load(
+        tmp_path,
+        {
+            "model": {
+                "model_type": {
+                    "type": "XGBClassifier",
+                },
+            }
+        },
+    )
+
+    # Expect the two to be the same
+    assert type(loaded_model) == type(xgb_model)
+    xgb_model_params = xgb_model.get_params()
+    xgb_model_params["missing"] = clear_nan(xgb_model_params["missing"])
+
+    X_train, _ = classification_data
+    y_pred = xgb_model.predict(X_train)
+    y_loaded_pred = loaded_model.predict(X_train)
+
+    assert np.allclose(y_pred, y_loaded_pred)
