@@ -37,7 +37,6 @@ class KerasManager(ModelManager):
     @classmethod
     def required_dependencies(cls) -> list:
         return [
-            "keras",
             "h5py",
             "numpy",
             "scipy",
