@@ -1,7 +1,7 @@
 import tempfile
 
 import catboost as ctb
-import keras
+from tensorflow import keras
 import lightgbm as lgb
 import pytorch_lightning as pl
 import tensorflow as tf
