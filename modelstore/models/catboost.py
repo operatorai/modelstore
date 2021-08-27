@@ -103,14 +103,18 @@ class CatBoostManager(ModelManager):
             "CatBoostRegressor": catboost.CatBoostRegressor,
             "CatBoostClassifier": catboost.CatBoostClassifier,
         }
-        model_type = meta_data["model"]["model_type"]["type"]
+        model_type = self._get_model_type(meta_data)
         if model_type not in model_types:
             raise ValueError(f"Cannot load catboost model type: {model_type}")
 
         logger.debug("Loading catboost model from %s", model_path)
-        target = os.path.join(model_path, _MODEL_PREFIX.format("cbm"))
+        file_path = _model_file_path(model_path, fmt="cbm")
         model = model_types[model_type]()
-        return model.load_model(target, format="cbm")
+        return model.load_model(file_path, format="cbm")
+
+
+def _model_file_path(tmp_dir: str, fmt: str) -> str:
+    return os.path.join(tmp_dir, _MODEL_PREFIX.format(fmt))
 
 
 def save_model(
@@ -120,9 +124,9 @@ def save_model(
     https://catboost.ai/docs/concepts/python-reference_catboost_save_model.html#python-reference_catboost_save_model
     """
     logger.debug("Saving catboost model as %s", fmt)
-    target = os.path.join(tmp_dir, _MODEL_PREFIX.format(fmt))
-    model.save_model(target, format=fmt, pool=pool)
-    return target
+    file_path = _model_file_path(tmp_dir, fmt)
+    model.save_model(file_path, format=fmt, pool=pool)
+    return file_path
 
 
 def dump_attributes(tmp_dir: str, model: "catboost.CatBoost") -> str:

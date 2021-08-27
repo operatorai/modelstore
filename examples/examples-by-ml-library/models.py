@@ -1,7 +1,6 @@
 import tempfile
 
 import catboost as ctb
-import keras
 import lightgbm as lgb
 import pytorch_lightning as pl
 import tensorflow as tf
@@ -13,6 +12,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from tensorflow import keras
 from torch.utils.data import DataLoader, TensorDataset
 from transformers import (
     AutoConfig,
@@ -87,11 +87,26 @@ def run_gensim_example(modelstore: ModelStore) -> dict:
     print(f"🤖  Training a word2vec model...")
     model = word2vec.Word2Vec(sentences, min_count=2)
 
+    most_similar = set([k[0] for k in model.wv.most_similar("cool", topn=5)])
+    print(f"🤖  Most similar to 'cool': {most_similar}")
+
     # Upload the model to the model store
     print(
         f"⤴️  Uploading the model to the {_NEWSGROUP_EMBEDDINGS_DOMAIN} domain."
     )
-    return modelstore.upload(_NEWSGROUP_EMBEDDINGS_DOMAIN, model=model)
+    meta_data = modelstore.upload(_NEWSGROUP_EMBEDDINGS_DOMAIN, model=model)
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the word2vec "{_NEWSGROUP_EMBEDDINGS_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_NEWSGROUP_EMBEDDINGS_DOMAIN, model_id)
+
+    most_similar = set([k[0] for k in model.wv.most_similar("cool", topn=5)])
+    print(f"🤖  Most similar to 'cool': {most_similar}")
+
+    return meta_data
 
 
 def run_keras_example(modelstore: ModelStore) -> dict:

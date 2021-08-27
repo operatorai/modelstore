@@ -102,9 +102,9 @@ def test_model_info(pytorchlightning_manager, pytorchlightning_model):
         ("sklearn", False),
     ],
 )
-def test_is_model_type(pytorchlightning_manager, ml_library, should_match):
+def test_is_same_library(pytorchlightning_manager, ml_library, should_match):
     assert (
-        pytorchlightning_manager._is_model_type({"library": ml_library})
+        pytorchlightning_manager._is_same_library({"library": ml_library})
         == should_match
     )
 

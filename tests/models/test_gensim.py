@@ -12,11 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json
+import os
 
 import pytest
 from gensim.models import word2vec
 from gensim.test.utils import common_texts
-from modelstore.models.gensim import GensimManager
+from modelstore.models.gensim import GENSIM_MODEL, GensimManager
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -53,9 +54,9 @@ def test_model_info(gensim_manager, model_type, expected):
         ("sklearn", False),
     ],
 )
-def test_is_model_type(gensim_manager, ml_library, should_match):
+def test_is_same_library(gensim_manager, ml_library, should_match):
     assert (
-        gensim_manager._is_model_type({"library": ml_library}) == should_match
+        gensim_manager._is_same_library({"library": ml_library}) == should_match
     )
 
 
@@ -94,7 +95,25 @@ def test_get_params(gensim_manager, model_type):
         pytest.fail(f"Exception when dumping params: {str(e)}")
 
 
-def test_load_model(gensim_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        gensim_manager.load("model-path", {})
+def test_load_model(tmp_path, gensim_manager, word2vec_model):
+    # Save the model to a tmp directory
+    model_path = os.path.join(tmp_path, GENSIM_MODEL)
+    word2vec_model.save(model_path)
+
+    #  Load the model
+    loaded_model = gensim_manager.load(
+        tmp_path,
+        {
+            "model": {
+                "model_type": {
+                    "type": "Word2Vec",
+                },
+            }
+        },
+    )
+
+    # Expect the two to be the same
+    assert type(loaded_model) == type(word2vec_model)
+    assert gensim_manager._get_params(
+        model=word2vec_model
+    ) == gensim_manager._get_params(model=loaded_model)

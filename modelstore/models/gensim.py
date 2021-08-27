@@ -78,12 +78,25 @@ class GensimManager(ModelManager):
         Loads a model, stored in model_path,
         back into memory
         """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        from gensim.models import Word2Vec
+
+        model_type = self._get_model_type(meta_data)
+        if model_type != "Word2Vec":
+            raise ValueError(
+                f"modelstore cannot load gensim '{model_type}' models"
+            )
+
+        model_file = _model_file_path(model_path)
+        return Word2Vec.load(model_file)
+
+
+def _model_file_path(tmp_dir: str) -> str:
+    return os.path.join(tmp_dir, GENSIM_MODEL)
 
 
 def _save_model(tmp_dir: str, model: "gensim.utils.SaveLoad") -> str:
-    file_path = os.path.join(tmp_dir, GENSIM_MODEL)
+    file_path = _model_file_path(tmp_dir)
     model.save(file_path)
     return file_path
 
