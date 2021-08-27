@@ -47,9 +47,9 @@ def test_model_info(model_file_manager):
         ("model_file", True),
     ],
 )
-def test_is_model_type(model_file_manager, ml_library, should_match):
+def test_is_same_library(model_file_manager, ml_library, should_match):
     assert (
-        model_file_manager._is_model_type({"library": ml_library})
+        model_file_manager._is_same_library({"library": ml_library})
         == should_match
     )
 

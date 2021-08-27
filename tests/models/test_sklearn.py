@@ -96,9 +96,10 @@ def test_model_info(sklearn_manager, model_type, expected):
         ("xgboost", False),
     ],
 )
-def test_is_model_type(sklearn_manager, ml_library, should_match):
+def test_is_same_library(sklearn_manager, ml_library, should_match):
     assert (
-        sklearn_manager._is_model_type({"library": ml_library}) == should_match
+        sklearn_manager._is_same_library({"library": ml_library})
+        == should_match
     )
 
 

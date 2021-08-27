@@ -82,8 +82,12 @@ class GensimManager(ModelManager):
         raise NotImplementedError()
 
 
+def _model_file_path(tmp_dir: str) -> str:
+    return os.path.join(tmp_dir, GENSIM_MODEL)
+
+
 def _save_model(tmp_dir: str, model: "gensim.utils.SaveLoad") -> str:
-    file_path = os.path.join(tmp_dir, GENSIM_MODEL)
+    file_path = _model_file_path(tmp_dir)
     model.save(file_path)
     return file_path
 

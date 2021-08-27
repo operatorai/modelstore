@@ -51,8 +51,10 @@ def test_model_info(keras_manager):
         ("sklearn", False),
     ],
 )
-def test_is_model_type(keras_manager, ml_library, should_match):
-    assert keras_manager._is_model_type({"library": ml_library}) == should_match
+def test_is_same_library(keras_manager, ml_library, should_match):
+    assert (
+        keras_manager._is_same_library({"library": ml_library}) == should_match
+    )
 
 
 def test_model_data(keras_manager, keras_model):

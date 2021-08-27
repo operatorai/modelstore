@@ -53,9 +53,9 @@ def test_model_info(gensim_manager, model_type, expected):
         ("sklearn", False),
     ],
 )
-def test_is_model_type(gensim_manager, ml_library, should_match):
+def test_is_same_library(gensim_manager, ml_library, should_match):
     assert (
-        gensim_manager._is_model_type({"library": ml_library}) == should_match
+        gensim_manager._is_same_library({"library": ml_library}) == should_match
     )
 
 

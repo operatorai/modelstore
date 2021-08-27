@@ -83,15 +83,19 @@ class XGBoostManager(ModelManager):
             "XGBModel": xgb.XGBModel,
             # Future: other types
         }
-        model_type = meta_data["model"]["model_type"]["type"]
+        model_type = self._get_model_type(meta_data)
         if model_type not in model_types:
             raise ValueError(f"Cannot load xgboost model type: {model_type}")
 
         logger.debug("Loading xgboost model from %s", model_path)
-        target = os.path.join(model_path, MODEL_FILE)
+        target = _model_file_path(model_path)
         model = model_types[model_type]()
         model.load_model(target)
         return model
+
+
+def _model_file_path(tmp_dir: str) -> str:
+    return os.path.join(tmp_dir, MODEL_FILE)
 
 
 def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
@@ -100,9 +104,9 @@ def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
     among the various XGBoost interfaces.
     """
     logger.debug("Saving xgboost model")
-    target = os.path.join(tmp_dir, MODEL_FILE)
-    model.save_model(target)
-    return target
+    file_path = _model_file_path(tmp_dir)
+    model.save_model(file_path)
+    return file_path
 
 
 def dump_model(tmp_dir: str, model: "xgb.XGBModel") -> str:

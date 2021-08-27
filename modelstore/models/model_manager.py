@@ -106,7 +106,10 @@ class ModelManager(ABC):
             model_info["type"] = type(kwargs["model"]).__name__
         return model_info
 
-    def _is_model_type(self, meta_data: dict) -> bool:
+    def _get_model_type(self, meta_data: dict) -> str:
+        return meta_data["model"]["model_type"]["type"]
+
+    def _is_same_library(self, meta_data: dict) -> bool:
         """ Whether the meta-data of a model artifact matches a model manager """
         return meta_data.get("library") == self.ml_library
 

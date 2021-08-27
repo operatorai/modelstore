@@ -62,9 +62,9 @@ def test_model_info(fastai_manager):
         ("sklearn", False),
     ],
 )
-def test_is_model_type(fastai_manager, ml_library, should_match):
+def test_is_same_library(fastai_manager, ml_library, should_match):
     assert (
-        fastai_manager._is_model_type({"library": ml_library}) == should_match
+        fastai_manager._is_same_library({"library": ml_library}) == should_match
     )
 
 
