@@ -24,10 +24,12 @@ from modelstore.models.tensorflow import (
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+tf.config.threading.set_inter_op_parallelism_threads(1)
 
 
 @pytest.fixture()
 def tf_model():
+
     model = tf.keras.models.Sequential(
         [
             tf.keras.layers.Dense(5, activation="relu", input_shape=(10,)),

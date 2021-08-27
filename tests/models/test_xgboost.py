@@ -102,15 +102,16 @@ def test_model_config(xgb_model, tmp_path):
 
 
 def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
-    def clear_nan(x):
-        # Because (nan != nan)
-        if math.isnan(x):
-            return 0
-        return x
+    # Some fields in xgboost get_params change when loading
+    # or are nans; we cannot compare them in this test
+    ignore_params = ["missing", "tree_method"]
 
     # Save the model to a tmp directory
     model_path = os.path.join(tmp_path, xgboost.MODEL_FILE)
     xgb_model.save_model(model_path)
+    xgb_model_params = xgb_model.get_params()
+    for param in ignore_params:
+        xgb_model_params.pop(param)
 
     #  Load the model
     loaded_model = xgb_manager.load(
@@ -126,11 +127,9 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
 
     # Expect the two to be the same
     assert type(loaded_model) == type(xgb_model)
-    xgb_model_params = xgb_model.get_params()
-    xgb_model_params["missing"] = clear_nan(xgb_model_params["missing"])
 
-    X_train, _ = classification_data
-    y_pred = xgb_model.predict(X_train)
-    y_loaded_pred = loaded_model.predict(X_train)
-
-    assert np.allclose(y_pred, y_loaded_pred)
+    # They should also have the same params
+    loaded_model_params = loaded_model.get_params()
+    for param in ignore_params:
+        loaded_model_params.pop(param)
+    assert xgb_model_params == loaded_model_params
