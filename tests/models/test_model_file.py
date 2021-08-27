@@ -16,7 +16,6 @@ from tempfile import TemporaryDirectory
 
 import pytest
 from modelstore.models.model_file import ModelFileManager, copy_file
-from tests.models.test_xgboost import xgb_model
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -63,7 +62,6 @@ def test_matches_with(model_file_manager, model_file):
     assert model_file_manager.matches_with(model=model_file)
     assert not model_file_manager.matches_with(model="a-string-value")
     assert not model_file_manager.matches_with(classifier=model_file)
-    assert not model_file_manager.matches_with(model=xgb_model)
 
 
 def test_get_functions(model_file_manager, model_file):
