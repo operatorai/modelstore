@@ -85,8 +85,24 @@ class TransformersManager(ModelManager):
         Loads a model, stored in model_path,
         back into memory
         """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        from transformers import AutoConfig, AutoModel, AutoTokenizer
+
+        model_dir = _get_model_directory(model_path)
+        model = AutoModel.from_pretrained(model_dir)
+        try:
+            config = AutoConfig.from_pretrained(model_dir)
+        except OSError:
+            config = None
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        except OSError:
+            tokenizer = None
+        return model, tokenizer, config
+
+
+def _get_model_directory(parent_dir: str) -> str:
+    return os.path.join(parent_dir, MODEL_DIRECTORY)
 
 
 def _save_transformers(
@@ -96,7 +112,7 @@ def _save_transformers(
     tokenizer: "transformers.PreTrainedTokenizerBase",
 ) -> str:
 
-    model_dir = os.path.join(tmp_dir, MODEL_DIRECTORY)
+    model_dir = _get_model_directory(tmp_dir)
     model.save_pretrained(model_dir)
     if config is not None:
         config.save_pretrained(model_dir)

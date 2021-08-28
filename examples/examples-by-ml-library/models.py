@@ -299,12 +299,21 @@ def run_transformers_example(modelstore: ModelStore) -> dict:
     print(
         f'⤴️  Uploading the transformers model to the "{model_domain}" domain.'
     )
-    return modelstore.upload(
+    meta_data = modelstore.upload(
         model_domain,
         config=config,
         model=model,
         tokenizer=tokenizer,
     )
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the transformers "{model_domain}" domain model={model_id}'
+    )
+    model, tokenizer, config = modelstore.load(model_domain, model_id)
+
+    return meta_data
 
 
 def run_xgboost_example(modelstore: ModelStore) -> dict:
