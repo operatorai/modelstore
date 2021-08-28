@@ -106,8 +106,7 @@ class BlobStorage(CloudStorage):
             raise ValueError("domain and model_id must be set")
         remote_path = self._get_metadata_path(domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            local_path = os.path.join(tmp_dir, f"{model_id}.json")
-            self._pull(remote_path, local_path)
+            local_path = self._pull(remote_path, tmp_dir)
             with open(local_path, "r") as lines:
                 return json.loads(lines.read())
 
