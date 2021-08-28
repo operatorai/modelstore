@@ -16,6 +16,7 @@ import os
 
 import pytest
 from modelstore.models.transformers import (
+    MODEL_DIRECTORY,
     TransformersManager,
     _save_transformers,
 )
@@ -24,6 +25,8 @@ from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
     DistilBertForSequenceClassification,
+    DistilBertModel,
+    DistilBertTokenizerFast,
     PreTrainedTokenizerFast,
 )
 from transformers.file_utils import CONFIG_NAME
@@ -38,7 +41,7 @@ def model_name():
 
 
 @pytest.fixture
-def model_config(model_name):
+def tr_config(model_name):
     return AutoConfig.from_pretrained(
         model_name,
         num_labels=3,
@@ -47,15 +50,15 @@ def model_config(model_name):
 
 
 @pytest.fixture
-def tokenizer(model_name):
+def tr_tokenizer(model_name):
     return AutoTokenizer.from_pretrained(model_name)
 
 
 @pytest.fixture()
-def tr_model(model_name, model_config):
+def tr_model(model_name, tr_config):
     return AutoModelForSequenceClassification.from_pretrained(
         model_name,
-        config=model_config,
+        config=tr_config,
     )
 
 
@@ -91,36 +94,36 @@ def test_required_kwargs(tr_manager):
     assert tr_manager._required_kwargs() == ["model", "tokenizer"]
 
 
-def test_matches_with(tr_manager, model_config, tr_model, tokenizer):
+def test_matches_with(tr_manager, tr_config, tr_model, tr_tokenizer):
     assert tr_manager.matches_with(
-        config=model_config, model=tr_model, tokenizer=tokenizer
+        config=tr_config, model=tr_model, tokenizer=tr_tokenizer
     )
     assert not tr_manager.matches_with(
-        config=model_config, model="a-string-value", tokenizer=tokenizer
+        config=tr_config, model="a-string-value", tokenizer=tr_tokenizer
     )
     assert not tr_manager.matches_with(classifier=tr_model)
 
 
-def test_get_functions(tr_manager, model_config, tr_model, tokenizer):
+def test_get_functions(tr_manager, tr_config, tr_model, tr_tokenizer):
     assert (
         len(
             tr_manager._get_functions(
-                config=model_config, model=tr_model, tokenizer=tokenizer
+                config=tr_config, model=tr_model, tokenizer=tr_tokenizer
             )
         )
         == 1
     )
 
 
-def test_get_params(tr_manager, model_config):
-    exp = model_config.to_dict()
-    res = tr_manager._get_params(config=model_config)
+def test_get_params(tr_manager, tr_config):
+    exp = tr_config.to_dict()
+    res = tr_manager._get_params(config=tr_config)
     assert exp == res
 
 
-def test_save_transformers(model_config, tr_model, tokenizer, tmp_path):
+def test_save_transformers(tr_config, tr_model, tr_tokenizer, tmp_path):
     exp = os.path.join(tmp_path, "transformers")
-    file_path = _save_transformers(tmp_path, model_config, tr_model, tokenizer)
+    file_path = _save_transformers(tmp_path, tr_config, tr_model, tr_tokenizer)
     assert exp == file_path
 
     # Validate config
@@ -128,12 +131,12 @@ def test_save_transformers(model_config, tr_model, tokenizer, tmp_path):
     assert os.path.exists(config_file)
     with open(config_file, "r") as lines:
         config_json = json.loads(lines.read())
-    assert config_json == json.loads(model_config.to_json_string())
+    assert config_json == json.loads(tr_config.to_json_string())
 
     # Validate model
     model = AutoModelForSequenceClassification.from_pretrained(
         file_path,
-        config=model_config,
+        config=tr_config,
     )
     assert isinstance(model, DistilBertForSequenceClassification)
 
@@ -142,7 +145,19 @@ def test_save_transformers(model_config, tr_model, tokenizer, tmp_path):
     assert isinstance(token, PreTrainedTokenizerFast)
 
 
-def test_load_model(tr_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        tr_manager.load("model-path", {})
+def test_load_model(tmp_path, tr_manager, tr_model, tr_config, tr_tokenizer):
+    # Save the model to a tmp directory
+    model_dir = os.path.join(tmp_path, MODEL_DIRECTORY)
+    tr_model.save_pretrained(model_dir)
+    tr_config.save_pretrained(model_dir)
+    tr_tokenizer.save_pretrained(model_dir)
+
+    #  Load the model
+    loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(
+        tmp_path, {}
+    )
+
+    # Expect the two to be the same
+    assert isinstance(loaded_model, DistilBertModel)
+    assert isinstance(loaded_config, type(tr_config))
+    assert isinstance(loaded_tokenizer, DistilBertTokenizerFast)
