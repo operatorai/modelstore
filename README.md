@@ -49,6 +49,7 @@ Is there a machine learning framework that is missing?
 * List models in a domain
 * Download model archives by id
 * Create model states and manage which state a model is in
+* Load models straight from your storage back into memory
 
 
 ## Example Usage
