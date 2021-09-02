@@ -181,7 +181,7 @@ def run_pytorch_example(modelstore: ModelStore) -> dict:
         loss.backward()
         optimizer.step()
 
-    mse = mean_squared_error(y_test, model.predict(X_test))
+    mse = mean_squared_error(y_test, model(X_test).detach().numpy())
     print(f"🔍  Fit model MSE={mse}.")
 
     # Upload the model to the model store
@@ -200,7 +200,7 @@ def run_pytorch_example(modelstore: ModelStore) -> dict:
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
     model.eval()
 
-    mse = mean_squared_error(y_test, model.predict(X_test))
+    mse = mean_squared_error(y_test, model(X_test).detach().numpy())
     print(f"🔍  Fit model MSE={mse}.")
     return meta_data
 
