@@ -85,17 +85,11 @@ class CatBoostManager(ModelManager):
 
     def _get_params(self, **kwargs) -> dict:
         """
-        Returns a dictionary containing any model parameters
-        that are available
         https://catboost.ai/docs/concepts/python-reference_catboost_get_params.html
         """
         return kwargs["model"].get_params()
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
         # pylint: disable=import-outside-toplevel
         import catboost
 

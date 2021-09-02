@@ -38,8 +38,6 @@ class GensimManager(ModelManager):
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """Returns a list of dependencies that, if installed
-        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["Levenshtein"]
 
@@ -62,9 +60,6 @@ class GensimManager(ModelManager):
         return funcs
 
     def _get_params(self, **kwargs) -> dict:
-        """
-        Returns a dictionary containing any model parameters
-        """
         params = kwargs["model"].__dict__
         # The instance attributes contain a lot of information, including
         # the model's keyed vectors; so we filter this down for now
@@ -74,10 +69,6 @@ class GensimManager(ModelManager):
         return params
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
         # pylint: disable=import-outside-toplevel
         from gensim.models import Word2Vec
 

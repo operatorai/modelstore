@@ -166,7 +166,7 @@ def run_model_file_example(modelstore: ModelStore) -> dict:
 
 def run_pytorch_example(modelstore: ModelStore) -> dict:
     # Load the data
-    X_train, _, y_train, _ = load_diabetes_dataset(as_numpy=True)
+    X_train, X_test, y_train, y_test = load_diabetes_dataset(as_numpy=True)
 
     # Train the model
     model = ExampleNet()
@@ -181,11 +181,28 @@ def run_pytorch_example(modelstore: ModelStore) -> dict:
         loss.backward()
         optimizer.step()
 
+    mse = mean_squared_error(y_test, model(X_test).detach().numpy())
+    print(f"🔍  Fit model MSE={mse}.")
+
     # Upload the model to the model store
     print(
         f'⤴️  Uploading the pytorch model to the "{_DIABETES_DOMAIN}" domain.'
     )
-    return modelstore.upload(_DIABETES_DOMAIN, model=model, optimizer=optimizer)
+    meta_data = modelstore.upload(
+        _DIABETES_DOMAIN, model=model, optimizer=optimizer
+    )
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the pytorch "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_DIABETES_DOMAIN, model_id)
+    model.eval()
+
+    mse = mean_squared_error(y_test, model(X_test).detach().numpy())
+    print(f"🔍  Fit model MSE={mse}.")
+    return meta_data
 
 
 def run_pytorch_lightning_example(modelstore: ModelStore) -> dict:
@@ -200,8 +217,9 @@ def run_pytorch_lightning_example(modelstore: ModelStore) -> dict:
 
     # Train the model
     model = ExampleLightningNet()
-    trainer = pl.Trainer(max_epochs=5, default_root_dir=mkdtemp())
-    trainer.fit(model, train_dataloader, val_dataloader)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        trainer = pl.Trainer(max_epochs=5, default_root_dir=tmp_dir)
+        trainer.fit(model, train_dataloader, val_dataloader)
 
     # Upload the model to the model store
     print(
