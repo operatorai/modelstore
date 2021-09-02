@@ -16,6 +16,7 @@ import os
 import pytest
 import torch
 from modelstore.models.pytorch import (
+    MODEL_PT,
     PyTorchManager,
     _save_model,
     _save_state_dict,
@@ -48,6 +49,11 @@ class ExampleNet(nn.Module):
         return x
 
 
+def models_equal(model_a: nn.Module, module_b: nn.Module):
+    for a_params, lb_params in zip(model_a.parameters(), module_b.parameters()):
+        assert a_params.data.ne(lb_params.data).sum() == 0
+
+
 @pytest.fixture
 def pytorch_model():
     return ExampleNet()
@@ -59,13 +65,13 @@ def pytorch_optim(pytorch_model):
 
 
 @pytest.fixture
-def torch_manager():
+def pytorch_manager():
     return PyTorchManager()
 
 
-def test_model_info(torch_manager, pytorch_model):
+def test_model_info(pytorch_manager, pytorch_model):
     exp = {"library": "pytorch", "type": "ExampleNet"}
-    res = torch_manager._model_info(model=pytorch_model)
+    res = pytorch_manager._model_info(model=pytorch_model)
     assert exp == res
 
 
@@ -76,34 +82,35 @@ def test_model_info(torch_manager, pytorch_model):
         ("sklearn", False),
     ],
 )
-def test_is_same_library(torch_manager, ml_library, should_match):
+def test_is_same_library(pytorch_manager, ml_library, should_match):
     assert (
-        torch_manager._is_same_library({"library": ml_library}) == should_match
+        pytorch_manager._is_same_library({"library": ml_library})
+        == should_match
     )
 
 
-def test_model_data(torch_manager, pytorch_model):
+def test_model_data(pytorch_manager, pytorch_model):
     exp = {}
-    res = torch_manager._model_data(model=pytorch_model)
+    res = pytorch_manager._model_data(model=pytorch_model)
     assert exp == res
 
 
-def test_required_kwargs(torch_manager):
-    assert torch_manager._required_kwargs() == ["model", "optimizer"]
+def test_required_kwargs(pytorch_manager):
+    assert pytorch_manager._required_kwargs() == ["model", "optimizer"]
 
 
-def test_matches_with(torch_manager, pytorch_model, pytorch_optim):
-    assert torch_manager.matches_with(
+def test_matches_with(pytorch_manager, pytorch_model, pytorch_optim):
+    assert pytorch_manager.matches_with(
         model=pytorch_model, optimizer=pytorch_optim
     )
-    assert not torch_manager.matches_with(model="a-string-value")
-    assert not torch_manager.matches_with(classifier=pytorch_model)
+    assert not pytorch_manager.matches_with(model="a-string-value")
+    assert not pytorch_manager.matches_with(classifier=pytorch_model)
 
 
-def test_get_functions(torch_manager, pytorch_model, pytorch_optim):
+def test_get_functions(pytorch_manager, pytorch_model, pytorch_optim):
     assert (
         len(
-            torch_manager._get_functions(
+            pytorch_manager._get_functions(
                 model=pytorch_model, optimizer=pytorch_optim
             )
         )
@@ -111,17 +118,12 @@ def test_get_functions(torch_manager, pytorch_model, pytorch_optim):
     )
 
 
-def test_get_params(torch_manager, pytorch_model, pytorch_optim):
+def test_get_params(pytorch_manager, pytorch_model, pytorch_optim):
     exp = pytorch_optim.state_dict()
-    res = torch_manager._get_params(
+    res = pytorch_manager._get_params(
         model=pytorch_model, optimizer=pytorch_optim
     )
     assert exp == res
-
-
-def models_equal(model_a: nn.Module, module_b: nn.Module):
-    for a_params, lb_params in zip(model_a.parameters(), module_b.parameters()):
-        assert a_params.data.ne(lb_params.data).sum() == 0
 
 
 def test_save_model(pytorch_model, tmp_path):
@@ -145,7 +147,16 @@ def test_save_state_dict(pytorch_model, pytorch_optim, tmp_path):
     models_equal(pytorch_model, model)
 
 
-def test_load_model(torch_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        torch_manager.load("model-path", {})
+def test_load_model(tmp_path, pytorch_manager, pytorch_model):
+    # Save the model to a tmp directory
+    torch.save(pytorch_model, os.path.join(tmp_path, MODEL_PT))
+
+    #  Load the model
+    loaded_model = pytorch_manager.load(
+        tmp_path,
+        {},
+    )
+
+    # Expect the two to be the same
+    assert type(loaded_model) == type(pytorch_model)
+    models_equal(pytorch_model, loaded_model)

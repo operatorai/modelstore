@@ -80,17 +80,21 @@ class PyTorchManager(ModelManager):
         return convert_tensors(params)
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        import torch
+
+        file_path = _get_model_path(model_path)
+        return torch.load(file_path)
+
+
+def _get_model_path(parent_dir: str) -> str:
+    return os.path.join(parent_dir, MODEL_PT)
 
 
 def _save_state_dict(
     tmp_dir: str, model: "nn.Module", optimizer: "optim.Optimizer"
 ) -> str:
+    # pylint: disable=import-outside-toplevel
     import torch
 
     file_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
@@ -105,8 +109,9 @@ def _save_state_dict(
 
 
 def _save_model(tmp_dir: str, model: "nn.Module") -> str:
+    # pylint: disable=import-outside-toplevel
     import torch
 
-    file_path = os.path.join(tmp_dir, MODEL_PT)
+    file_path = _get_model_path(tmp_dir)
     torch.save(model, file_path)
     return file_path
