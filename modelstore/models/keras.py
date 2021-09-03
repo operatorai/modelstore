@@ -65,22 +65,21 @@ class KerasManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        """
-        Returns a dictionary containing the optimizer
-        parameters
-        """
         return kwargs["model"].optimizer.get_config()
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        from tensorflow import keras
+
+        model_dir = _get_model_path(model_path)
+        return keras.models.load_model(model_dir)
+
+
+def _get_model_path(parent_dir: str) -> str:
+    return os.path.join(parent_dir, MODEL_DIRECTORY)
 
 
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:
-    file_path = os.path.join(tmp_dir, MODEL_DIRECTORY)
+    file_path = _get_model_path(tmp_dir)
     model.save(file_path)
     return file_path
