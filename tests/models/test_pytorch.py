@@ -49,8 +49,8 @@ class ExampleNet(nn.Module):
         return x
 
 
-def models_equal(model_a: nn.Module, module_b: nn.Module):
-    for a_params, lb_params in zip(model_a.parameters(), module_b.parameters()):
+def models_equal(model_a: nn.Module, model_b: nn.Module):
+    for a_params, lb_params in zip(model_a.parameters(), model_b.parameters()):
         assert a_params.data.ne(lb_params.data).sum() == 0
 
 

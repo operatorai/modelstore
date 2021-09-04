@@ -17,8 +17,14 @@ import os
 
 import numpy as np
 import pytest
-from modelstore.models.keras import KerasManager, _save_model, save_json
+from modelstore.models.keras import (
+    MODEL_DIRECTORY,
+    KerasManager,
+    _save_model,
+    save_json,
+)
 from tensorflow import keras
+from tensorflow.python.ops.gen_math_ops import TruncateMod
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -36,6 +42,30 @@ def keras_model():
 @pytest.fixture
 def keras_manager():
     return KerasManager()
+
+
+def assert_models_equal(
+    model_a: keras.Model, model_b: keras.Model, assert_predictions: bool
+):
+    # Same high-level structure
+    assert type(model_a) == type(model_b)
+    assert model_a.count_params() == model_b.count_params()
+    assert len(model_a.layers) == len(model_b.layers)
+
+    # Same structure
+    for i in range(len(model_a.layers)):
+        assert (
+            model_a.layers[i].__class__.__name__
+            == model_b.layers[i].__class__.__name__
+        )
+        assert model_a.layers[i].name == model_b.layers[i].name
+
+    if assert_predictions:
+        # Same predictions
+        test_input = np.random.random((128, 10))
+        np.testing.assert_allclose(
+            model_a.predict(test_input), model_b.predict(test_input)
+        )
 
 
 def test_model_info(keras_manager):
@@ -90,10 +120,7 @@ def test_save_model(keras_model, tmp_path):
     assert os.path.isdir(model_path)
 
     model = keras.models.load_model(model_path)
-    test_input = np.random.random((128, 10))
-    np.testing.assert_allclose(
-        keras_model.predict(test_input), model.predict(test_input)
-    )
+    assert_models_equal(model, keras_model, assert_predictions=True)
 
 
 def test_model_json(keras_model, tmp_path):
@@ -103,17 +130,16 @@ def test_model_json(keras_model, tmp_path):
     with open(file_path, "r") as lines:
         model_json = json.loads(lines.read())
     model = keras.models.model_from_json(model_json)
-    assert model.count_params() == keras_model.count_params()
-    assert len(model.layers) == len(keras_model.layers)
-    for i in range(len(model.layers)):
-        assert (
-            model.layers[i].__class__.__name__
-            == keras_model.layers[i].__class__.__name__
-        )
-        assert model.layers[i].name == keras_model.layers[i].name
+    assert_models_equal(model, keras_model, assert_predictions=False)
 
 
-def test_load_model(keras_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        keras_manager.load("model-path", {})
+def test_load_model(tmp_path, keras_manager, keras_model):
+    # Save the model to a tmp directory
+    model_path = os.path.join(tmp_path, MODEL_DIRECTORY)
+    keras_model.save(model_path)
+
+    #  Load the model
+    loaded_model = keras_manager.load(tmp_path, {})
+
+    # Expect the two to be the same
+    assert_models_equal(loaded_model, keras_model, assert_predictions=True)
