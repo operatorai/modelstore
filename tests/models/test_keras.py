@@ -24,6 +24,7 @@ from modelstore.models.keras import (
     save_json,
 )
 from tensorflow import keras
+from tensorflow.python.ops.gen_math_ops import TruncateMod
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -43,17 +44,13 @@ def keras_manager():
     return KerasManager()
 
 
-def assert_models_equal(model_a: keras.Model, model_b: keras.Model):
+def assert_models_equal(
+    model_a: keras.Model, model_b: keras.Model, assert_predictions: bool
+):
     # Same high-level structure
     assert type(model_a) == type(model_b)
     assert model_a.count_params() == model_b.count_params()
     assert len(model_a.layers) == len(model_b.layers)
-
-    # # Same predictions
-    # test_input = np.random.random((128, 10))
-    # np.testing.assert_allclose(
-    #     model_a.predict(test_input), model_b.predict(test_input)
-    # )
 
     # Same structure
     for i in range(len(model_a.layers)):
@@ -62,6 +59,13 @@ def assert_models_equal(model_a: keras.Model, model_b: keras.Model):
             == model_b.layers[i].__class__.__name__
         )
         assert model_a.layers[i].name == model_b.layers[i].name
+
+    if assert_predictions:
+        # Same predictions
+        test_input = np.random.random((128, 10))
+        np.testing.assert_allclose(
+            model_a.predict(test_input), model_b.predict(test_input)
+        )
 
 
 def test_model_info(keras_manager):
@@ -116,7 +120,7 @@ def test_save_model(keras_model, tmp_path):
     assert os.path.isdir(model_path)
 
     model = keras.models.load_model(model_path)
-    assert_models_equal(model, keras_model)
+    assert_models_equal(model, keras_model, assert_predictions=True)
 
 
 def test_model_json(keras_model, tmp_path):
@@ -126,7 +130,7 @@ def test_model_json(keras_model, tmp_path):
     with open(file_path, "r") as lines:
         model_json = json.loads(lines.read())
     model = keras.models.model_from_json(model_json)
-    assert_models_equal(model, keras_model)
+    assert_models_equal(model, keras_model, assert_predictions=False)
 
 
 def test_load_model(tmp_path, keras_manager, keras_model):
@@ -138,4 +142,4 @@ def test_load_model(tmp_path, keras_manager, keras_model):
     loaded_model = keras_manager.load(tmp_path, {})
 
     # Expect the two to be the same
-    assert_models_equal(loaded_model, keras_model)
+    assert_models_equal(loaded_model, keras_model, assert_predictions=True)
