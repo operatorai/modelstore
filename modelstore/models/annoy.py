@@ -49,9 +49,6 @@ class AnnoyManager(ModelManager):
         if not self.matches_with(**kwargs):
             raise TypeError("Model is not an AnnoyIndex!")
 
-        # pool parameter, from the catboost docs:
-        # The dataset previously used for training.
-        # This parameter is required if the model contains categorical features and the output format is cpp, python, or JSON.
         return [
             partial(
                 save_model,
