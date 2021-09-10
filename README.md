@@ -25,6 +25,7 @@ pip install modelstore
 
 ## Supported machine learning libraries
 
+* [Annoy](https://github.com/operatorai/modelstore/blob/15996f54989bba9f709c03373073bb6eeca06925/examples/examples-by-ml-library/models.py#L37-L74)
 * [Catboost](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L34-L48)
 * [Fast.AI](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L51-L63)
 * [Gensim](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L66-L78)
