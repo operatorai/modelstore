@@ -8,13 +8,15 @@
 
 🆕  Read a specific model's metadata with `modelstore.get_model_info()`
 
+🆕  Added [Annoy](https://github.com/spotify/annoy) support.
+
 ## modelstore 0.0.65
 
 🆕  Added model states, and updated listing models to listing by state.
 
 🆕  Created a unified upload function. You can now use `modelstore.upload()` for all ML frameworks.
 
-🆕  Added Gensim support.
+🆕  Added [Gensim](https://github.com/RaRe-Technologies/gensim) support.
 
 🆕  Added Azure blob storage support.
 
