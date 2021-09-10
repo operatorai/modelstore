@@ -144,7 +144,15 @@ def run_lightgbm_example(modelstore: ModelStore) -> dict:
     print(
         f'⤴️  Uploading the light GBM model to the "{_DIABETES_DOMAIN}" domain.'
     )
-    return modelstore.upload(_DIABETES_DOMAIN, model=model)
+    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the light gbm "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_DIABETES_DOMAIN, model_id)
+    return meta_data
 
 
 def run_model_file_example(modelstore: ModelStore) -> dict:
