@@ -125,7 +125,7 @@ class ModelStore:
                 return manager.upload(domain, **kwargs)
         raise ValueError("unable to upload: could not find matching manager")
 
-    def load(self, domain: str, model_id: str = None):
+    def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)
         ml_library = meta_data["model"]["model_type"]["library"]
         # pylint: disable=no-member
