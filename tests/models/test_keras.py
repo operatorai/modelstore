@@ -24,7 +24,6 @@ from modelstore.models.keras import (
     save_json,
 )
 from tensorflow import keras
-from tensorflow.python.ops.gen_math_ops import TruncateMod
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
