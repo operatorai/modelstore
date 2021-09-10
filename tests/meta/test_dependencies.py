@@ -32,6 +32,7 @@ def test_get_version():
 
 def test_get_dependency_versions():
     test_deps = [
+        "annoy",
         "pytest",
         "pylint",
         "black",
@@ -40,6 +41,7 @@ def test_get_dependency_versions():
         "a-missing-dependency",
     ]
     expected = {
+        "annoy": "1.17.0",
         "black": "20.8b1",
         "pytest": pytest.__version__,
         "pylint": "2.6.0",
