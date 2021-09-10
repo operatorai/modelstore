@@ -19,7 +19,8 @@ from typing import Any
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
-LEARNER = "learner"
+LEARNER_DIRECTORY = "learner"
+LEARNER_FILE = "learner.pkl"
 
 
 class FastAIManager(ModelManager):
@@ -79,12 +80,15 @@ class FastAIManager(ModelManager):
         return {}
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        from fastai.learner import load_learner
+
+        model_file = _model_file_path(model_path)
+        return load_learner(model_file)
+
+
+def _model_file_path(parent_dir: str) -> str:
+    return os.path.join(parent_dir, LEARNER_FILE)
 
 
 def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
@@ -92,7 +96,7 @@ def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
     learner_path = learner.path
     learner.path = Path(tmp_dir)
 
-    file_path = learner.save(LEARNER)
+    file_path = learner.save(LEARNER_DIRECTORY, with_opt=True)
 
     # Revert value
     learner.path = learner_path
@@ -100,12 +104,11 @@ def _save_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
 
 
 def _export_model(tmp_dir: str, learner: "fastai.learner.Leader") -> str:
-    file_name = LEARNER + ".pkl"
     # learner.export(file) will write to: self.path/fname
     learner_path = learner.path
     learner.path = Path(tmp_dir)
-    learner.export(file_name)
+    learner.export(LEARNER_FILE)
 
     # Revert value
     learner.path = learner_path
-    return os.path.join(tmp_dir, file_name)
+    return _model_file_path(tmp_dir)
