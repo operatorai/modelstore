@@ -22,7 +22,7 @@ from modelstore.meta import dependencies
 
 def test_get_version():
     assert dependencies._get_version("a-missing-dependency") is None
-    assert dependencies._get_version("pytest") == "6.2.4"
+    assert dependencies._get_version("pytest") == "6.2.5"
     if "isort" in sys.modules:
         # Force import
         del sys.modules["isort"]
