@@ -15,6 +15,7 @@ import json
 import os
 import sys
 
+import pytest
 from modelstore.meta import dependencies
 
 # pylint: disable=protected-access
@@ -22,7 +23,7 @@ from modelstore.meta import dependencies
 
 def test_get_version():
     assert dependencies._get_version("a-missing-dependency") is None
-    assert dependencies._get_version("pytest") == "6.2.5"
+    assert dependencies._get_version("pytest") == pytest.__version__
     if "isort" in sys.modules:
         # Force import
         del sys.modules["isort"]
@@ -40,7 +41,7 @@ def test_get_dependency_versions():
     ]
     expected = {
         "black": "20.8b1",
-        "pytest": "6.2.4",
+        "pytest": pytest.__version__,
         "pylint": "2.6.0",
         "flake8": "3.8.4",
         "isort": "5.6.4",
@@ -68,7 +69,7 @@ def test_save_dependencies(tmp_path):
         "black": "20.8b1",
         "flake8": "3.8.4",
         "isort": "5.6.4",
-        "pytest": "6.2.4",
+        "pytest": pytest.__version__,
         "pylint": "2.6.0",
     }
     tmp_file = dependencies.save_dependencies(tmp_path, test_deps)
