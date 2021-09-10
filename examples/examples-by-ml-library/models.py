@@ -41,8 +41,8 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
     model = ctb.CatBoostRegressor(allow_writing_files=False)
     model.fit(X_train, y_train)
 
-    mse = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Fit model MSE={mse}.")
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Fit model MSE={results}.")
 
     # Upload the model to the model store
     print(
@@ -58,8 +58,8 @@ def run_catboost_example(modelstore: ModelStore) -> dict:
     )
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
 
-    mse = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Loaded model MSE={mse}.")
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Loaded model MSE={results}.")
 
     return meta_data
 
@@ -84,6 +84,7 @@ def run_fastai_example(modelstore: ModelStore) -> dict:
         f'⤵️  Loading the catboost "{_DIABETES_DOMAIN}" domain model={model_id}'
     )
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
+    # ... use for inference
 
     return meta_data
 
@@ -120,7 +121,7 @@ def run_gensim_example(modelstore: ModelStore) -> dict:
 
 def run_keras_example(modelstore: ModelStore) -> dict:
     # Load the data
-    X_train, _, y_train, _ = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_diabetes_dataset()
 
     # Train a model
     print(f"🤖  Training a keras model...")
@@ -130,9 +131,24 @@ def run_keras_example(modelstore: ModelStore) -> dict:
     model.compile(optimizer="adam", loss="mean_squared_error")
     model.fit(X_train, y_train, epochs=10)
 
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Trained model MSE={results}.")
+
     # Upload the model to the model store
     print(f'⤴️  Uploading the keras model to the "{_DIABETES_DOMAIN}" domain.')
-    return modelstore.upload(_DIABETES_DOMAIN, model=model)
+    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the light gbm "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_DIABETES_DOMAIN, model_id)
+
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Loaded model MSE={results}.")
+
+    return meta_data
 
 
 def run_lightgbm_example(modelstore: ModelStore) -> dict:
@@ -149,6 +165,9 @@ def run_lightgbm_example(modelstore: ModelStore) -> dict:
         param, train_data, num_round, valid_sets=[validation_data]
     )
 
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Trained model MSE={results}.")
+
     # Upload the model to the model store
     print(
         f'⤴️  Uploading the light GBM model to the "{_DIABETES_DOMAIN}" domain.'
@@ -161,6 +180,9 @@ def run_lightgbm_example(modelstore: ModelStore) -> dict:
         f'⤵️  Loading the light gbm "{_DIABETES_DOMAIN}" domain model={model_id}'
     )
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Loaded model MSE={results}.")
+
     return meta_data
 
 
@@ -198,8 +220,8 @@ def run_pytorch_example(modelstore: ModelStore) -> dict:
         loss.backward()
         optimizer.step()
 
-    mse = mean_squared_error(y_test, model(X_test).detach().numpy())
-    print(f"🔍  Fit model MSE={mse}.")
+    results = mean_squared_error(y_test, model(X_test).detach().numpy())
+    print(f"🔍  Fit model MSE={results}.")
 
     # Upload the model to the model store
     print(
@@ -217,8 +239,8 @@ def run_pytorch_example(modelstore: ModelStore) -> dict:
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
     model.eval()
 
-    mse = mean_squared_error(y_test, model(X_test).detach().numpy())
-    print(f"🔍  Fit model MSE={mse}.")
+    results = mean_squared_error(y_test, model(X_test).detach().numpy())
+    print(f"🔍  Loaded model MSE={results}.")
     return meta_data
 
 
@@ -238,11 +260,27 @@ def run_pytorch_lightning_example(modelstore: ModelStore) -> dict:
         trainer = pl.Trainer(max_epochs=5, default_root_dir=tmp_dir)
         trainer.fit(model, train_dataloader, val_dataloader)
 
+    results = mean_squared_error(y_test, model(X_test).detach().numpy())
+    print(f"🔍  Trained model MSE={results}.")
+
     # Upload the model to the model store
     print(
         f'⤴️  Uploading the pytorch lightning model to the "{_DIABETES_DOMAIN}" domain.'
     )
-    return modelstore.upload(_DIABETES_DOMAIN, model=model, trainer=trainer)
+    meta_data = modelstore.upload(
+        _DIABETES_DOMAIN, model=model, trainer=trainer
+    )
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the pytorch lightning "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_DIABETES_DOMAIN, model_id)
+    results = mean_squared_error(y_test, model(X_test).detach().numpy())
+    print(f"🔍  Loaded model MSE={results}.")
+
+    return meta_data
 
 
 def run_sklearn_example(modelstore: ModelStore) -> dict:
@@ -264,8 +302,8 @@ def run_sklearn_example(modelstore: ModelStore) -> dict:
         ]
     )
     pipeline.fit(X_train, y_train)
-    mse = mean_squared_error(y_test, pipeline.predict(X_test))
-    print(f"⤴️  Trained model MSE={mse}.")
+    results = mean_squared_error(y_test, pipeline.predict(X_test))
+    print(f"🔍  Trained model MSE={results}.")
 
     # Upload the model to the model store
     print(
@@ -280,8 +318,8 @@ def run_sklearn_example(modelstore: ModelStore) -> dict:
     )
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
 
-    mse = mean_squared_error(y_test, model.predict(X_test))
-    print(f"⤴️  Loaded model MSE={mse}.")
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Loaded model MSE={results}.")
 
     return meta_data
 
@@ -301,6 +339,9 @@ def run_tensorflow_example(modelstore: ModelStore) -> dict:
     model.compile(optimizer="adam", loss="mean_squared_error")
     model.fit(X_train, y_train, epochs=10)
 
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Trained model MSE={results}.")
+
     # Upload the model to the model store
     meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
 
@@ -310,6 +351,9 @@ def run_tensorflow_example(modelstore: ModelStore) -> dict:
         f'⤵️  Loading the tensorflow "{_DIABETES_DOMAIN}" domain model={model_id}'
     )
     model = modelstore.load(_DIABETES_DOMAIN, model_id)
+    results = mean_squared_error(y_test, model.predict(X_test))
+    print(f"🔍  Loaded model MSE={results}.")
+
     return meta_data
 
 
@@ -373,8 +417,8 @@ def run_xgboost_example(modelstore: ModelStore) -> dict:
     )
     xg_reg.fit(X_train, y_train)
 
-    mse = mean_squared_error(y_test, xg_reg.predict(X_test))
-    print(f"🔍  Fit model MSE={mse}.")
+    results = mean_squared_error(y_test, xg_reg.predict(X_test))
+    print(f"🔍  Trained model MSE={results}.")
 
     # Upload the model to the model store
     print(
@@ -390,6 +434,7 @@ def run_xgboost_example(modelstore: ModelStore) -> dict:
     )
     xg_reg = modelstore.load(_DIABETES_DOMAIN, model_id)
 
-    mse = mean_squared_error(y_test, xg_reg.predict(X_test))
-    print(f"🔍  Loaded model MSE={mse}.")
-    return modelstore.upload(_DIABETES_DOMAIN, model=xg_reg)
+    results = mean_squared_error(y_test, xg_reg.predict(X_test))
+    print(f"🔍  Loaded model MSE={results}.")
+
+    return meta_data
