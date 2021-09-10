@@ -37,7 +37,7 @@ class AnnoyManager(ModelManager):
         return ["annoy"]
 
     def _required_kwargs(self):
-        return ["model"]
+        return ["model", "metric", "num_trees"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
@@ -60,15 +60,19 @@ class AnnoyManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        return {}
+        return {
+            "num_dimensions": kwargs["model"].f,
+            "num_trees": kwargs["num_trees"],
+            "metric": kwargs["metric"],
+        }
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
         from annoy import AnnoyIndex
 
         # Extract these from the meta_data
-        num_dimensions = 10
-        metric = "angular"
+        num_dimensions = int(meta_data["model"]["parameters"]["num_dimensions"])
+        metric = meta_data["model"]["parameters"]["metric"]
 
         model = AnnoyIndex(num_dimensions, metric)
         model.load(_model_file_path(model_path))
