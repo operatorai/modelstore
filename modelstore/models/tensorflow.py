@@ -65,12 +65,15 @@ class TensorflowManager(ModelManager):
         return kwargs["model"].optimizer.get_config()
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        from tensorflow import keras
+
+        model_path = _model_file_path(model_path)
+        return keras.models.load_model(model_path)
+
+
+def _model_file_path(parent_dir: str) -> str:
+    return os.path.join(parent_dir, MODEL_DIRECTORY)
 
 
 def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
@@ -81,7 +84,7 @@ def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
 
 
 def _save_model(tmp_dir: str, model) -> str:
-    model_path = os.path.join(tmp_dir, MODEL_DIRECTORY)
+    model_path = _model_file_path(tmp_dir)
     os.makedirs(model_path)
     model.save(model_path)
     return model_path
