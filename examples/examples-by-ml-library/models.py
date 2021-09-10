@@ -1,3 +1,4 @@
+import random
 import tempfile
 
 import catboost as ctb
@@ -5,6 +6,7 @@ import lightgbm as lgb
 import pytorch_lightning as pl
 import tensorflow as tf
 import xgboost as xgb
+from annoy import AnnoyIndex
 from fastai.tabular.all import *
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
@@ -30,6 +32,46 @@ from networks import ExampleLightningNet, ExampleNet
 # pylint: disable=invalid-name
 _DIABETES_DOMAIN = "diabetes-boosting-demo"
 _NEWSGROUP_EMBEDDINGS_DOMAIN = "newsgroups-embeddings"
+
+
+def run_annoy_example(modelstore: ModelStore) -> dict:
+    # Create an index
+    print("🤖  Creating an Annoy index...")
+    num_dimensions = 40
+    metric = "angular"
+    model = AnnoyIndex(num_dimensions, metric)
+    for i in range(1000):
+        vector = [random.gauss(0, 1) for z in range(num_dimensions)]
+        model.add_item(i, vector)
+    num_trees = 10
+    model.build(num_trees)
+
+    # Find some nearest neighbours
+    results = model.get_nns_by_item(0, 10)
+    print(f"🔍  Nearest neighbors = {results}.")
+
+    # Upload the model to the model store
+    domain_name = "example-annoy-index"
+    print(f'⤴️  Uploading the Annoy model to the "{domain_name}" domain.')
+    # Alternative: modelstore.annoy.upload(model_domain, model=model)
+    meta_data = modelstore.upload(
+        domain_name,
+        model=model,
+        num_dimensions=num_dimensions,
+        metric=metric,
+        num_trees=num_trees,
+    )
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(f'⤵️  Loading the Annoy "{domain_name}" domain model={model_id}')
+    model = modelstore.load(domain_name, model_id)
+
+    # Find some nearest neighbours
+    results = model.get_nns_by_item(0, 10)
+    print(f"🔍  Nearest neighbors = {results}.")
+
+    return meta_data
 
 
 def run_catboost_example(modelstore: ModelStore) -> dict:
