@@ -1,3 +1,4 @@
+annoy==1.17.0
 azure-core==1.13.0
 azure-storage-blob==12.8.0
 black==20.8b1

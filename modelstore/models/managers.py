@@ -14,6 +14,7 @@
 from typing import Iterator
 
 from modelstore.meta.dependencies import module_exists
+from modelstore.models.annoy import AnnoyManager
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.fastai import FastAIManager
 from modelstore.models.gensim import GensimManager
@@ -32,6 +33,7 @@ from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
 ML_LIBRARIES = {
+    "annoy": AnnoyManager,
     "catboost": CatBoostManager,
     "fastai": FastAIManager,
     "file": ModelFileManager,

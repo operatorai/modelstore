@@ -1,6 +1,7 @@
 import importlib
 import sys
 
+import pkg_resources
 from modelstore.models.common import save_json
 from modelstore.utils.log import logger
 
@@ -16,6 +17,9 @@ def _get_version(modname: str) -> str:
         else:
             mod = importlib.import_module(modname)
         return mod.__version__
+    except AttributeError:
+        #  Annoy does not have a __version__
+        return pkg_resources.get_distribution(modname).version
     except ImportError:
         logger.debug("%s is not installed.", modname)
         return None

@@ -3,6 +3,7 @@ import json
 import click
 
 from models import (
+    run_annoy_example,
     run_catboost_example,
     run_fastai_example,
     run_gensim_example,
@@ -19,6 +20,7 @@ from models import (
 from modelstores import create_model_store
 
 EXAMPLES = {
+    "annoy": run_annoy_example,
     "catboost": run_catboost_example,
     "fastai": run_fastai_example,
     "gensim": run_gensim_example,
