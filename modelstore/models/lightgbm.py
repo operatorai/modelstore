@@ -64,18 +64,21 @@ class LightGbmManager(ModelManager):
         return kwargs["model"].params
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
-        # @TODO
-        raise NotImplementedError()
+        # pylint: disable=import-outside-toplevel
+        import lightgbm as lgb
+
+        model_file = _model_file_path(model_path)
+        return lgb.Booster(model_file=model_file)
+
+
+def _model_file_path(parent_dir: str) -> str:
+    return os.path.join(parent_dir, MODEL_FILE)
 
 
 def save_model(tmp_dir: str, model: "lgb.Booster") -> str:
-    """From the docs: dump model into JSON file"""
+    """From the docs: dump model into a txt file"""
     logger.debug("Saving lightgbm model")
-    model_file = os.path.join(tmp_dir, MODEL_FILE)
+    model_file = _model_file_path(tmp_dir)
     model.save_model(model_file)
     return model_file
 

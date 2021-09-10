@@ -16,8 +16,16 @@ import json
 import os
 
 import lightgbm as lgb
+import numpy as np
 import pytest
-from modelstore.models import lightgbm
+from modelstore.models.lightgbm import (
+    MODEL_FILE,
+    MODEL_JSON,
+    LightGbmManager,
+    _model_file_path,
+    dump_model,
+    save_model,
+)
 from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
@@ -33,13 +41,27 @@ def lgb_model(classification_data):
 
 
 @pytest.fixture
-def lightgbm_manager():
-    return lightgbm.LightGbmManager()
+def lgb_manager():
+    return LightGbmManager()
 
 
-def test_model_info(lightgbm_manager, lgb_model):
+def assert_models_equal(
+    model_a: lgb.Booster, model_b: lgb.Booster, classification_data
+):
+    # Same type
+    assert type(model_a) == type(model_b)
+    assert model_a.model_to_string() == model_b.model_to_string()
+
+    # Same predictions
+    X_train, _ = classification_data
+    np.testing.assert_allclose(
+        model_a.predict(X_train), model_b.predict(X_train)
+    )
+
+
+def test_model_info(lgb_manager, lgb_model):
     exp = {"library": "lightgbm", "type": "Booster"}
-    res = lightgbm_manager._model_info(model=lgb_model)
+    res = lgb_manager._model_info(model=lgb_model)
     assert exp == res
 
 
@@ -50,34 +72,31 @@ def test_model_info(lightgbm_manager, lgb_model):
         ("sklearn", False),
     ],
 )
-def test_is_same_library(lightgbm_manager, ml_library, should_match):
-    assert (
-        lightgbm_manager._is_same_library({"library": ml_library})
-        == should_match
-    )
+def test_is_same_library(lgb_manager, ml_library, should_match):
+    assert lgb_manager._is_same_library({"library": ml_library}) == should_match
 
 
-def test_model_data(lightgbm_manager, lgb_model):
+def test_model_data(lgb_manager, lgb_model):
     exp = {}
-    res = lightgbm_manager._model_data(model=lgb_model)
+    res = lgb_manager._model_data(model=lgb_model)
     assert exp == res
 
 
-def test_required_kwargs(lightgbm_manager):
-    assert lightgbm_manager._required_kwargs() == ["model"]
+def test_required_kwargs(lgb_manager):
+    assert lgb_manager._required_kwargs() == ["model"]
 
 
-def test_matches_with(lightgbm_manager, lgb_model):
-    assert lightgbm_manager.matches_with(model=lgb_model)
-    assert not lightgbm_manager.matches_with(model="a-string-value")
-    assert not lightgbm_manager.matches_with(classifier=lgb_model)
+def test_matches_with(lgb_manager, lgb_model):
+    assert lgb_manager.matches_with(model=lgb_model)
+    assert not lgb_manager.matches_with(model="a-string-value")
+    assert not lgb_manager.matches_with(classifier=lgb_model)
 
 
-def test_get_functions(lightgbm_manager, lgb_model):
-    assert len(lightgbm_manager._get_functions(model=lgb_model)) == 2
+def test_get_functions(lgb_manager, lgb_model):
+    assert len(lgb_manager._get_functions(model=lgb_model)) == 2
 
 
-def test_get_params(lightgbm_manager, lgb_model):
+def test_get_params(lgb_manager, lgb_model):
     exp = {
         "num_leaves": 31,
         "objective": "binary",
@@ -85,34 +104,44 @@ def test_get_params(lightgbm_manager, lgb_model):
         "early_stopping_round": None,
         "num_threads": 1,
     }
-    res = lightgbm_manager._get_params(model=lgb_model)
+    res = lgb_manager._get_params(model=lgb_model)
     assert exp == res
 
 
-def test_save_model(lgb_model, tmp_path):
+def test_save_model(tmp_path, lgb_model, classification_data):
     exp = os.path.join(tmp_path, "model.txt")
-    res = lightgbm.save_model(tmp_path, lgb_model)
+    res = save_model(tmp_path, lgb_model)
     assert res == exp
 
-    model = lgb.Booster(model_file=res)
-    assert lgb_model.model_to_string() == model.model_to_string()
+    loaded_model = lgb.Booster(model_file=res)
+    assert_models_equal(lgb_model, loaded_model, classification_data)
 
 
-def test_dump_model(lgb_model, tmp_path):
-    exp = os.path.join(tmp_path, "model.json")
-    res = lightgbm.dump_model(tmp_path, lgb_model)
+def test_dump_model(tmp_path, lgb_model, classification_data):
+    exp = os.path.join(tmp_path, MODEL_JSON)
+    res = dump_model(tmp_path, lgb_model)
 
     assert os.path.exists(exp)
     assert res == exp
+
+    # Models can't be loaded back from JSON
+    # https://stackoverflow.com/questions/52170236/lightgbm-loading-from-json
     try:
-        with open(exp, "r") as lines:
+        with open(res, "r") as lines:
             json.loads(lines.read())
     except:
-        # Fail if we cannot load
-        assert False
+        pytest.fail("Cannot load dumped model as JSON")
 
 
-def test_load_model(lightgbm_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        lightgbm_manager.load("model-path", {})
+def test_load_model(tmp_path, lgb_manager, lgb_model, classification_data):
+    # Save the model to a tmp directory
+    model_path = _model_file_path(tmp_path)
+    lgb_model.save_model(model_path)
+    assert model_path == os.path.join(tmp_path, MODEL_FILE)
+    assert os.path.exists(model_path)
+
+    #  Load the model
+    loaded_model = lgb_manager.load(tmp_path, {})
+
+    # Expect the two to be the same
+    assert_models_equal(lgb_model, loaded_model, classification_data)
