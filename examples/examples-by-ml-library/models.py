@@ -293,8 +293,15 @@ def run_tensorflow_example(modelstore: ModelStore) -> dict:
     model.fit(X_train, y_train, epochs=10)
 
     # Upload the model to the model store
-    print(f'⤴️  Uploading the tf model to the "{_DIABETES_DOMAIN}" domain.')
-    return modelstore.upload(_DIABETES_DOMAIN, model=model)
+    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
+
+    # Load the model back into memory!
+    model_id = meta_data["model"]["model_id"]
+    print(
+        f'⤵️  Loading the tensorflow "{_DIABETES_DOMAIN}" domain model={model_id}'
+    )
+    model = modelstore.load(_DIABETES_DOMAIN, model_id)
+    return meta_data
 
 
 def run_transformers_example(modelstore: ModelStore) -> dict:
