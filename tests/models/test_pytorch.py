@@ -49,7 +49,8 @@ class ExampleNet(nn.Module):
         return x
 
 
-def models_equal(model_a: nn.Module, model_b: nn.Module):
+def assert_models_equal(model_a: nn.Module, model_b: nn.Module):
+    assert type(model_a) == type(model_b)
     for a_params, lb_params in zip(model_a.parameters(), model_b.parameters()):
         assert a_params.data.ne(lb_params.data).sum() == 0
 
@@ -132,7 +133,7 @@ def test_save_model(pytorch_model, tmp_path):
     assert exp == file_path
 
     model = torch.load(file_path)
-    models_equal(pytorch_model, model)
+    assert_models_equal(pytorch_model, model)
 
 
 def test_save_state_dict(pytorch_model, pytorch_optim, tmp_path):
@@ -144,7 +145,7 @@ def test_save_state_dict(pytorch_model, pytorch_optim, tmp_path):
     model = ExampleNet()
 
     model.load_state_dict(state_dict["model_state_dict"])
-    models_equal(pytorch_model, model)
+    assert_models_equal(pytorch_model, model)
 
 
 def test_load_model(tmp_path, pytorch_manager, pytorch_model):
@@ -152,11 +153,7 @@ def test_load_model(tmp_path, pytorch_manager, pytorch_model):
     torch.save(pytorch_model, os.path.join(tmp_path, MODEL_PT))
 
     #  Load the model
-    loaded_model = pytorch_manager.load(
-        tmp_path,
-        {},
-    )
+    loaded_model = pytorch_manager.load(tmp_path, {})
 
     # Expect the two to be the same
-    assert type(loaded_model) == type(pytorch_model)
-    models_equal(pytorch_model, loaded_model)
+    assert_models_equal(pytorch_model, loaded_model)

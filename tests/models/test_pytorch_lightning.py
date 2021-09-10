@@ -18,6 +18,7 @@ import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
 from modelstore.models.pytorch_lightning import (
+    MODEL_CHECKPOINT,
     PyTorchLightningManager,
     _save_lightning_model,
 )
@@ -55,7 +56,7 @@ class ExampleLightningNet(pl.LightningModule):
 
 
 @pytest.fixture
-def pytorchlightning_model():
+def lightning_model():
     return ExampleLightningNet()
 
 
@@ -76,22 +77,27 @@ def val_loader():
 
 
 @pytest.fixture
-def pytorchlightning_trainer(
-    tmp_path, pytorchlightning_model, train_loader, val_loader
-):
+def lightning_trainer(tmp_path, lightning_model, train_loader, val_loader):
     trainer = pl.Trainer(max_epochs=5, default_root_dir=tmp_path)
-    trainer.fit(pytorchlightning_model, train_loader, val_loader)
+    trainer.fit(lightning_model, train_loader, val_loader)
     return trainer
 
 
 @pytest.fixture
-def pytorchlightning_manager():
+def lightning_manager():
     return PyTorchLightningManager()
 
 
-def test_model_info(pytorchlightning_manager, pytorchlightning_model):
+def assert_models_equal(
+    model_a: pl.LightningModule, module_b: pl.LightningModule
+):
+    for a_params, lb_params in zip(model_a.parameters(), module_b.parameters()):
+        assert a_params.data.ne(lb_params.data).sum() == 0
+
+
+def test_model_info(lightning_manager, lightning_model):
     exp = {"library": "pytorch_lightning", "type": "ExampleLightningNet"}
-    res = pytorchlightning_manager._model_info(model=pytorchlightning_model)
+    res = lightning_manager._model_info(model=lightning_model)
     assert exp == res
 
 
@@ -102,71 +108,71 @@ def test_model_info(pytorchlightning_manager, pytorchlightning_model):
         ("sklearn", False),
     ],
 )
-def test_is_same_library(pytorchlightning_manager, ml_library, should_match):
+def test_is_same_library(lightning_manager, ml_library, should_match):
     assert (
-        pytorchlightning_manager._is_same_library({"library": ml_library})
+        lightning_manager._is_same_library({"library": ml_library})
         == should_match
     )
 
 
-def test_model_data(pytorchlightning_manager, pytorchlightning_model):
+def test_model_data(lightning_manager, lightning_model):
     exp = {}
-    res = pytorchlightning_manager._model_data(model=pytorchlightning_model)
+    res = lightning_manager._model_data(model=lightning_model)
     assert exp == res
 
 
-def test_required_kwargs(pytorchlightning_manager):
-    assert pytorchlightning_manager._required_kwargs() == ["trainer", "model"]
+def test_required_kwargs(lightning_manager):
+    assert lightning_manager._required_kwargs() == ["trainer"]
 
 
-def test_matches_with(
-    pytorchlightning_manager, pytorchlightning_model, pytorchlightning_trainer
-):
-    assert pytorchlightning_manager.matches_with(
-        model=pytorchlightning_model, trainer=pytorchlightning_trainer
-    )
-    assert not pytorchlightning_manager.matches_with(model="a-string-value")
-    assert not pytorchlightning_manager.matches_with(
-        classifier=pytorchlightning_model
-    )
+def test_matches_with(lightning_manager, lightning_trainer):
+    assert lightning_manager.matches_with(trainer=lightning_trainer)
+    assert not lightning_manager.matches_with(model="a-string-value")
+    assert not lightning_manager.matches_with(classifier=lightning_trainer)
 
 
-def test_get_functions(
-    pytorchlightning_manager, pytorchlightning_model, pytorchlightning_trainer
-):
+def test_get_functions(lightning_manager, lightning_model, lightning_trainer):
     assert (
         len(
-            pytorchlightning_manager._get_functions(
-                trainer=pytorchlightning_trainer, model=pytorchlightning_model
+            lightning_manager._get_functions(
+                trainer=lightning_trainer, model=lightning_model
             )
         )
         == 1
     )
 
 
-def test_get_params(pytorchlightning_manager):
+def test_get_params(lightning_manager):
     exp = {}
-    res = pytorchlightning_manager._get_params()
+    res = lightning_manager._get_params()
     assert exp == res
 
 
-def models_equal(model_a: nn.Module, module_b: nn.Module):
-    for a_params, lb_params in zip(model_a.parameters(), module_b.parameters()):
-        assert a_params.data.ne(lb_params.data).sum() == 0
-
-
-def test_save_model(pytorchlightning_model, pytorchlightning_trainer, tmp_path):
+def test_save_model(tmp_path, lightning_model, lightning_trainer):
     exp = os.path.join(tmp_path, "checkpoint.pt")
-    file_path = _save_lightning_model(
-        tmp_path, pytorchlightning_trainer, pytorchlightning_model
-    )
+    file_path = _save_lightning_model(tmp_path, lightning_trainer)
     assert exp == file_path
 
-    model = ExampleLightningNet.load_from_checkpoint(file_path)
-    models_equal(pytorchlightning_model, model)
+    loaded_model = ExampleLightningNet.load_from_checkpoint(file_path)
+    assert_models_equal(lightning_model, loaded_model)
 
 
-def test_load_model(pytorchlightning_manager):
-    # Placeholder - to be implemented
-    with pytest.raises(NotImplementedError):
-        pytorchlightning_manager.load("model-path", {})
+def test_load_model(tmp_path, lightning_manager, lightning_trainer):
+    # Save the model to a tmp directory
+    file_path = os.path.join(tmp_path, MODEL_CHECKPOINT)
+    lightning_trainer.save_checkpoint(file_path)
+
+    #  Load the model
+    loaded_model = lightning_manager.load(
+        tmp_path,
+        {
+            "model": {
+                "model_type": {
+                    "type": "ExampleLightningNet",
+                }
+            }
+        },
+    )
+
+    # Expect the two to be the same
+    assert_models_equal(lightning_trainer.model, loaded_model)

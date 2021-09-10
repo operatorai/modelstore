@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import modelstore
+import pytest
 from modelstore.meta import metadata
 
 # pylint: disable=protected-access
@@ -36,7 +37,7 @@ def test_generate_for_code():
     res = metadata.generate_for_code(deps_list)
     assert res["runtime"].startswith("python")
     assert all(k in res for k in ["user", "created", "dependencies", "git"])
-    assert res["dependencies"]["pytest"] == "6.2.4"
+    assert res["dependencies"]["pytest"] == pytest.__version__
     assert res["git"]["repository"] == "modelstore"
 
 

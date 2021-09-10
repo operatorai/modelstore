@@ -11,7 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import inspect
 import os
+import sys
 from functools import partial
 from typing import Any
 
@@ -47,51 +49,63 @@ class PyTorchLightningManager(ModelManager):
         return deps + ["torch", "torchvision"]
 
     def _required_kwargs(self):
-        return ["trainer", "model"]
+        return ["trainer"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
         from pytorch_lightning import Trainer
-        from pytorch_lightning.core.lightning import LightningModule
 
-        return isinstance(kwargs.get("trainer"), Trainer) and isinstance(
-            kwargs.get("model"), LightningModule
-        )
+        return isinstance(kwargs.get("trainer"), Trainer)
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
-            raise TypeError(
-                "'trainer' or 'model' is not from pytorch_lightning!"
-            )
+            raise TypeError("'trainer' is not from pytorch_lightning!")
 
         return [
             partial(
                 _save_lightning_model,
                 trainer=kwargs["trainer"],
-                model=kwargs["model"],
             ),
         ]
 
     def _get_params(self, **kwargs) -> dict:
         """
         Currently empty
-        // @TODO: investigate other params we can
-        return here
+        // @TODO: investigate other params we can return here
         """
         return {}
 
+    @classmethod
+    def _find_class(cls, class_name: str):
+        modules = sys.modules.copy()
+        for module_name in modules:
+            try:
+                classes = inspect.getmembers(
+                    modules[module_name], inspect.isclass
+                )
+                classes = [c for c in classes if c[0] == class_name]
+                if len(classes) == 1:
+                    return classes[0][1]
+            except (ImportError, TypeError, ModuleNotFoundError):
+                continue
+        raise ValueError(f"Please import {class_name} before calling load()")
+
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
-        # @TODO
-        raise NotImplementedError()
+        # The name of the class for the model
+        model_class_name = meta_data["model"]["model_type"]["type"]
+        model_file = _model_file_path(model_path)
+
+        # We assume that class has already been imported, so it exists
+        # in the current module
+        model_class = self._find_class(model_class_name)
+        return model_class.load_from_checkpoint(model_file)
 
 
-def _save_lightning_model(
-    tmp_dir: str, trainer: "Trainer", model: "LightningModule"
-) -> str:
-    file_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
+def _model_file_path(parent_dir: str) -> str:
+    return os.path.join(parent_dir, MODEL_CHECKPOINT)
+
+
+def _save_lightning_model(tmp_dir: str, trainer: "Trainer") -> str:
+    file_path = _model_file_path(tmp_dir)
     trainer.save_checkpoint(file_path)
     return file_path
