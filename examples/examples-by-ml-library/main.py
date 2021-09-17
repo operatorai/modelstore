@@ -2,23 +2,37 @@ import json
 
 import click
 
-from libraries import annoy_example, catboost_example, fastai_example
+from libraries import (
+    annoy_example,
+    catboost_example,
+    fastai_example,
+    gensim_example,
+    keras_example,
+    lightgbm_example,
+    pytorch_example,
+    pytorch_lightning_example,
+    raw_file_example,
+    sklearn_example,
+    tensorflow_example,
+    transformers_example,
+    xgboost_example,
+)
 from modelstores import create_model_store
 
 EXAMPLES = {
     "annoy": annoy_example,
     "catboost": catboost_example,
     "fastai": fastai_example,
-    # "gensim": run_gensim_example,
-    # "keras": run_keras_example,
-    # "lightgbm": run_lightgbm_example,
-    # "file": run_model_file_example,
-    # "pytorch": run_pytorch_example,
-    # "pytorch-lightning": run_pytorch_lightning_example,
-    # "sklearn": run_sklearn_example,
-    # "tensorflow": run_tensorflow_example,
-    # "transformers": run_transformers_example,
-    # "xgboost": run_xgboost_example,
+    "gensim": gensim_example,
+    "keras": keras_example,
+    "lightgbm": lightgbm_example,
+    "file": raw_file_example,
+    "pytorch": pytorch_example,
+    "pytorch-lightning": pytorch_lightning_example,
+    "sklearn": sklearn_example,
+    "tensorflow": tensorflow_example,
+    "transformers": transformers_example,
+    "xgboost": xgboost_example,
 }
 
 
