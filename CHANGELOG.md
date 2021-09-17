@@ -1,6 +1,6 @@
 # Change log
 
-## Unreleased
+## Unreleased
 
 🆕  Load models straight into memory! Model Store previously had `modelstore.download()` to download an artifact archive to a local path, it now also has `modelstore.load()` to load a model straight into memory. Currently works with `scikit-learn` models only.
 
@@ -8,7 +8,7 @@
 
 🆕  Read a specific model's metadata with `modelstore.get_model_info()`
 
-🆕  Added [Annoy](https://github.com/spotify/annoy) support.
+🆕  Added [Annoy](https://github.com/spotify/annoy) and [ONNX](https://github.com/onnx/onnx) support.
 
 ## modelstore 0.0.65
 
