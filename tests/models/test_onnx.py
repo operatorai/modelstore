@@ -42,11 +42,8 @@ def onnx_model(classification_data):
 
 
 @pytest.fixture
-def onnx_inference(tmpdir, onnx_model):
-    file_path = os.path.join(tmpdir, "model.onnx")
-    with open(file_path, "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    return rt.InferenceSession(file_path)
+def onnx_inference(onnx_model):
+    return rt.InferenceSession(onnx_model.SerializeToString())
 
 
 @pytest.fixture
