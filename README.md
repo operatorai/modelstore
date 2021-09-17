@@ -4,8 +4,23 @@
 
 For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
-This library has been developed using Python `3.6`, `3.7` and `3.8`. Please open an issue if you have any trouble!
+## Features
 
+No tracking server required
+* Pip install and go
+* Support for multiple clouds (AWS, GCP, Azure)
+
+Upload: version all your models
+* Model versioning on each upload
+* Replaces all the boiler plate code you need to save models
+
+Manage models by domains and states
+* List models in a domain
+* Create model states and manage which state a model is in
+
+Download and load
+* Download model archives by id
+* Load models straight from your storage back into memory
 
 ## Installation
 
@@ -25,33 +40,22 @@ pip install modelstore
 
 ## Supported machine learning libraries
 
-* [Annoy](https://github.com/operatorai/modelstore/blob/15996f54989bba9f709c03373073bb6eeca06925/examples/examples-by-ml-library/models.py#L37-L74)
-* [Catboost](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L34-L48)
-* [Fast.AI](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L51-L63)
-* [Gensim](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L66-L78)
-* [Keras](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L81-L95)
-* [LightGBM](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L98-L116)
-* [PyTorch](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L119-L140)
-* [PyTorch Lightning](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L143-L162)
-* [Scikit Learn](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L165-L189)
-* [Tensorflow](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L192-L209)
-* [Transformers](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L212-L245)
-* [XGBoost](https://github.com/operatorai/modelstore/blob/fb1fa3e55efe8ecd05302667aff34f06bfce759a/examples/examples-by-ml-library/models.py#L248-L267)
+* [Annoy](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/annoy_example.py)
+* [Catboost](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/catboost_example.py)
+* [Fast.AI](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/fastai_example.py)
+* [Gensim](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/gensim_example.py)
+* [Keras](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/keras_example.py)
+* [LightGBM](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/lightgbm_example.py)
+* [PyTorch](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/pytorch_example.py)
+* [PyTorch Lightning](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/pytorch_lightning_example.py)
+* [Scikit Learn](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/sklearn_example.py)
+* [Tensorflow](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/tensorflow_example.py)
+* [Transformers](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/transformers_example.py)
+* [XGBoost](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/xgboost_example.py)
 
 Is there a machine learning framework that is missing? 
-* You can store your model locally, and then use `modelstore` to upload it
+* Save your model and then upload it [as a raw file](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/raw_file_example.py).
 * Feel free to [open an issue](https://github.com/operatorai/modelstore/issues)
-
-## Features
-
-* Model versioning on each upload
-* Replaces all the boiler plate code you need to save models
-* Support for multiple clouds (AWS, GCP, Azure)
-* List models in a domain
-* Download model archives by id
-* Create model states and manage which state a model is in
-* Load models straight from your storage back into memory
-
 
 ## Example Usage
 
