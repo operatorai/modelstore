@@ -1,19 +1,11 @@
 import tempfile
 
-import lightgbm as lgb
-import pytorch_lightning as pl
 import xgboost as xgb
-from datasets import (
-    load_diabetes_dataframe,
-    load_diabetes_dataset,
-    load_newsgroup_sentences,
-)
 from modelstore.model_store import ModelStore
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from torch.utils.data import DataLoader, TensorDataset
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
@@ -23,49 +15,6 @@ from transformers import (
 from networks import ExampleLightningNet, ExampleNet
 
 # pylint: disable=invalid-name
-
-
-def run_keras_example(modelstore: ModelStore) -> dict:
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-
-    return meta_data
-
-
-def run_lightgbm_example(modelstore: ModelStore) -> dict:
-    # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset()
-
-    # Train a model
-    print("🤖  Training a light GBM model...")
-    train_data = lgb.Dataset(X_train, label=y_train)
-    validation_data = lgb.Dataset(X_test, y_test)
-    num_round = 5
-    param = {"num_leaves": 31, "objective": "binary"}
-    model = lgb.train(
-        param, train_data, num_round, valid_sets=[validation_data]
-    )
-
-    results = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Trained model MSE={results}.")
-
-    # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the light GBM model to the "{_DIABETES_DOMAIN}" domain.'
-    )
-    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-    print(
-        f'⤵️  Loading the light gbm "{_DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(_DIABETES_DOMAIN, model_id)
-    results = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Loaded model MSE={results}.")
-
-    return meta_data
 
 
 def run_model_file_example(modelstore: ModelStore) -> dict:
@@ -83,86 +32,6 @@ def run_model_file_example(modelstore: ModelStore) -> dict:
         model_domain = "example-model-file"
         print(f'⤴️  Uploading the model file to the "{model_domain}" domain.')
         return modelstore.upload(model_domain, model=model_path)
-
-
-def run_pytorch_example(modelstore: ModelStore) -> dict:
-    # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset(as_numpy=True)
-
-    # Train the model
-    model = ExampleNet()
-    criterion = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters())
-
-    for epoch in range(5):
-        print(f"🤖  Training epoch: {epoch}...")
-        optimizer.zero_grad()
-        outputs = model(X_train)
-        loss = criterion(outputs, y_train)
-        loss.backward()
-        optimizer.step()
-
-    results = mean_squared_error(y_test, model(X_test).detach().numpy())
-    print(f"🔍  Fit model MSE={results}.")
-
-    # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the pytorch model to the "{_DIABETES_DOMAIN}" domain.'
-    )
-    meta_data = modelstore.upload(
-        _DIABETES_DOMAIN, model=model, optimizer=optimizer
-    )
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-    print(
-        f'⤵️  Loading the pytorch "{_DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(_DIABETES_DOMAIN, model_id)
-    model.eval()
-
-    results = mean_squared_error(y_test, model(X_test).detach().numpy())
-    print(f"🔍  Loaded model MSE={results}.")
-    return meta_data
-
-
-def run_pytorch_lightning_example(modelstore: ModelStore) -> dict:
-    # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset(as_numpy=True)
-
-    data_set = TensorDataset(X_test, y_test)
-    val_dataloader = DataLoader(data_set)
-
-    data_set = TensorDataset(X_train, y_train)
-    train_dataloader = DataLoader(data_set)
-
-    # Train the model
-    model = ExampleLightningNet()
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        trainer = pl.Trainer(max_epochs=5, default_root_dir=tmp_dir)
-        trainer.fit(model, train_dataloader, val_dataloader)
-
-    results = mean_squared_error(y_test, model(X_test).detach().numpy())
-    print(f"🔍  Trained model MSE={results}.")
-
-    # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the pytorch lightning model to the "{_DIABETES_DOMAIN}" domain.'
-    )
-    meta_data = modelstore.upload(
-        _DIABETES_DOMAIN, model=model, trainer=trainer
-    )
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-    print(
-        f'⤵️  Loading the pytorch lightning "{_DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(_DIABETES_DOMAIN, model_id)
-    results = mean_squared_error(y_test, model(X_test).detach().numpy())
-    print(f"🔍  Loaded model MSE={results}.")
-
-    return meta_data
 
 
 def run_sklearn_example(modelstore: ModelStore) -> dict:
