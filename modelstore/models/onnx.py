@@ -72,9 +72,6 @@ def _model_file_path(tmp_dir: str) -> str:
 
 
 def save_model(tmp_dir: str, model: "onnx.ModelProto") -> str:
-    # pylint: disable=import-outside-toplevel
-    import onnx
-
     file_path = _model_file_path(tmp_dir)
     logger.debug("Saving onnx model to %s", file_path)
     with open(file_path, "wb") as f:
