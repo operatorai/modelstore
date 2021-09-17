@@ -34,7 +34,7 @@ class OnnxManager(ModelManager):
 
     @classmethod
     def required_dependencies(cls) -> list:
-        return ["onnx"]
+        return ["onnx", "onnxruntime"]
 
     def _required_kwargs(self):
         return ["model"]
@@ -61,10 +61,10 @@ class OnnxManager(ModelManager):
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
-        import onnx
+        import onnxruntime as rt
 
-        model = onnx.load(_model_file_path(model_path))
-        return model
+        model_path = _model_file_path(model_path)
+        return rt.InferenceSession(model_path)
 
 
 def _model_file_path(tmp_dir: str) -> str:
@@ -72,7 +72,10 @@ def _model_file_path(tmp_dir: str) -> str:
 
 
 def save_model(tmp_dir: str, model: "onnx.ModelProto") -> str:
+    # pylint: disable=import-outside-toplevel
+    import onnx
+
     file_path = _model_file_path(tmp_dir)
     logger.debug("Saving onnx model to %s", file_path)
-    model.save(file_path)
+    onnx.save(model, file_path)
     return file_path
