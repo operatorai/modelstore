@@ -10,6 +10,7 @@ _diabetes = None
 
 
 def load_diabetes_dataset(as_numpy: bool = False):
+    print(f"🔍  Loading the diabetes dataset")
     global _diabetes
     if _diabetes is None:
         diabetes = load_diabetes()
