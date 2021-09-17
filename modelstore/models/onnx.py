@@ -64,7 +64,9 @@ class OnnxManager(ModelManager):
         import onnxruntime as rt
 
         model_path = _model_file_path(model_path)
-        return rt.InferenceSession(model_path)
+        with open(model_path, "rb") as lines:
+            model = lines.read()
+        return rt.InferenceSession(model)
 
 
 def _model_file_path(tmp_dir: str) -> str:
