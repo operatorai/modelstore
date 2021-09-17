@@ -1,20 +1,18 @@
-import random
 import tempfile
 
-import catboost as ctb
 import lightgbm as lgb
 import pytorch_lightning as pl
-import tensorflow as tf
 import xgboost as xgb
-from annoy import AnnoyIndex
-from fastai.tabular.all import *
-from gensim.models import word2vec
+from datasets import (
+    load_diabetes_dataframe,
+    load_diabetes_dataset,
+    load_newsgroup_sentences,
+)
 from modelstore.model_store import ModelStore
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from tensorflow import keras
 from torch.utils.data import DataLoader, TensorDataset
 from transformers import (
     AutoConfig,
@@ -22,173 +20,15 @@ from transformers import (
     AutoTokenizer,
 )
 
-from datasets import (
-    load_diabetes_dataframe,
-    load_diabetes_dataset,
-    load_newsgroup_sentences,
-)
 from networks import ExampleLightningNet, ExampleNet
 
 # pylint: disable=invalid-name
-_DIABETES_DOMAIN = "diabetes-boosting-demo"
-_NEWSGROUP_EMBEDDINGS_DOMAIN = "newsgroups-embeddings"
-
-
-def run_annoy_example(modelstore: ModelStore) -> dict:
-    # Create an index
-    print("🤖  Creating an Annoy index...")
-    num_dimensions = 40
-    metric = "angular"
-    model = AnnoyIndex(num_dimensions, metric)
-    for i in range(1000):
-        vector = [random.gauss(0, 1) for z in range(num_dimensions)]
-        model.add_item(i, vector)
-    num_trees = 10
-    model.build(num_trees)
-
-    # Find some nearest neighbours
-    results = model.get_nns_by_item(0, 10)
-    print(f"🔍  Nearest neighbors = {results}.")
-
-    # Upload the model to the model store
-    domain_name = "example-annoy-index"
-    print(f'⤴️  Uploading the Annoy model to the "{domain_name}" domain.')
-    # Alternative: modelstore.annoy.upload(model_domain, model=model)
-    meta_data = modelstore.upload(
-        domain_name,
-        model=model,
-        num_dimensions=num_dimensions,
-        metric=metric,
-        num_trees=num_trees,
-    )
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-    print(f'⤵️  Loading the Annoy "{domain_name}" domain model={model_id}')
-    model = modelstore.load(domain_name, model_id)
-
-    # Find some nearest neighbours
-    results = model.get_nns_by_item(0, 10)
-    print(f"🔍  Nearest neighbors = {results}.")
-
-    return meta_data
-
-
-def run_catboost_example(modelstore: ModelStore) -> dict:
-    # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset()
-
-    # Train the model
-    print("🤖  Training a CatBoostRegressor")
-    model = ctb.CatBoostRegressor(allow_writing_files=False)
-    model.fit(X_train, y_train)
-
-    results = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Fit model MSE={results}.")
-
-    # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the catboost model to the "{_DIABETES_DOMAIN}" domain.'
-    )
-    # Alternative: modelstore.catboost.upload(model_domain, model=model)
-    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-    print(
-        f'⤵️  Loading the catboost "{_DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(_DIABETES_DOMAIN, model_id)
-
-    results = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Loaded model MSE={results}.")
-
-    return meta_data
-
-
-def run_fastai_example(modelstore: ModelStore) -> dict:
-    # Load the data
-    df = load_diabetes_dataframe()
-
-    # Train the model
-    print(f"🤖  Training a fastai tabular learner...")
-    dl = TabularDataLoaders.from_df(df, y_names=["y"])
-    learner = tabular_learner(dl)
-    learner.fit_one_cycle(n_epoch=1)
-
-    # Upload the model to the model store
-    print(f'⤴️  Uploading the fastai model to the "{_DIABETES_DOMAIN}" domain.')
-    meta_data = modelstore.upload(_DIABETES_DOMAIN, learner=learner)
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-    print(
-        f'⤵️  Loading the catboost "{_DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(_DIABETES_DOMAIN, model_id)
-    # ... use for inference
-
-    return meta_data
-
-
-def run_gensim_example(modelstore: ModelStore) -> dict:
-    # Load the data
-    sentences = load_newsgroup_sentences()
-
-    # Train a word2vec model
-    print(f"🤖  Training a word2vec model...")
-    model = word2vec.Word2Vec(sentences, min_count=2)
-
-    most_similar = set([k[0] for k in model.wv.most_similar("cool", topn=5)])
-    print(f"🤖  Most similar to 'cool': {most_similar}")
-
-    # Upload the model to the model store
-    print(
-        f"⤴️  Uploading the model to the {_NEWSGROUP_EMBEDDINGS_DOMAIN} domain."
-    )
-    meta_data = modelstore.upload(_NEWSGROUP_EMBEDDINGS_DOMAIN, model=model)
-
-    # Load the model back into memory!
-    model_id = meta_data["model"]["model_id"]
-    print(
-        f'⤵️  Loading the word2vec "{_NEWSGROUP_EMBEDDINGS_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(_NEWSGROUP_EMBEDDINGS_DOMAIN, model_id)
-
-    most_similar = set([k[0] for k in model.wv.most_similar("cool", topn=5)])
-    print(f"🤖  Most similar to 'cool': {most_similar}")
-
-    return meta_data
 
 
 def run_keras_example(modelstore: ModelStore) -> dict:
-    # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset()
-
-    # Train a model
-    print(f"🤖  Training a keras model...")
-    inputs = keras.Input(shape=(10,))
-    outputs = keras.layers.Dense(1)(inputs)
-    model = keras.Model(inputs, outputs)
-    model.compile(optimizer="adam", loss="mean_squared_error")
-    model.fit(X_train, y_train, epochs=10)
-
-    results = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Trained model MSE={results}.")
-
-    # Upload the model to the model store
-    print(f'⤴️  Uploading the keras model to the "{_DIABETES_DOMAIN}" domain.')
-    meta_data = modelstore.upload(_DIABETES_DOMAIN, model=model)
 
     # Load the model back into memory!
     model_id = meta_data["model"]["model_id"]
-    print(
-        f'⤵️  Loading the light gbm "{_DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(_DIABETES_DOMAIN, model_id)
-
-    results = mean_squared_error(y_test, model.predict(X_test))
-    print(f"🔍  Loaded model MSE={results}.")
 
     return meta_data
 

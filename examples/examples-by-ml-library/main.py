@@ -2,37 +2,23 @@ import json
 
 import click
 
-from models import (
-    run_annoy_example,
-    run_catboost_example,
-    run_fastai_example,
-    run_gensim_example,
-    run_keras_example,
-    run_lightgbm_example,
-    run_model_file_example,
-    run_pytorch_example,
-    run_pytorch_lightning_example,
-    run_sklearn_example,
-    run_tensorflow_example,
-    run_transformers_example,
-    run_xgboost_example,
-)
+from libraries import annoy_example, catboost_example, fastai_example
 from modelstores import create_model_store
 
 EXAMPLES = {
-    "annoy": run_annoy_example,
-    "catboost": run_catboost_example,
-    "fastai": run_fastai_example,
-    "gensim": run_gensim_example,
-    "keras": run_keras_example,
-    "lightgbm": run_lightgbm_example,
-    "file": run_model_file_example,
-    "pytorch": run_pytorch_example,
-    "pytorch-lightning": run_pytorch_lightning_example,
-    "sklearn": run_sklearn_example,
-    "tensorflow": run_tensorflow_example,
-    "transformers": run_transformers_example,
-    "xgboost": run_xgboost_example,
+    "annoy": annoy_example,
+    "catboost": catboost_example,
+    "fastai": fastai_example,
+    # "gensim": run_gensim_example,
+    # "keras": run_keras_example,
+    # "lightgbm": run_lightgbm_example,
+    # "file": run_model_file_example,
+    # "pytorch": run_pytorch_example,
+    # "pytorch-lightning": run_pytorch_lightning_example,
+    # "sklearn": run_sklearn_example,
+    # "tensorflow": run_tensorflow_example,
+    # "transformers": run_transformers_example,
+    # "xgboost": run_xgboost_example,
 }
 
 
@@ -58,9 +44,13 @@ def main(modelstore_in, ml_framework):
     # Create a model store instance
     modelstore = create_model_store(modelstore_in)
 
-    # Run the example
-    example_function = EXAMPLES[ml_framework]
-    meta_data = example_function(modelstore)
+    # Run the example: train and upload a model
+    example = EXAMPLES[ml_framework]
+    meta_data = example.train_and_upload(modelstore)
+
+    # Run the example: download and load a model
+    model_id = meta_data["model"]["model_id"]
+    example.load_and_test(modelstore, model_id)
 
     # The upload returns meta-data about the model that was uploaded
     # In this example, we just print it out to the terminal
