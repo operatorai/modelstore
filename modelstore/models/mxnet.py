@@ -25,7 +25,7 @@ PARAMS_FILE = "model-{}.params"
 class MxnetManager(ModelManager):
 
     """
-    Model persistence for Mxnet Gluon models
+    Model persistence for Mxnet (Hybrid) Gluon models
     https://mxnet.apache.org/versions/1.8.0/api/python/docs/tutorials/packages/gluon/blocks/save_load_params.html
     """
 
