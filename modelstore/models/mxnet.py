@@ -54,6 +54,10 @@ class MxnetManager(ModelManager):
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
             raise TypeError("Model is not an mxnet nn.HybridBlock!")
+        if not kwargs.get("epoch"):
+            raise ValueError(
+                "Mxnet uploads require the 'epoch' kwarg to be set."
+            )
 
         return [
             partial(
@@ -72,7 +76,7 @@ class MxnetManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         from mxnet.gluon import SymbolBlock
 
-        epoch = int(metric=meta_data["model"]["parameters"]["epoch"])
+        epoch = int(meta_data["model"]["parameters"]["epoch"])
         return SymbolBlock.imports(
             model_file_path(model_path),
             ["data"],
