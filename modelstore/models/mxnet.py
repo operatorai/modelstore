@@ -54,7 +54,7 @@ class MxnetManager(ModelManager):
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
             raise TypeError("Model is not an mxnet nn.HybridBlock!")
-        if not kwargs.get("epoch"):
+        if "epoch" not in kwargs:
             raise ValueError(
                 "Mxnet uploads require the 'epoch' kwarg to be set."
             )

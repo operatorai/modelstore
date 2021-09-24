@@ -1,6 +1,6 @@
 dataclasses==0.8; python_version < '3.7'
 gitpython>=3.1.11
 joblib>=1.0.0
-onnxruntime==1.6.0
+onnxruntime>=1.6.0
 requests>=2.23.0
 tqdm>=4.54.1

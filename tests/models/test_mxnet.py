@@ -23,7 +23,7 @@ from mxnet.gluon import nn
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
-def random_y():
+def random_x():
     y = np.random.rand(10, 10)
     return mx.ndarray.array(y)
 
@@ -35,7 +35,7 @@ def mxnet_model():
         net.add(nn.Dense(20, activation="relu"))
     net.initialize(ctx=mx.cpu(0))
     net.hybridize()
-    net(random_y())
+    net(random_x())
     return net
 
 
@@ -89,8 +89,8 @@ def test_get_params(mxnet_manager, mxnet_model):
 
 
 def test_save_model(tmp_path, mxnet_model):
-    y = random_y()
-    y_pred = mxnet_model(y).asnumpy()
+    x = random_x()
+    y_pred = mxnet_model(x).asnumpy()
 
     # Save the model to file
     results = mxnet.save_model(tmp_path, model=mxnet_model, epoch=0)
@@ -102,15 +102,15 @@ def test_save_model(tmp_path, mxnet_model):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         loaded = nn.SymbolBlock.imports(results[0], ["data"], results[1])
-    y_loaded_pred = loaded(y).asnumpy()
+    y_loaded_pred = loaded(x).asnumpy()
 
     assert np.allclose(y_pred, y_loaded_pred)
 
 
 def test_load_model(tmp_path, mxnet_manager, mxnet_model):
     # Get the current predictions
-    y = random_y()
-    y_pred = mxnet_model(y).asnumpy()
+    x = random_x()
+    y_pred = mxnet_model(x).asnumpy()
 
     # Save the model to a tmp directory
     mxnet.save_model(tmp_path, mxnet_model, epoch=0)
