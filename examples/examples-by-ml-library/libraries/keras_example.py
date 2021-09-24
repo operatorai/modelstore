@@ -39,5 +39,6 @@ def load_and_test(modelstore: ModelStore, model_id: str):
     model = modelstore.load(DIABETES_DOMAIN, model_id)
 
     # Run some test predictions
+    _, X_test, _, y_test = load_diabetes_dataset()
     results = mean_squared_error(y_test, model.predict(X_test))
     print(f"🔍  Loaded model MSE={results}.")
