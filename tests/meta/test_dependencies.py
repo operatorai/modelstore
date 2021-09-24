@@ -39,6 +39,7 @@ def test_get_dependency_versions():
         "flake8",
         "isort",
         "a-missing-dependency",
+        "pickle",
     ]
     expected = {
         "annoy": "1.17.0",
@@ -48,6 +49,7 @@ def test_get_dependency_versions():
         "flake8": "3.8.4",
         "isort": "5.6.4",
         "a-missing-dependency": None,
+        "pickle": "4.0",
     }
     result = dependencies.get_dependency_versions(test_deps)
     assert result == expected
