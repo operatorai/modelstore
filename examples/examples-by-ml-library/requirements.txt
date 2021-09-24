@@ -13,6 +13,7 @@ catboost==0.24.1
 fastai==2.4.1
 gensim==4.0.1
 lightgbm==3.2.1
+mxnet==1.8.0.post0
 onnx==1.10.1
 onnxruntime==1.6.0
 python-Levenshtein==0.12.2

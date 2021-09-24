@@ -1,4 +1,3 @@
-from gensim.models import word2vec
 from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 from tensorflow import keras
