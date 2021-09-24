@@ -66,9 +66,11 @@ def main(modelstore_in, ml_framework):
     example = EXAMPLES[ml_framework]
     meta_data = example.train_and_upload(modelstore)
 
-    # Run the example: download and load a model
-    model_id = meta_data["model"]["model_id"]
-    example.load_and_test(modelstore, model_id)
+    if modelstore_in != "hosted":
+        # Run the example: download and load a model
+        # Currently unimplemented in the hosted storage
+        model_id = meta_data["model"]["model_id"]
+        example.load_and_test(modelstore, model_id)
 
     # The upload returns meta-data about the model that was uploaded
     # In this example, we just print it out to the terminal
