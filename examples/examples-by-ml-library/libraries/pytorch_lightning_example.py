@@ -59,18 +59,18 @@ def _train_example_model() -> ExampleLightningNet:
 
     results = mean_squared_error(y_test, model(X_test).detach().numpy())
     print(f"🔍  Fit model MSE={results}.")
-    return trainer
+    return model, trainer
 
 
 def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a PyTorch model
-    trainer = _train_example_model()
+    model, trainer = _train_example_model()
 
     # Upload the model to the model store
     print(
         f'⤴️  Uploading the pytorch lightning model to the "{DIABETES_DOMAIN}" domain.'
     )
-    meta_data = modelstore.upload(DIABETES_DOMAIN, trainer=trainer)
+    meta_data = modelstore.upload(DIABETES_DOMAIN, model=model, trainer=trainer)
     return meta_data
 
 
