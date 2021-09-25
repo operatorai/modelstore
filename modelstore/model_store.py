@@ -123,7 +123,9 @@ class ModelStore:
         for manager in self._managers:
             if manager.matches_with(**kwargs):
                 return manager.upload(domain, **kwargs)
-        raise ValueError("unable to upload: could not find matching manager")
+        raise ValueError(
+            "unable to upload: could not find matching manager (did you add all of the required kwargs?)"
+        )
 
     def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)
