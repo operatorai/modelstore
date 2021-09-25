@@ -122,11 +122,13 @@ def test_model_data(lightning_manager, lightning_model):
 
 
 def test_required_kwargs(lightning_manager):
-    assert lightning_manager._required_kwargs() == ["trainer"]
+    assert lightning_manager._required_kwargs() == ["trainer", "model"]
 
 
-def test_matches_with(lightning_manager, lightning_trainer):
-    assert lightning_manager.matches_with(trainer=lightning_trainer)
+def test_matches_with(lightning_manager, lightning_trainer, lightning_model):
+    assert lightning_manager.matches_with(
+        trainer=lightning_trainer, model=lightning_model
+    )
     assert not lightning_manager.matches_with(model="a-string-value")
     assert not lightning_manager.matches_with(classifier=lightning_trainer)
 
