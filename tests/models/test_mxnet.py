@@ -124,7 +124,7 @@ def test_load_model(tmp_path, mxnet_manager, mxnet_model):
             }
         },
     )
-    y_loaded_pred = loaded_model(y).asnumpy()
+    y_loaded_pred = loaded_model(x).asnumpy()
 
     # Expect the two to be the same
     assert isinstance(loaded_model, nn.SymbolBlock)

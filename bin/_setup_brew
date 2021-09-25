@@ -5,6 +5,10 @@ brew update
 
 # To use xgboost
 # https://xgboost.readthedocs.io/en/latest/build.html#building-on-osx
-brew install libomp
+
+# Note: it looks like there's trouble with libomp 12
+# https://github.com/dmlc/xgboost/issues/7039
+
+brew install libomp@11.1.0
 
 echo "\n ✅  Done."

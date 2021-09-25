@@ -12,14 +12,23 @@ _MODEL_TYPE_FILE = "model-info.json"
 
 def _get_version(modname: str) -> str:
     try:
+        if modname == "pickle":
+            # pylint: disable=import-outside-toplevel
+            import pickle
+
+            return pickle.format_version
         if modname in sys.modules:
             mod = sys.modules[modname]
         else:
             mod = importlib.import_module(modname)
         return mod.__version__
     except AttributeError:
-        #  Annoy does not have a __version__
-        return pkg_resources.get_distribution(modname).version
+        try:
+            #  Annoy does not have a __version__
+            return pkg_resources.get_distribution(modname).version
+        except:
+            logger.debug("Unable to get %s's version", modname)
+            return None
     except ImportError:
         logger.debug("%s is not installed.", modname)
         return None

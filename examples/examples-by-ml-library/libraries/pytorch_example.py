@@ -36,16 +36,18 @@ def _train_example_model() -> ExampleNet:
 
     results = mean_squared_error(y_test, model(X_test).detach().numpy())
     print(f"🔍  Fit model MSE={results}.")
-    return model
+    return model, optimizer
 
 
 def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a PyTorch model
-    model = _train_example_model()
+    model, optimizer = _train_example_model()
 
     # Upload the model to the model store
     print(f'⤴️  Uploading the pytorch model to the "{DIABETES_DOMAIN}" domain.')
-    meta_data = modelstore.upload(DIABETES_DOMAIN, model=model)
+    meta_data = modelstore.upload(
+        DIABETES_DOMAIN, model=model, optimizer=optimizer
+    )
     return meta_data
 
 

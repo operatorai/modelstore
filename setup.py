@@ -8,10 +8,10 @@ with open("requirements.txt", "r") as lines:
 
 setup(
     name="modelstore",
-    version="0.0.7",
+    version="0.0.71",
     packages=find_packages(exclude=["tests", "examples", "docs"]),
     include_package_data=True,
-    description="modelstore is a library for versioning, exporting, and storing machine learning models",
+    description="modelstore is a library for versioning, exporting, storing, and loading machine learning models",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/operatorai/modelstore",

@@ -28,7 +28,7 @@ class PyTorchLightningManager(ModelManager):
 
     """
     Model persistence for PyTorch Lightning models:
-    https://pytorch-lightning.readthedocs.io/en/stable/weights_loading.html#checkpoint-saving
+    https://pytorch-lightning.readthedocs.io/en/latest/common/weights_loading.html#manual-saving
 
     // @TODO: export as for onnx & torchscript
     https://pytorch-lightning.readthedocs.io/en/latest/new-project.html#predict-or-deploy
@@ -49,13 +49,15 @@ class PyTorchLightningManager(ModelManager):
         return deps + ["torch", "torchvision"]
 
     def _required_kwargs(self):
-        return ["trainer"]
+        return ["trainer", "model"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
-        from pytorch_lightning import Trainer
+        from pytorch_lightning import LightningModule, Trainer
 
-        return isinstance(kwargs.get("trainer"), Trainer)
+        return isinstance(kwargs.get("trainer"), Trainer) and isinstance(
+            kwargs.get("model"), LightningModule
+        )
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
@@ -105,7 +107,9 @@ def _model_file_path(parent_dir: str) -> str:
     return os.path.join(parent_dir, MODEL_CHECKPOINT)
 
 
-def _save_lightning_model(tmp_dir: str, trainer: "Trainer") -> str:
+def _save_lightning_model(
+    tmp_dir: str, trainer: "pytorch_lightning.Trainer"
+) -> str:
     file_path = _model_file_path(tmp_dir)
     trainer.save_checkpoint(file_path)
     return file_path
