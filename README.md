@@ -99,9 +99,7 @@ model_path = model_store.download(
 
 ## Recorded demo from Data Talks Club
 
-This interview and demo, recorded with Alexey from the [Data Talks Club](https://datatalks.club/) in July 2021, is based on `modelstore==0.0.6`. Click below to watch on YouTube.
-
-[![Demo on YouTube](http://img.youtube.com/vi/85BWnKmOZl8/0.jpg)](https://www.youtube.com/watch?v=85BWnKmOZl8 "DTC's minis: Model Store")
+This interview and demo, recorded with Alexey from the [Data Talks Club](https://datatalks.club/) in July 2021, is based on `modelstore==0.0.6`. Click [here to watch on YouTube](https://www.youtube.com/watch?v=85BWnKmOZl8 "DTC's minis: Model Store").
 
 ## License
 
