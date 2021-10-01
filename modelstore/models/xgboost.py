@@ -41,8 +41,6 @@ class XGBoostManager(ModelManager):
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """Returns a list of dependencies that, if installed
-        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["sklearn"]
 
@@ -63,17 +61,9 @@ class XGBoostManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        """
-        Returns a dictionary containing any model parameters
-        that are available
-        """
         return kwargs["model"].get_xgb_params()
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 

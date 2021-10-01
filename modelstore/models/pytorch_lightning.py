@@ -43,8 +43,6 @@ class PyTorchLightningManager(ModelManager):
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """Returns a list of dependencies that, if installed
-        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["torch", "torchvision"]
 
@@ -69,13 +67,6 @@ class PyTorchLightningManager(ModelManager):
                 trainer=kwargs["trainer"],
             ),
         ]
-
-    def _get_params(self, **kwargs) -> dict:
-        """
-        Currently empty
-        // @TODO: investigate other params we can return here
-        """
-        return {}
 
     @classmethod
     def _find_class(cls, class_name: str):

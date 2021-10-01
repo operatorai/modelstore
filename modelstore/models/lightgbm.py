@@ -57,10 +57,6 @@ class LightGbmManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        """
-        Returns a dictionary containing any model parameters
-        that are available
-        """
         return kwargs["model"].params
 
     def load(self, model_path: str, meta_data: dict) -> Any:
