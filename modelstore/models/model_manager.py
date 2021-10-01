@@ -69,13 +69,12 @@ class ModelManager(ABC):
         """
         raise NotImplementedError()
 
-    @abstractmethod
     def _get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
         that are available
         """
-        raise NotImplementedError()
+        return {}
 
     @abstractmethod
     def _required_kwargs(self) -> list:

@@ -56,9 +56,6 @@ class OnnxManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
-        return {}
-
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
         import onnxruntime as rt

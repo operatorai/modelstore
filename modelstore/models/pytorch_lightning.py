@@ -70,13 +70,6 @@ class PyTorchLightningManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
-        """
-        Currently empty
-        // @TODO: investigate other params we can return here
-        """
-        return {}
-
     @classmethod
     def _find_class(cls, class_name: str):
         modules = sys.modules.copy()

@@ -70,9 +70,6 @@ class ModelFileManager(ModelManager):
             partial(copy_file, source=kwargs["model"]),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
-        return {}
-
     def _required_kwargs(self) -> list:
         return ["model"]
 
