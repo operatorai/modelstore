@@ -18,8 +18,9 @@ rest for you:
 
 Will update `brew` and install `libomp` (required by `xgboost`).
 
-It will then create a Python 3.7.0 virtual environment, using `pyenv-virtualenv`,
-and install all of the dependencies in the requirements files.
+It will then create a Python virtual environment, using `pyenv-virtualenv`,
+and install all of the dependencies in the requirements files. If you want
+to use a different version of Python, update the [bin/_config](bin/config) file.
 
 ## Run the tests
 
@@ -34,13 +35,5 @@ this `Makefile` command:
 
 We have two types of examples:
 
-* `examples-by-ml-library`, which has 1 machine learning model library and writes to three different model stores (GCP, AWS, file system)
+* `examples-by-ml-library`, which has iterates over  machine learning model library and writes to three different model stores (GCP, AWS, file system)
 * `examples-by-storage` which has 2 machine learning libraries (`sklearn` and `xgboost`) and writes to one type of model store
-
-To run a single example; for example, the `xgboost` one:
-
-```bash
-❯ cd examples/examples-by-ml-library/xgboost 
-❯ make pyenv # or make pyenv-local if you have made local changes to the modelstore library
-❯ make run # will run the Python script 3 times, with each model store type
-```
