@@ -39,8 +39,6 @@ class TransformersManager(ModelManager):
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """Returns a list of dependencies that, if installed
-        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["torch", "tensorflow"]
 

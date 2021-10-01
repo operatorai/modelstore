@@ -42,8 +42,6 @@ class PyTorchManager(ModelManager):
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """Returns a list of dependencies that, if installed
-        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["torchvision"]
 
@@ -71,10 +69,6 @@ class PyTorchManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        """
-        Returns a dictionary the optimizer's state
-        dictionary
-        """
         params = kwargs["optimizer"].state_dict()
         params = convert_numpy(params)
         return convert_tensors(params)

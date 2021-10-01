@@ -58,10 +58,6 @@ class TensorflowManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        """
-        Returns a dictionary containing any model parameters
-        that are available
-        """
         return kwargs["model"].optimizer.get_config()
 
     def load(self, model_path: str, meta_data: dict) -> Any:

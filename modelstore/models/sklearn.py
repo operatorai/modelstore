@@ -40,8 +40,6 @@ class SKLearnManager(ModelManager):
 
     @classmethod
     def optional_dependencies(cls) -> list:
-        """Returns a list of dependencies that, if installed
-        are useful to log info about"""
         deps = super().optional_dependencies()
         return deps + ["Cython", "joblib", "threadpoolctl"]
 
@@ -66,7 +64,6 @@ class SKLearnManager(ModelManager):
         return isinstance(kwargs.get("model"), sklearn.base.BaseEstimator)
 
     def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
         data = {}
         if "X_train" in kwargs:
             features = datasets.describe_dataset(kwargs["X_train"])
