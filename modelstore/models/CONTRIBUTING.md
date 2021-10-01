@@ -108,11 +108,52 @@ Finally, the `load()` function does the reverse of the model artefact saving tha
         return model
 ```
 
-
-
 ## Add the class to a dictionary of managers
+
+The `modelstore/models/managers.py` file contains a `ML_LIBRARIES` dictionary that keeps a mapping between each framework's name and the manager that we use to store/load models from it. 
+
+This ensures that when a `modelstore` instance is created, it knows to check whether the machine learning framework you've added in the previous step exists in the user's environment.
+
+Add an entry for your new framework, e.g.:
+
+```python
+# ...
+from modelstore.models.xgboost import XGBoostManager
+
+ML_LIBRARIES = {
+    # ...
+    "xgboost": XGBoostManager,
+}
+```
 
 ## Writing unit tests for the class you've added
 
+The `tests/models/` directory contains all of the unit tests that we run for each machine learning framework.
+
+The `modelstore` library typically includes tests that assert that:
+
+* The `_model_info()`, `_model_data()`, and `_get_params()` functions returns the expected dictionary;
+* The `_is_same_library()` returns True for the current machine learning framework, and False for others;
+* The `_required_kwargs()` function returns the expected list;
+* The `matches_with()` function returns True when the right key-value kwargs are passed, and False for incorrect pairs;
+* The number of functions returned from `_get_functions()` is as expected; that individual functions save a model as they are expected to do;
+* The `load()` function returns the same model that was previously saved
+
+Feel free to include any additional unit tests that you think will be useful.
+
 ## Extend the `examples`
+
+The examples directory shows `modelstore` users how to use the library.
+
+In the `examples-by-ml-library/libraries` directory, you will find one Python file per machine learning framework. Create a new file there for the framework you're adding.
+
+Implement two functions -- `train_and_upload(modelstore: ModelStore) -> dict`, which trains a model using the new framework and showcases how to upload it to the store, and `load_and_test(modelstore: ModelStore, model_id: str)` which showcases how to download/load a specific model with this framework from the store.
+
+Add the new framework to `frameworks` in `run-all.sh`, and to the mapping of `EXAMPLES` in `main.py`.
+
+You can then test it out with:
+
+```bash
+❯ python main.py --modelstore-in filesystem --ml-framework <the-new-framework>
+```
 
