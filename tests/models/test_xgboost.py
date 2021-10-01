@@ -11,10 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import math
 import os
 
-import numpy as np
 import pytest
 import xgboost as xgb
 from modelstore.models import xgboost
