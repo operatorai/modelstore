@@ -188,12 +188,15 @@ class ModelManager(ABC):
 
         # Meta-data about the model location
         archive_path = self._create_archive(**kwargs)
+
+        # Upload the model archive and any additional extras
         storage_meta = self.storage.upload(domain, model_id, archive_path)
 
         # Generate the combined meta-data and add it to the store
         meta_data = metadata.generate(model_meta, storage_meta, code_meta)
         self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
+
         return meta_data
 
 

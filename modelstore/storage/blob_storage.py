@@ -16,7 +16,7 @@ import os
 import tempfile
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util.paths import (
@@ -85,10 +85,32 @@ class BlobStorage(CloudStorage):
         versions_path = get_versions_path(domain, state_name)
         return os.path.join(versions_path, f"{model_id}.json")
 
-    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
+    def upload(
+        self,
+        domain: str,
+        model_id: str,
+        local_path: str,
+        extras: Optional[Union[str, list]] = None,
+    ) -> dict:
         # @TODO model_id is unused
-        bucket_path = get_archive_path(domain, local_path)
-        prefix = self._push(local_path, bucket_path)
+        archive_remote_path = get_archive_path(domain, local_path)
+        prefix = self._push(local_path, archive_remote_path)
+        if extras:
+            remote_path = os.path.split(archive_remote_path)[0]
+            if isinstance(extras, list):
+                for extra_path in extras:
+                    # @TODO ignore directories
+                    remote_file_path = os.path.join(
+                        remote_path, os.path.split(extra_path)[1]
+                    )
+                    self._push(extra_path, remote_file_path)
+            else:
+                # @TODO ignore directories
+                remote_file_path = os.path.join(
+                    remote_path, os.path.split(extras)[1]
+                )
+                self._push(extras, remote_file_path)
+
         return self._storage_location(prefix)
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
