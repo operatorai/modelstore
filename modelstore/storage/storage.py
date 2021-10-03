@@ -41,7 +41,6 @@ class CloudStorage(ABC):
     def upload(
         self,
         domain: str,
-        model_id: str,
         local_path: str,
         extras: Optional[Union[str, list]] = None,
     ) -> dict:
