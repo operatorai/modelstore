@@ -187,7 +187,7 @@ class ModelManager(ABC):
 
         # Upload the model archive and any additional extras
         storage_meta = self.storage.upload(
-            domain, model_id, archive_path, extras=kwargs.get("extras")
+            domain, archive_path, extras=kwargs.get("extras")
         )
 
         # Generate the combined meta-data and add it to the store

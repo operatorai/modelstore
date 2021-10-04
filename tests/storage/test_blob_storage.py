@@ -120,7 +120,7 @@ def test_upload(mock_blob_storage, tmp_path):
         mock_blob_storage.root_dir,
         get_archive_path("test-domain", source),
     )
-    rsp = mock_blob_storage.upload("test-domain", "test-model-id", source)
+    rsp = mock_blob_storage.upload("test-domain", source)
     assert rsp["type"] == "file_system"
     assert rsp["path"] == model_path
     assert os.path.exists(model_path)

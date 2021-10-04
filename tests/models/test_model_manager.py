@@ -14,7 +14,7 @@
 import os
 import tarfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Union
 
 import pytest
 from modelstore.models.model_manager import ModelManager
@@ -30,7 +30,12 @@ class MockCloudStorage(FileSystemStorage):
         super().__init__(root_path=str(tmpdir))
         self.called = False
 
-    def upload(self, domain: str, model_id: str, local_path: str):
+    def upload(
+        self,
+        domain: str,
+        local_path: str,
+        extras: Optional[Union[str, list]] = None,
+    ):
         self.called = True
 
 
