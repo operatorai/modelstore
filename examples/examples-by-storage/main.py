@@ -1,50 +1,11 @@
 import json
 import os
+import tempfile
 
 import click
-import numpy as np
-import xgboost as xgb
-from sklearn.datasets import load_diabetes
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
 
+from model import train
 from modelstores import create_model_store
-
-
-def train(model_type):
-    diabetes = load_diabetes()
-    X_train, X_test, y_train, y_test = train_test_split(
-        diabetes.data, diabetes.target, test_size=0.1, random_state=13
-    )
-
-    if model_type == "sklearn":
-        params = {
-            "n_estimators": 500,
-            "max_depth": 4,
-            "min_samples_split": 5,
-            "learning_rate": 0.01,
-            "loss": "ls",
-        }
-        reg = GradientBoostingRegressor(**params)
-        reg.fit(X_train, y_train)
-        # Skipped for brevity (but important!) evaluate the model
-        return reg
-    if model_type == "xgboost":
-        xg_reg = xgb.XGBRegressor(
-            objective="reg:squarederror",
-            colsample_bytree=0.3,
-            learning_rate=0.1,
-            max_depth=5,
-            alpha=10,
-            n_estimators=10,
-        )
-        xg_reg.fit(X_train, y_train)
-
-        preds = xg_reg.predict(X_test)
-        rmse = np.sqrt(mean_squared_error(y_test, preds))
-        print(f"📈  Trained a model with RMSE={rmse}.")
-        return xg_reg
 
 
 @click.command()
@@ -59,43 +20,67 @@ def main(modelstore_in):
 
     # Create a model store instance
     modelstore = create_model_store(modelstore_in)
-    model_domain = "diabetes-boosting-demo"
+
+    # This demo downloads models; we'll store them into a temporary
+    # directory
+    tmp_dir = tempfile.mkdtemp()
 
     # In this demo, we train two models, so that we can demonstrate
     # how modelstore keeps track of uploaded models for us
+    model_ids = []
     for model_type in ["sklearn", "xgboost"]:
         print(f"🤖  Training a {model_type} model...")
-        model = train(model_type)
+        model, result = train(model_type)
 
+        #  We're going to write the results to a file
+        results_file = os.path.join(tmp_dir, "results.json")
+        with open(results_file, "w") as out:
+            out.write(json.dumps(result))
+
+        model_domain = "diabetes-boosting-demo"
         print(f"⤴️  Uploading to the {model_domain} domain.")
-        meta_data = modelstore.upload(model_domain, model=model)
+        meta_data = modelstore.upload(
+            model_domain, model=model, extras=results_file
+        )
 
         # The upload returns meta-data about the model that was uploaded
         # This meta-data has also been sync'ed into the s3 bucket
         print(f"✅  Finished uploading the {model_type} model!")
-        print(json.dumps(meta_data, indent=4))
+        model_ids.append(meta_data["model"]["model_id"])
 
-        # Download the model back!
-        target = os.path.join(modelstore_in, f"downloaded-{model_type}-model")
-        os.makedirs(target, exist_ok=True)
-        model_path = modelstore.download(
-            local_path=target,
-            domain=model_domain,
-            model_id=meta_data["model"]["model_id"],
-        )
-        print(f"⤵️  Downloaded the model back to {model_path}")
+    # We now have push an additional two models into our store
+    # How does modelstore enable you to manage them?
 
-    # List the available domains
+    # List all the domains
     print(f"✅  Listing existing domains:")
     domains = modelstore.list_domains()
     for domain in domains:
         print(f"\t  Domain: {domain}")
 
-    # List the available models in the diabest-boosting-demo domain
+    # List the models in the diabest-boosting-demo domain
     print(f"✅  Listing models for {model_domain}:")
     versions = modelstore.list_versions(domain=model_domain)
     for version in versions:
         print(f"\t  Domain: {model_domain} has model with id={version}")
+
+    # Download models
+    print(f"⤵️  Downloading {model_domain} models:")
+    for model_id in model_ids:
+        print(f"⤵️  Downloading {model_id}:")
+        target = os.path.join(tmp_dir, f"downloaded-{model_type}-model")
+        os.makedirs(target, exist_ok=True)
+
+        model_path = modelstore.download(
+            local_path=target,
+            domain=model_domain,
+            model_id=model_id,
+        )
+        print(f"⤵️  Downloaded to: {model_path}")
+
+    # Load models straight into memory
+    for model_id in model_ids:
+        model = modelstore.load(model_domain, model_id)
+        print(f"⤵️  Loaded a {type(model)} model")
 
     if modelstore_in == "hosted":
         # The rest is currently not implemented in the 'hosted'
