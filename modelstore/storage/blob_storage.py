@@ -16,7 +16,7 @@ import os
 import tempfile
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util.paths import (
@@ -85,10 +85,37 @@ class BlobStorage(CloudStorage):
         versions_path = get_versions_path(domain, state_name)
         return os.path.join(versions_path, f"{model_id}.json")
 
-    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        # @TODO model_id is unused
-        bucket_path = get_archive_path(domain, local_path)
-        prefix = self._push(local_path, bucket_path)
+    def _upload_extra(self, local_path: str, remote_path: str):
+        if os.path.isdir(local_path):
+            #  Currently ignoring directories
+            return
+        local_file_name = os.path.split(local_path)[1]
+        if local_file_name == "artifacts.tar.gz":
+            raise ValueError(
+                "Name conflict in extras: cannot use 'artifacts.tar.gz'"
+            )
+        remote_file_path = os.path.join(remote_path, local_file_name)
+        self._push(local_path, remote_file_path)
+
+    def upload(
+        self,
+        domain: str,
+        local_path: str,
+        extras: Optional[Union[str, list]] = None,
+    ) -> dict:
+        # Upload the archive into storage
+        archive_remote_path = get_archive_path(domain, local_path)
+        prefix = self._push(local_path, archive_remote_path)
+        if extras:
+            # If any extras have been defined, they are uploaded
+            # to the same place
+            remote_path = os.path.split(archive_remote_path)[0]
+            if isinstance(extras, list):
+                for extra_path in extras:
+                    self._upload_extra(extra_path, remote_path)
+            else:
+                self._upload_extra(extras, remote_path)
+
         return self._storage_location(prefix)
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):

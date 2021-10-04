@@ -139,10 +139,6 @@ class ModelManager(ABC):
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model
-
-        Uploads the archive to storage. This function returns
-        a dictionary of meta-data that is associated with this model,
-        including an id.
         """
         self._validate_kwargs(**kwargs)
         archive_name = "artifacts.tar.gz"
@@ -164,11 +160,10 @@ class ModelManager(ABC):
     def upload(self, domain: str, **kwargs) -> dict:
         """
         Creates the `artifacts.tar.gz` archive which contains
-        all of the files of the model
+        all of the files of the model and uploads the archive to storage.
 
-        Uploads the archive to storage. This function returns
-        a dictionary of meta-data that is associated with this model,
-        including an id.
+        This function returns a dictionary of meta-data that is associated
+        with this model, including an id.
         """
         _validate_domain(domain)
         self._validate_kwargs(**kwargs)
@@ -186,14 +181,20 @@ class ModelManager(ABC):
         # Meta-data about the code
         code_meta = metadata.generate_for_code(self._get_dependencies())
 
-        # Meta-data about the model location
+        # Create the model archive and return
+        # meta-data about its location
         archive_path = self._create_archive(**kwargs)
-        storage_meta = self.storage.upload(domain, model_id, archive_path)
+
+        # Upload the model archive and any additional extras
+        storage_meta = self.storage.upload(
+            domain, archive_path, extras=kwargs.get("extras")
+        )
 
         # Generate the combined meta-data and add it to the store
         meta_data = metadata.generate(model_meta, storage_meta, code_meta)
         self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
+
         return meta_data
 
 

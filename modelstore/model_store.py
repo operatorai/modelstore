@@ -24,6 +24,7 @@ from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.storage.hosted import HostedStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.storage import CloudStorage
+from modelstore.utils.log import logger
 
 
 @dataclass(frozen=True)
@@ -122,6 +123,7 @@ class ModelStore:
         # pylint: disable=no-member
         for manager in self._managers:
             if manager.matches_with(**kwargs):
+                logger.debug(f"Auto matched with: %s", manager.ml_library)
                 return manager.upload(domain, **kwargs)
         raise ValueError(
             "unable to upload: could not find matching manager (did you add all of the required kwargs?)"
