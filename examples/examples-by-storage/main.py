@@ -94,11 +94,6 @@ def main(modelstore_in):
         model = modelstore.load(model_domain, model_id)
         print(f"\t  Loaded a {type(model)} model")
 
-    if modelstore_in == "hosted":
-        # The rest is currently not implemented in the 'hosted'
-        # modelstore
-        return
-
     # Create a new model state
     state_prod = "production"
     print(f"✅  Creating model state={state_prod}:")
