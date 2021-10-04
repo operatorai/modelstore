@@ -1,5 +1,9 @@
 # Change log
 
+## Unreleased
+
+🆕  Need to upload additional files alongside your model? You can now use the `extras=` kwarg in `modelstore.upload()` to point modelstore to a file (or list of files) to upload as well.
+
 ## modelstore 0.0.71
 
 🆕  Load models straight into memory! Model Store previously had `modelstore.download()` to download an artifact archive to a local path, it now also has `modelstore.load()` to load a model straight into memory.
