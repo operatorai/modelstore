@@ -66,8 +66,8 @@ class ProphetManager(ModelManager):
         params = {}
         for pname in ["k", "m", "sigma_obs"]:
             params[pname] = model.params[pname][0][0]
-        for pname in ["delta", "beta"]:
-            params[pname] = model.params[pname][0]
+        for pname in ["delta", "beta", "trend"]:
+            params[pname] = model.params[pname][0].tolist()
         return params
 
     def load(self, model_path: str, meta_data: dict) -> Any:
@@ -91,5 +91,5 @@ def save_model(tmp_dir: str, model: "prophet.Prophet") -> str:
     file_path = _model_file_path(tmp_dir)
     logger.debug("Saving prophet model to %s", file_path)
     with open(file_path, "w") as fout:
-        json.dump(model_to_json(model), fout)
+        fout.write(json.dumps(model_to_json(model)))
     return file_path
