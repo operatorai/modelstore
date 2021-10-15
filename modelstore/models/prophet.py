@@ -35,7 +35,7 @@ class ProphetManager(ModelManager):
 
     @classmethod
     def required_dependencies(cls) -> list:
-        return ["pystan", "fbprophet"]
+        return ["pystan", "prophet"]
 
     def _required_kwargs(self):
         return ["model"]
