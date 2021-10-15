@@ -1,14 +1,19 @@
 set -e
 
 echo "\n ⏱  Running brew update and installing libomp"
-brew update
+#brew update
+
+# To get pystan to install correctly (required by prophet)
+# https://stackoverflow.com/questions/52814868/pystan-compileerror-command-gcc-failed-with-exit-status-1-macos
+brew install gcc
+export CC=gcc-11
+export CXX=g++-11
 
 # To use xgboost
 # https://xgboost.readthedocs.io/en/latest/build.html#building-on-osx
 
 # Note: it looks like there's trouble with libomp 12
 # https://github.com/dmlc/xgboost/issues/7039
-
 brew install libomp@11.1.0
 
 echo "\n ✅  Done."

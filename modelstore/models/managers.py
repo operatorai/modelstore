@@ -25,6 +25,7 @@ from modelstore.models.model_file import ModelFileManager
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.mxnet import MxnetManager
 from modelstore.models.onnx import OnnxManager
+from modelstore.models.prophet import ProphetManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.pytorch_lightning import PyTorchLightningManager
 from modelstore.models.sklearn import SKLearnManager
@@ -44,6 +45,7 @@ ML_LIBRARIES = {
     "lightgbm": LightGbmManager,
     "mxnet": MxnetManager,
     "onnx": OnnxManager,
+    "prophet": ProphetManager,
     "pytorch": PyTorchManager,
     "pytorch_lightning": PyTorchLightningManager,
     "sklearn": SKLearnManager,
