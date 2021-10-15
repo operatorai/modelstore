@@ -14,6 +14,10 @@ env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" \
         $1
 pyenv local $1
 
+# To get fbprophet to install correctly:
+export CC=$(which gcc)
+export CXX=$(which g++)
+
 pip install --upgrade pip setuptools wheel
 for i in ./requirements*txt; do
     echo "\n ⏱  Installing requirements in: $i"
