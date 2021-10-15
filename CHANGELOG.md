@@ -1,5 +1,9 @@
 # Change log
 
+## Unreleased
+
+📈  Added [Prophet](https://facebook.github.io/prophet/) support
+
 ## modelstore 0.0.71
 
 🆕  Load models straight into memory! Model Store previously had `modelstore.download()` to download an artifact archive to a local path, it now also has `modelstore.load()` to load a model straight into memory.
