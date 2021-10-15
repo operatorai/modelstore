@@ -101,9 +101,6 @@ class SKLearnManager(ModelManager):
         return convert_numpy(params)
 
     def load(self, model_path: str, meta_data: dict) -> Any:
-        """
-        Loads a joblib model, stored in model_path, back into memory
-        """
         # @Future: check if loading into same version of joblib
         # as was used for saving
         file_name = os.path.join(model_path, MODEL_JOBLIB)

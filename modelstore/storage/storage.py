@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Optional
+from typing import Optional, Union
 
 from modelstore.meta.dependencies import module_exists
 
@@ -38,8 +38,16 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def upload(self, domain: str, model_id: str, local_path: str) -> dict:
-        """ Uploads an archive to this type of storage"""
+    def upload(
+        self,
+        domain: str,
+        local_path: str,
+        extras: Optional[Union[str, list]] = None,
+    ) -> dict:
+        """Uploads an archive to this type of storage
+        :param extras can be a path to a file or list of files
+        if these are specified, those files are upload
+        to the same storage prefix too."""
         raise NotImplementedError()
 
     @abstractmethod
