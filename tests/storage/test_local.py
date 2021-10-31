@@ -14,6 +14,7 @@
 import json
 import os
 
+import mock
 import pytest
 from modelstore.storage.local import FileSystemStorage
 
@@ -34,6 +35,20 @@ from tests.storage.test_utils import (
 @pytest.fixture
 def fs_model_store(tmp_path):
     return FileSystemStorage(root_path=str(tmp_path))
+
+
+def test_create_from_environment_variables():
+    with mock.patch.dict(
+        os.environ,
+        {
+            "MODEL_STORE_ROOT": "~",
+        },
+    ):
+        # pylint: disable=bare-except
+        try:
+            _ = FileSystemStorage()
+        except:
+            pytest.fail("Failed to initialise storage from env variables")
 
 
 def test_validate(fs_model_store):

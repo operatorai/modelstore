@@ -77,6 +77,17 @@ def azure_storage(azure_client):
     )
 
 
+def test_create_from_environment_variables():
+    with mock.patch.dict(
+        os.environ, {"MODEL_STORE_AZURE_CONTAINER": _MOCK_CONTAINER_NAME}
+    ):
+        # pylint: disable=bare-except
+        try:
+            _ = AzureBlobStorage()
+        except:
+            pytest.fail("Failed to initialise storage from env variables")
+
+
 def test_validate_existing_container(azure_storage):
     assert azure_storage.validate()
 

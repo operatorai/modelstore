@@ -65,6 +65,21 @@ def gcloud_model_store(gcloud_client):
     )
 
 
+def test_create_from_environment_variables():
+    with mock.patch.dict(
+        os.environ,
+        {
+            "MODEL_STORE_GCP_PROJECT": "project",
+            "MODEL_STORE_GCP_BUCKET": _MOCK_BUCKET_NAME,
+        },
+    ):
+        # pylint: disable=bare-except
+        try:
+            _ = GoogleCloudStorage()
+        except:
+            pytest.fail("Failed to initialise storage from env variables")
+
+
 def test_validate_existing_bucket(gcloud_model_store):
     assert gcloud_model_store.validate()
 
