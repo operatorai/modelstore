@@ -13,8 +13,10 @@
 #    limitations under the License.
 import json
 import os
+from typing import Optional
 
 from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
@@ -36,10 +38,16 @@ class AWSStorage(BlobStorage):
     https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html
     """
 
-    def __init__(self, bucket_name: str, region: str = None):
+    def __init__(
+        self, bucket_name: Optional[str], region: Optional[str] = None
+    ):
         super().__init__(["boto3"])
-        self.bucket_name = bucket_name
-        self.region = region
+        self.bucket_name = environment.get_value(
+            bucket_name, "MODEL_STORE_AWS_BUCKET"
+        )
+        self.region = environment.get_value(
+            region, "MODEL_STORE_REGION", allow_missing=True
+        )
         self.__client = None
 
     @property

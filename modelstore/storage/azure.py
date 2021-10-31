@@ -13,8 +13,10 @@
 #    limitations under the License.
 import json
 import os
+from typing import Optional
 
 from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
@@ -37,12 +39,14 @@ class AzureBlobStorage(BlobStorage):
 
     def __init__(
         self,
-        container_name: str,
+        container_name: Optional[str] = None,
         client: "azure.storage.blobage.BlobClient" = None,
         environ_key: str = "AZURE_STORAGE_CONNECTION_STRING",
     ):
         super().__init__(["azure.storage.blob"])
-        self.container_name = container_name
+        self.container_name = environment.get_value(
+            container_name, "MODEL_STORE_AZURE_CONTAINER"
+        )
         self.connection_string_key = environ_key
         self.__client = client
 

@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Optional
 
 from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT,
     get_model_state_path,
@@ -34,8 +35,9 @@ class FileSystemStorage(BlobStorage):
     File System Storage
     """
 
-    def __init__(self, root_path: str):
+    def __init__(self, root_path: Optional[str] = None):
         super().__init__([])
+        root_path = environment.get_value(root_path, "MODEL_STORE_ROOT")
         if MODELSTORE_ROOT in root_path:
             warnings.warn(
                 f'Warning: "{MODELSTORE_ROOT}" is in the root path, and is a value'

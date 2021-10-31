@@ -13,8 +13,10 @@
 #    limitations under the License.
 import json
 import os
+from typing import Optional
 
 from modelstore.storage.blob_storage import BlobStorage
+from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
@@ -42,13 +44,17 @@ class GoogleCloudStorage(BlobStorage):
 
     def __init__(
         self,
-        project_name: str,
-        bucket_name: str,
+        project_name: Optional[str],
+        bucket_name: Optional[str],
         client: "storage.Client" = None,
     ):
         super().__init__(["google.cloud.storage"])
-        self.project_name = project_name
-        self.bucket_name = bucket_name
+        self.project_name = environment.get_value(
+            project_name, "MODEL_STORE_GCP_PROJECT"
+        )
+        self.bucket_name = environment.get_value(
+            bucket_name, "MODEL_STORE_GCP_BUCKET"
+        )
         self.__client = client
 
     @property
