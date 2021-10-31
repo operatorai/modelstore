@@ -44,8 +44,8 @@ class GoogleCloudStorage(BlobStorage):
 
     def __init__(
         self,
-        project_name: Optional[str],
-        bucket_name: Optional[str],
+        project_name: Optional[str] = None,
+        bucket_name: Optional[str] = None,
         client: "storage.Client" = None,
     ):
         super().__init__(["google.cloud.storage"])

@@ -39,7 +39,7 @@ class AWSStorage(BlobStorage):
     """
 
     def __init__(
-        self, bucket_name: Optional[str], region: Optional[str] = None
+        self, bucket_name: Optional[str] = None, region: Optional[str] = None
     ):
         super().__init__(["boto3"])
         self.bucket_name = environment.get_value(
