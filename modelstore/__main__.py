@@ -44,6 +44,9 @@ def download(domain: str, model_id: str, parent_dir: str):
         modelstorecli.success(
             f"✅  Downloaded: {domain}={model_id} to {archive_path}"
         )
+    except SystemExit:
+        # Failed to instantiate a model store from environment variables
+        pass
     except:
         modelstorecli.failure("❌  Failed to download model:")
         raise
