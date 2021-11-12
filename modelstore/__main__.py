@@ -11,9 +11,10 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import os
+
 import click
 
-from modelstore.storage.util.environment import model_store_from_env
 from modelstore.utils import cli as modelstorecli
 
 
@@ -25,16 +26,23 @@ def download_model():
 @download_model.command()
 @click.argument("domain", type=str, required=True)
 @click.argument("model_id", type=str, required=True)
-@click.argument("target_dir", type=str, required=False, default=None)
-def download(domain, model_id, target_dir):
+@click.argument("parent_dir", type=str, required=False, default=None)
+def download(domain: str, model_id: str, parent_dir: str):
     """Download a model from the modelstore. Usage:\n
-    ❯ python -m modelstore <domain> <model-id> <target-directory>
+    ❯ python -m modelstore <domain> <model-id> <parent-directory>
     """
     try:
-        model_store = model_store_from_env()
-        model_store.download(target_dir, domain, model_id)
+        target_dir = (
+            os.path.join(parent_dir, domain, model_id)
+            if parent_dir is not None
+            else os.path.join(domain, model_id)
+        )
+        os.makedirs(target_dir, exist_ok=True)
+
+        model_store = modelstorecli.model_store_from_env()
+        archive_path = model_store.download(target_dir, domain, model_id)
         modelstorecli.success(
-            f"✅  Downloaded: {domain}={model_id} to {target_dir}"
+            f"✅  Downloaded: {domain}={model_id} to {archive_path}"
         )
     except:
         modelstorecli.failure("❌  Failed to download model:")
