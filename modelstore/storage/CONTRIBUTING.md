@@ -31,7 +31,7 @@ To add support for a new storage layer, add a new factory method in `modelstore.
 
 ```python
     @classmethod
-    def from_aws_s3(cls, bucket_name: str, region: str = None) -> "ModelStore":
+    def from_aws_s3(cls, bucket_name: Optional[str] = None, region: Optional[str] = None) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an AWS s3
         bucket.
 
@@ -42,6 +42,8 @@ To add support for a new storage layer, add a new factory method in `modelstore.
             storage=AWSStorage(bucket_name=bucket_name, region=region)
         )
 ```
+
+Note that the arguments are all `Optional`. That is because `modelstore` enables retrieving these variables from the user's environment.
 
 ## Writing unit tests for the class you've added
 

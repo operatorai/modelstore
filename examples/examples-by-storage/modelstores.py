@@ -18,7 +18,7 @@ def create_aws_model_store() -> ModelStore:
     # A model store in an AWS S3 bucket
     # The modelstore library assumes you have already created
     # an s3 bucket and will raise an exception if it doesn't exist
-    return ModelStore.from_aws_s3(os.environ["AWS_BUCKET_NAME"])
+    return ModelStore.from_aws_s3(os.environ["MODEL_STORE_AWS_BUCKET"])
 
 
 def create_azure_model_store() -> ModelStore:
@@ -27,7 +27,7 @@ def create_azure_model_store() -> ModelStore:
     # 1. You have already created an Azure container
     # 2. You have an os environment variable called AZURE_STORAGE_CONNECTION_STRING
     return ModelStore.from_azure(
-        container_name=os.environ["AZURE_CONTAINER_NAME"],
+        container_name=os.environ["MODEL_STORE_AZURE_CONTAINER"],
     )
 
 
@@ -36,8 +36,8 @@ def create_gcloud_model_store() -> ModelStore:
     # The modelstore library assumes you have already created
     # a Cloud Storage bucket and will raise an exception if it doesn't exist
     return ModelStore.from_gcloud(
-        os.environ["GCP_PROJECT_ID"],
-        os.environ["GCP_BUCKET_NAME"],
+        os.environ["MODEL_STORE_GCP_PROJECT"],
+        os.environ["MODEL_STORE_GCP_BUCKET"],
     )
 
 

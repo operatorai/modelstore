@@ -15,6 +15,7 @@ import json
 import os
 
 import boto3
+import mock
 import pytest
 from modelstore.storage.aws import AWSStorage
 from moto import mock_s3
@@ -45,6 +46,21 @@ def moto_boto():
 @pytest.fixture
 def aws_model_store():
     return AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+
+
+def test_create_from_environment_variables():
+    # Does not fail when environment variables exist
+    with mock.patch.dict(
+        os.environ, {"MODEL_STORE_AWS_BUCKET": _MOCK_BUCKET_NAME}
+    ):
+        # pylint: disable=bare-except
+        try:
+            _ = AWSStorage()
+        except:
+            pytest.fail("Failed to initialise storage from env variables")
+    # Fails when environment variables are missing
+    with pytest.raises(KeyError):
+        _ = AWSStorage()
 
 
 def test_validate_existing_bucket(aws_model_store):

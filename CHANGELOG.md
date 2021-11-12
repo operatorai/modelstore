@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+🆕   Added CLI functionality! You can now `python -m modelstore download <domain> <model-id> <directory>` to download a model. This requires you to set environment variables.
+
 📈  Added [Prophet](https://facebook.github.io/prophet/) support
 
 🆕 Need to upload additional files alongside your model? You can now use the extras= kwarg in modelstore.upload() to point modelstore to a file (or list of files) to upload as well.

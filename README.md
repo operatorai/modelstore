@@ -7,7 +7,7 @@ For more details, please refer to [the documentation](https://modelstore.readthe
 ## Features
 
 No tracking server required
-* Pip install and go
+* Pip install and get going!
 * Support for multiple clouds (AWS, GCP, Azure)
 
 Upload: version all your models
@@ -21,6 +21,9 @@ Manage models by domains and states
 Download and load
 * Download model archives by id
 * Load models straight from your storage back into memory
+
+Use as a command line tool
+* Download models from the command line
 
 ## Installation
 
@@ -98,6 +101,8 @@ model_path = model_store.download(
 ```
 
 ## Recorded demo from Data Talks Club
+
+_Note_ the talk below is based on an older version of `modelstore` and the API has been simplified since then.
 
 This interview and demo, recorded with Alexey from the [Data Talks Club](https://datatalks.club/) in July 2021, is based on `modelstore==0.0.6`. Click [here to watch on YouTube](https://www.youtube.com/watch?v=85BWnKmOZl8 "DTC's minis: Model Store").
 

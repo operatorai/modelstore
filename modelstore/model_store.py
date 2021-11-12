@@ -41,7 +41,9 @@ class ModelStore:
     storage: CloudStorage
 
     @classmethod
-    def from_aws_s3(cls, bucket_name: str, region: str = None) -> "ModelStore":
+    def from_aws_s3(
+        cls, bucket_name: Optional[str] = None, region: Optional[str] = None
+    ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an AWS s3
         bucket.
 
@@ -53,7 +55,7 @@ class ModelStore:
         )
 
     @classmethod
-    def from_azure(cls, container_name: str) -> "ModelStore":
+    def from_azure(cls, container_name: Optional[str] = None) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an
         Azure blob container. This assumes that the container already exists."""
         if not AZURE_EXISTS:
@@ -63,7 +65,11 @@ class ModelStore:
         )
 
     @classmethod
-    def from_gcloud(cls, project_name: str, bucket_name: str) -> "ModelStore":
+    def from_gcloud(
+        cls,
+        project_name: Optional[str] = None,
+        bucket_name: Optional[str] = None,
+    ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to a
         Google Cloud Bucket. This assumes that the Cloud bucket already exists."""
         if not GCLOUD_EXISTS:
@@ -73,7 +79,9 @@ class ModelStore:
         )
 
     @classmethod
-    def from_file_system(cls, root_directory: str) -> "ModelStore":
+    def from_file_system(
+        cls, root_directory: Optional[str] = None
+    ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         the local file system."""
         return ModelStore(storage=FileSystemStorage(root_directory))
