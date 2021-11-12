@@ -65,6 +65,10 @@ def assert_environ_exists(storage_type: str, keys: dict):
 
 
 def model_store_from_env() -> ModelStore:
+    if "MODEL_STORE_STORAGE" not in os.environ:
+        failure("❌  No value for MODEL_STORE_STORAGE set in os.environ")
+        sys.exit(1)
+
     storage_name = os.environ["MODEL_STORE_STORAGE"]
     if storage_name not in STORAGE_TYPES:
         failure(
