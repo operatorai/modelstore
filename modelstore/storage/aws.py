@@ -39,6 +39,14 @@ class AWSStorage(BlobStorage):
     """
 
     NAME = "aws-s3"
+    BUILD_FROM_ENVIRONMENT = {
+        "required": [
+            "MODEL_STORE_AWS_BUCKET",
+            "AWS_ACCESS_KEY_ID",
+            "AWS_SECRET_ACCESS_KEY",
+        ],
+        "optional": ["MODEL_STORE_REGION"],
+    }
 
     def __init__(
         self, bucket_name: Optional[str] = None, region: Optional[str] = None

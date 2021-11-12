@@ -1,10 +1,20 @@
 import os
 import sys
 from enum import Enum
-from typing import Optional
 
 import click
 from modelstore import ModelStore
+from modelstore.storage.aws import AWSStorage
+from modelstore.storage.gcloud import GoogleCloudStorage
+from modelstore.storage.hosted import HostedStorage
+from modelstore.storage.local import FileSystemStorage
+
+STORAGE_TYPES = {
+    AWSStorage.NAME: AWSStorage,
+    GoogleCloudStorage.NAME: GoogleCloudStorage,
+    HostedStorage.NAME: HostedStorage,
+    FileSystemStorage.NAME: FileSystemStorage,
+}
 
 
 class MessageStatus(Enum):
@@ -20,30 +30,30 @@ class MessageStatus(Enum):
     Info: str = "blue"
 
 
-def echo(message: str, status: MessageStatus):
+def _echo(message: str, status: MessageStatus):
     click.echo(click.style(message, fg=status.value))
 
 
 def success(message: str):
-    echo(message, MessageStatus.Sucess)
+    _echo(message, MessageStatus.Sucess)
 
 
 def failure(message: str):
-    echo(message, MessageStatus.Failure)
+    _echo(message, MessageStatus.Failure)
 
 
 def info(message: str):
-    echo(message, MessageStatus.Info)
+    _echo(message, MessageStatus.Info)
 
 
-def assert_environ_exists(
-    storage_type: str, keys: list, optional_keys: Optional[list]
-):
-    missing_required_keys = [k for k in keys if k not in os.environ]
+def assert_environ_exists(storage_type: str, keys: dict):
+    missing_required_keys = [
+        k for k in keys.get("required", []) if k not in os.environ
+    ]
+    missing_optional_keys = [
+        k for k in keys.get("optional", []) if k not in os.environ
+    ]
     if len(missing_required_keys) != 0:
-        missing_optional_keys = [
-            k for k in optional_keys if k not in os.environ
-        ]
         failure(
             f"❌ Failed to create {storage_type} modelstore.\nYour environment is missing:"
         )
@@ -55,21 +65,13 @@ def assert_environ_exists(
 
 
 def model_store_from_env() -> ModelStore:
-    storage_type = os.environ["MODEL_STORE_STORAGE"]
-    if storage_type == "aws":
-        assert_environ_exists(
-            "aws", ["MODEL_STORE_AWS_BUCKET"], ["MODEL_STORE_REGION"]
+    storage_name = os.environ["MODEL_STORE_STORAGE"]
+    if storage_name not in STORAGE_TYPES:
+        failure(
+            f"❌  Unknown storage name in MODEL_STORE_STORAGE: {storage_name}"
         )
-        return ModelStore.from_aws_s3()
-    if storage_type == "gcloud":
-        assert_environ_exists(
-            "aws", ["MODEL_STORE_GCP_PROJECT", "MODEL_STORE_GCP_BUCKET"], []
-        )
-        return ModelStore.from_gcloud()
-    if storage_type == "azure":
-        assert_environ_exists("aws", ["MODEL_STORE_AZURE_CONTAINER"], [])
-        return ModelStore.from_azure()
-    if storage_type == "filesystem":
-        assert_environ_exists("aws", ["MODEL_STORE_ROOT"], [])
-        return ModelStore.from_file_system()
-    raise ValueError(f"Uknown modelstore type: {storage_type}")
+        sys.exit(1)
+
+    storage_type = STORAGE_TYPES[storage_name]
+    assert_environ_exists(storage_name, storage_type.BUILD_FROM_ENVIRONMENT)
+    return STORAGE_TYPES[storage_name]()

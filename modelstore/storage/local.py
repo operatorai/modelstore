@@ -20,9 +20,11 @@ from typing import Optional
 
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
-from modelstore.storage.util.paths import (MODELSTORE_ROOT,
-                                           get_model_state_path,
-                                           is_valid_state_name)
+from modelstore.storage.util.paths import (
+    MODELSTORE_ROOT,
+    get_model_state_path,
+    is_valid_state_name,
+)
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 
@@ -30,10 +32,16 @@ from modelstore.utils.log import logger
 class FileSystemStorage(BlobStorage):
 
     """
-    File System Storage
+    File System Storage: store models in a directory
     """
 
     NAME = "filesystem"
+    BUILD_FROM_ENVIRONMENT = {
+        "required": [
+            "MODEL_STORE_ROOT",
+        ],
+        "optional": [],
+    }
 
     def __init__(self, root_path: Optional[str] = None):
         super().__init__([])

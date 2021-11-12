@@ -34,6 +34,10 @@ class HostedStorage(CloudStorage):
     """
 
     NAME = "hosted"
+    BUILD_FROM_ENVIRONMENT = {
+        "required": ["MODELSTORE_KEY_ID", "MODELSTORE_ACCESS_KEY"],
+        "optional": [],
+    }
 
     def __init__(
         self, access_key_id: Optional[str], secret_access_key: Optional[str]

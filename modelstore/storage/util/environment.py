@@ -14,20 +14,6 @@
 import os
 from typing import Optional
 
-import modelstore.utils.cli as modelstorecli
-from modelstore.model_store import ModelStore
-from modelstore.storage.aws import AWSStorage
-from modelstore.storage.gcloud import GoogleCloudStorage
-from modelstore.storage.hosted import HostedStorage
-from modelstore.storage.local import FileSystemStorage
-
-STORAGE_TYPES = {
-    AWSStorage.NAME: AWSStorage,
-    GoogleCloudStorage.NAME: GoogleCloudStorage,
-    HostedStorage.NAME: HostedStorage,
-    FileSystemStorage.NAME: FileSystemStorage,
-}
-
 
 def get_value(
     arg: str, env_key: str, allow_missing: bool = False
@@ -48,14 +34,3 @@ def get_value(
     # Return the environment variable; this will KeyError if it
     # is missing
     return os.environ[env_key]
-
-
-def model_store_from_env() -> ModelStore:
-    """Used by the modelstore CLI to construct a ModelStore
-    instance purely using environment variables
-    """
-    storage_name = os.environ["MODEL_STORE_STORAGE"]
-    if storage_name not in STORAGE_TYPES:
-        raise ValueError(f"Unknown storage name: {storage_name}")
-    modelstorecli.info(f"Using: {storage_name} model store.")
-    return STORAGE_TYPES[storage_name]()

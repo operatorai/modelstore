@@ -43,6 +43,10 @@ class GoogleCloudStorage(BlobStorage):
     """
 
     NAME = "google-cloud-storage"
+    BUILD_FROM_ENVIRONMENT = {
+        "required": ["MODEL_STORE_GCP_PROJECT", "MODEL_STORE_GCP_BUCKET"],
+        "optional": [],
+    }
 
     def __init__(
         self,

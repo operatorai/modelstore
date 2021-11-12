@@ -38,6 +38,15 @@ class AzureBlobStorage(BlobStorage):
     """
 
     NAME = "azure-container"
+    BUILD_FROM_ENVIRONMENT = {
+        "required": [
+            "MODEL_STORE_AZURE_CONTAINER",
+            "AZURE_ACCOUNT_NAME",
+            "AZURE_ACCESS_KEY",
+            "AZURE_STORAGE_CONNECTION_STRING",
+        ],
+        "optional": [],
+    }
 
     def __init__(
         self,
