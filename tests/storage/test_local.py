@@ -38,6 +38,7 @@ def fs_model_store(tmp_path):
 
 
 def test_create_from_environment_variables():
+    # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ,
         {
@@ -49,6 +50,9 @@ def test_create_from_environment_variables():
             _ = FileSystemStorage()
         except:
             pytest.fail("Failed to initialise storage from env variables")
+    # Fails when environment variables are missing
+    with pytest.raises(KeyError):
+        _ = FileSystemStorage()
 
 
 def test_validate(fs_model_store):

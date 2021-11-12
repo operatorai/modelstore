@@ -66,6 +66,7 @@ def gcloud_model_store(gcloud_client):
 
 
 def test_create_from_environment_variables():
+    # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ,
         {
@@ -78,6 +79,9 @@ def test_create_from_environment_variables():
             _ = GoogleCloudStorage()
         except:
             pytest.fail("Failed to initialise storage from env variables")
+    # Fails when environment variables are missing
+    with pytest.raises(KeyError):
+        _ = GoogleCloudStorage()
 
 
 def test_validate_existing_bucket(gcloud_model_store):
