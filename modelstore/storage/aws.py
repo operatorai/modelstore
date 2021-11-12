@@ -38,6 +38,8 @@ class AWSStorage(BlobStorage):
     https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html
     """
 
+    NAME = "aws-s3"
+
     def __init__(
         self, bucket_name: Optional[str] = None, region: Optional[str] = None
     ):

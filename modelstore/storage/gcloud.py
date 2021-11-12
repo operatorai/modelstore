@@ -42,6 +42,8 @@ class GoogleCloudStorage(BlobStorage):
     Assumes that google.cloud.storage is installed and configured
     """
 
+    NAME = "google-cloud-storage"
+
     def __init__(
         self,
         project_name: Optional[str] = None,

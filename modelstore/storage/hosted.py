@@ -33,6 +33,8 @@ class HostedStorage(CloudStorage):
     Usage of this storage requires you to have an `api_access_key` and `api_key_id`.
     """
 
+    NAME = "hosted"
+
     def __init__(
         self, access_key_id: Optional[str], secret_access_key: Optional[str]
     ):

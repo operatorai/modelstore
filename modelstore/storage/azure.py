@@ -37,6 +37,8 @@ class AzureBlobStorage(BlobStorage):
     and that the Azure Container already exists
     """
 
+    NAME = "azure-container"
+
     def __init__(
         self,
         container_name: Optional[str] = None,
