@@ -48,7 +48,7 @@ def aws_model_store():
     return AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
 
 
-def test_create_from_environment_variables():
+def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ, {"MODEL_STORE_AWS_BUCKET": _MOCK_BUCKET_NAME}
@@ -59,6 +59,8 @@ def test_create_from_environment_variables():
         except:
             pytest.fail("Failed to initialise storage from env variables")
     # Fails when environment variables are missing
+    for key in AWSStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
+        monkeypatch.delenv(key)
     with pytest.raises(KeyError):
         _ = AWSStorage()
 

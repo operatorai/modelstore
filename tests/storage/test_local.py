@@ -16,6 +16,7 @@ import os
 
 import mock
 import pytest
+from _pytest.python_api import raises
 from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=unused-import
@@ -37,7 +38,7 @@ def fs_model_store(tmp_path):
     return FileSystemStorage(root_path=str(tmp_path))
 
 
-def test_create_from_environment_variables():
+def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ,
@@ -50,7 +51,10 @@ def test_create_from_environment_variables():
             _ = FileSystemStorage()
         except:
             pytest.fail("Failed to initialise storage from env variables")
+
     # Fails when environment variables are missing
+    for key in FileSystemStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
+        monkeypatch.delenv(key)
     with pytest.raises(KeyError):
         _ = FileSystemStorage()
 
