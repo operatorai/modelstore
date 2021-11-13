@@ -2,9 +2,11 @@
 
 ## Unreleased
 
-🆕   Added CLI functionality! You can now `python -m modelstore download <domain> <model-id> <directory>` to download a model. This requires you to set environment variables.
+🐛  Fixed an `ImportError` bug when trying to use `modelstore` on an instance [that does not have git installed](https://github.com/operatorai/modelstore/pull/86).
 
-📈  Added [Prophet](https://facebook.github.io/prophet/) support
+🆕   Added CLI functionality! You can now `python -m modelstore download <domain> <model-id> <directory>` to download a model. This requires you to [set environment variables](https://modelstore.readthedocs.io/en/latest/concepts/cli.html).
+
+🆕  Added [Prophet](https://facebook.github.io/prophet/) support.
 
 🆕 Need to upload additional files alongside your model? You can now use the extras= kwarg in modelstore.upload() to point modelstore to a file (or list of files) to upload as well.
 
@@ -74,10 +76,10 @@
 
 ## modelstore 0.0.1b
 
-First release! Supports (and tested on) Python 3.7 only. ☢️
+🆕  First release! Supports (and tested on) Python 3.7 only. ☢️
 
-Storage: GCP buckets, AWS S3 buckets, file systems. Upload only!
+🆕  Storage: GCP buckets, AWS S3 buckets, file systems. Upload only!
 
-Initial models: `catboost`, `keras`, `torch`, `sklearn`, `xgboost`
+🆕  Initial models: `catboost`, `keras`, `torch`, `sklearn`, `xgboost`
 
-Meta-data: Python runtime, user, dependency versions, git hash
+🆕  Meta-data: Python runtime, user, dependency versions, git hash

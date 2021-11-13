@@ -1,8 +1,5 @@
 from setuptools import find_packages, setup
 
-with open("README.md", "r") as lines:
-    long_description = lines.read()
-
 with open("requirements.txt", "r") as lines:
     requirements = lines.read().splitlines()
 
@@ -12,7 +9,7 @@ setup(
     packages=find_packages(exclude=["tests", "examples", "docs"]),
     include_package_data=True,
     description="modelstore is a library for versioning, exporting, storing, and loading machine learning models",
-    long_description=long_description,
+    long_description="Please refer to: https://modelstore.readthedocs.io/en/latest/",
     long_description_content_type="text/markdown",
     url="https://github.com/operatorai/modelstore",
     author="Neal Lathia",

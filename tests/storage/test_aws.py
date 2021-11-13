@@ -19,16 +19,10 @@ import mock
 import pytest
 from modelstore.storage.aws import AWSStorage
 from moto import mock_s3
-
 # pylint: disable=unused-import
-from tests.storage.test_utils import (
-    TEST_FILE_CONTENTS,
-    TEST_FILE_NAME,
-    file_contains_expected_contents,
-    remote_file_path,
-    remote_path,
-    temp_file,
-)
+from tests.storage.test_utils import (TEST_FILE_CONTENTS, TEST_FILE_NAME,
+                                      file_contains_expected_contents,
+                                      remote_file_path, remote_path, temp_file)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -48,7 +42,7 @@ def aws_model_store():
     return AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
 
 
-def test_create_from_environment_variables():
+def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ, {"MODEL_STORE_AWS_BUCKET": _MOCK_BUCKET_NAME}
@@ -59,6 +53,8 @@ def test_create_from_environment_variables():
         except:
             pytest.fail("Failed to initialise storage from env variables")
     # Fails when environment variables are missing
+    for key in AWSStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
+        monkeypatch.delenv(key, raising=False)
     with pytest.raises(KeyError):
         _ = AWSStorage()
 
