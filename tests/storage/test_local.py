@@ -53,7 +53,7 @@ def test_create_from_environment_variables(monkeypatch):
 
     # Fails when environment variables are missing
     for key in FileSystemStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
-        monkeypatch.delenv(key)
+        monkeypatch.delenv(key, raising=False)
     with pytest.raises(KeyError):
         _ = FileSystemStorage()
 

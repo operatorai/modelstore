@@ -81,7 +81,7 @@ def test_create_from_environment_variables(monkeypatch):
             pytest.fail("Failed to initialise storage from env variables")
     # Fails when environment variables are missing
     for key in GoogleCloudStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
-        monkeypatch.delenv(key)
+        monkeypatch.delenv(key, raising=False)
     with pytest.raises(KeyError):
         _ = GoogleCloudStorage()
 
