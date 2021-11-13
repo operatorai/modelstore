@@ -16,7 +16,6 @@ import os
 
 import mock
 import pytest
-from _pytest.python_api import raises
 from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=unused-import
