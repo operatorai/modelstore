@@ -32,7 +32,9 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     model = _train_example_model()
 
     # Upload the model to the model store
-    print(f'⤴️  Uploading the keras model to the "{DIABETES_DOMAIN}" domain.')
+    print(
+        f'⤴️  Uploading the tensorflow model to the "{DIABETES_DOMAIN}" domain.'
+    )
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model)
     return meta_data
 

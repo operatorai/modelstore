@@ -35,7 +35,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
 
 def load_and_test(modelstore: ModelStore, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the Keras "{DIABETES_DOMAIN}" domain model={model_id}')
+    print(f'⤵️  Loading the keras "{DIABETES_DOMAIN}" domain model={model_id}')
     model = modelstore.load(DIABETES_DOMAIN, model_id)
 
     # Run some test predictions

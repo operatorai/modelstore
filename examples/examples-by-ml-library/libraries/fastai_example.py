@@ -22,9 +22,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     learner = _train_example_model()
 
     # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the catboost model to the "{DIABETES_DOMAIN}" domain.'
-    )
+    print(f'⤴️  Uploading the fastai model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, learner=learner)
     return meta_data
 

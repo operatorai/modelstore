@@ -7,6 +7,11 @@ boto3==1.14.56
 azure-core==1.13.0
 azure-storage-blob==12.8.0
 
+# Data / dependencies for ML libraries
+numpy==1.19.2
+python-Levenshtein==0.12.2
+numba==0.53.1
+
 # Prophet
 pystan==2.19.1.1 # required to be installed before prophet
 
@@ -20,9 +25,9 @@ mxnet==1.8.0.post0
 onnx==1.10.1
 onnxruntime==1.6.0
 prophet==1.0.1
-python-Levenshtein==0.12.2
 pytorch-lightning==1.3.8
 scikit-learn==0.23.2
+shap==0.40.0
 skl2onnx==1.9.2
 tensorflow==2.5.2
 transformers==4.9.2

@@ -1,7 +1,7 @@
 set -e
 
 echo "\n ⏱  Running brew update and installing libomp"
-#brew update
+brew update
 
 # To get pystan to install correctly (required by prophet)
 # https://stackoverflow.com/questions/52814868/pystan-compileerror-command-gcc-failed-with-exit-status-1-macos
