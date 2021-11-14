@@ -13,6 +13,8 @@
 #    limitations under the License.
 import os
 
+import joblib
+import numpy as np
 import pytest
 import shap as shp
 from modelstore.models import shap
@@ -92,35 +94,37 @@ def test_save_explainer(tmp_path, shap_explainer, classification_data):
 
     # Save the explainer to file
     exp = os.path.join(tmp_path, shap.EXPLAINER_FILE)
-    res = shap.save_explainer(tmp_path, explainer=shap_explainer)
+    res = shap.save_joblib(
+        tmp_path, shap_explainer, file_name=shap.EXPLAINER_FILE
+    )
     assert os.path.exists(exp)
     assert res == exp
 
     # Load the saved explainer and get its predictions
     with open(res, "rb") as f:
-        loaded_expl = shp.Explainer.load(f)
-    import pdb
-
-    pdb.set_trace()
-    # sess = rt.InferenceSession(res)
-    # loaded_pred = get_predictions(sess, classification_data)
-    # assert np.allclose(model_pred, loaded_pred)
+        loaded_expl = joblib.load(f)
+    loaded_shap_values = loaded_expl.shap_values(X_train)[0]
+    assert np.allclose(shap_values, loaded_shap_values)
 
 
-# def test_load_model(
-#     tmp_path, onnx_manager, onnx_model, onnx_inference, classification_data
-# ):
-#     # Get the current predictions
-#     model_pred = get_predictions(onnx_inference, classification_data)
+def test_load_model(
+    tmp_path, shap_manager, shap_explainer, classification_data
+):
+    # Get the shap values
+    X_train, _ = classification_data
+    shap_values = shap_explainer.shap_values(X_train)[0]
 
-#     # Save the model to a tmp directory
-#     model_path = onnx.save_model(tmp_path, onnx_model)
-#     assert model_path == os.path.join(tmp_path, onnx.MODEL_FILE)
+    # Save the explainer to file
+    exp = os.path.join(tmp_path, shap.EXPLAINER_FILE)
+    res = shap.save_joblib(
+        tmp_path, shap_explainer, file_name=shap.EXPLAINER_FILE
+    )
 
-#     #  Load the model
-#     loaded_model = onnx_manager.load(tmp_path, {})
-#     loaded_pred = get_predictions(loaded_model, classification_data)
+    #  Load the model
+    loaded_expl = shap_manager.load(tmp_path, {})
+    loaded_shap_values = loaded_expl.shap_values(X_train)[0]
+    assert np.allclose(shap_values, loaded_shap_values)
 
-#     # Expect the two to be the same
-#     assert type(loaded_model) == type(onnx_inference)
-#     assert np.allclose(model_pred, loaded_pred)
+    # Expect the two to be the same
+    assert type(shap_explainer) == type(loaded_expl)
+    assert np.allclose(shap_values, loaded_shap_values)

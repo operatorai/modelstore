@@ -12,14 +12,16 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+import pickle
 from functools import partial
 from typing import Any
 
+from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
-EXPLAINER_FILE = "explainer.pkl"
+EXPLAINER_FILE = "explainer.joblib"
 
 
 class ShapManager(ModelManager):
@@ -33,7 +35,7 @@ class ShapManager(ModelManager):
 
     @classmethod
     def required_dependencies(cls) -> list:
-        return ["shap", "pickle"]
+        return ["shap", "joblib"]
 
     def _required_kwargs(self):
         return ["explainer"]
@@ -62,30 +64,14 @@ class ShapManager(ModelManager):
 
         return [
             partial(
-                save_explainer,
-                explainer=kwargs["explainer"],
+                save_joblib, model=kwargs["explainer"], file_name=EXPLAINER_FILE
             ),
         ]
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
-        # pylint: disable=import-outside-toplevel
-        from shap import Explainer
-
+    def load(self, model_path: str, meta_data: dict) -> "shap.Explainer":
         explainer_path = _explainer_file_path(model_path)
-        with open(explainer_path, "rb") as f:
-            explainer = Explainer.load(
-                f, model_loader="auto", masker_loader="auto"
-            )
-        return explainer
+        return load_joblib(explainer_path)
 
 
 def _explainer_file_path(tmp_dir: str) -> str:
     return os.path.join(tmp_dir, EXPLAINER_FILE)
-
-
-def save_explainer(tmp_dir: str, explainer: "shap.Explainer") -> str:
-    file_path = _explainer_file_path(tmp_dir)
-    logger.debug("Saving shap.Explainer model to %s", file_path)
-    with open(file_path, "wb") as f:
-        explainer.save(f, model_saver="auto", masker_saver="auto")
-    return file_path
