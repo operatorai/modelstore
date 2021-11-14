@@ -17,7 +17,11 @@ import tempfile
 from dataclasses import dataclass
 from typing import Optional
 
-from modelstore.models.managers import iter_libraries
+from modelstore.models.managers import (
+    iter_explainers,
+    iter_libraries,
+    matching_manager,
+)
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
@@ -112,11 +116,17 @@ class ModelStore:
                 f"Failed to set up the {type(self.storage).__name__} storage."
             )
         # Supported machine learning model libraries
-        managers = []
+        ml_libraries = []
         for library, manager in iter_libraries(self.storage):
             object.__setattr__(self, library, manager)
-            managers.append(manager)
-        object.__setattr__(self, "_managers", managers)
+            ml_libraries.append(manager)
+        object.__setattr__(self, "_ml_libraries", ml_libraries)
+
+        # Supported explainer libraries
+        explainer_libraries = []
+        for library, manager in iter_explainers(self.storage):
+            explainer_libraries.append(manager)
+        object.__setattr__(self, "_explainers", explainer_libraries)
 
     def list_domains(self) -> list:
         """Returns a list of dicts, containing info about all
@@ -135,19 +145,23 @@ class ModelStore:
 
     def upload(self, domain: str, **kwargs) -> dict:
         # pylint: disable=no-member
-        for manager in self._managers:
-            if manager.matches_with(**kwargs):
-                logger.debug(f"Auto matched with: %s", manager.ml_library)
-                return manager.upload(domain, **kwargs)
-        raise ValueError(
-            "unable to upload: could not find matching manager (did you add all of the required kwargs?)"
-        )
+        #  Figure out which ML library the kwargs match with
+        ml_manager = matching_manager(self._ml_libraries, **kwargs)
+        expl_manager = None
+        if "explainer" in kwargs and len(kwargs) != 1:
+            #  If the user is trying to upload a model and an explainer
+            #  figure out which explainer library to match with
+            expl_manager = matching_manager(
+                self._explainers, explainer=kwargs["explainer"]
+            )
+        # Trigger the upload
+        ml_manager.upload(domain, explainer_manager=expl_manager, **kwargs)
 
     def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)
         ml_library = meta_data["model"]["model_type"]["library"]
         # pylint: disable=no-member
-        for manager in self._managers:
+        for manager in self._ml_libraries:
             if manager.ml_library == ml_library:
                 with tempfile.TemporaryDirectory() as tmp_dir:
                     model_files = self.download(tmp_dir, domain, model_id)

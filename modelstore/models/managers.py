@@ -58,11 +58,37 @@ ML_LIBRARIES = {
     "xgboost": XGBoostManager,
 }
 
+EXPLAINER_LIBRARIES = {
+    "shap": ShapManager,
+}
 
-def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
-    for library, mngr in ML_LIBRARIES.items():
+
+def _iter_managers(
+    managers: dict, storage: CloudStorage = None
+) -> Iterator[ModelManager]:
+    """Iterates of a dict of ModelManagers and yields
+    the ones that are available in the current environment,
+    based on checking for dependencies.
+    """
+    for library, mngr in managers.items():
         if all(module_exists(x) for x in mngr.required_dependencies()):
             yield library, mngr(storage)
         else:
             logger.debug("Skipping: %s, not installed.", library)
             yield library, MissingDepManager(library, storage)
+
+
+def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
+    return _iter_managers(ML_LIBRARIES, storage)
+
+
+def iter_explainers(storage: CloudStorage = None) -> Iterator[ModelManager]:
+    return _iter_managers(EXPLAINER_LIBRARIES, storage)
+
+
+def matching_manager(managers: list, **kwargs) -> ModelManager:
+    for manager in managers:
+        if manager.matches_with(**kwargs):
+            logger.debug(f"Auto matched with: %s", manager.ml_library)
+            return manager
+    raise ValueError("could not find matching manager")
