@@ -20,6 +20,7 @@ def _get_version(modname: str) -> str:
         if modname in sys.modules:
             mod = sys.modules[modname]
         else:
+            logger.debug("Trying to import: %s", modname)
             mod = importlib.import_module(modname)
         return mod.__version__
     except AttributeError:
@@ -33,7 +34,7 @@ def _get_version(modname: str) -> str:
         logger.debug("%s is not installed.", modname)
         return None
     except Exception:
-        logger.error("Error importing %s.", modname)
+        logger.error("Error importing: %s.", modname)
         return None
 
 
