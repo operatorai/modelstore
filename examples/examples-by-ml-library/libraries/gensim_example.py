@@ -24,7 +24,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
 
     # Upload the model to the model store
     print(
-        f"⤴️  Uploading the model to the {NEWSGROUP_EMBEDDINGS_DOMAIN} domain."
+        f"⤴️  Uploading the word2vec model to the {NEWSGROUP_EMBEDDINGS_DOMAIN} domain."
     )
     meta_data = modelstore.upload(NEWSGROUP_EMBEDDINGS_DOMAIN, model=model)
     return meta_data

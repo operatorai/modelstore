@@ -36,9 +36,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     model = _train_example_model()
 
     # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the catboost model to the "{DIABETES_DOMAIN}" domain.'
-    )
+    print(f'⤴️  Uploading the sklearn model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model)
     return meta_data
 
@@ -46,7 +44,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
 def load_and_test(modelstore: ModelStore, model_id: str):
     # Load the model back into memory!
     print(
-        f'⤵️  Loading the catboost "{DIABETES_DOMAIN}" domain model={model_id}'
+        f'⤵️  Loading the sklearn "{DIABETES_DOMAIN}" domain model={model_id}'
     )
     model = modelstore.load(DIABETES_DOMAIN, model_id)
 
