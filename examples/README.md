@@ -10,7 +10,9 @@ downloads/loads it back.
 
 As with the main library, these scripts have been developed using [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv).
 
-## Set up
+## Set up - examples by ML model
+
+Warning: the `examples-by-ml-model` virtual environment installs ALL of the machine learning frameworks that are supported by `modelstore`. In your own project, you will only need to install the machine learning frameworks that you need.
 
 Start by `cd`'ing into the directory containing the example you want to run:
 
@@ -18,7 +20,16 @@ Start by `cd`'ing into the directory containing the example you want to run:
 ❯ cd examples-by-ml-model/
 ```
 
-or
+And then you can use this `Makefile` command that creates a new virtual environment
+and installs all of the requirements:
+
+```bash
+❯ make pyenv
+```
+
+## Set up - examples by storage type
+
+Warning: the `examples-by-ml-storage` virtual environment installs ALL of the storage libraries that are supported by `modelstore`. In your own project, you will only need to install the storage library that you need.
 
 ```bash
 ❯ cd examples-by-ml-storage/
