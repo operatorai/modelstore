@@ -14,10 +14,10 @@ pytest==6.2.5
 rope==0.18.0
 twine==3.2.0
 
-# Data
+# Data / dependencies for ML libraries
 numpy==1.19.2
 python-Levenshtein==0.12.2
-numba==0.54.1
+numba==0.53.1
 
 # Prophet
 pystan==2.19.1.1 # required to be installed before prophet
