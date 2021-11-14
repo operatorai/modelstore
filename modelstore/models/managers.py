@@ -28,6 +28,7 @@ from modelstore.models.onnx import OnnxManager
 from modelstore.models.prophet import ProphetManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.pytorch_lightning import PyTorchLightningManager
+from modelstore.models.shap import ShapManager
 from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.transformers import TransformersManager
@@ -48,6 +49,7 @@ ML_LIBRARIES = {
     "prophet": ProphetManager,
     "pytorch": PyTorchManager,
     "pytorch_lightning": PyTorchLightningManager,
+    "shap": ShapManager,
     "sklearn": SKLearnManager,
     "tensorflow": TensorflowManager,
     "transformers": TransformersManager,

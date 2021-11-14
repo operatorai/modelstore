@@ -33,12 +33,24 @@ class ShapManager(ModelManager):
 
     @classmethod
     def required_dependencies(cls) -> list:
-        return ["shap"]
+        return ["shap", "pickle"]
 
     def _required_kwargs(self):
         return ["explainer"]
 
+    def _model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the explainer type """
+        return {
+            "library": self.ml_library,
+            "type": type(kwargs["explainer"]).__name__,
+        }
+
     def matches_with(self, **kwargs) -> bool:
+        # Exclude cases where the user wants to upload a model AND explainer
+        # this use case will be dealt with in other model managers
+        if len(kwargs) > 1:
+            return False
+
         # pylint: disable=import-outside-toplevel
         from shap import Explainer
 
@@ -60,9 +72,10 @@ class ShapManager(ModelManager):
         from shap import Explainer
 
         explainer_path = _explainer_file_path(model_path)
-        explainer = Explainer()
         with open(explainer_path, "rb") as f:
-            explainer.load(f)
+            explainer = Explainer.load(
+                f, model_loader="auto", masker_loader="auto"
+            )
         return explainer
 
 
@@ -74,5 +87,5 @@ def save_explainer(tmp_dir: str, explainer: "shap.Explainer") -> str:
     file_path = _explainer_file_path(tmp_dir)
     logger.debug("Saving shap.Explainer model to %s", file_path)
     with open(file_path, "wb") as f:
-        explainer.save(f)
+        explainer.save(f, model_saver="auto", masker_saver="auto")
     return file_path
