@@ -21,6 +21,7 @@ from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.util import convert_numpy
 from modelstore.storage.storage import CloudStorage
+from modelstore.utils.log import logger
 
 MODEL_JOBLIB = "model.joblib"
 
@@ -37,12 +38,12 @@ class SKLearnManager(ModelManager):
 
     @classmethod
     def required_dependencies(cls) -> list:
-        return ["sklearn"]
+        return ["sklearn", "joblib"]
 
     @classmethod
     def optional_dependencies(cls) -> list:
         deps = super().optional_dependencies()
-        return deps + ["Cython", "joblib", "threadpoolctl"]
+        return deps + ["Cython", "threadpoolctl"]
 
     def _required_kwargs(self):
         return ["model"]
@@ -77,13 +78,11 @@ class SKLearnManager(ModelManager):
         return data
 
     def _get_functions(self, **kwargs) -> list:
-        if not self.matches_with(**kwargs):
-            raise TypeError("This model is not an sklearn model!")
-
-        # @Future idea: export/save in onnx format?
-        return [
+        funcs = super()._get_functions(**kwargs)
+        funcs += [
             partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB)
         ]
+        return funcs
 
     def _get_params(self, **kwargs) -> dict:
         """

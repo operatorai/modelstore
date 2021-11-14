@@ -67,7 +67,11 @@ class ModelManager(ABC):
         Returns a list of functions to call to save the model
         and any other required data
         """
-        raise NotImplementedError()
+        if not self.matches_with(**kwargs):
+            raise TypeError(f"This model is not an {self.ml_library} model!")
+        if kwargs.get("explainer_manager") is not None:
+            return kwargs["explainer_manager"]._get_functions(kwargs)
+        return []
 
     def _get_params(self, **kwargs) -> dict:
         """
