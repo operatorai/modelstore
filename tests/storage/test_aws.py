@@ -17,12 +17,19 @@ import os
 import boto3
 import mock
 import pytest
+from botocore.exceptions import ClientError
 from modelstore.storage.aws import AWSStorage
 from moto import mock_s3
+
 # pylint: disable=unused-import
-from tests.storage.test_utils import (TEST_FILE_CONTENTS, TEST_FILE_NAME,
-                                      file_contains_expected_contents,
-                                      remote_file_path, remote_path, temp_file)
+from tests.storage.test_utils import (
+    TEST_FILE_CONTENTS,
+    TEST_FILE_NAME,
+    file_contains_expected_contents,
+    remote_file_path,
+    remote_path,
+    temp_file,
+)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -37,8 +44,17 @@ def moto_boto():
         yield conn
 
 
+def get_file_contents(moto_boto, prefix):
+    return (
+        moto_boto.Object(_MOCK_BUCKET_NAME, prefix)
+        .get()["Body"]
+        .read()
+        .decode("utf-8")
+    )
+
+
 @pytest.fixture
-def aws_model_store():
+def aws_storage():
     return AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
 
 
@@ -59,44 +75,46 @@ def test_create_from_environment_variables(monkeypatch):
         _ = AWSStorage()
 
 
-def test_validate_existing_bucket(aws_model_store):
-    assert aws_model_store.validate()
+def test_validate_existing_bucket(aws_storage):
+    assert aws_storage.validate()
 
 
 def test_validate_missing_bucket():
-    aws_model_store = AWSStorage(bucket_name="missing-bucket")
-    assert not aws_model_store.validate()
+    aws_storage = AWSStorage(bucket_name="missing-bucket")
+    assert not aws_storage.validate()
 
 
-def test_push(temp_file, remote_file_path, moto_boto, aws_model_store):
-    def get_file_contents(prefix):
-        return (
-            moto_boto.Object(_MOCK_BUCKET_NAME, prefix)
-            .get()["Body"]
-            .read()
-            .decode("utf-8")
-        )
-
-    result = aws_model_store._push(temp_file, remote_file_path)
+def test_push(temp_file, remote_file_path, moto_boto, aws_storage):
+    result = aws_storage._push(temp_file, remote_file_path)
     assert result == remote_file_path
-    assert get_file_contents(result) == TEST_FILE_CONTENTS
+    assert get_file_contents(moto_boto, result) == TEST_FILE_CONTENTS
 
 
-def test_pull(temp_file, tmp_path, remote_file_path, aws_model_store):
+def test_pull(temp_file, tmp_path, remote_file_path, aws_storage):
     # Push the file to storage
-    remote_destination = aws_model_store._push(temp_file, remote_file_path)
+    remote_destination = aws_storage._push(temp_file, remote_file_path)
 
     # Pull the file back from storage
     local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
-    result = aws_model_store._pull(remote_destination, tmp_path)
+    result = aws_storage._pull(remote_destination, tmp_path)
     assert result == local_destination
     assert os.path.exists(local_destination)
     assert file_contains_expected_contents(local_destination)
 
 
-def test_read_json_objects_ignores_non_json(
-    tmp_path, remote_path, aws_model_store
-):
+def test_remove(temp_file, moto_boto, remote_file_path, aws_storage):
+    # Push the file to storage
+    remote_destination = aws_storage._push(temp_file, remote_file_path)
+
+    # Remove the file
+    aws_storage._remove(remote_destination)
+
+    # Trying to read the file errors
+    with pytest.raises(ClientError):
+        get_file_contents(moto_boto, remote_file_path)
+
+
+def test_read_json_objects_ignores_non_json(tmp_path, remote_path, aws_storage):
     # Create files with different suffixes
     for file_type in ["txt", "json"]:
         source = os.path.join(tmp_path, f"test-file-source.{file_type}")
@@ -107,32 +125,32 @@ def test_read_json_objects_ignores_non_json(
         remote_destination = os.path.join(
             remote_path, f"test-file-destination.{file_type}"
         )
-        aws_model_store._push(source, remote_destination)
+        aws_storage._push(source, remote_destination)
 
     # Read the json files at the prefix
-    items = aws_model_store._read_json_objects(remote_path)
+    items = aws_storage._read_json_objects(remote_path)
     assert len(items) == 1
 
 
 def test_read_json_object_fails_gracefully(
-    temp_file, remote_file_path, aws_model_store
+    temp_file, remote_file_path, aws_storage
 ):
     # Push a file that doesn't contain JSON to storage
-    remote_path = aws_model_store._push(temp_file, remote_file_path)
+    remote_path = aws_storage._push(temp_file, remote_file_path)
 
     # Read the json files at the prefix
-    item = aws_model_store._read_json_object(remote_path)
+    item = aws_storage._read_json_object(remote_path)
     assert item is None
 
 
-def test_storage_location(aws_model_store, remote_path):
+def test_storage_location(aws_storage, remote_path):
     # Asserts that the location meta data is correctly formatted
     exp = {
         "type": "aws:s3",
         "bucket": _MOCK_BUCKET_NAME,
         "prefix": remote_path,
     }
-    assert aws_model_store._storage_location(remote_path) == exp
+    assert aws_storage._storage_location(remote_path) == exp
 
 
 @pytest.mark.parametrize(
@@ -156,10 +174,10 @@ def test_storage_location(aws_model_store, remote_path):
         ),
     ],
 )
-def test_get_location(aws_model_store, meta_data, should_raise, result):
+def test_get_location(aws_storage, meta_data, should_raise, result):
     # Asserts that pulling the location out of meta data is correct
     if should_raise:
         with pytest.raises(ValueError):
-            aws_model_store._get_storage_location(meta_data)
+            aws_storage._get_storage_location(meta_data)
     else:
-        assert aws_model_store._get_storage_location(meta_data) == result
+        assert aws_storage._get_storage_location(meta_data) == result
