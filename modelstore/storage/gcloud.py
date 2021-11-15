@@ -124,6 +124,9 @@ class GoogleCloudStorage(BlobStorage):
         """ Removes a file from the destination path """
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
+        if not blob.exists():
+            logger.debug("Remote file does not exist: %s", destination)
+            return
         blob.delete()
 
     def _storage_location(self, prefix: str) -> dict:

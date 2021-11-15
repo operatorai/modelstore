@@ -107,6 +107,9 @@ class FileSystemStorage(BlobStorage):
     def _remove(self, destination: str):
         """ Removes a file from the destination path """
         destination = self.relative_dir(destination)
+        if not os.path.exists(destination):
+            logger.debug("Remote file does not exist: %s", destination)
+            return
         os.remove(destination)
 
     def _read_json_objects(self, path: str) -> list:

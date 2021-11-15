@@ -96,7 +96,13 @@ class AWSStorage(BlobStorage):
 
     def _remove(self, destination: str):
         """ Removes a file from the destination path """
-        self.client.delete_object(Bucket=self.bucket_name, Key=destination)
+        try:
+            self.client.head_object(Bucket=self.bucket_name, Key=destination)
+            self.client.delete_object(Bucket=self.bucket_name, Key=destination)
+        except ClientError as e:
+            if int(e.response["Error"]["Code"]) != 404:
+                raise
+            logger.debug("Remote file does not exist: %s", destination)
 
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """

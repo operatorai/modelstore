@@ -122,6 +122,9 @@ class AzureBlobStorage(BlobStorage):
     def _remove(self, destination: str):
         """ Removes a file from the destination path """
         blob_client = self._blob_client(destination)
+        if not blob_client.exists():
+            logger.debug("Remote file does not exist: %s", destination)
+            return
         blob_client.delete_blob()
 
     def _storage_location(self, prefix: str) -> dict:
