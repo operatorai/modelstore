@@ -104,6 +104,10 @@ class FileSystemStorage(BlobStorage):
         shutil.copy(source, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
+    def _remove(self, destination: str):
+        """ Removes a file from the destination path """
+        raise NotImplementedError()
+
     def _read_json_objects(self, path: str) -> list:
         path = self.relative_dir(path)
         if not os.path.exists(path):

@@ -94,6 +94,10 @@ class AWSStorage(BlobStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
+    def _remove(self, destination: str):
+        """ Removes a file from the destination path """
+        raise NotImplementedError()
+
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """
         return {
