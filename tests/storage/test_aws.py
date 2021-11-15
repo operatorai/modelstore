@@ -68,6 +68,9 @@ def test_create_from_environment_variables(monkeypatch):
             _ = AWSStorage()
         except:
             pytest.fail("Failed to initialise storage from env variables")
+
+
+def test_create_fails_with_missing_environment_variables(monkeypatch):
     # Fails when environment variables are missing
     for key in AWSStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
         monkeypatch.delenv(key, raising=False)

@@ -16,11 +16,24 @@ import os
 from unittest import mock
 
 import pytest
-from azure.storage.blob import (BlobClient, BlobProperties, BlobServiceClient,
-                                ContainerClient, StorageStreamDownloader)
+from azure.storage.blob import (
+    BlobClient,
+    BlobProperties,
+    BlobServiceClient,
+    ContainerClient,
+    StorageStreamDownloader,
+)
 from modelstore.storage.azure import AzureBlobStorage
+
 # pylint: disable=unused-import
-from tests.storage.test_utils import temp_file
+from tests.storage.test_utils import (
+    TEST_FILE_CONTENTS,
+    TEST_FILE_NAME,
+    file_contains_expected_contents,
+    remote_file_path,
+    remote_path,
+    temp_file,
+)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -81,6 +94,9 @@ def test_create_from_environment_variables(monkeypatch):
             _ = AzureBlobStorage()
         except:
             pytest.fail("Failed to initialise storage from env variables")
+
+
+def test_create_fails_with_missing_environment_variables(monkeypatch):
     # Fails when environment variables are missing
     for key in AzureBlobStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
         monkeypatch.delenv(key, raising=False)
