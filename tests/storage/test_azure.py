@@ -122,21 +122,32 @@ def test_validate_missing_container(mock_blob_client):
     assert not azure_storage.validate()
 
 
-def test_push(azure_storage, temp_file):
+def test_push(azure_storage, remote_file_path, temp_file):
     # Asserts that pushing a file results in an upload
-    azure_storage._push(temp_file, "destination")
-    blob_client = azure_storage._blob_client("destination")
+    azure_storage._push(temp_file, remote_file_path)
+    blob_client = azure_storage._blob_client(remote_file_path)
     blob_client.upload_blob.assert_called()
 
 
-def test_pull(azure_storage, tmp_path):
+def test_pull(azure_storage, remote_file_path, tmp_path):
     # Asserts that pulling a file results in a download
-    azure_storage._pull("source", tmp_path)
-    blob_client = azure_storage._blob_client("destination")
+    azure_storage._pull(remote_file_path, tmp_path)
+    blob_client = azure_storage._blob_client(remote_file_path)
     blob_client.download_blob.assert_called()
-    with open(os.path.join(tmp_path, "source"), "r") as lines:
+    with open(os.path.join(tmp_path, "test-file.txt"), "r") as lines:
         contents = lines.read()
         assert contents == '{"k": "v"}'
+
+
+def test_remove(temp_file, remote_file_path, azure_storage):
+    # Push the file to storage
+    remote_destination = azure_storage._push(temp_file, remote_file_path)
+
+    # Remove the file
+    azure_storage._remove(remote_destination)
+
+    # Trying to read the file errors
+    # @TODO
 
 
 def test_read_json_objects(azure_storage):
