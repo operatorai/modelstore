@@ -50,7 +50,7 @@ ML_LIBRARIES = {
     "prophet": ProphetManager,
     "pytorch": PyTorchManager,
     "pytorch_lightning": PyTorchLightningManager,
-    "shap": ShapManager,
+    "shap": ShapManager,  # Shap is added here to enable folks to just save an explainer (without a model)
     "sklearn": SKLearnManager,
     "skorch": SkorchManager,
     "tensorflow": TensorflowManager,

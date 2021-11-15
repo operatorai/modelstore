@@ -70,7 +70,9 @@ class ModelManager(ABC):
         if not self.matches_with(**kwargs):
             raise TypeError(f"This model is not an {self.ml_library} model!")
         if kwargs.get("explainer_manager") is not None:
-            return kwargs["explainer_manager"]._get_functions(kwargs)
+            return kwargs["explainer_manager"]._get_functions(
+                explainer=kwargs.get("explainer")
+            )
         return []
 
     def _get_params(self, **kwargs) -> dict:
@@ -78,6 +80,7 @@ class ModelManager(ABC):
         Returns a dictionary containing any model parameters
         that are available
         """
+        # Note: explainer params are currently omitted
         return {}
 
     @abstractmethod
@@ -107,6 +110,10 @@ class ModelManager(ABC):
         model_info = {"library": self.ml_library}
         if "model" in kwargs:
             model_info["type"] = type(kwargs["model"]).__name__
+        if kwargs.get("explainer_manager") is not None:
+            model_info["explainer"] = kwargs["explainer_manager"]._model_info(
+                explainer=kwargs.get("explainer")
+            )
         return model_info
 
     def _get_model_type(self, meta_data: dict) -> str:
