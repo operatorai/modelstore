@@ -121,7 +121,8 @@ class AzureBlobStorage(BlobStorage):
 
     def _remove(self, destination: str):
         """ Removes a file from the destination path """
-        raise NotImplementedError()
+        blob_client = self._blob_client(destination)
+        blob_client.delete_blob()
 
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """

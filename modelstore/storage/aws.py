@@ -96,7 +96,7 @@ class AWSStorage(BlobStorage):
 
     def _remove(self, destination: str):
         """ Removes a file from the destination path """
-        raise NotImplementedError()
+        self.client.delete_object(Bucket=self.bucket_name, Key=destination)
 
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """

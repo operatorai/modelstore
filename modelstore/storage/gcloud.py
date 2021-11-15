@@ -122,7 +122,9 @@ class GoogleCloudStorage(BlobStorage):
 
     def _remove(self, destination: str):
         """ Removes a file from the destination path """
-        raise NotImplementedError()
+        bucket = self.client.get_bucket(self.bucket_name)
+        blob = bucket.blob(destination)
+        blob.delete()
 
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """

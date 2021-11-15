@@ -106,7 +106,8 @@ class FileSystemStorage(BlobStorage):
 
     def _remove(self, destination: str):
         """ Removes a file from the destination path """
-        raise NotImplementedError()
+        destination = self.relative_dir(destination)
+        os.remove(destination)
 
     def _read_json_objects(self, path: str) -> list:
         path = self.relative_dir(path)
