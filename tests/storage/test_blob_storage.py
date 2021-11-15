@@ -228,3 +228,20 @@ def test_set_model_state(mock_blob_storage):
     items = mock_blob_storage.list_versions("domain-1", "production")
     assert len(items) == 1
     assert items[0] == "model-1"
+
+
+def test_unset_model_state(mock_blob_storage):
+    mock_blob_storage.create_model_state("production")
+    mock_blob_storage.set_model_state("domain-1", "model-1", "production")
+
+    # State now exists
+    items = mock_blob_storage.list_versions("domain-1", "production")
+    assert len(items) == 1
+    assert items[0] == "model-1"
+
+    # Unset the state
+    mock_blob_storage.unset_model_state("domain-1", "model-1", "production")
+
+    # State has been removed
+    items = mock_blob_storage.list_versions("domain-1", "production")
+    assert len(items) == 0
