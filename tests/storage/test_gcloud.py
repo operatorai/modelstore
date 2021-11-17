@@ -65,7 +65,7 @@ def gcloud_storage(gcloud_client):
     )
 
 
-def test_create_from_environment_variables(monkeypatch):
+def test_create_from_environment_variables():
     # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ,

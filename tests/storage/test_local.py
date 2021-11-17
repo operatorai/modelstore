@@ -37,7 +37,7 @@ def file_system_storage(tmp_path):
     return FileSystemStorage(root_path=str(tmp_path))
 
 
-def test_create_from_environment_variables(monkeypatch):
+def test_create_from_environment_variables():
     # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ,

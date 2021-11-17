@@ -58,7 +58,7 @@ def aws_storage():
     return AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
 
 
-def test_create_from_environment_variables(monkeypatch):
+def test_create_from_environment_variables():
     # Does not fail when environment variables exist
     with mock.patch.dict(
         os.environ, {"MODEL_STORE_AWS_BUCKET": _MOCK_BUCKET_NAME}
@@ -157,6 +157,8 @@ def test_read_json_object_fails_gracefully(
 
     # Read the json files at the prefix
     item = aws_storage._read_json_object(remote_path)
+
+    # Return None if we can't decode the JSON
     assert item is None
 
 
