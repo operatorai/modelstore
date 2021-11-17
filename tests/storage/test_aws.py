@@ -88,33 +88,47 @@ def test_validate_missing_bucket():
 
 
 def test_push(temp_file, remote_file_path, moto_boto, aws_storage):
+    # Push a file to storage
     result = aws_storage._push(temp_file, remote_file_path)
+
+    # The correct remote prefix is returned
     assert result == remote_file_path
+
+    # The remote file has the right contents
     assert get_file_contents(moto_boto, result) == TEST_FILE_CONTENTS
 
 
 def test_pull(temp_file, tmp_path, remote_file_path, aws_storage):
-    # Push the file to storage
+    # Push a file to storage
     remote_destination = aws_storage._push(temp_file, remote_file_path)
 
     # Pull the file back from storage
     local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
     result = aws_storage._pull(remote_destination, tmp_path)
+
+    # The correct local path is returned
     assert result == local_destination
+
+    # The local file exists, with the right content
     assert os.path.exists(local_destination)
     assert file_contains_expected_contents(local_destination)
 
 
 def test_remove(temp_file, moto_boto, remote_file_path, aws_storage):
-    # Push the file to storage
+    # Push a file to storage
     remote_destination = aws_storage._push(temp_file, remote_file_path)
 
-    # Remove the file
-    aws_storage._remove(remote_destination)
+    # Removing the file returns True
+    assert aws_storage._remove(remote_destination)
 
     # Trying to read the file errors
     with pytest.raises(ClientError):
         get_file_contents(moto_boto, remote_file_path)
+
+
+def test_remove_missing_file(aws_storage):
+    # Removing a file returns False
+    assert not aws_storage._remove("path/to/file/that/does/not/exist.txt")
 
 
 def test_read_json_objects_ignores_non_json(tmp_path, remote_path, aws_storage):

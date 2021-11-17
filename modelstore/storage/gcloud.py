@@ -120,14 +120,15 @@ class GoogleCloudStorage(BlobStorage):
         logger.debug("Finished: %s", destination)
         return destination
 
-    def _remove(self, destination: str):
+    def _remove(self, destination: str) -> bool:
         """ Removes a file from the destination path """
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
         if not blob.exists():
             logger.debug("Remote file does not exist: %s", destination)
-            return
+            return False
         blob.delete()
+        return True
 
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """

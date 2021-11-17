@@ -104,13 +104,14 @@ class FileSystemStorage(BlobStorage):
         shutil.copy(source, destination)
         return os.path.join(os.path.abspath(destination), file_name)
 
-    def _remove(self, destination: str):
+    def _remove(self, destination: str) -> bool:
         """ Removes a file from the destination path """
         destination = self.relative_dir(destination)
         if not os.path.exists(destination):
             logger.debug("Remote file does not exist: %s", destination)
-            return
+            return False
         os.remove(destination)
+        return True
 
     def _read_json_objects(self, path: str) -> list:
         path = self.relative_dir(path)

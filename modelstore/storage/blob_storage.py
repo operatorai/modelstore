@@ -50,7 +50,7 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     @abstractmethod
-    def _remove(self, destination: str):
+    def _remove(self, destination: str) -> bool:
         """ Removes a file from the destination path """
         raise NotImplementedError()
 
@@ -217,6 +217,9 @@ class BlobStorage(CloudStorage):
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_model_path = self._pull(model_path, tmp_dir)
             self._push(local_model_path, model_state_path)
+        logger.debug(
+            "Successfully set %s=%s from %s", domain, model_id, state_name
+        )
 
     def unset_model_state(self, domain: str, model_id: str, state_name: str):
         """ Removes the given model ID from the set that are in the state_name path """
@@ -224,5 +227,7 @@ class BlobStorage(CloudStorage):
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
         model_state_path = self._get_metadata_path(domain, model_id, state_name)
-        # @TODO warn if trying to unset a model from a state it hasn't been set to
-        self._remove(model_state_path)
+        if self._remove(model_state_path):
+            logger.debug(
+                "Successfully unset %s=%s from %s", domain, model_id, state_name
+            )
