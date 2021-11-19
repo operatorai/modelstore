@@ -16,25 +16,14 @@ import os
 from unittest import mock
 
 import pytest
-from azure.storage.blob import (
-    BlobClient,
-    BlobProperties,
-    BlobServiceClient,
-    ContainerClient,
-    StorageStreamDownloader,
-)
+from azure.storage.blob import (BlobClient, BlobProperties, BlobServiceClient,
+                                ContainerClient, StorageStreamDownloader)
 from modelstore.storage.azure import AzureBlobStorage
-
 # pylint: disable=unused-import
-from tests.storage.test_utils import (
-    TEST_FILE_CONTENTS,
-    TEST_FILE_LIST,
-    TEST_FILE_NAME,
-    file_contains_expected_contents,
-    remote_file_path,
-    remote_path,
-    temp_file,
-)
+from tests.storage.test_utils import (TEST_FILE_CONTENTS, TEST_FILE_LIST,
+                                      TEST_FILE_NAME,
+                                      file_contains_expected_contents,
+                                      remote_file_path, remote_path, temp_file)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -189,8 +178,8 @@ def test_remove(file_exists, should_call_delete):
         files_exist=file_exists,
     )
     storage = azure_storage(blob_service_client)
+    prefix = remote_file_path()
     try:
-        prefix = remote_file_path()
         file_removed = storage._remove(prefix)
         blob_client = storage._blob_client(prefix)
         if should_call_delete:
