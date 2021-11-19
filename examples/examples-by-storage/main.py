@@ -76,13 +76,22 @@ def main(modelstore_in):
 
     # Set the first model to the production state
     model_id = list(model_ids.values())[0]
-    demos.set_model_state(modelstore, model_domain, model_id)
+    demos.set_model_state(modelstore, model_domain, model_id, state_name)
 
-    # List the models that are in production
-    demos.list_models_in_domain_with_state(modelstore, model_domain, state_name)
+    # List the models that are in production - the new model is there
+    model_ids = demos.list_models_in_domain_with_state(
+        modelstore, model_domain, state_name
+    )
+    assert model_id in model_ids
 
     # Remove a state from a model
     demos.remove_model_state(modelstore, model_domain, model_id, state_name)
+
+    # List the models that are in production - the removed model is not there
+    model_ids = demos.list_models_in_domain_with_state(
+        modelstore, model_domain, state_name
+    )
+    assert model_id not in model_ids
 
 
 if __name__ == "__main__":
