@@ -46,11 +46,6 @@ class ShapManager(ModelManager):
         }
 
     def matches_with(self, **kwargs) -> bool:
-        # Exclude cases where the user wants to upload a model AND explainer
-        # this use case will be dealt with in other model managers
-        if len(kwargs) > 1:
-            return False
-
         # pylint: disable=import-outside-toplevel
         from shap import Explainer
 

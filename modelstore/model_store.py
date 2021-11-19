@@ -22,6 +22,7 @@ from modelstore.models.managers import (
     iter_libraries,
     matching_manager,
 )
+from modelstore.models.model_and_explainer import ModelAndExplainerManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
@@ -125,6 +126,7 @@ class ModelStore:
         # Supported explainer libraries
         explainer_libraries = []
         for library, manager in iter_explainers(self.storage):
+            object.__setattr__(self, library, manager)
             explainer_libraries.append(manager)
         object.__setattr__(self, "_explainers", explainer_libraries)
 
@@ -144,23 +146,37 @@ class ModelStore:
         return self.storage.list_versions(domain, state_name)
 
     def upload(self, domain: str, **kwargs) -> dict:
-        # pylint: disable=no-member
-        #  Figure out which ML library the kwargs match with
+        # Figure out which ML library (if any) the kwargs match with
         ml_manager = matching_manager(self._ml_libraries, **kwargs)
-        expl_manager = None
-        if "explainer" in kwargs and len(kwargs) != 1:
-            #  If the user is trying to upload a model and an explainer
-            #  figure out which explainer library to match with
-            expl_manager = matching_manager(
-                self._explainers, explainer=kwargs["explainer"]
+
+        # Figure out which explainer library (if any) the kwargs match with
+        expl_manager = matching_manager(self._explainers, **kwargs)
+
+        # If there is no match anywhere, raise a ValueError
+        if all(x is None for x in [ml_manager, expl_manager]):
+            raise ValueError(
+                "Unable to find matching library (check your kwargs?)"
             )
-        # Trigger the upload
-        ml_manager.upload(domain, explainer_manager=expl_manager, **kwargs)
+
+        # If the user is just trying to upload an ML model
+        if expl_manager is None:
+            ml_manager.upload(domain, **kwargs)
+
+        # If the user is just trying to upload an explainer
+        if ml_manager is None:
+            expl_manager.upload(domain, **kwargs)
+
+        # If the user is trying to upload both
+        manager = ModelAndExplainerManager(
+            ml_manager, expl_manager, self.storage
+        )
+        manager.upload(**kwargs)
 
     def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)
         ml_library = meta_data["model"]["model_type"]["library"]
         # @TODO replace for loop with getattr
+        # @TODO check explicitly for ModelAndExplainerManager
         # pylint: disable=no-member
         for manager in self._ml_libraries:
             if manager.ml_library == ml_library:
