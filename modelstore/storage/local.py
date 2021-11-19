@@ -138,7 +138,7 @@ class FileSystemStorage(BlobStorage):
         """ Returns a dict of the location the artifact was stored """
         return {
             "type": "file_system",
-            "path": os.path.abspath(prefix),
+            "path": os.path.abspath(self.relative_dir(prefix)),
         }
 
     def _get_storage_location(self, meta: dict) -> str:

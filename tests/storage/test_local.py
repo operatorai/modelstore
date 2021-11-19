@@ -14,7 +14,6 @@
 import json
 import os
 
-import mock
 import pytest
 from modelstore.storage.local import FileSystemStorage
 
@@ -37,19 +36,13 @@ def file_system_storage(tmp_path):
     return FileSystemStorage(root_path=str(tmp_path))
 
 
-def test_create_from_environment_variables():
+def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
-    with mock.patch.dict(
-        os.environ,
-        {
-            "MODEL_STORE_ROOT": "~",
-        },
-    ):
-        # pylint: disable=bare-except
-        try:
-            _ = FileSystemStorage()
-        except:
-            pytest.fail("Failed to initialise storage from env variables")
+    monkeypatch.setenv("MODEL_STORE_ROOT", "~")
+    try:
+        _ = FileSystemStorage()
+    except:
+        pytest.fail("Failed to initialise storage from env variables")
 
 
 def test_create_fails_with_missing_environment_variables(monkeypatch):
@@ -65,16 +58,16 @@ def test_validate(file_system_storage):
     assert os.path.exists(file_system_storage.root_dir)
 
 
-def test_push(temp_file, remote_file_path, file_system_storage):
-    result = file_system_storage._push(temp_file, remote_file_path)
-    assert result == os.path.join(
-        file_system_storage.root_dir, remote_file_path
-    )
+def test_push(tmp_path, file_system_storage):
+    prefix = remote_file_path()
+    result = file_system_storage._push(temp_file(tmp_path), prefix)
+    assert result == os.path.join(file_system_storage.root_dir, prefix)
 
 
-def test_pull(temp_file, tmp_path, remote_file_path, file_system_storage):
+def test_pull(tmp_path, file_system_storage):
     # Push the file to storage
-    remote_destination = file_system_storage._push(temp_file, remote_file_path)
+    prefix = remote_file_path()
+    remote_destination = file_system_storage._push(temp_file(tmp_path), prefix)
 
     # Pull the file back from storage
     local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
@@ -84,23 +77,39 @@ def test_pull(temp_file, tmp_path, remote_file_path, file_system_storage):
     assert file_contains_expected_contents(local_destination)
 
 
-def test_remove(temp_file, remote_file_path, file_system_storage):
+@pytest.mark.parametrize(
+    "file_exists,should_call_delete",
+    [
+        (
+            False,
+            False,
+        ),
+        (
+            True,
+            True,
+        ),
+    ],
+)
+def test_remove(file_exists, should_call_delete, tmp_path, file_system_storage):
     # Push the file to storage
-    remote_destination = file_system_storage._push(temp_file, remote_file_path)
+    prefix = remote_file_path()
+    if file_exists:
+        file_system_storage._push(temp_file(tmp_path), prefix)
+    try:
+        # Remove the file
+        assert file_system_storage._remove(prefix) == should_call_delete
+        # The file no longer exists
+        assert not os.path.exists(
+            os.path.join(file_system_storage.root_dir, prefix)
+        )
+    except:
+        # Should fail gracefully here
+        pytest.fail("Remove raised an exception")
 
-    # Remove the file
-    file_system_storage._remove(remote_destination)
 
-    # The file no longer exists
-    assert not os.path.exists(
-        os.path.join(file_system_storage.root_dir, remote_file_path)
-    )
-
-
-def test_read_json_objects_ignores_non_json(
-    tmp_path, remote_path, file_system_storage
-):
+def test_read_json_objects_ignores_non_json(tmp_path, file_system_storage):
     # Create files with different suffixes
+    prefix = remote_path()
     for file_type in ["txt", "json"]:
         source = os.path.join(tmp_path, f"test-file-source.{file_type}")
         with open(source, "w") as out:
@@ -108,20 +117,20 @@ def test_read_json_objects_ignores_non_json(
 
         # Push the file to storage
         remote_destination = os.path.join(
-            remote_path, f"test-file-destination.{file_type}"
+            prefix, f"test-file-destination.{file_type}"
         )
         file_system_storage._push(source, remote_destination)
 
     # Read the json files at the prefix
-    items = file_system_storage._read_json_objects(remote_path)
+    items = file_system_storage._read_json_objects(prefix)
     assert len(items) == 1
 
 
-def test_read_json_object_fails_gracefully(
-    temp_file, remote_file_path, file_system_storage
-):
+def test_read_json_object_fails_gracefully(tmp_path, file_system_storage):
     # Push a file that doesn't contain JSON to storage
-    remote_path = file_system_storage._push(temp_file, remote_file_path)
+    remote_path = file_system_storage._push(
+        temp_file(tmp_path, contents="not json"), remote_file_path()
+    )
 
     # Read the json files at the prefix
     item = file_system_storage._read_json_object(remote_path)
@@ -135,12 +144,13 @@ def test_list_versions_missing_domain(file_system_storage):
 
 def test_storage_location(file_system_storage):
     # Asserts that the location meta data is correctly formatted
-    prefix = "/path/to/file"
+    prefix = remote_file_path()
     exp = {
         "type": "file_system",
-        "path": prefix,
+        "path": os.path.join(file_system_storage.root_dir, prefix),
     }
-    assert file_system_storage._storage_location(prefix) == exp
+    result = file_system_storage._storage_location(prefix)
+    assert result == exp
 
 
 @pytest.mark.parametrize(
