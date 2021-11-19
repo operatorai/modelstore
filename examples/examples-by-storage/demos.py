@@ -1,3 +1,5 @@
+import tempfile
+
 from modelstore.model_store import ModelStore
 
 
@@ -33,6 +35,22 @@ def load_models(modelstore: ModelStore, model_domain: str, model_ids: dict):
         print(f"\t  Loading {model_type}={model_id}")
         model = modelstore.load(model_domain, model_id)
         print(f"\t  Loaded a {type(model)} model")
+
+
+def download_models(modelstore: ModelStore, model_domain: str, model_ids: dict):
+    print(f"💡  Downloading models")
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        for model_type, model_id in model_ids.items():
+            print(f"\t  Downloading {model_type}={model_id}")
+            model_path = modelstore.download(tmp_dir, model_domain, model_id)
+            print(f"\t  Downloaded a model to: {model_path}")
+
+
+def download_latest_model(modelstore: ModelStore, model_domain: str):
+    print(f"💡  Downloading latest model")
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        model_path = modelstore.download(tmp_dir, model_domain)
+        print(f"\t  Downloaded latest model to: {model_path}")
 
 
 def create_a_model_state(modelstore: ModelStore, state_name: str):

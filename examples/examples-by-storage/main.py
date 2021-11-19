@@ -67,6 +67,12 @@ def main(modelstore_in):
     # List the models in the diabest-boosting-demo domain
     demos.list_models_in_domain(modelstore, model_domain)
 
+    # Download the models back
+    demos.download_models(modelstore, model_domain, model_ids)
+
+    # Download the latest model
+    demos.download_latest_model(modelstore, model_domain)
+
     # Load models back into memory
     demos.load_models(modelstore, model_domain, model_ids)
 
