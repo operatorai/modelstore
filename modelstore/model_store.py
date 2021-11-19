@@ -167,3 +167,9 @@ class ModelStore:
         That state must already exist (ref: `create_model_state()`)
         """
         return self.storage.set_model_state(domain, model_id, state_name)
+
+    def remove_model_state(self, domain: str, model_id: str, state_name: str):
+        """Removes a model_id from a specific state.
+        This will not error if the model was never set to that state to begin
+        with, but it will if that state does not exist"""
+        return self.storage.unset_model_state(domain, model_id, state_name)

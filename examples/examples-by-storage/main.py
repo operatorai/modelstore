@@ -5,6 +5,7 @@ import time
 
 import click
 
+import demos
 from model import train
 from modelstores import create_model_store
 
@@ -27,8 +28,8 @@ def main(modelstore_in):
     # directory
     tmp_dir = tempfile.mkdtemp()
 
-    # # In this demo, we train two models, so that we can demonstrate
-    # # how modelstore keeps track of uploaded models for us
+    # In this demo, we train two models, so that we can demonstrate
+    # how modelstore keeps track of uploaded models for us
     model_ids = {}
     for model_type in ["sklearn", "xgboost"]:
         print(f"🤖  Training a {model_type} model...")
@@ -60,57 +61,28 @@ def main(modelstore_in):
     # We now have push an additional two models into our store
     # How does modelstore enable you to manage them?
 
-    # List all the domains
-    print(f"✅  Listing existing domains:")
-    domains = modelstore.list_domains()
-    for domain in domains:
-        print(f"\t  Domain: {domain}")
+    # Let's demo all the different things you can do!
+    demos.list_domains(modelstore)
 
     # List the models in the diabest-boosting-demo domain
-    print(f"✅  Listing models for {model_domain}:")
-    versions = modelstore.list_versions(domain=model_domain)
-    for version in versions:
-        print(f"\t  Domain: {model_domain} has model with id={version}")
+    demos.list_models_in_domain(modelstore, model_domain)
 
-    # Download models back
-    print(f"⤵️  Downloading {model_domain} models:")
-    for model_type, model_id in model_ids.items():
-        print(f"\t  Downloading {model_type}={model_id}")
-        target = os.path.join(tmp_dir, f"downloaded-{model_type}-model")
-        os.makedirs(target, exist_ok=True)
-
-        model_path = modelstore.download(
-            local_path=target,
-            domain=model_domain,
-            model_id=model_id,
-        )
-        print(f"\t  Downloaded to: {model_path}")
-
-    # You don't need to download models manually, you can
-    # also load models straight into memory
-    print(f"💡  Loading models into memory")
-    for model_type, model_id in model_ids.items():
-        print(f"\t  Loading {model_type}={model_id}")
-        model = modelstore.load(model_domain, model_id)
-        print(f"\t  Loaded a {type(model)} model")
+    # Load models back into memory
+    demos.load_models(modelstore, model_domain, model_ids)
 
     # Create a new model state
-    state_prod = "production"
-    print(f"✅  Creating model state={state_prod}:")
-    modelstore.create_model_state(state_prod)
+    state_name = "production"
+    demos.create_a_model_state(modelstore, state_name)
 
     # Set the first model to the production state
-    prod_model = list(model_ids.values())[0]
-    print(f"✅  Setting model_id={prod_model} to state={state_prod}:")
-    modelstore.set_model_state(model_domain, prod_model, state_prod)
+    model_id = list(model_ids.values())[0]
+    demos.set_model_state(modelstore, model_domain, model_id)
 
     # List the models that are in production
-    print(
-        f"✅  Listing models for {model_domain} that are in state={state_prod}:"
-    )
-    versions = modelstore.list_versions(model_domain, state_name=state_prod)
-    for version in versions:
-        print(f"\t  Domain: {model_domain} has model with id={version}")
+    demos.list_models_in_domain_with_state(modelstore, model_domain, state_name)
+
+    # Remove a state from a model
+    demos.remove_model_state(modelstore, model_domain, model_id, state_name)
 
 
 if __name__ == "__main__":
