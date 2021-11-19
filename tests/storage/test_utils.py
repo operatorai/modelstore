@@ -11,13 +11,15 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import json
 import os
 
 import pytest
 
 # pylint: disable=redefined-outer-name
 TEST_FILE_NAME = "test-file.txt"
-TEST_FILE_CONTENTS = "expected-contents"
+TEST_FILE_CONTENTS = json.dumps({"k": "v"})
+TEST_FILE_LIST = [f"test-file-{i}.json" for i in range(3)]
 
 
 @pytest.fixture
