@@ -150,7 +150,7 @@ class BlobStorage(CloudStorage):
         if model_id is None:
             model_domain = get_domain_path(domain)
             model_meta = self._read_json_object(model_domain)
-            logger.info("Latest model is: %f", model_meta["model"]["model_id"])
+            logger.info("Latest model is: %s", model_meta["model"]["model_id"])
         else:
             model_meta_path = self._get_metadata_path(domain, model_id)
             # Note: this will fail if the model does not exist (needs a more informative exception)
