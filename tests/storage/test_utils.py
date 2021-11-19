@@ -14,15 +14,12 @@
 import json
 import os
 
-import pytest
-
 # pylint: disable=redefined-outer-name
 TEST_FILE_NAME = "test-file.txt"
 TEST_FILE_CONTENTS = json.dumps({"k": "v"})
 TEST_FILE_LIST = [f"test-file-{i}.json" for i in range(3)]
 
 
-@pytest.fixture
 def temp_file(tmp_path):
     source = os.path.join(tmp_path, TEST_FILE_NAME)
     with open(source, "w") as out:
@@ -36,11 +33,9 @@ def file_contains_expected_contents(file_path):
     return contents == TEST_FILE_CONTENTS
 
 
-@pytest.fixture
 def remote_path():
     return "prefix/to/file/"
 
 
-@pytest.fixture
-def remote_file_path(remote_path):
-    return os.path.join(remote_path, TEST_FILE_NAME)
+def remote_file_path():
+    return os.path.join(remote_path(), TEST_FILE_NAME)

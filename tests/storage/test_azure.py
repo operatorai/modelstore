@@ -124,7 +124,7 @@ def test_create_fails_with_missing_environment_variables(monkeypatch):
         ),
     ],
 )
-def test_validate_existing_container(container_exists, validate_should_pass):
+def test_validate(container_exists, validate_should_pass):
     blob_service_client = mock_blob_service_client(
         container_exists=container_exists,
         files_exist=False,
@@ -133,7 +133,7 @@ def test_validate_existing_container(container_exists, validate_should_pass):
     assert storage.validate() == validate_should_pass
 
 
-def test_push(remote_file_path, temp_file):
+def test_push(tmp_path):
     # Create a mock storage instance
     blob_service_client = mock_blob_service_client(
         container_exists=True,
@@ -142,14 +142,15 @@ def test_push(remote_file_path, temp_file):
     storage = azure_storage(blob_service_client)
 
     # Push a file to storage
-    storage._push(temp_file, remote_file_path)
+    prefix = remote_file_path()
+    storage._push(temp_file(tmp_path), prefix)
 
     # Asserts that pushing a file results in an upload
-    blob_client = storage._blob_client(remote_file_path)
+    blob_client = storage._blob_client(prefix)
     blob_client.upload_blob.assert_called()
 
 
-def test_pull(remote_file_path, tmp_path):
+def test_pull(tmp_path):
     # Create a mock storage instance
     blob_service_client = mock_blob_service_client(
         container_exists=True,
@@ -158,11 +159,13 @@ def test_pull(remote_file_path, tmp_path):
     storage = azure_storage(blob_service_client)
 
     # Pull a file from storage
-    result = storage._pull(remote_file_path, tmp_path)
+    prefix = remote_file_path()
+    result = storage._pull(prefix, tmp_path)
 
     # Asserts that pulling a file results in a download
-    blob_client = storage._blob_client(remote_file_path)
+    blob_client = storage._blob_client(prefix)
     blob_client.download_blob.assert_called()
+    assert os.path.exists(result)
     assert file_contains_expected_contents(result)
 
 
@@ -179,7 +182,7 @@ def test_pull(remote_file_path, tmp_path):
         ),
     ],
 )
-def test_remove(remote_file_path, file_exists, should_call_delete):
+def test_remove(file_exists, should_call_delete):
     # Create a mock storage instance
     blob_service_client = mock_blob_service_client(
         container_exists=True,
@@ -187,8 +190,9 @@ def test_remove(remote_file_path, file_exists, should_call_delete):
     )
     storage = azure_storage(blob_service_client)
     try:
-        file_removed = storage._remove(remote_file_path)
-        blob_client = storage._blob_client(remote_file_path)
+        prefix = remote_file_path()
+        file_removed = storage._remove(prefix)
+        blob_client = storage._blob_client(prefix)
         if should_call_delete:
             assert file_removed
             # Asserts that removing the file results in a removal
