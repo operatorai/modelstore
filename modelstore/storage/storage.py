@@ -88,3 +88,8 @@ class CloudStorage(ABC):
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """ Sets the given model ID to the given state """
         raise NotImplementedError()
+
+    @abstractmethod
+    def unset_model_state(self, domain: str, model_id: str, state_name: str):
+        """ Removes the given model ID from the set that are in the state_name path """
+        raise NotImplementedError()

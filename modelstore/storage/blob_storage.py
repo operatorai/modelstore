@@ -50,6 +50,11 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     @abstractmethod
+    def _remove(self, destination: str) -> bool:
+        """ Removes a file from the destination path """
+        raise NotImplementedError()
+
+    @abstractmethod
     def _read_json_objects(self, path: str) -> list:
         """ Returns a list of all the JSON in a path """
         raise NotImplementedError()
@@ -203,12 +208,26 @@ class BlobStorage(CloudStorage):
             self._push(version_path, get_model_state_path(state_name))
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
-        """ Adds the given model ID the set that are in the state_name path """
+        """ Adds the given model ID to the set that are in the state_name path """
         if not self.state_exists(state_name):
             logger.debug("Model state '%s' does not exist", state_name)
-            raise Exception(f"State '{state_name}' does not exist")
+            raise ValueError(f"State '{state_name}' does not exist")
         model_path = self._get_metadata_path(domain, model_id)
         model_state_path = self._get_metadata_path(domain, model_id, state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_model_path = self._pull(model_path, tmp_dir)
             self._push(local_model_path, model_state_path)
+        logger.debug(
+            "Successfully set %s=%s from %s", domain, model_id, state_name
+        )
+
+    def unset_model_state(self, domain: str, model_id: str, state_name: str):
+        """ Removes the given model ID from the set that are in the state_name path """
+        if not self.state_exists(state_name):
+            logger.debug("Model state '%s' does not exist", state_name)
+            raise ValueError(f"State '{state_name}' does not exist")
+        model_state_path = self._get_metadata_path(domain, model_id, state_name)
+        if self._remove(model_state_path):
+            logger.debug(
+                "Successfully unset %s=%s from %s", domain, model_id, state_name
+            )

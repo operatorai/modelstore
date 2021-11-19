@@ -119,6 +119,15 @@ class AzureBlobStorage(BlobStorage):
         logger.debug("Finished: %s", destination)
         return target
 
+    def _remove(self, destination: str) -> bool:
+        """ Removes a file from the destination path """
+        blob_client = self._blob_client(destination)
+        if not blob_client.exists():
+            logger.debug("Remote file does not exist: %s", destination)
+            return False
+        blob_client.delete_blob()
+        return True
+
     def _storage_location(self, prefix: str) -> dict:
         """ Returns a dict of the location the artifact was stored """
         return {

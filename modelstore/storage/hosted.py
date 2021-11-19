@@ -112,7 +112,7 @@ class HostedStorage(CloudStorage):
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
         """ Returns a model's meta data """
-        # @TODO coming soon
+        # @TODO Future
         raise NotImplementedError()
 
     def download(self, local_path: str, domain: str, model_id: str = None):
@@ -124,12 +124,17 @@ class HostedStorage(CloudStorage):
 
     def create_model_state(self, state_name: str):
         """ Creates a state label that can be used to tag models """
-        # @TODO coming soon
+        # @TODO Future
         raise NotImplementedError()
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """ Adds the given model ID the set that are in the state_name path """
-        # @TODO coming soon
+        # @TODO Future
+        raise NotImplementedError()
+
+    def unset_model_state(self, domain: str, model_id: str, state_name: str):
+        """ Removes the given model ID from the set that are in the state_name path """
+        # @TODO Future
         raise NotImplementedError()
 
 
