@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import json
 import os
 from functools import partial
 from typing import Any
@@ -59,9 +60,9 @@ class SKLearnManager(ModelManager):
         except ImportError:
             pass
 
-        import sklearn
+        from sklearn.base import BaseEstimator
 
-        return isinstance(kwargs.get("model"), sklearn.base.BaseEstimator)
+        return isinstance(kwargs.get("model"), BaseEstimator)
 
     def _model_data(self, **kwargs) -> dict:
         data = {}
@@ -90,15 +91,20 @@ class SKLearnManager(ModelManager):
         that are available
         https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator.get_params
         """
-        params = kwargs["model"].get_params()
-        # Pipelines contain a ton of things that are not JSON serializable
-        # the same params exist separately in get_params(), so we just drop
-        # the bits that could not be serialized
-        if "steps" in params:
-            for key, _ in params["steps"]:
-                params.pop(key, None)
-            params.pop("steps", None)
-        return convert_numpy(params)
+        from sklearn.pipeline import Pipeline
+
+        if isinstance(kwargs.get("model"), Pipeline):
+            # Pipelines contain a ton of things that are not JSON serializable
+            # the same params exist separately in get_params(), so we just drop
+            # the bits that could not be serialized
+            return {}
+        try:
+            params = kwargs["model"].get_params()
+            # Check if params is json serializable
+            json.dumps(params)
+            return params
+        except TypeError:
+            return {}
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # @Future: check if loading into same version of joblib

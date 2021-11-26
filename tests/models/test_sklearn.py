@@ -24,10 +24,11 @@ from modelstore.models.sklearn import (
     SKLearnManager,
     _feature_importances,
 )
+from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
@@ -132,9 +133,6 @@ def test_get_functions(sklearn_manager, sklearn_tree):
     [
         RandomForestRegressor,
         LogisticRegression,
-        partial(
-            Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]
-        ),
     ],
 )
 def test_get_params(sklearn_manager, model_type):
@@ -143,6 +141,25 @@ def test_get_params(sklearn_manager, model_type):
         json.dumps(result)
     except Exception as e:
         pytest.fail(f"Exception when dumping params: {str(e)}")
+
+
+def test_get_params_from_pipeline(sklearn_manager):
+    pipeline = Pipeline(
+        steps=[
+            (
+                "preprocessor",
+                ColumnTransformer(
+                    transformers=[
+                        ("cat", OneHotEncoder(), ["columns"]),
+                    ],
+                    remainder="passthrough",
+                ),
+            ),
+            ("classifier", RandomForestRegressor()),
+        ]
+    )
+    result = sklearn_manager._get_params(model=pipeline)
+    assert result == {}
 
 
 def test_feature_importances_tree_model(sklearn_tree, classification_data):
