@@ -46,7 +46,7 @@ class PyTorchManager(ModelManager):
         return deps + ["torchvision"]
 
     def _required_kwargs(self):
-        return ["model", "optimizer"]
+        return ["model"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel

@@ -97,7 +97,7 @@ def test_model_data(pytorch_manager, pytorch_model):
 
 
 def test_required_kwargs(pytorch_manager):
-    assert pytorch_manager._required_kwargs() == ["model", "optimizer"]
+    assert pytorch_manager._required_kwargs() == ["model"]
 
 
 def test_matches_with(pytorch_manager, pytorch_model, pytorch_optim):
