@@ -59,13 +59,18 @@ class FastAIManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
-        from fastai.learner import Learner
+        import fastai
+
+        if fastai.__version__.startswith("1.0"):
+            from fastai.basic_train import Learner
+        else:
+            from fastai.learner import Learner
 
         return isinstance(kwargs.get("learner"), Learner)
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
-            raise TypeError("learner is not a fastai.learner.Learner!")
+            raise TypeError("learner is not a fastai Learner!")
 
         return [
             partial(_save_model, learner=kwargs["learner"]),
@@ -74,9 +79,13 @@ class FastAIManager(ModelManager):
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
-        from fastai.learner import load_learner
-
         model_file = _model_file_path(model_path)
+        version = meta_data["code"]["dependencies"]["fastai"]
+        if version.startswith("1.0"):
+            from fastai.basic_train import load_learner
+        else:
+            from fastai.learner import load_learner
+
         return load_learner(model_file)
 
 
