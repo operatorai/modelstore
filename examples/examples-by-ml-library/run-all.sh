@@ -11,4 +11,3 @@ do
 		echo "\n ✅  Finished running the $framework example in $backend."
 	done
 done
-
