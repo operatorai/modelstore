@@ -48,18 +48,36 @@ class PyTorchManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
-    def matches_with(self, **kwargs) -> bool:
-        # pylint: disable=import-outside-toplevel
+    def _is_pytorch_lightning(self, **kwargs) -> bool:
         try:
+            # pylint: disable=import-outside-toplevel
             from pytorch_lightning import LightningModule
 
             # pytorch_lightning models are pytorch models
             # but we want to upload them using the pytorch_lightning manager
             # we therefore check specifically for this case
-            if isinstance(kwargs.get("model"), LightningModule):
-                return False
-        except ImportError:
-            pass
+            return isinstance(kwargs.get("model"), LightningModule)
+        except (ImportError, ValueError):
+            False
+
+    def _is_transformers(self, **kwargs) -> bool:
+        try:
+            # pylint: disable=import-outside-toplevel
+            import transformers
+
+            # transformer models are pytorch models
+            # but we want to upload them using the transformer manager
+            # we therefore check specifically for this case
+            return isinstance(kwargs.get("model"), transformers.PreTrainedModel)
+        except (ImportError, ValueError):
+            False
+
+    def matches_with(self, **kwargs) -> bool:
+        # pylint: disable=import-outside-toplevel
+        if self._is_pytorch_lightning(**kwargs):
+            return False
+        if self._is_transformers(**kwargs):
+            return False
 
         import torch
 
