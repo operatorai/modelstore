@@ -17,6 +17,7 @@ from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
+from modelstore.utils.log import logger
 
 # pylint disable=import-outside-toplevel
 MODEL_DIRECTORY = "transformers"
@@ -43,15 +44,15 @@ class TransformersManager(ModelManager):
         return deps + ["torch", "tensorflow"]
 
     def _required_kwargs(self):
-        return ["model", "tokenizer"]
+        return ["model", "tokenizer", "config"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
         import transformers
 
         return (
-            isinstance(kwargs.get("config"), transformers.PretrainedConfig)
-            and isinstance(kwargs.get("model"), transformers.PreTrainedModel)
+            isinstance(kwargs.get("model"), transformers.PreTrainedModel)
+            and isinstance(kwargs.get("config"), transformers.PretrainedConfig)
             and isinstance(
                 kwargs.get("tokenizer"), transformers.PreTrainedTokenizerBase
             )
@@ -88,14 +89,8 @@ class TransformersManager(ModelManager):
 
         model_dir = _get_model_directory(model_path)
         model = AutoModel.from_pretrained(model_dir)
-        try:
-            config = AutoConfig.from_pretrained(model_dir)
-        except OSError:
-            config = None
-        try:
-            tokenizer = AutoTokenizer.from_pretrained(model_dir)
-        except OSError:
-            tokenizer = None
+        config = AutoConfig.from_pretrained(model_dir)
+        tokenizer = AutoTokenizer.from_pretrained(model_dir)
         return model, tokenizer, config
 
 
@@ -109,11 +104,10 @@ def _save_transformers(
     model: "transformers.PreTrainedModel",
     tokenizer: "transformers.PreTrainedTokenizerBase",
 ) -> str:
-
     model_dir = _get_model_directory(tmp_dir)
+    os.makedirs(model_dir)
+
     model.save_pretrained(model_dir)
-    if config is not None:
-        config.save_pretrained(model_dir)
-    if tokenizer is not None:
-        tokenizer.save_pretrained(model_dir)
+    config.save_pretrained(model_dir)
+    tokenizer.save_pretrained(model_dir)
     return model_dir
