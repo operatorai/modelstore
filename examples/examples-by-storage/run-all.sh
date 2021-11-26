@@ -1,5 +1,5 @@
 set -e
-backends=( filesystem aws azure gcloud hosted )
+backends=( filesystem aws azure gcloud )
 
 for backend in "${backends[@]}"
 do
