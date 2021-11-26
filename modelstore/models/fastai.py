@@ -18,6 +18,7 @@ from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
+from modelstore.utils.log import logger
 
 LEARNER_DIRECTORY = "learner"
 LEARNER_FILE = "learner.pkl"
@@ -59,13 +60,18 @@ class FastAIManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
-        from fastai.learner import Learner
+        import fastai
+
+        if fastai.__version__.startswith("1.0"):
+            from fastai.basic_train import Learner
+        else:
+            from fastai.learner import Learner
 
         return isinstance(kwargs.get("learner"), Learner)
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
-            raise TypeError("learner is not a fastai.learner.Learner!")
+            raise TypeError("learner is not a fastai Learner!")
 
         return [
             partial(_save_model, learner=kwargs["learner"]),
@@ -74,7 +80,20 @@ class FastAIManager(ModelManager):
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
-        from fastai.learner import load_learner
+        import fastai
+
+        if fastai.__version__.startswith("1.0"):
+            from fastai.basic_train import load_learner
+        else:
+            from fastai.learner import load_learner
+
+        version = meta_data["code"].get("dependencies", {}).get("fastai", "?")
+        if version != fastai.__version__:
+            logger.warn(
+                "Model was saved with fastai==%s, trying to load it with fastai==%s",
+                version,
+                fastai.__version__,
+            )
 
         model_file = _model_file_path(model_path)
         return load_learner(model_file)

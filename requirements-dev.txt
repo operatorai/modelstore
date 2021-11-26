@@ -25,7 +25,7 @@ pystan==2.19.1.1 # required to be installed before prophet
 # Machine Learning
 annoy==1.17.0
 catboost==0.24.3
-fastai==2.2.7
+fastai==2.2.7  # Note: 1.0.61 has different import paths!
 gensim==4.0.1
 Keras-Preprocessing==1.1.2
 lightgbm==3.1.1
