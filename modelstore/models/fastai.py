@@ -18,6 +18,7 @@ from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
+from modelstore.utils.log import logger
 
 LEARNER_DIRECTORY = "learner"
 LEARNER_FILE = "learner.pkl"
@@ -79,13 +80,22 @@ class FastAIManager(ModelManager):
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
-        model_file = _model_file_path(model_path)
-        version = meta_data["code"]["dependencies"]["fastai"]
-        if version.startswith("1.0"):
+        import fastai
+
+        if fastai.__version__.startswith("1.0"):
             from fastai.basic_train import load_learner
         else:
             from fastai.learner import load_learner
 
+        version = meta_data["code"].get("dependencies", {}).get("fastai", "?")
+        if version != fastai.__version__:
+            logger.warn(
+                "Model was saved with fastai==%s, trying to load it with fastai==%s",
+                version,
+                fastai.__version__,
+            )
+
+        model_file = _model_file_path(model_path)
         return load_learner(model_file)
 
 
