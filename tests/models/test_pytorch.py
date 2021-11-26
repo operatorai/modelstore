@@ -148,6 +148,18 @@ def test_save_state_dict(pytorch_model, pytorch_optim, tmp_path):
     assert_models_equal(pytorch_model, model)
 
 
+def test_save_state_dict_without_optimizer(pytorch_model, tmp_path):
+    exp = os.path.join(tmp_path, "checkpoint.pt")
+    file_path = _save_state_dict(tmp_path, pytorch_model)
+    assert file_path == exp
+
+    state_dict = torch.load(file_path)
+    model = ExampleNet()
+
+    model.load_state_dict(state_dict["model_state_dict"])
+    assert_models_equal(pytorch_model, model)
+
+
 def test_load_model(tmp_path, pytorch_manager, pytorch_model):
     # Save the model to a tmp directory
     torch.save(pytorch_model, os.path.join(tmp_path, MODEL_PT))
