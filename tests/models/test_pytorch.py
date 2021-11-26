@@ -97,7 +97,7 @@ def test_model_data(pytorch_manager, pytorch_model):
 
 
 def test_required_kwargs(pytorch_manager):
-    assert pytorch_manager._required_kwargs() == ["model", "optimizer"]
+    assert pytorch_manager._required_kwargs() == ["model"]
 
 
 def test_matches_with(pytorch_manager, pytorch_model, pytorch_optim):
@@ -139,6 +139,18 @@ def test_save_model(pytorch_model, tmp_path):
 def test_save_state_dict(pytorch_model, pytorch_optim, tmp_path):
     exp = os.path.join(tmp_path, "checkpoint.pt")
     file_path = _save_state_dict(tmp_path, pytorch_model, pytorch_optim)
+    assert file_path == exp
+
+    state_dict = torch.load(file_path)
+    model = ExampleNet()
+
+    model.load_state_dict(state_dict["model_state_dict"])
+    assert_models_equal(pytorch_model, model)
+
+
+def test_save_state_dict_without_optimizer(pytorch_model, tmp_path):
+    exp = os.path.join(tmp_path, "checkpoint.pt")
+    file_path = _save_state_dict(tmp_path, pytorch_model)
     assert file_path == exp
 
     state_dict = torch.load(file_path)

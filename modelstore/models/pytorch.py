@@ -13,7 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
-from typing import Any
+from typing import Any, Optional
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.util import convert_numpy, convert_tensors
@@ -46,15 +46,19 @@ class PyTorchManager(ModelManager):
         return deps + ["torchvision"]
 
     def _required_kwargs(self):
-        return ["model", "optimizer"]
+        return ["model"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
         import torch
 
-        return isinstance(kwargs.get("model"), torch.nn.Module) and isinstance(
-            kwargs.get("optimizer"), torch.optim.Optimizer
-        )
+        if isinstance(kwargs.get("model"), torch.nn.Module):
+            if "optimizer" in kwargs:
+                return isinstance(
+                    kwargs.get("optimizer"), torch.optim.Optimizer
+                )
+            return True
+        return False
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
@@ -63,7 +67,7 @@ class PyTorchManager(ModelManager):
             partial(
                 _save_state_dict,
                 model=kwargs["model"],
-                optimizer=kwargs["optimizer"],
+                optimizer=kwargs.get("optimizer"),
             ),
             partial(_save_model, model=kwargs["model"]),
         ]
@@ -86,19 +90,19 @@ def _get_model_path(parent_dir: str) -> str:
 
 
 def _save_state_dict(
-    tmp_dir: str, model: "nn.Module", optimizer: "optim.Optimizer"
+    tmp_dir: str,
+    model: "nn.Module",
+    optimizer: Optional["optim.Optimizer"] = None,
 ) -> str:
     # pylint: disable=import-outside-toplevel
     import torch
 
     file_path = os.path.join(tmp_dir, MODEL_CHECKPOINT)
-    torch.save(
-        {
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-        },
-        file_path,
-    )
+    state_dict = {"model_state_dict": model.state_dict()}
+    if optimizer is not None:
+        state_dict["optimizer_state_dict"] = optimizer.state_dict()
+
+    torch.save(state_dict, file_path)
     return file_path
 
 

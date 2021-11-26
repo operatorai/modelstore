@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+🐛  Updated the library so that PyTorch models can be uploaded [without an optimizer](https://github.com/operatorai/modelstore/issues/94).
+
 🐛  Fixed [a logging bug when trying to download the latest model](https://github.com/operatorai/modelstore/issues/91) in a domain - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who found the issue.
 
 🆕   Added support for uploading [unsetting model states](https://github.com/operatorai/modelstore/issues/82) - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who opened an issue about this.
