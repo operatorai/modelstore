@@ -50,6 +50,17 @@ class PyTorchManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
+        try:
+            from pytorch_lightning import LightningModule
+
+            # pytorch_lightning models are pytorch models
+            # but we want to upload them using the pytorch_lightning manager
+            # we therefore check specifically for this case
+            if isinstance(kwargs.get("model"), LightningModule):
+                return False
+        except ImportError:
+            pass
+
         import torch
 
         if isinstance(kwargs.get("model"), torch.nn.Module):
@@ -73,9 +84,11 @@ class PyTorchManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        params = kwargs["optimizer"].state_dict()
-        params = convert_numpy(params)
-        return convert_tensors(params)
+        if "optimizer" in kwargs:
+            params = kwargs["optimizer"].state_dict()
+            params = convert_numpy(params)
+            return convert_tensors(params)
+        return {}
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
