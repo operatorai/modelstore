@@ -1,5 +1,5 @@
 set -e
-backends=( filesystem aws azure gcloud hosted )
+backends=( filesystem aws azure gcloud )
 frameworks=( annoy catboost fastai file gensim keras lightgbm mxnet onnx prophet pytorch pytorch-lightning sklearn tensorflow transformers xgboost )
 
 for framework in "${frameworks[@]}"
@@ -11,4 +11,3 @@ do
 		echo "\n ✅  Finished running the $framework example in $backend."
 	done
 done
-

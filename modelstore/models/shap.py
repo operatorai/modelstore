@@ -12,14 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import pickle
 from functools import partial
 from typing import Any
 
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
-from modelstore.utils.log import logger
 
 EXPLAINER_FILE = "explainer.joblib"
 

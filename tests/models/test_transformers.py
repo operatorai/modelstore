@@ -91,7 +91,7 @@ def test_model_data(tr_manager, tr_model):
 
 
 def test_required_kwargs(tr_manager):
-    assert tr_manager._required_kwargs() == ["model", "tokenizer"]
+    assert tr_manager._required_kwargs() == ["model", "tokenizer", "config"]
 
 
 def test_matches_with(tr_manager, tr_config, tr_model, tr_tokenizer):
@@ -135,13 +135,13 @@ def test_save_transformers(tr_config, tr_model, tr_tokenizer, tmp_path):
 
     # Validate model
     model = AutoModelForSequenceClassification.from_pretrained(
-        file_path,
+        exp,
         config=tr_config,
     )
     assert isinstance(model, DistilBertForSequenceClassification)
 
     # Validate tokenizer
-    token = AutoTokenizer.from_pretrained(file_path)
+    token = AutoTokenizer.from_pretrained(exp)
     assert isinstance(token, PreTrainedTokenizerFast)
 
 

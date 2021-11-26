@@ -16,7 +16,7 @@ pyenv-local: pyenv-uninstall pyenv
 
 pyenv-test: pyenv-uninstall pyenv
 	pip uninstall -y modelstore
-	pip install -i https://test.pypi.org/simple/ modelstore==0.0.71
+	pip install --no-cache-dir -i https://test.pypi.org/simple/ modelstore==0.0.72
 
 pyenv-prod: pyenv-uninstall pyenv
 	pip uninstall -y modelstore
@@ -28,4 +28,4 @@ pyenv-uninstall:
 refresh:
 	pip install --upgrade pip setuptools wheel	
 	pip uninstall -y modelstore
-	pip install -e $(REPO_ROOT)
+	pip install --no-cache-dir -e $(REPO_ROOT)

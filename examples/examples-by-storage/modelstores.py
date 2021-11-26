@@ -9,7 +9,6 @@ def create_model_store(backend) -> ModelStore:
         "azure": create_azure_model_store,
         "gcloud": create_gcloud_model_store,
         "filesystem": create_file_system_model_store,
-        "hosted": create_hosted_model_store,
     }
     return modelstores[backend]()
 
@@ -47,10 +46,3 @@ def create_file_system_model_store() -> ModelStore:
     home_dir = os.path.expanduser("~")
     print(f"🏦  Creating store in: {home_dir}")
     return ModelStore.from_file_system(root_directory=home_dir)
-
-
-def create_hosted_model_store() -> ModelStore:
-    # To use the hosted model store, you need an API key id and secret
-    # They can either be passed into this constructor, or stored as environment
-    # variables
-    return ModelStore.from_api_key()

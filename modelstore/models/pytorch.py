@@ -48,8 +48,37 @@ class PyTorchManager(ModelManager):
     def _required_kwargs(self):
         return ["model"]
 
+    def _is_pytorch_lightning(self, **kwargs) -> bool:
+        try:
+            # pylint: disable=import-outside-toplevel
+            from pytorch_lightning import LightningModule
+
+            # pytorch_lightning models are pytorch models
+            # but we want to upload them using the pytorch_lightning manager
+            # we therefore check specifically for this case
+            return isinstance(kwargs.get("model"), LightningModule)
+        except (ImportError, ValueError):
+            False
+
+    def _is_transformers(self, **kwargs) -> bool:
+        try:
+            # pylint: disable=import-outside-toplevel
+            import transformers
+
+            # transformer models are pytorch models
+            # but we want to upload them using the transformer manager
+            # we therefore check specifically for this case
+            return isinstance(kwargs.get("model"), transformers.PreTrainedModel)
+        except (ImportError, ValueError):
+            False
+
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
+        if self._is_pytorch_lightning(**kwargs):
+            return False
+        if self._is_transformers(**kwargs):
+            return False
+
         import torch
 
         if isinstance(kwargs.get("model"), torch.nn.Module):
@@ -73,9 +102,11 @@ class PyTorchManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        params = kwargs["optimizer"].state_dict()
-        params = convert_numpy(params)
-        return convert_tensors(params)
+        if "optimizer" in kwargs:
+            params = kwargs["optimizer"].state_dict()
+            params = convert_numpy(params)
+            return convert_tensors(params)
+        return {}
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
