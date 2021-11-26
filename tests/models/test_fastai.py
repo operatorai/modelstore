@@ -140,7 +140,9 @@ def test_load_model(tmp_path, fai_manager, fai_learner, classification_row):
     fai_learner.export(LEARNER_FILE)
 
     #  Load the model
-    loaded_learner = fai_manager.load(tmp_path, {})
+    loaded_learner = fai_manager.load(
+        tmp_path, {"code": {"dependencies": {"fastai": "2.2.7"}}}
+    )
 
     # Expect the two to be the same
     assert_models_equal(fai_learner, loaded_learner, classification_row)

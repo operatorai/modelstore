@@ -18,7 +18,7 @@
 
 🆕  Added [Prophet](https://facebook.github.io/prophet/) support.
 
-🆕 Need to upload additional files alongside your model? You can now use the extras= kwarg in modelstore.upload() to point modelstore to a file (or list of files) to upload as well.
+🆕 Need to upload additional files alongside your model? You can now use the `extras=` kwarg in `modelstore.upload()` to point modelstore to a file (or list of files) to upload as well.
 
 ## modelstore 0.0.71
 
