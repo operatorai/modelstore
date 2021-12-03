@@ -21,7 +21,7 @@ from modelstore.models.xgboost import XGBoostManager
 
 def test_iter_libraries():
     mgrs = {library: manager for library, manager in managers.iter_libraries()}
-    assert len(mgrs) == 17
+    assert len(mgrs) == 18
     assert isinstance(mgrs["sklearn"], SKLearnManager)
     assert isinstance(mgrs["pytorch"], PyTorchManager)
     assert isinstance(mgrs["xgboost"], XGBoostManager)
