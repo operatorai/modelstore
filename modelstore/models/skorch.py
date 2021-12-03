@@ -90,9 +90,7 @@ def save_params(tmp_dir: str, model: "skorch.NeuralNet") -> str:
     during training in the classes_ attribute. This attribute will be missing after
     load_params(). Therefore, if you need it, you should pickle.dump() the whole net.
     """
-
     # pylint: disable=import-outside-toplevel
-
     file_path = _model_file_path(tmp_dir)
     logger.debug("Saving skorch model to %s", file_path)
     model.save_params(f_params=file_path)
