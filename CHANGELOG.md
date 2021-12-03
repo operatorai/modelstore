@@ -1,5 +1,9 @@
 # Change log
 
+## Unreleased
+
+🆕   Added support for uploading [skorch](https://github.com/skorch-dev/skorch) models
+
 ## modelstore 0.0.72
 
 🐛  Saving complex sklearn pipelines was [raising a TypeError](https://github.com/operatorai/modelstore/issues/96). This is because the `get_params()` function, which `modelstore` uses to save meta data about the model, returns a lot of things that are not JSON serializable. For now, I've patched this by not returning metadata for `sklearn.pipeline.Pipeline` models.
