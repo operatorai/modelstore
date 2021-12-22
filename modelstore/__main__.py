@@ -23,13 +23,18 @@ def download_model():
     pass
 
 
+@click.group()
+def upload_model():
+    pass
+
+
 @download_model.command()
 @click.argument("domain", type=str, required=True)
 @click.argument("model_id", type=str, required=True)
 @click.argument("parent_dir", type=str, required=False, default=None)
 def download(domain: str, model_id: str, parent_dir: str):
     """Download a model from the modelstore. Usage:\n
-    ❯ python -m modelstore <domain> <model-id> <parent-directory>
+    ❯ python -m modelstore download <domain> <model-id> <parent-directory>
     """
     try:
         target_dir = (
@@ -52,7 +57,27 @@ def download(domain: str, model_id: str, parent_dir: str):
         raise
 
 
-cli = click.CommandCollection(sources=[download_model])
+@upload_model.command()
+@click.argument("domain", type=str, required=True)
+@click.argument("model", type=click.Path(exists=True))
+def upload(domain: str, model: str):
+    """Upload a model to the modelstore. Usage:\n
+    ❯ python -m modelstore upload <domain> /path/to/file
+    """
+    try:
+        model_store = modelstorecli.model_store_from_env()
+        meta_data = model_store.upload(domain, model=model)
+        model_id = meta_data["model"]["model_id"]
+        modelstorecli.success(f"✅  Uploaded: {domain}={model_id}")
+    except SystemExit:
+        # Failed to instantiate a model store from environment variables
+        pass
+    except:
+        modelstorecli.failure("❌  Failed to upload model:")
+        raise
+
+
+cli = click.CommandCollection(sources=[download_model, upload_model])
 
 if __name__ == "__main__":
     cli()
