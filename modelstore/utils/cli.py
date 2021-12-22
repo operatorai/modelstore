@@ -5,15 +5,22 @@ from enum import Enum
 import click
 from modelstore import ModelStore
 from modelstore.storage.aws import AWSStorage
+from modelstore.storage.azure import AzureBlobStorage
 from modelstore.storage.gcloud import GoogleCloudStorage
-from modelstore.storage.hosted import HostedStorage
 from modelstore.storage.local import FileSystemStorage
 
 STORAGE_TYPES = {
     AWSStorage.NAME: AWSStorage,
+    AzureBlobStorage.NAME: AzureBlobStorage,
     GoogleCloudStorage.NAME: GoogleCloudStorage,
-    HostedStorage.NAME: HostedStorage,
     FileSystemStorage.NAME: FileSystemStorage,
+}
+
+MODEL_STORE_TYPES = {
+    AWSStorage.NAME: ModelStore.from_aws_s3,
+    AzureBlobStorage.NAME: ModelStore.from_azure,
+    GoogleCloudStorage.NAME: ModelStore.from_gcloud,
+    FileSystemStorage.NAME: ModelStore.from_file_system,
 }
 
 
@@ -31,7 +38,7 @@ class MessageStatus(Enum):
 
 
 def _echo(message: str, status: MessageStatus):
-    click.echo(click.style(message, fg=status.value))
+    click.echo(click.style(message, fg=status.value), err=True)
 
 
 def success(message: str):
@@ -78,4 +85,5 @@ def model_store_from_env() -> ModelStore:
 
     storage_type = STORAGE_TYPES[storage_name]
     assert_environ_exists(storage_name, storage_type.BUILD_FROM_ENVIRONMENT)
-    return STORAGE_TYPES[storage_name]()
+    info(f"Using model store with storage={storage_name}")
+    return MODEL_STORE_TYPES[storage_name]()
