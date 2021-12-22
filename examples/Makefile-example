@@ -7,7 +7,7 @@ name:
 	echo $(VIRTUALENV_NAME)
 
 pyenv:
-	@$(REPO_ROOT)/bin/_setup_brew
+	#@$(REPO_ROOT)/bin/_setup_brew
 	@$(REPO_ROOT)/bin/_setup_pyenv $(VIRTUALENV_NAME)
 
 pyenv-local: pyenv-uninstall pyenv
