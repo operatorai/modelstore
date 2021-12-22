@@ -69,6 +69,7 @@ def upload(domain: str, model: str):
         meta_data = model_store.upload(domain, model=model)
         model_id = meta_data["model"]["model_id"]
         modelstorecli.success(f"✅  Uploaded: {domain}={model_id}")
+        print(model_id)
     except SystemExit:
         # Failed to instantiate a model store from environment variables
         pass
