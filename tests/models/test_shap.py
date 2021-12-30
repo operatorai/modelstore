@@ -71,11 +71,9 @@ def test_required_kwargs(shap_manager):
 
 def test_matches_with(shap_manager, shap_explainer):
     assert shap_manager.matches_with(explainer=shap_explainer)
+    assert shap_manager.matches_with(explainer=shap_explainer, model="a-model")
     assert not shap_manager.matches_with(explainer="a-string-value")
     assert not shap_manager.matches_with(wrong_kwarg_keyword=shap_explainer)
-    assert not shap_manager.matches_with(
-        explainer=shap_explainer, model="a-model"
-    )
 
 
 def test_get_functions(shap_manager, shap_explainer):
