@@ -65,7 +65,7 @@ def test_from_gcloud(mock_gcloud):
     mocked_gcloud.validate.return_value = True
 
     store = ModelStore.from_gcloud("project-name", "gcs-bucket-name")
-    validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
+    validate_library_attributes(store, allowed=_LIBRARIES, not_allowed=[])
 
 
 @patch("modelstore.model_store.iter_libraries", side_effect=iter_only_sklearn)
@@ -82,7 +82,7 @@ def test_from_gcloud_only_sklearn(mock_gcloud, libraries_without_sklearn):
 def test_from_file_system(tmp_path):
     store = ModelStore.from_file_system(root_directory=str(tmp_path))
     assert isinstance(store.storage, FileSystemStorage)
-    validate_library_attributes(store, allowed=ML_LIBRARIES, not_allowed=[])
+    validate_library_attributes(store, allowed=_LIBRARIES, not_allowed=[])
 
 
 @patch("modelstore.model_store.iter_libraries", side_effect=iter_only_sklearn)

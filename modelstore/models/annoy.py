@@ -29,8 +29,10 @@ class AnnoyManager(ModelManager):
     https://github.com/spotify/annoy
     """
 
+    NAME = "annoy"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("annoy", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

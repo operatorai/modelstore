@@ -29,8 +29,10 @@ class TensorflowManager(ModelManager):
     https://www.tensorflow.org/tutorials/keras/save_and_load
     """
 
+    NAME = "tensorflow"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("tensorflow", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

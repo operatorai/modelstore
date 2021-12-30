@@ -37,8 +37,10 @@ class CatBoostManager(ModelManager):
     https://catboost.ai/docs/concepts/apply-onnx-ml.html
     """
 
+    NAME = "catboost"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("catboost", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

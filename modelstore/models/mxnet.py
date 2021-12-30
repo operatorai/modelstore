@@ -29,8 +29,10 @@ class MxnetManager(ModelManager):
     https://mxnet.apache.org/versions/1.8.0/api/python/docs/tutorials/packages/gluon/blocks/save_load_params.html
     """
 
+    NAME = "mxnet"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("mxnet", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

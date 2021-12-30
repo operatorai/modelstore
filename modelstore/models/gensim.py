@@ -29,8 +29,10 @@ class GensimManager(ModelManager):
     https://scikit-learn.org/stable/modules/model_persistence.html
     """
 
+    NAME = "gensim"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("gensim", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

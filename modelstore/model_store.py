@@ -150,8 +150,6 @@ class ModelStore:
     def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)
         ml_library = meta_data["model"]["model_type"]["library"]
-        # @TODO replace for loop with getattr
-        # @TODO check explicitly for ModelAndExplainerManager
         # pylint: disable=no-member
         for manager in self._ml_libraries:
             if manager.ml_library == ml_library:

@@ -29,8 +29,10 @@ class OnnxManager(ModelManager):
     https://github.com/onnx/onnx/blob/master/docs/PythonAPIOverview.md
     """
 
+    NAME = "onnx"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("onnx", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

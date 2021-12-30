@@ -30,8 +30,10 @@ class ProphetManager(ModelManager):
     https://facebook.github.io/prophet/docs/additional_topics.html#saving-models
     """
 
+    NAME = "prophet"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("prophet", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

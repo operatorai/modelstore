@@ -31,8 +31,10 @@ class SKLearnManager(ModelManager):
     https://scikit-learn.org/stable/modules/model_persistence.html
     """
 
+    NAME = "sklearn"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("sklearn", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

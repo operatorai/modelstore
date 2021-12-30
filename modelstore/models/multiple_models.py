@@ -24,12 +24,14 @@ class MultipleModelsManager(ModelManager):
     E.g. pairs of (model, explainer) that need to be saved together
     """
 
+    NAME = "multiple-models"
+
     def __init__(
         self,
         managers: List[ModelManager],
         storage: CloudStorage = None,
     ):
-        super().__init__("multiple-models", storage)
+        super().__init__(self.NAME, storage)
         self.managers = managers
 
     def _required_kwargs(self) -> list:

@@ -30,8 +30,10 @@ class TransformersManager(ModelManager):
     https://github.com/huggingface/transformers/blob/e50a931c118b9f55f77a743bf703f436bf7a7c29/src/transformers/modeling_utils.py#L676
     """
 
+    NAME = "transformers"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("transformers", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

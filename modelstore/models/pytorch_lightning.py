@@ -34,8 +34,10 @@ class PyTorchLightningManager(ModelManager):
     https://pytorch-lightning.readthedocs.io/en/latest/new-project.html#predict-or-deploy
     """
 
+    NAME = "pytorch_lightning"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("pytorch_lightning", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

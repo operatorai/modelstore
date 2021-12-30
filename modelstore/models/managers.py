@@ -38,24 +38,27 @@ from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
 _LIBRARIES = {
-    "annoy": AnnoyManager,
-    "catboost": CatBoostManager,
-    "fastai": FastAIManager,
-    "file": ModelFileManager,
-    "gensim": GensimManager,
-    "keras": KerasManager,
-    "lightgbm": LightGbmManager,
-    "mxnet": MxnetManager,
-    "onnx": OnnxManager,
-    "prophet": ProphetManager,
-    "pytorch": PyTorchManager,
-    "pytorch_lightning": PyTorchLightningManager,
-    "shap": ShapManager,
-    "sklearn": SKLearnManager,
-    "skorch": SkorchManager,
-    "tensorflow": TensorflowManager,
-    "transformers": TransformersManager,
-    "xgboost": XGBoostManager,
+    m.NAME: m
+    for m in [
+        AnnoyManager,
+        CatBoostManager,
+        FastAIManager,
+        ModelFileManager,
+        GensimManager,
+        KerasManager,
+        LightGbmManager,
+        MxnetManager,
+        OnnxManager,
+        ProphetManager,
+        PyTorchManager,
+        PyTorchLightningManager,
+        ShapManager,
+        SKLearnManager,
+        SkorchManager,
+        TensorflowManager,
+        TransformersManager,
+        XGBoostManager,
+    ]
 }
 
 

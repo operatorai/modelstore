@@ -32,8 +32,10 @@ class FastAIManager(ModelManager):
     https://docs.fast.ai/learner.html#Learner.export
     """
 
+    NAME = "fastai"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("fastai", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

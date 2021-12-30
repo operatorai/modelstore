@@ -31,8 +31,10 @@ class KerasManager(ModelManager):
     https://keras.io/guides/serialization_and_saving/
     """
 
+    NAME = "keras"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("keras", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:

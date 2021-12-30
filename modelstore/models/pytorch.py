@@ -33,8 +33,10 @@ class PyTorchManager(ModelManager):
     https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_models_for_inference.html
     """
 
+    NAME = "pytorch"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("pytorch", storage)
+        super().__init__(self.NAME, storage)
 
     @classmethod
     def required_dependencies(cls) -> list:
