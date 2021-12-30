@@ -20,8 +20,8 @@ from modelstore.storage.storage import CloudStorage
 class MultipleModelsManager(ModelManager):
 
     """
-    Persistence for multiple models, e.g. pairs of (model, explainer)
-    that need to be saved together
+    Persistence for multiple models
+    E.g. pairs of (model, explainer) that need to be saved together
     """
 
     def __init__(
@@ -32,21 +32,23 @@ class MultipleModelsManager(ModelManager):
         super().__init__("model-and-explainer", storage)
         self.managers = managers
 
-    def _required_kwargs(self):
-        return self.model._required_kwargs() + self.explainer._required_kwargs()
+    def _required_kwargs(self) -> list:
+        requirements = []
+        for manager in self.managers:
+            requirements += manager._required_kwargs()
+        return requirements
 
     def matches_with(self, **kwargs) -> bool:
-        return self.model.matches_with(
-            **kwargs
-        ) and self.explainer.matches_with(**kwargs)
+        for manager in self.managers:
+            if not manager.matches_with(**kwargs):
+                return False
+        return True
 
     def _get_functions(self, **kwargs) -> list:
-        if not self.matches_with(**kwargs):
-            raise TypeError("Model is not an onnx.ModelProto!")
-
-        return self.model._get_functions(
-            **kwargs
-        ) + self.explainer._get_functions(**kwargs)
+        functions = []
+        for manager in self.managers:
+            functions += manager._get_functions(**kwargs)
+        return functions
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
