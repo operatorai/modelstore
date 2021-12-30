@@ -16,6 +16,7 @@ import json
 import pytest
 import shap as shp
 from modelstore.models.common import save_joblib
+from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.models.shap import ShapManager
 from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager
 from sklearn.ensemble import RandomForestRegressor
@@ -45,70 +46,65 @@ def shap_explainer(sklearn_tree):
 
 
 @pytest.fixture
-def sklearn_manager():
-    return SKLearnManager()
+def multiple_model_manager():
+    managers = [SKLearnManager(), ShapManager()]
+    return MultipleModelsManager(managers)
 
 
-@pytest.fixture
-def shap_manager():
-    return ShapManager()
+# def test_model_info_with_explainer(
+#     sklearn_manager, sklearn_tree, shap_explainer, shap_manager
+# ):
+#     exp = {
+#         "library": "sklearn",
+#         "type": "RandomForestRegressor",
+#         "explainer": {
+#             "library": "shap",
+#             "type": "Tree",
+#         },
+#     }
+#     res = sklearn_manager._model_info(
+#         model=sklearn_tree,
+#         explainer=shap_explainer,
+#         explainer_manager=shap_manager,
+#     )
+#     assert res == exp
 
 
-def test_model_info_with_explainer(
-    sklearn_manager, sklearn_tree, shap_explainer, shap_manager
-):
-    exp = {
-        "library": "sklearn",
-        "type": "RandomForestRegressor",
-        "explainer": {
-            "library": "shap",
-            "type": "Tree",
-        },
-    }
-    res = sklearn_manager._model_info(
-        model=sklearn_tree,
-        explainer=shap_explainer,
-        explainer_manager=shap_manager,
-    )
-    assert res == exp
-
-
-def test_matches_with(sklearn_manager, sklearn_tree, shap_explainer):
-    assert sklearn_manager.matches_with(
+def test_matches_with(multiple_model_manager, sklearn_tree, shap_explainer):
+    assert multiple_model_manager.matches_with(
         model=sklearn_tree, explainer=shap_explainer
     )
 
 
-def test_get_functions(
-    sklearn_manager, sklearn_tree, shap_explainer, shap_manager
-):
-    functions = sklearn_manager._get_functions(
+def test_get_functions(multiple_model_manager, sklearn_tree, shap_explainer):
+    functions = multiple_model_manager._get_functions(
         model=sklearn_tree,
         explainer=shap_explainer,
-        explainer_manager=shap_manager,
     )
     # Two functions: save the model and explainer
     assert len(functions) == 2
+
+
+def test_get_functions_incorrect_types(multiple_model_manager, sklearn_tree):
     with pytest.raises(TypeError):
-        sklearn_manager._get_functions(
+        multiple_model_manager._get_functions(
             model=sklearn_tree,
             explainer="not-a-shap-explainer",
-            explainer_manager=shap_manager,
         )
 
 
-def test_get_params(
-    sklearn_manager, sklearn_tree, shap_explainer, shap_manager
-):
-    try:
-        result = sklearn_manager._get_params(
-            model=sklearn_tree,
-            explainer=shap_explainer,
-            explainer_manager=shap_manager,
-        )
-        json.dumps(result)
-    except Exception as e:
-        pytest.fail(f"Exception when dumping params: {str(e)}")
+# def test_get_params(
+#     sklearn_manager, sklearn_tree, shap_explainer, shap_manager
+# ):
+#     try:
+#         result = sklearn_manager._get_params(
+#             model=sklearn_tree,
+#             explainer=shap_explainer,
+#             explainer_manager=shap_manager,
+#         )
+#         json.dumps(result)
+#     except Exception as e:
+#         pytest.fail(f"Exception when dumping params: {str(e)}")
 
 
 # def test_load_model(tmp_path, sklearn_manager, sklearn_tree):
