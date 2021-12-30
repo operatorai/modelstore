@@ -29,7 +29,7 @@ class MultipleModelsManager(ModelManager):
         managers: List[ModelManager],
         storage: CloudStorage = None,
     ):
-        super().__init__("model-and-explainer", storage)
+        super().__init__("multiple-models", storage)
         self.managers = managers
 
     def _required_kwargs(self) -> list:
@@ -49,6 +49,21 @@ class MultipleModelsManager(ModelManager):
         for manager in self.managers:
             functions += manager._get_functions(**kwargs)
         return functions
+
+    def _model_info(self, **kwargs) -> dict:
+        """ Returns meta-data about the model's type """
+        return {
+            "library": self.ml_library,
+            "models": [
+                manager._model_info(**kwargs) for manager in self.managers
+            ],
+        }
+
+    def _get_params(self, **kwargs) -> dict:
+        return {
+            manager.ml_library: manager._get_params(**kwargs)
+            for manager in self.managers
+        }
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel

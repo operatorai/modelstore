@@ -51,23 +51,21 @@ def multiple_model_manager():
     return MultipleModelsManager(managers)
 
 
-# def test_model_info_with_explainer(
-#     sklearn_manager, sklearn_tree, shap_explainer, shap_manager
-# ):
-#     exp = {
-#         "library": "sklearn",
-#         "type": "RandomForestRegressor",
-#         "explainer": {
-#             "library": "shap",
-#             "type": "Tree",
-#         },
-#     }
-#     res = sklearn_manager._model_info(
-#         model=sklearn_tree,
-#         explainer=shap_explainer,
-#         explainer_manager=shap_manager,
-#     )
-#     assert res == exp
+def test_model_info_with_explainer(
+    multiple_model_manager, sklearn_tree, shap_explainer
+):
+    exp = {
+        "library": "multiple-models",
+        "models": [
+            {"library": "sklearn", "type": "RandomForestRegressor"},
+            {"library": "shap", "type": "Tree"},
+        ],
+    }
+    res = multiple_model_manager._model_info(
+        model=sklearn_tree,
+        explainer=shap_explainer,
+    )
+    assert res == exp
 
 
 def test_matches_with(multiple_model_manager, sklearn_tree, shap_explainer):
@@ -93,18 +91,17 @@ def test_get_functions_incorrect_types(multiple_model_manager, sklearn_tree):
         )
 
 
-# def test_get_params(
-#     sklearn_manager, sklearn_tree, shap_explainer, shap_manager
-# ):
-#     try:
-#         result = sklearn_manager._get_params(
-#             model=sklearn_tree,
-#             explainer=shap_explainer,
-#             explainer_manager=shap_manager,
-#         )
-#         json.dumps(result)
-#     except Exception as e:
-#         pytest.fail(f"Exception when dumping params: {str(e)}")
+def test_get_params(multiple_model_manager, sklearn_tree, shap_explainer):
+    try:
+        result = multiple_model_manager._get_params(
+            model=sklearn_tree,
+            explainer=shap_explainer,
+        )
+        assert "sklearn" in result
+        assert "shap" in result
+        json.dumps(result)
+    except Exception as e:
+        pytest.fail(f"Exception when dumping params: {str(e)}")
 
 
 # def test_load_model(tmp_path, sklearn_manager, sklearn_tree):
