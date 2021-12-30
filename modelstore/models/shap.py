@@ -13,7 +13,6 @@
 #    limitations under the License.
 import os
 from functools import partial
-from typing import Any
 
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager

@@ -27,7 +27,7 @@ def _get_version(modname: str) -> str:
         try:
             #  Annoy does not have a __version__
             return pkg_resources.get_distribution(modname).version
-        except:
+        except Exception:
             logger.debug("Unable to get %s's version", modname)
             return None
     except ImportError:

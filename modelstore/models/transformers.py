@@ -17,7 +17,6 @@ from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
-from modelstore.utils.log import logger
 
 # pylint disable=import-outside-toplevel
 MODEL_DIRECTORY = "transformers"

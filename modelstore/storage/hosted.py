@@ -54,12 +54,12 @@ class HostedStorage(CloudStorage):
         try:
             _ = self._post("ping", {})
             return True
-        except:
+        except Exception:
             return False
 
     def _post(self, endpoint: str, data: dict) -> dict:
         url = os.path.join(_URL_ROOT, endpoint)
-        logger.info(f"ℹ️  POST: %s", url)
+        logger.info("ℹ️  POST: %s", url)
         headers = {"x-api-key": self.secret_access_key}
         data["key_id"] = self.access_key_id
         rsp = requests.post(url, headers=headers, data=json.dumps(data))

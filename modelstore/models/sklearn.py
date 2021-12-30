@@ -19,7 +19,6 @@ from typing import Any
 from modelstore.meta import datasets
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
-from modelstore.models.util import convert_numpy
 from modelstore.storage.storage import CloudStorage
 
 MODEL_JOBLIB = "model.joblib"

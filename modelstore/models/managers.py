@@ -88,6 +88,6 @@ def iter_explainers(storage: CloudStorage = None) -> Iterator[ModelManager]:
 def matching_manager(managers: list, **kwargs) -> ModelManager:
     for manager in managers:
         if manager.matches_with(**kwargs):
-            logger.debug(f"Auto matched with: %s", manager.ml_library)
+            logger.debug("Auto matched with: %s", manager.ml_library)
             return manager
     raise ValueError("could not find matching manager")

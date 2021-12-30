@@ -29,7 +29,6 @@ from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.storage.hosted import HostedStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.storage import CloudStorage
-from modelstore.utils.log import logger
 
 
 @dataclass(frozen=True)
