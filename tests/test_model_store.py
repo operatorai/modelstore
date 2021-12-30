@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 import pytest
 from modelstore.model_store import ModelStore
-from modelstore.models.managers import ML_LIBRARIES
+from modelstore.models.managers import _LIBRARIES
 from modelstore.models.missing_manager import MissingDepManager
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
@@ -27,13 +27,13 @@ from modelstore.storage.local import FileSystemStorage
 
 @pytest.fixture
 def libraries_without_sklearn():
-    libraries = ML_LIBRARIES.copy()
+    libraries = _LIBRARIES.copy()
     libraries.pop("sklearn")
     return libraries
 
 
 def iter_only_sklearn(_):
-    for k, v in ML_LIBRARIES.items():
+    for k, v in _LIBRARIES.items():
         if k == "sklearn":
             yield k, v()
         else:
