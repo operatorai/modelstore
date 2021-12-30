@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Iterator
+from typing import Iterator, List
 
 from modelstore.meta.dependencies import module_exists
 from modelstore.models.annoy import AnnoyManager
@@ -37,7 +37,7 @@ from modelstore.models.xgboost import XGBoostManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
-ML_LIBRARIES = {
+_LIBRARIES = {
     "annoy": AnnoyManager,
     "catboost": CatBoostManager,
     "fastai": FastAIManager,
@@ -50,6 +50,7 @@ ML_LIBRARIES = {
     "prophet": ProphetManager,
     "pytorch": PyTorchManager,
     "pytorch_lightning": PyTorchLightningManager,
+    "shap": ShapManager,
     "sklearn": SKLearnManager,
     "skorch": SkorchManager,
     "tensorflow": TensorflowManager,
@@ -57,37 +58,23 @@ ML_LIBRARIES = {
     "xgboost": XGBoostManager,
 }
 
-EXPLAINER_LIBRARIES = {
-    "shap": ShapManager,
-}
 
-
-def _iter_managers(
-    managers: dict, storage: CloudStorage = None
-) -> Iterator[ModelManager]:
+def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
     """Iterates of a dict of ModelManagers and yields
     the ones that are available in the current environment,
     based on checking for dependencies.
     """
-    for library, mngr in managers.items():
+    for library, mngr in _LIBRARIES.items():
         if all(module_exists(x) for x in mngr.required_dependencies()):
+            logger.debug("Adding: %s", library)
             yield library, mngr(storage)
         else:
             logger.debug("Skipping: %s, not installed.", library)
             yield library, MissingDepManager(library, storage)
 
 
-def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
-    return _iter_managers(ML_LIBRARIES, storage)
-
-
-def iter_explainers(storage: CloudStorage = None) -> Iterator[ModelManager]:
-    return _iter_managers(EXPLAINER_LIBRARIES, storage)
-
-
-def matching_manager(managers: list, **kwargs) -> ModelManager:
-    for manager in managers:
-        if manager.matches_with(**kwargs):
-            logger.debug("Auto matched with: %s", manager.ml_library)
-            return manager
-    raise ValueError("could not find matching manager")
+def matching_managers(managers: list, **kwargs) -> List[ModelManager]:
+    managers = [m for m in managers if m.matches_with(**kwargs)]
+    if len(managers) == 0:
+        raise ValueError("could not find matching manager")
+    return managers
