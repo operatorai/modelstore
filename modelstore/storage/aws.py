@@ -59,7 +59,8 @@ class AWSStorage(BlobStorage):
             region, "MODEL_STORE_REGION", allow_missing=True
         )
         self.__client = None
-        self.model_store_root = model_store_root if not None else ""
+        self.model_store_root = model_store_root if model_store_root is not None else ""
+        
 
     @property
     def client(self):

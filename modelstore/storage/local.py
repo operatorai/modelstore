@@ -43,16 +43,17 @@ class FileSystemStorage(BlobStorage):
         "optional": [],
     }
 
-    def __init__(self, root_path: Optional[str] = None):
+    def __init__(self, model_store_root: Optional[str] = None):
         super().__init__([])
-        root_path = environment.get_value(root_path, "MODEL_STORE_ROOT")
-        if MODELSTORE_ROOT_PREFIX in root_path:
+
+        if MODELSTORE_ROOT_PREFIX in model_store_root:
             warnings.warn(
                 f'Warning: "{MODELSTORE_ROOT_PREFIX}" is in the root path, and is a value'
                 + " that this library usually appends. Is this intended?"
             )
-        root_path = os.path.abspath(root_path)
-        self.root_dir = root_path
+        root_path = os.path.abspath(model_store_root)
+        self.root_dir = model_store_root
+        self.model_store_root = model_store_root
         logger.debug("Root is: %s", self.root_dir)
 
     def validate(self) -> bool:
