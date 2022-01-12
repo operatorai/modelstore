@@ -22,45 +22,45 @@ from modelstore.storage.util import paths
 
 def test_get_archive_path():
     prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-    exp = os.path.join(paths.MODELSTORE_ROOT, "domain", prefix, "file-name")
+    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "file-name")
     res = paths.get_archive_path("domain", "path/to/file-name")
     assert exp == res
 
 
 def test_get_versions_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT, "example-domain", "versions")
-    res = paths.get_versions_path("example-domain")
+    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions")
+    res = paths.get_versions_path("", "example-domain")
     assert exp == res
 
 
 def test_get_versions_path_with_state():
     exp = os.path.join(
-        paths.MODELSTORE_ROOT, "example-domain", "versions", "prod"
+        paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions", "prod"
     )
-    res = paths.get_versions_path("example-domain", "prod")
+    res = paths.get_versions_path("", "example-domain", "prod")
     assert exp == res
 
 
 def test_get_domains_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT, "domains")
+    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domains")
     res = paths.get_domains_path()
     assert exp == res
 
 
 def test_get_domain_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT, "domains", "domain.json")
-    res = paths.get_domain_path("domain")
+    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domains", "domain.json")
+    res = paths.get_domain_path("", "domain")
     assert exp == res
 
 
 def test_get_model_states_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT, "model_states")
+    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "model_states")
     res = paths.get_model_states_path()
     assert exp == res
 
 
 def test_get_model_state_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT, "model_states", "prod.json")
+    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "model_states", "prod.json")
     res = paths.get_model_state_path("prod")
     assert exp == res
 

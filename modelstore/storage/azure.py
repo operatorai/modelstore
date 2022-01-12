@@ -53,6 +53,7 @@ class AzureBlobStorage(BlobStorage):
         container_name: Optional[str] = None,
         client: "azure.storage.blobage.BlobClient" = None,
         environ_key: str = "AZURE_STORAGE_CONNECTION_STRING",
+        model_store_root:  Optional[str] = None,
     ):
         super().__init__(["azure.storage.blob"])
         self.container_name = environment.get_value(
@@ -60,6 +61,7 @@ class AzureBlobStorage(BlobStorage):
         )
         self.connection_string_key = environ_key
         self.__client = client
+        self.model_store_root = model_store_root if not None else ""
 
     @property
     def client(self) -> "azure.storage.blobage.BlobClient":

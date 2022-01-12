@@ -21,7 +21,7 @@ from typing import Optional
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
-    MODELSTORE_ROOT,
+    MODELSTORE_ROOT_PREFIX,
     get_model_state_path,
     is_valid_state_name,
 )
@@ -46,9 +46,9 @@ class FileSystemStorage(BlobStorage):
     def __init__(self, root_path: Optional[str] = None):
         super().__init__([])
         root_path = environment.get_value(root_path, "MODEL_STORE_ROOT")
-        if MODELSTORE_ROOT in root_path:
+        if MODELSTORE_ROOT_PREFIX in root_path:
             warnings.warn(
-                f'Warning: "{MODELSTORE_ROOT}" is in the root path, and is a value'
+                f'Warning: "{MODELSTORE_ROOT_PREFIX}" is in the root path, and is a value'
                 + " that this library usually appends. Is this intended?"
             )
         root_path = os.path.abspath(root_path)
