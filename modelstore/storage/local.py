@@ -59,21 +59,22 @@ class FileSystemStorage(BlobStorage):
         """This validates that the directory exists
         and can be written to"""
         # pylint: disable=broad-except
-        try:
-            parent_dir = os.path.split(self.root_dir)[0]
-            # Check that directory exists
-            if not os.path.exists(parent_dir):
-                logger.error("Error: %s does not exist", parent_dir)
-                return False
+        parent_dir = os.path.split(self.root_dir)[0]
 
+        if not os.path.exists(parent_dir):
+            raise Exception("Error: Parent directory to root dir '%s' does not exist", parent_dir)
+            
+        try:
             # Check we can write to it
             source = os.path.join(self.root_dir, ".operator-ai")
             Path(source).touch()
             os.remove(source)
-            return True
         except Exception as ex:
-            logger.error("Error=%s...", str(ex))
-            return False
+            logger.error(ex)
+
+
+        return True
+
 
     def _get_metadata_path(
         self, domain: str, model_id: str, state_name: Optional[str] = None
