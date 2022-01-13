@@ -33,7 +33,7 @@ from tests.storage.test_utils import (
 
 @pytest.fixture
 def file_system_storage(tmp_path):
-    return FileSystemStorage(root_path=str(tmp_path))
+    return FileSystemStorage(root_dir=str(tmp_path))
 
 
 def test_create_from_environment_variables(monkeypatch):

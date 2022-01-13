@@ -22,7 +22,7 @@ MODELSTORE_ROOT_PREFIX = "operatorai-model-store"
 # @TODO move into blob_storage / override in local
 
 
-def get_archive_path(model_store_root: str, domain: str, local_path: str) -> str:
+def get_archive_path(root_dir: str, domain: str, local_path: str) -> str:
     """Creates a bucket prefix where a model archive will be stored.
     I.e.: :code:`operatorai-model-store/<domain>/<prefix>/<file-name>`
 
@@ -37,10 +37,10 @@ def get_archive_path(model_store_root: str, domain: str, local_path: str) -> str
     # Future: enable different types of prefixes
     # Warning! Mac OS translates ":" in paths to "/"
     prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-    return os.path.join(model_store_root, MODELSTORE_ROOT_PREFIX, domain, prefix, file_name)
+    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, prefix, file_name)
 
 
-def get_versions_path(model_store_root: str, domain: str, state_name: Optional[str] = None) -> str:
+def get_versions_path(root_dir: str, domain: str, state_name: Optional[str] = None) -> str:
     """Creates a path where a meta-data file about a model is stored.
     I.e.: :code:`operatorai-model-store/<domain>/versions/`
 
@@ -50,18 +50,18 @@ def get_versions_path(model_store_root: str, domain: str, state_name: Optional[s
         state_name (str): A model's state tag (e.g. "prod" or "archived")
     """
     if state_name is not None:
-        return os.path.join(model_store_root, MODELSTORE_ROOT_PREFIX, domain, "versions", state_name)
-    return os.path.join(model_store_root, MODELSTORE_ROOT_PREFIX, domain, "versions")
+        return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions", state_name)
+    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions")
 
 
-def get_domains_path(model_store_root: str,) -> str:
+def get_domains_path(root_dir: str,) -> str:
     """Creates a path where meta-data about the latest trained model
     is stored, i.e.: :code:`operatorai-model-store/domains/`
     """
-    return os.path.join(model_store_root, MODELSTORE_ROOT_PREFIX, "domains")
+    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, "domains")
 
 
-def get_domain_path(model_store_root: str, domain: str) -> str:
+def get_domain_path(root_dir: str, domain: str) -> str:
     """Creates a path where meta-data about the latest trained model
     is stored, i.e.: :code:`operatorai-model-store/domains/<domain>.json`
 
@@ -69,7 +69,7 @@ def get_domain_path(model_store_root: str, domain: str) -> str:
         domain (str): A group of models that are trained for the
         same end-use are given the same domain.
     """
-    domains_path = get_domains_path(model_store_root)
+    domains_path = get_domains_path(root_dir)
     return os.path.join(domains_path, f"{domain}.json")
 
 

@@ -19,7 +19,7 @@ def create_aws_model_store() -> ModelStore:
     # an s3 bucket and will raise an exception if it doesn't exist
     return ModelStore.from_aws_s3(
         os.environ["MODEL_STORE_AWS_BUCKET"],
-        model_store_root="example-by-ml-library",
+        root_dir="example-by-ml-library",
     )
 
 

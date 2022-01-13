@@ -62,7 +62,7 @@ class GoogleCloudStorage(BlobStorage):
             bucket_name, "MODEL_STORE_GCP_BUCKET"
         )
         self.__client = client
-        self.model_store_root = ""
+        self.root_dir = ""
 
     @property
     def client(self) -> "storage.Client":

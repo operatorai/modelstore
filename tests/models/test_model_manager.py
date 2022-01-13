@@ -27,7 +27,7 @@ from modelstore.storage.local import FileSystemStorage
 
 class MockCloudStorage(FileSystemStorage):
     def __init__(self, tmpdir):
-        super().__init__(root_path=str(tmpdir))
+        super().__init__(root_dir=str(tmpdir))
         self.called = False
 
     def upload(

@@ -60,7 +60,7 @@ class AzureBlobStorage(BlobStorage):
         )
         self.connection_string_key = environ_key
         self.__client = client
-        self.model_store_root = ""
+        self.root_dir = ""
 
     @property
     def client(self) -> "azure.storage.blobage.BlobClient":
