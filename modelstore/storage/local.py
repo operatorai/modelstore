@@ -52,8 +52,7 @@ class FileSystemStorage(BlobStorage):
                 + " that this library usually appends. Is this intended?"
             )
         root_path = os.path.abspath(root_dir)
-        self.root_dir = root_dir
-        self.root_dir = root_dir
+        self.root_dir = root_path
         logger.debug("Root is: %s", self.root_dir)
 
     def validate(self) -> bool:
