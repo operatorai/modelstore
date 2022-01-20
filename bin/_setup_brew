@@ -14,6 +14,6 @@ export CXX=g++-11
 
 # Note: it looks like there's trouble with libomp 12
 # https://github.com/dmlc/xgboost/issues/7039
-brew install libomp@11.1.0
+brew install rajivshah3/libomp-tap/libomp@11.1.0
 
 echo "\n ✅  Done."

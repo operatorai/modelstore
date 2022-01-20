@@ -17,7 +17,7 @@ pyenv local $1
 pip install --upgrade pip setuptools wheel
 for i in ./requirements*txt; do
     echo "\n ⏱  Installing requirements in: $i"
-    pip install -r $i
+    pip install --no-cache-dir -r $i
 done
 
 pip install -e $REPO_ROOT
