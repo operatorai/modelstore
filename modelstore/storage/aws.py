@@ -49,7 +49,7 @@ class AWSStorage(BlobStorage):
     }
 
     def __init__(
-        self, bucket_name: Optional[str] = None, region: Optional[str] = None
+        self, bucket_name: Optional[str] = None, region: Optional[str] = None,  root_dir:  Optional[str] = None
     ):
         super().__init__(["boto3"])
         self.bucket_name = environment.get_value(
@@ -59,6 +59,8 @@ class AWSStorage(BlobStorage):
             region, "MODEL_STORE_REGION", allow_missing=True
         )
         self.__client = None
+        self.root_dir = root_dir if root_dir is not None else ""
+        
 
     @property
     def client(self):

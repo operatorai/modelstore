@@ -21,7 +21,7 @@ from typing import Optional
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
-    MODELSTORE_ROOT,
+    MODELSTORE_ROOT_PREFIX,
     get_model_state_path,
     is_valid_state_name,
 )
@@ -43,15 +43,15 @@ class FileSystemStorage(BlobStorage):
         "optional": [],
     }
 
-    def __init__(self, root_path: Optional[str] = None):
+    def __init__(self, root_dir: Optional[str] = None):
         super().__init__([])
-        root_path = environment.get_value(root_path, "MODEL_STORE_ROOT")
-        if MODELSTORE_ROOT in root_path:
+
+        if MODELSTORE_ROOT_PREFIX in root_dir:
             warnings.warn(
-                f'Warning: "{MODELSTORE_ROOT}" is in the root path, and is a value'
+                f'Warning: "{MODELSTORE_ROOT_PREFIX}" is in the root path, and is a value'
                 + " that this library usually appends. Is this intended?"
             )
-        root_path = os.path.abspath(root_path)
+        root_path = os.path.abspath(root_dir)
         self.root_dir = root_path
         logger.debug("Root is: %s", self.root_dir)
 
@@ -59,21 +59,22 @@ class FileSystemStorage(BlobStorage):
         """This validates that the directory exists
         and can be written to"""
         # pylint: disable=broad-except
-        try:
-            parent_dir = os.path.split(self.root_dir)[0]
-            # Check that directory exists
-            if not os.path.exists(parent_dir):
-                logger.error("Error: %s does not exist", parent_dir)
-                return False
+        parent_dir = os.path.split(self.root_dir)[0]
 
+        if not os.path.exists(parent_dir):
+            raise Exception("Error: Parent directory to root dir '%s' does not exist", parent_dir)
+            
+        try:
             # Check we can write to it
             source = os.path.join(self.root_dir, ".operator-ai")
             Path(source).touch()
             os.remove(source)
-            return True
         except Exception as ex:
-            logger.error("Error=%s...", str(ex))
-            return False
+            logger.error(ex)
+
+
+        return True
+
 
     def _get_metadata_path(
         self, domain: str, model_id: str, state_name: Optional[str] = None

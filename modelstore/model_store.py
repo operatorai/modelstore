@@ -42,7 +42,7 @@ class ModelStore:
 
     @classmethod
     def from_aws_s3(
-        cls, bucket_name: Optional[str] = None, region: Optional[str] = None
+        cls, bucket_name: Optional[str] = None, region: Optional[str] = None,  root_dir: Optional[str]=None,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an AWS s3
         bucket.
@@ -51,7 +51,7 @@ class ModelStore:
         if not BOTO_EXISTS:
             raise ModuleNotFoundError("boto3 is not installed!")
         return ModelStore(
-            storage=AWSStorage(bucket_name=bucket_name, region=region)
+            storage=AWSStorage(bucket_name=bucket_name, region=region, root_dir=root_dir)
         )
 
     @classmethod

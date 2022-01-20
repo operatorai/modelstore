@@ -20,7 +20,7 @@ import modelstore
 import pytest
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
-    MODELSTORE_ROOT,
+    MODELSTORE_ROOT_PREFIX,
     get_archive_path,
     get_domain_path,
     get_model_state_path,
@@ -66,7 +66,7 @@ def test_state_exists(mock_blob_storage):
 def test_get_metadata_path(mock_blob_storage):
     exp = os.path.join(
         mock_blob_storage.root_dir,
-        MODELSTORE_ROOT,
+        MODELSTORE_ROOT_PREFIX,
         "domain",
         "versions",
         "model-id.json",
@@ -86,7 +86,7 @@ def test_set_meta_data(mock_blob_storage):
     # Expected two uploads
     # (1) The meta data for the 'latest' model
     meta_data = os.path.join(
-        mock_blob_storage.root_dir, get_domain_path("test-domain")
+        mock_blob_storage.root_dir, get_domain_path("", "test-domain")
     )
     assert get_file_contents(meta_data) == meta_str
 

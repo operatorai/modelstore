@@ -47,6 +47,7 @@ class HostedStorage(CloudStorage):
         self.secret_access_key = _get_environ(
             secret_access_key, "MODELSTORE_ACCESS_KEY"
         )
+        self.root_dir = ""
 
     def validate(self) -> bool:
         """ Requires an ACCESS_KEY_ID and SECRET_ACCESS_KEY """

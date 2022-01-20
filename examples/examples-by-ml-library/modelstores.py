@@ -17,7 +17,10 @@ def create_aws_model_store() -> ModelStore:
     # A model store in an AWS S3 bucket
     # The modelstore library assumes you have already created
     # an s3 bucket and will raise an exception if it doesn't exist
-    return ModelStore.from_aws_s3(os.environ["MODEL_STORE_AWS_BUCKET"])
+    return ModelStore.from_aws_s3(
+        os.environ["MODEL_STORE_AWS_BUCKET"],
+        root_dir="example-by-ml-library",
+    )
 
 
 def create_azure_model_store() -> ModelStore:
@@ -35,8 +38,7 @@ def create_gcloud_model_store() -> ModelStore:
     # The modelstore library assumes you have already created
     # a Cloud Storage bucket and will raise an exception if it doesn't exist
     return ModelStore.from_gcloud(
-        os.environ["MODEL_STORE_GCP_PROJECT"],
-        os.environ["MODEL_STORE_GCP_BUCKET"],
+        os.environ["MODEL_STORE_GCP_PROJECT"], os.environ["MODEL_STORE_GCP_BUCKET"],
     )
 
 
@@ -44,5 +46,5 @@ def create_file_system_model_store() -> ModelStore:
     # A model store in a local file system
     # Here, we create a new local model store in our home directory
     home_dir = os.path.expanduser("~")
-    print(f"🏦  Creating store in: {home_dir}")
-    return ModelStore.from_file_system(root_directory=home_dir)
+    print(f"🏦  Creating store in: {home_dir}" +"/test-modelstore")
+    return ModelStore.from_file_system(root_directory=home_dir+"/test-modelstore")
