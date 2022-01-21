@@ -20,10 +20,17 @@ from modelstore.storage.util import paths
 # pylint: disable=protected-access
 
 
-def test_get_archive_path():
+def test_get_archive_path_no_root_dir():
     prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
     exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "file-name")
-    res = paths.get_archive_path("domain", "path/to/file-name")
+    res = paths.get_archive_path("", "domain", "path/to/file-name")
+    assert exp == res
+
+def test_get_archive_path_with_root_dir(tmp_path):
+    prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+    tmp_path = str(tmp_path)
+    exp = os.path.join(tmp_path, paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "file-name")
+    res = paths.get_archive_path(tmp_path, "domain", "path/to/file-name")
     assert exp == res
 
 

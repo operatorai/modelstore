@@ -118,7 +118,7 @@ def test_upload(mock_blob_storage, tmp_path):
 
     model_path = os.path.join(
         mock_blob_storage.root_dir,
-        get_archive_path("test-domain", source),
+        get_archive_path(mock_blob_storage.root_dir, "test-domain", source),
     )
     rsp = mock_blob_storage.upload("test-domain", source)
     assert rsp["type"] == "file_system"
@@ -142,7 +142,7 @@ def test_upload_extras(mock_blob_storage, tmp_path):
     # The model will be uploaded to the right place
     model_path = os.path.join(
         mock_blob_storage.root_dir,
-        get_archive_path("test-domain", source),
+        get_archive_path(mock_blob_storage.root_dir, "test-domain", source),
     )
     assert rsp["path"] == model_path
     assert os.path.exists(model_path)

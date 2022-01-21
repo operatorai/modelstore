@@ -46,5 +46,6 @@ def create_file_system_model_store() -> ModelStore:
     # A model store in a local file system
     # Here, we create a new local model store in our home directory
     home_dir = os.path.expanduser("~")
-    print(f"🏦  Creating store in: {home_dir}" +"/test-modelstore")
-    return ModelStore.from_file_system(root_directory=home_dir+"/test-modelstore")
+    root_dir = os.path.join(home_dir, "test-modelstore")
+    print(f"🏦  Creating store in: {root_dir}")
+    return ModelStore.from_file_system(root_directory=root_dir)

@@ -54,7 +54,7 @@ def get_versions_path(root_dir: str, domain: str, state_name: Optional[str] = No
     return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions")
 
 
-def get_domains_path(root_dir: str,) -> str:
+def get_domains_path(root_dir: str = "") -> str:
     """Creates a path where meta-data about the latest trained model
     is stored, i.e.: :code:`operatorai-model-store/domains/`
     """

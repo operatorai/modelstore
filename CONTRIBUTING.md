@@ -13,7 +13,7 @@ Once you have those installed, we have a `Makefile` command that does the
 rest for you:
 
 ```bash
-❯ make setup
+❯ make install
 ```
 
 Will update `brew` and install `libomp` (required by `xgboost`).
@@ -59,3 +59,7 @@ For a tutorial on how to add a new storage type, refer to the [CONTRIBUTING.md](
 Do you have ideas for other features that it may be useful to add to `modelstore`?
 
 Please get in touch by opening a [discussion](https://github.com/operatorai/modelstore/discussions) or [issue](https://github.com/operatorai/modelstore/issues) on Github.
+
+## Common issues
+
+* Trouble running `test_prophet`? See [this issue](https://github.com/facebook/prophet/issues/689).
