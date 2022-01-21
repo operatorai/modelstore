@@ -63,6 +63,8 @@ class FileSystemStorage(BlobStorage):
             raise Exception(
                 "Error: Parent directory to root dir '%s' does not exist", parent_dir
             )
+        if not os.path.isdir(parent_dir):
+            raise Exception("Error: root_dir needs to be a directory")
 
         try:
             # Check we can write to it
