@@ -52,17 +52,15 @@ class GoogleCloudStorage(BlobStorage):
         self,
         project_name: Optional[str] = None,
         bucket_name: Optional[str] = None,
+        root_prefix: Optional[str] = None,
         client: "storage.Client" = None,
     ):
-        super().__init__(["google.cloud.storage"])
+        super().__init__(["google.cloud.storage"], root_prefix)
         self.project_name = environment.get_value(
             project_name, "MODEL_STORE_GCP_PROJECT"
         )
-        self.bucket_name = environment.get_value(
-            bucket_name, "MODEL_STORE_GCP_BUCKET"
-        )
+        self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_GCP_BUCKET")
         self.__client = client
-        self.root_dir = ""
 
     @property
     def client(self) -> "storage.Client":
