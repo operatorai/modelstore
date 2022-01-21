@@ -48,17 +48,17 @@ class FileSystemStorage(BlobStorage):
             raise Exception(
                 "Error: cannot create a file system model store without a root directory"
             )
-        if MODELSTORE_ROOT_PREFIX in root_dir:
+        if MODELSTORE_ROOT_PREFIX in self.root_prefix:
             warnings.warn(
                 f'Warning: "{MODELSTORE_ROOT_PREFIX}" is in the root path, and is a value'
                 + " that this library usually appends. Is this intended?"
             )
-        self.root_prefix = os.path.abspath(root_dir)
+        self.root_prefix = os.path.abspath(self.root_prefix)
 
     def validate(self) -> bool:
         """This validates that the directory exists and can be written to"""
         # pylint: disable=broad-except
-        parent_dir = os.path.split(self.root_dir)[0]
+        parent_dir = os.path.split(self.root_prefix)[0]
         if not os.path.exists(parent_dir):
             raise Exception(
                 "Error: Parent directory to root dir '%s' does not exist", parent_dir
@@ -66,7 +66,7 @@ class FileSystemStorage(BlobStorage):
 
         try:
             # Check we can write to it
-            source = os.path.join(self.root_dir, ".operator-ai")
+            source = os.path.join(self.root_prefix, ".operator-ai")
             Path(source).touch()
             os.remove(source)
             return True
@@ -126,7 +126,7 @@ class FileSystemStorage(BlobStorage):
 
     def relative_dir(self, file_path: str) -> str:
         paths = os.path.split(file_path)
-        parent_dir = os.path.join(self.root_dir, paths[0])
+        parent_dir = os.path.join(self.root_prefix, paths[0])
         if not os.path.exists(parent_dir):
             os.makedirs(parent_dir)
         return os.path.join(parent_dir, paths[1])

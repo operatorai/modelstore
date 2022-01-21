@@ -38,7 +38,7 @@ def file_system_storage(tmp_path):
 
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
-    monkeypatch.setenv("MODEL_STORE_ROOT", "~")
+    monkeypatch.setenv("MODEL_STORE_ROOT_PREFIX", "~")
     try:
         _ = FileSystemStorage()
     except:
@@ -55,13 +55,13 @@ def test_create_fails_with_missing_environment_variables(monkeypatch):
 
 def test_validate(file_system_storage):
     assert file_system_storage.validate()
-    assert os.path.exists(file_system_storage.root_dir)
+    assert os.path.exists(file_system_storage.root_prefix)
 
 
 def test_push(tmp_path, file_system_storage):
     prefix = remote_file_path()
     result = file_system_storage._push(temp_file(tmp_path), prefix)
-    assert result == os.path.join(file_system_storage.root_dir, prefix)
+    assert result == os.path.join(file_system_storage.root_prefix, prefix)
 
 
 def test_pull(tmp_path, file_system_storage):
@@ -99,9 +99,7 @@ def test_remove(file_exists, should_call_delete, tmp_path, file_system_storage):
         # Remove the file
         assert file_system_storage._remove(prefix) == should_call_delete
         # The file no longer exists
-        assert not os.path.exists(
-            os.path.join(file_system_storage.root_dir, prefix)
-        )
+        assert not os.path.exists(os.path.join(file_system_storage.root_prefix, prefix))
     except:
         # Should fail gracefully here
         pytest.fail("Remove raised an exception")
@@ -116,9 +114,7 @@ def test_read_json_objects_ignores_non_json(tmp_path, file_system_storage):
             out.write(json.dumps({"key": "value"}))
 
         # Push the file to storage
-        remote_destination = os.path.join(
-            prefix, f"test-file-destination.{file_type}"
-        )
+        remote_destination = os.path.join(prefix, f"test-file-destination.{file_type}")
         file_system_storage._push(source, remote_destination)
 
     # Read the json files at the prefix
@@ -147,7 +143,7 @@ def test_storage_location(file_system_storage):
     prefix = remote_file_path()
     exp = {
         "type": "file_system",
-        "path": os.path.join(file_system_storage.root_dir, prefix),
+        "path": os.path.join(file_system_storage.root_prefix, prefix),
     }
     result = file_system_storage._storage_location(prefix)
     assert result == exp
@@ -181,9 +177,7 @@ def test_get_location(file_system_storage, meta_data, should_raise, result):
         ("state-2", True, True),
     ],
 )
-def test_state_exists(
-    file_system_storage, state_name, should_create, expect_exists
-):
+def test_state_exists(file_system_storage, state_name, should_create, expect_exists):
     if should_create:
         file_system_storage.create_model_state(state_name)
     assert file_system_storage.state_exists(state_name) == expect_exists
