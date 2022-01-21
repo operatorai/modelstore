@@ -39,15 +39,12 @@ class HostedStorage(CloudStorage):
         "optional": [],
     }
 
-    def __init__(
-        self, access_key_id: Optional[str], secret_access_key: Optional[str]
-    ):
+    def __init__(self, access_key_id: Optional[str], secret_access_key: Optional[str]):
         super().__init__([])
         self.access_key_id = _get_environ(access_key_id, "MODELSTORE_KEY_ID")
         self.secret_access_key = _get_environ(
             secret_access_key, "MODELSTORE_ACCESS_KEY"
         )
-        self.root_dir = ""
 
     def validate(self) -> bool:
         """ Requires an ACCESS_KEY_ID and SECRET_ACCESS_KEY """
@@ -89,9 +86,7 @@ class HostedStorage(CloudStorage):
             "type": "operator:cloud-storage",
         }
 
-    def list_versions(
-        self, domain: str, state_name: Optional[str] = None
-    ) -> list:
+    def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
         """ Returns a list of a model's versions """
         # @TODO enable filtering by state-name
         rsp = self._post("list-models", {"domain": domain})

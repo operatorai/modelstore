@@ -65,7 +65,7 @@ def test_state_exists(mock_blob_storage):
 
 def test_get_metadata_path(mock_blob_storage):
     exp = os.path.join(
-        mock_blob_storage.root_dir,
+        mock_blob_storage.root_prefix,
         MODELSTORE_ROOT_PREFIX,
         "domain",
         "versions",
@@ -86,14 +86,12 @@ def test_set_meta_data(mock_blob_storage):
     # Expected two uploads
     # (1) The meta data for the 'latest' model
     meta_data = os.path.join(
-        mock_blob_storage.root_dir, get_domain_path("", "test-domain")
+        mock_blob_storage.root_prefix, get_domain_path("", "test-domain")
     )
     assert get_file_contents(meta_data) == meta_str
 
     # (2) The meta data for a specific model
-    meta_data_path = mock_blob_storage._get_metadata_path(
-        "test-domain", "model-123"
-    )
+    meta_data_path = mock_blob_storage._get_metadata_path("test-domain", "model-123")
     assert get_file_contents(meta_data_path) == meta_str
 
 
@@ -117,8 +115,8 @@ def test_upload(mock_blob_storage, tmp_path):
     Path(source).touch()
 
     model_path = os.path.join(
-        mock_blob_storage.root_dir,
-        get_archive_path(mock_blob_storage.root_dir, "test-domain", source),
+        mock_blob_storage.root_prefix,
+        get_archive_path(mock_blob_storage.root_prefix, "test-domain", source),
     )
     rsp = mock_blob_storage.upload("test-domain", source)
     assert rsp["type"] == "file_system"
@@ -141,8 +139,8 @@ def test_upload_extras(mock_blob_storage, tmp_path):
 
     # The model will be uploaded to the right place
     model_path = os.path.join(
-        mock_blob_storage.root_dir,
-        get_archive_path(mock_blob_storage.root_dir, "test-domain", source),
+        mock_blob_storage.root_prefix,
+        get_archive_path(mock_blob_storage.root_prefix, "test-domain", source),
     )
     assert rsp["path"] == model_path
     assert os.path.exists(model_path)
@@ -201,7 +199,8 @@ def test_create_model_state(mock_blob_storage):
 
     # Assert that a file at this location was created
     state_path = os.path.join(
-        mock_blob_storage.root_dir, get_model_state_path("production")
+        mock_blob_storage.root_prefix,
+        get_model_state_path(mock_blob_storage.root_prefix, "production"),
     )
     state_meta = json.loads(get_file_contents(state_path))
     assert state_meta["state_name"] == "production"

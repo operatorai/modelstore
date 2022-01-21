@@ -20,55 +20,64 @@ from modelstore.storage.util import paths
 # pylint: disable=protected-access
 
 
-def test_get_archive_path_no_root_dir():
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_archive_path(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
     prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "file-name")
-    res = paths.get_archive_path("", "domain", "path/to/file-name")
-    assert exp == res
-
-def test_get_archive_path_with_root_dir(tmp_path):
-    prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
-    tmp_path = str(tmp_path)
-    exp = os.path.join(tmp_path, paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "file-name")
-    res = paths.get_archive_path(tmp_path, "domain", "path/to/file-name")
-    assert exp == res
-
-
-def test_get_versions_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions")
-    res = paths.get_versions_path("", "example-domain")
-    assert exp == res
-
-
-def test_get_versions_path_with_state():
     exp = os.path.join(
-        paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions", "prod"
+        root, paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "file-name"
     )
-    res = paths.get_versions_path("", "example-domain", "prod")
+    res = paths.get_archive_path(root, "domain", "path/to/file-name")
     assert exp == res
 
 
-def test_get_domains_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domains")
-    res = paths.get_domains_path()
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_versions_path_no_root_prefix(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
+    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions")
+    res = paths.get_versions_path(root, "example-domain")
     assert exp == res
 
 
-def test_get_domain_path():
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_versions_path_with_state(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
+    exp = os.path.join(
+        root, paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions", "prod"
+    )
+    res = paths.get_versions_path(root, "example-domain", "prod")
+    assert exp == res
+
+
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_domains_path(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
+    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "domains")
+    res = paths.get_domains_path(root)
+    assert exp == res
+
+
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_domain_path(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
     exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domains", "domain.json")
     res = paths.get_domain_path("", "domain")
     assert exp == res
 
 
-def test_get_model_states_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "model_states")
-    res = paths.get_model_states_path()
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_model_states_path(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
+    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "model_states")
+    res = paths.get_model_states_path(root)
     assert exp == res
 
 
-def test_get_model_state_path():
-    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "model_states", "prod.json")
-    res = paths.get_model_state_path("prod")
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_model_state_path(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
+    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "model_states", "prod.json")
+    res = paths.get_model_state_path(root, "prod")
     assert exp == res
 
 

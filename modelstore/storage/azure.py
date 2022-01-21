@@ -45,36 +45,35 @@ class AzureBlobStorage(BlobStorage):
             "AZURE_ACCESS_KEY",
             "AZURE_STORAGE_CONNECTION_STRING",
         ],
-        "optional": [],
+        "optional": [
+            "MODEL_STORE_ROOT_PREFIX",
+        ],
     }
 
     def __init__(
         self,
         container_name: Optional[str] = None,
+        root_prefix: Optional[str] = None,
         client: "azure.storage.blobage.BlobClient" = None,
         environ_key: str = "AZURE_STORAGE_CONNECTION_STRING",
     ):
-        super().__init__(["azure.storage.blob"])
+        super().__init__(["azure.storage.blob"], root_prefix)
+        # If arguments are None, try to populate them using environment variables
         self.container_name = environment.get_value(
             container_name, "MODEL_STORE_AZURE_CONTAINER"
         )
         self.connection_string_key = environ_key
         self.__client = client
-        self.root_dir = ""
 
     @property
     def client(self) -> "azure.storage.blobage.BlobClient":
         if not AZURE_EXISTS:
             raise ImportError("Please install azure-storage-blob")
         if self.connection_string_key not in os.environ:
-            raise Exception(
-                f"{self.connection_string_key} is not in os.environ"
-            )
+            raise Exception(f"{self.connection_string_key} is not in os.environ")
         if self.__client is None:
             connect_str = os.environ[self.connection_string_key]
-            self.__client = BlobServiceClient.from_connection_string(
-                connect_str
-            )
+            self.__client = BlobServiceClient.from_connection_string(connect_str)
         return self.__client
 
     def _container_client(self):
@@ -97,9 +96,7 @@ class AzureBlobStorage(BlobStorage):
 
     def validate(self) -> bool:
         """ Checks that the Azure container exists """
-        logger.debug(
-            "Querying for containers with name=%s...", self.container_name
-        )
+        logger.debug("Querying for containers with name=%s...", self.container_name)
         return self._container_client().exists()
 
     def _push(self, source: str, destination: str) -> str:

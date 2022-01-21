@@ -42,7 +42,10 @@ class ModelStore:
 
     @classmethod
     def from_aws_s3(
-        cls, bucket_name: Optional[str] = None, region: Optional[str] = None,  root_dir: Optional[str]=None,
+        cls,
+        bucket_name: Optional[str] = None,
+        region: Optional[str] = None,
+        root_prefix: Optional[str] = None,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an AWS s3
         bucket.
@@ -51,17 +54,23 @@ class ModelStore:
         if not BOTO_EXISTS:
             raise ModuleNotFoundError("boto3 is not installed!")
         return ModelStore(
-            storage=AWSStorage(bucket_name=bucket_name, region=region, root_dir=root_dir)
+            storage=AWSStorage(
+                bucket_name=bucket_name, region=region, root_prefix=root_prefix
+            )
         )
 
     @classmethod
-    def from_azure(cls, container_name: Optional[str] = None) -> "ModelStore":
+    def from_azure(
+        cls, container_name: Optional[str] = None, root_prefix: Optional[str] = None
+    ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an
         Azure blob container. This assumes that the container already exists."""
         if not AZURE_EXISTS:
             raise ModuleNotFoundError("azure-storage-blob is not installed!")
         return ModelStore(
-            storage=AzureBlobStorage(container_name=container_name),
+            storage=AzureBlobStorage(
+                container_name=container_name, root_prefix=root_prefix
+            )
         )
 
     @classmethod
@@ -69,19 +78,20 @@ class ModelStore:
         cls,
         project_name: Optional[str] = None,
         bucket_name: Optional[str] = None,
+        root_prefix: Optional[str] = None,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to a
         Google Cloud Bucket. This assumes that the Cloud bucket already exists."""
         if not GCLOUD_EXISTS:
             raise ModuleNotFoundError("google.cloud is not installed!")
         return ModelStore(
-            storage=GoogleCloudStorage(project_name, bucket_name),
+            storage=GoogleCloudStorage(
+                project_name, bucket_name, root_prefix=root_prefix
+            )
         )
 
     @classmethod
-    def from_file_system(
-        cls, root_directory: Optional[str] = None
-    ) -> "ModelStore":
+    def from_file_system(cls, root_directory: Optional[str] = None) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         the local file system."""
         return ModelStore(storage=FileSystemStorage(root_directory))
@@ -94,9 +104,7 @@ class ModelStore:
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         a managed system. Requires API keys."""
-        return ModelStore(
-            storage=HostedStorage(access_key_id, secret_access_key)
-        )
+        return ModelStore(storage=HostedStorage(access_key_id, secret_access_key))
 
     def __post_init__(self):
         if not self.storage.validate():
@@ -119,9 +127,7 @@ class ModelStore:
         """ Returns the meta-data for a given model """
         return self.storage.get_meta_data(domain, model_id)
 
-    def list_versions(
-        self, domain: str, state_name: Optional[str] = None
-    ) -> list:
+    def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
         """Returns a list of dicts, containing info about the
         models that have been uploaded to a domain; if state_name
         is given results are filtered to models set to that state"""
@@ -148,9 +154,7 @@ class ModelStore:
                     return manager.load(model_files, meta_data)
         raise ValueError("unable to load model with type: ", ml_library)
 
-    def download(
-        self, local_path: str, domain: str, model_id: str = None
-    ) -> str:
+    def download(self, local_path: str, domain: str, model_id: str = None) -> str:
         local_path = os.path.abspath(local_path)
         archive_path = self.storage.download(local_path, domain, model_id)
         with tarfile.open(archive_path, "r:gz") as tar:

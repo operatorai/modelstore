@@ -40,7 +40,9 @@ def get_archive_path(root_dir: str, domain: str, local_path: str) -> str:
     return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, prefix, file_name)
 
 
-def get_versions_path(root_dir: str, domain: str, state_name: Optional[str] = None) -> str:
+def get_versions_path(
+    root_dir: str, domain: str, state_name: Optional[str] = None
+) -> str:
     """Creates a path where a meta-data file about a model is stored.
     I.e.: :code:`operatorai-model-store/<domain>/versions/`
 
@@ -50,11 +52,13 @@ def get_versions_path(root_dir: str, domain: str, state_name: Optional[str] = No
         state_name (str): A model's state tag (e.g. "prod" or "archived")
     """
     if state_name is not None:
-        return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions", state_name)
+        return os.path.join(
+            root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions", state_name
+        )
     return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions")
 
 
-def get_domains_path(root_dir: str = "") -> str:
+def get_domains_path(root_dir: str) -> str:
     """Creates a path where meta-data about the latest trained model
     is stored, i.e.: :code:`operatorai-model-store/domains/`
     """
@@ -73,7 +77,7 @@ def get_domain_path(root_dir: str, domain: str) -> str:
     return os.path.join(domains_path, f"{domain}.json")
 
 
-def get_model_states_path() -> str:
+def get_model_states_path(root_dir: str) -> str:
     """Creates a path where meta-data about the model states are
     stored, i.e.: :code:`operatorai-model-store/model_states/`
 
@@ -81,17 +85,17 @@ def get_model_states_path() -> str:
         domain (str): A group of models that are trained for the
         same end-use are given the same domain.
     """
-    return os.path.join(MODELSTORE_ROOT_PREFIX, "model_states")
+    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, "model_states")
 
 
-def get_model_state_path(state_name: str) -> str:
+def get_model_state_path(root_dir: str, state_name: str) -> str:
     """Creates a path where meta-data about a model states is
     stored, i.e.: :code:`operatorai-model-store/model_states/<state_name>.json`
 
     Args:
         state_name (str): The name of the model state (e.g., "prod").
     """
-    model_states = get_model_states_path()
+    model_states = get_model_states_path(root_dir)
     return os.path.join(model_states, f"{state_name}.json")
 
 

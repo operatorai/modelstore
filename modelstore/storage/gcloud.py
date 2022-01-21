@@ -45,24 +45,23 @@ class GoogleCloudStorage(BlobStorage):
     NAME = "google-cloud-storage"
     BUILD_FROM_ENVIRONMENT = {
         "required": ["MODEL_STORE_GCP_PROJECT", "MODEL_STORE_GCP_BUCKET"],
-        "optional": [],
+        "optional": ["MODEL_STORE_ROOT_PREFIX"],
     }
 
     def __init__(
         self,
         project_name: Optional[str] = None,
         bucket_name: Optional[str] = None,
+        root_prefix: Optional[str] = None,
         client: "storage.Client" = None,
     ):
-        super().__init__(["google.cloud.storage"])
+        super().__init__(["google.cloud.storage"], root_prefix)
+        # If arguments are None, try to populate them using environment variables
+        self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_GCP_BUCKET")
         self.project_name = environment.get_value(
             project_name, "MODEL_STORE_GCP_PROJECT"
         )
-        self.bucket_name = environment.get_value(
-            bucket_name, "MODEL_STORE_GCP_BUCKET"
-        )
         self.__client = client
-        self.root_dir = ""
 
     @property
     def client(self) -> "storage.Client":

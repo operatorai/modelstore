@@ -94,7 +94,7 @@ def mock_manager(tmpdir):
 
 
 def test_collect_files(mock_manager):
-    tmp_path = mock_manager.storage.root_dir
+    tmp_path = mock_manager.storage.root_prefix
     exp = sorted(
         [
             os.path.join(tmp_path, "model-info.json"),
