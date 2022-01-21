@@ -39,6 +39,10 @@ class BlobStorage(CloudStorage):
 
     __metaclass__ = ABCMeta
 
+    def __init__(self, required_deps: list, root_prefix: str = None):
+        super().__init__(required_deps)
+        self.root_prefix = root_prefix if root_prefix is not None else ""
+
     @abstractmethod
     def _push(self, source: str, destination: str) -> str:
         """ Pushes a file from a source to a destination """
@@ -96,9 +100,7 @@ class BlobStorage(CloudStorage):
             return
         local_file_name = os.path.split(local_path)[1]
         if local_file_name == "artifacts.tar.gz":
-            raise ValueError(
-                "Name conflict in extras: cannot use 'artifacts.tar.gz'"
-            )
+            raise ValueError("Name conflict in extras: cannot use 'artifacts.tar.gz'")
         remote_file_path = os.path.join(remote_path, local_file_name)
         self._push(local_path, remote_file_path)
 
@@ -164,9 +166,7 @@ class BlobStorage(CloudStorage):
         domains = self._read_json_objects(domains)
         return [d["model"]["domain"] for d in domains]
 
-    def list_versions(
-        self, domain: str, state_name: Optional[str] = None
-    ) -> list:
+    def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
         versions_path = get_versions_path(self.root_dir, domain, state_name)
@@ -217,9 +217,7 @@ class BlobStorage(CloudStorage):
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_model_path = self._pull(model_path, tmp_dir)
             self._push(local_model_path, model_state_path)
-        logger.debug(
-            "Successfully set %s=%s from %s", domain, model_id, state_name
-        )
+        logger.debug("Successfully set %s=%s from %s", domain, model_id, state_name)
 
     def unset_model_state(self, domain: str, model_id: str, state_name: str):
         """ Removes the given model ID from the set that are in the state_name path """

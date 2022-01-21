@@ -45,20 +45,27 @@ class AzureBlobStorage(BlobStorage):
             "AZURE_ACCESS_KEY",
             "AZURE_STORAGE_CONNECTION_STRING",
         ],
-        "optional": [],
+        "optional": [
+            "MODEL_STORE_ROOT_PREFIX",
+        ],
     }
 
     def __init__(
         self,
         container_name: Optional[str] = None,
-        client: "azure.storage.blobage.BlobClient" = None,
         root_prefix: Optional[str] = None,
+        client: "azure.storage.blobage.BlobClient" = None,
         environ_key: str = "AZURE_STORAGE_CONNECTION_STRING",
     ):
-        super().__init__(["azure.storage.blob"], root_prefix)
+        # If arguments are None, try to populate them using environment
+        # variables
+        root_prefix = environment.get_value(
+            root_prefix, "MODEL_STORE_ROOT_PREFIX", allow_missing=True
+        )
         self.container_name = environment.get_value(
             container_name, "MODEL_STORE_AZURE_CONTAINER"
         )
+        super().__init__(["azure.storage.blob"], root_prefix)
         self.connection_string_key = environ_key
         self.__client = client
 

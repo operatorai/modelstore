@@ -45,7 +45,10 @@ class AWSStorage(BlobStorage):
             "AWS_ACCESS_KEY_ID",
             "AWS_SECRET_ACCESS_KEY",
         ],
-        "optional": ["MODEL_STORE_REGION"],
+        "optional": [
+            "MODEL_STORE_REGION",
+            "MODEL_STORE_ROOT_PREFIX",
+        ],
     }
 
     def __init__(
@@ -54,11 +57,16 @@ class AWSStorage(BlobStorage):
         region: Optional[str] = None,
         root_prefix: Optional[str] = None,
     ):
-        super().__init__(["boto3"], root_prefix)
+        # If arguments are None, try to populate them using environment
+        # variables
+        root_prefix = environment.get_value(
+            root_prefix, "MODEL_STORE_ROOT_PREFIX", allow_missing=True
+        )
         self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_AWS_BUCKET")
         self.region = environment.get_value(
             region, "MODEL_STORE_REGION", allow_missing=True
         )
+        super().__init__(["boto3"], root_prefix)
         self.__client = None
 
     @property
