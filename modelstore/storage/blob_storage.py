@@ -91,7 +91,7 @@ class BlobStorage(CloudStorage):
             model_id (str): A UUID4 string that identifies this specific
             model.
         """
-        versions_path = get_versions_path(self.root_dir, domain, state_name)
+        versions_path = get_versions_path(self.root_prefix, domain, state_name)
         return os.path.join(versions_path, f"{model_id}.json")
 
     def _upload_extra(self, local_path: str, remote_path: str):
@@ -111,7 +111,7 @@ class BlobStorage(CloudStorage):
         extras: Optional[Union[str, list]] = None,
     ) -> dict:
         # Upload the archive into storage
-        archive_remote_path = get_archive_path(self.root_dir, domain, local_path)
+        archive_remote_path = get_archive_path(self.root_prefix, domain, local_path)
         prefix = self._push(local_path, archive_remote_path)
         if extras:
             # If any extras have been defined, they are uploaded
@@ -132,7 +132,7 @@ class BlobStorage(CloudStorage):
             with open(local_path, "w") as out:
                 out.write(json.dumps(meta_data))
             self._push(local_path, self._get_metadata_path(domain, model_id))
-            self._push(local_path, get_domain_path(self.root_dir, domain))
+            self._push(local_path, get_domain_path(self.root_prefix, domain))
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
         """ Returns a model's meta data """
@@ -150,7 +150,7 @@ class BlobStorage(CloudStorage):
         domain"""
         model_meta = None
         if model_id is None:
-            model_domain = get_domain_path(self.root_dir, domain)
+            model_domain = get_domain_path(self.root_prefix, domain)
             model_meta = self._read_json_object(model_domain)
             logger.info("Latest model is: %s", model_meta["model"]["model_id"])
         else:
@@ -162,14 +162,14 @@ class BlobStorage(CloudStorage):
 
     def list_domains(self) -> list:
         """ Returns a list of all the existing model domains """
-        domains = get_domains_path(self.root_dir)
+        domains = get_domains_path(self.root_prefix)
         domains = self._read_json_objects(domains)
         return [d["model"]["domain"] for d in domains]
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
-        versions_path = get_versions_path(self.root_dir, domain, state_name)
+        versions_path = get_versions_path(self.root_prefix, domain, state_name)
         versions = self._read_json_objects(versions_path)
         # @TODO sort models by creation time stamp
         return [v["model"]["model_id"] for v in versions]
