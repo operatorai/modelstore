@@ -154,7 +154,9 @@ class FileSystemStorage(BlobStorage):
             return False
         # @TODO this function can be removed once get_model_state_path
         # doesn't need to be called with relative_dir()
-        state_path = self.relative_dir(get_model_state_path(state_name))
+        state_path = self.relative_dir(
+            get_model_state_path(self.root_prefix, state_name)
+        )
         return os.path.exists(state_path)
 
 

@@ -184,7 +184,7 @@ class BlobStorage(CloudStorage):
         if not is_valid_state_name(state_name):
             return False
         try:
-            state_path = get_model_state_path(state_name)
+            state_path = get_model_state_path(self.root_prefix, state_name)
             with tempfile.TemporaryDirectory() as tmp_dir:
                 self._pull(state_path, tmp_dir)
             return True
@@ -210,7 +210,7 @@ class BlobStorage(CloudStorage):
                     "state_name": state_name,
                 }
                 out.write(json.dumps(state_data))
-            self._push(version_path, get_model_state_path(state_name))
+            self._push(version_path, get_model_state_path(self.root_prefix, state_name))
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """ Adds the given model ID to the set that are in the state_name path """

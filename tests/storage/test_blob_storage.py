@@ -199,7 +199,8 @@ def test_create_model_state(mock_blob_storage):
 
     # Assert that a file at this location was created
     state_path = os.path.join(
-        mock_blob_storage.root_prefix, get_model_state_path("production")
+        mock_blob_storage.root_prefix,
+        get_model_state_path(mock_blob_storage.root_prefix, "production"),
     )
     state_meta = json.loads(get_file_contents(state_path))
     assert state_meta["state_name"] == "production"
