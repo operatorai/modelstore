@@ -45,6 +45,11 @@ class FileSystemStorage(BlobStorage):
 
     def __init__(self, root_dir: Optional[str] = None):
         super().__init__([])
+        # If root_dir is None, check whether the user has set it as
+        # an environment variable
+        root_dir = environment.get_value(root_dir, "MODEL_STORE_ROOT", allow_missing=True)
+        if root_dir is None:
+            raise Exception("Error: cannot create a file system model store without a root directory")
 
         if MODELSTORE_ROOT_PREFIX in root_dir:
             warnings.warn(
