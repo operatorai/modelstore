@@ -19,7 +19,6 @@ from pathlib import Path
 from typing import Optional
 
 from modelstore.storage.blob_storage import BlobStorage
-from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
     get_model_state_path,
@@ -38,48 +37,42 @@ class FileSystemStorage(BlobStorage):
     NAME = "filesystem"
     BUILD_FROM_ENVIRONMENT = {
         "required": [
-            "MODEL_STORE_ROOT",
+            "MODEL_STORE_ROOT_PREFIX",
         ],
         "optional": [],
     }
 
     def __init__(self, root_dir: Optional[str] = None):
-        super().__init__([])
-        # If root_dir is None, check whether the user has set it as
-        # an environment variable
-        root_dir = environment.get_value(root_dir, "MODEL_STORE_ROOT", allow_missing=True)
-        if root_dir is None:
-            raise Exception("Error: cannot create a file system model store without a root directory")
-
+        super().__init__([], root_prefix=root_dir)
+        if self.root_prefix == "":
+            raise Exception(
+                "Error: cannot create a file system model store without a root directory"
+            )
         if MODELSTORE_ROOT_PREFIX in root_dir:
             warnings.warn(
                 f'Warning: "{MODELSTORE_ROOT_PREFIX}" is in the root path, and is a value'
                 + " that this library usually appends. Is this intended?"
             )
-        root_path = os.path.abspath(root_dir)
-        self.root_dir = root_path
-        logger.debug("Root is: %s", self.root_dir)
+        self.root_prefix = os.path.abspath(root_dir)
 
     def validate(self) -> bool:
-        """This validates that the directory exists
-        and can be written to"""
+        """This validates that the directory exists and can be written to"""
         # pylint: disable=broad-except
         parent_dir = os.path.split(self.root_dir)[0]
-
         if not os.path.exists(parent_dir):
-            raise Exception("Error: Parent directory to root dir '%s' does not exist", parent_dir)
-            
+            raise Exception(
+                "Error: Parent directory to root dir '%s' does not exist", parent_dir
+            )
+
         try:
             # Check we can write to it
             source = os.path.join(self.root_dir, ".operator-ai")
             Path(source).touch()
             os.remove(source)
+            return True
         except Exception as ex:
             logger.error(ex)
-
-
-        return True
-
+            return False
 
     def _get_metadata_path(
         self, domain: str, model_id: str, state_name: Optional[str] = None
@@ -94,9 +87,7 @@ class FileSystemStorage(BlobStorage):
             model_id (str): A UUID4 string that identifies this specific
             model.
         """
-        meta_data_path = super()._get_metadata_path(
-            domain, model_id, state_name
-        )
+        meta_data_path = super()._get_metadata_path(domain, model_id, state_name)
         return self.relative_dir(meta_data_path)
 
     def _push(self, source: str, destination: str) -> str:

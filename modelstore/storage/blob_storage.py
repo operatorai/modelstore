@@ -19,6 +19,7 @@ from datetime import datetime
 from typing import Optional, Union
 
 from modelstore.storage.storage import CloudStorage
+from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
     get_archive_path,
     get_domain_path,
@@ -41,7 +42,11 @@ class BlobStorage(CloudStorage):
 
     def __init__(self, required_deps: list, root_prefix: str = None):
         super().__init__(required_deps)
+        root_prefix = environment.get_value(
+            root_prefix, "MODEL_STORE_ROOT_PREFIX", allow_missing=True
+        )
         self.root_prefix = root_prefix if root_prefix is not None else ""
+        logger.debug("Root prefix is: %s", self.root_prefix)
 
     @abstractmethod
     def _push(self, source: str, destination: str) -> str:

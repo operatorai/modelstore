@@ -55,16 +55,12 @@ class GoogleCloudStorage(BlobStorage):
         root_prefix: Optional[str] = None,
         client: "storage.Client" = None,
     ):
-        # If arguments are None, try to populate them using environment
-        # variables
-        root_prefix = environment.get_value(
-            root_prefix, "MODEL_STORE_ROOT_PREFIX", allow_missing=True
-        )
+        super().__init__(["google.cloud.storage"], root_prefix)
+        # If arguments are None, try to populate them using environment variables
+        self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_GCP_BUCKET")
         self.project_name = environment.get_value(
             project_name, "MODEL_STORE_GCP_PROJECT"
         )
-        self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_GCP_BUCKET")
-        super().__init__(["google.cloud.storage"], root_prefix)
         self.__client = client
 
     @property
