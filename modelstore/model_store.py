@@ -145,7 +145,7 @@ class ModelStore:
         # If we match on more than one manager (e.g., a model
         # and an explainer)
         manager = MultipleModelsManager(managers, self.storage)
-        return manager.upload(**kwargs)
+        return manager.upload(domain, **kwargs)
 
     def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)

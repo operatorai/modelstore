@@ -32,8 +32,7 @@ class ShapManager(ModelManager):
     def __init__(self, storage: CloudStorage = None):
         super().__init__(self.NAME, storage)
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return ["shap", "joblib"]
 
     def _required_kwargs(self):
@@ -57,9 +56,7 @@ class ShapManager(ModelManager):
             raise TypeError("Explainer is not a shap.Explainer!")
 
         return [
-            partial(
-                save_joblib, model=kwargs["explainer"], file_name=EXPLAINER_FILE
-            ),
+            partial(save_joblib, model=kwargs["explainer"], file_name=EXPLAINER_FILE),
         ]
 
     def load(self, model_path: str, meta_data: dict) -> "shap.Explainer":

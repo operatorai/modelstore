@@ -39,12 +39,10 @@ class PyTorchLightningManager(ModelManager):
     def __init__(self, storage: CloudStorage = None):
         super().__init__(self.NAME, storage)
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return ["pytorch_lightning"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["torch", "torchvision"]
 
@@ -75,9 +73,7 @@ class PyTorchLightningManager(ModelManager):
         modules = sys.modules.copy()
         for module_name in modules:
             try:
-                classes = inspect.getmembers(
-                    modules[module_name], inspect.isclass
-                )
+                classes = inspect.getmembers(modules[module_name], inspect.isclass)
                 classes = [c for c in classes if c[0] == class_name]
                 if len(classes) == 1:
                     return classes[0][1]
@@ -100,9 +96,7 @@ def _model_file_path(parent_dir: str) -> str:
     return os.path.join(parent_dir, MODEL_CHECKPOINT)
 
 
-def _save_lightning_model(
-    tmp_dir: str, trainer: "pytorch_lightning.Trainer"
-) -> str:
+def _save_lightning_model(tmp_dir: str, trainer: "pytorch_lightning.Trainer") -> str:
     file_path = _model_file_path(tmp_dir)
     trainer.save_checkpoint(file_path)
     return file_path

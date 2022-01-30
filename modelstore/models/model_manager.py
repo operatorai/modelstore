@@ -45,21 +45,18 @@ class ModelManager(ABC):
         are an instance of the current manager"""
         raise NotImplementedError()
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         """Returns a list of dependencies that
         must be pip installed for this ModelManager to work"""
         raise NotImplementedError()
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         """Returns a list of dependencies that, if installed
         are useful to log info about"""
         return ["pip", "setuptools", "numpy", "scipy", "pandas"]
 
-    @classmethod
-    def _get_dependencies(cls) -> list:
-        return cls.required_dependencies() + cls.optional_dependencies()
+    def _get_dependencies(self) -> list:
+        return self.required_dependencies() + self.optional_dependencies()
 
     @abstractmethod
     def _get_functions(self, **kwargs) -> list:

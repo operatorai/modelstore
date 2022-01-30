@@ -38,7 +38,13 @@ class MultipleModelsManager(ModelManager):
         requirements = []
         for manager in self.managers:
             requirements += manager._required_kwargs()
-        return requirements
+        return list(set(requirements))
+
+    def required_dependencies(self) -> list:
+        dependencies = []
+        for manager in self.managers:
+            dependencies += manager.required_dependencies()
+        return list(set(dependencies))
 
     def matches_with(self, **kwargs) -> bool:
         for manager in self.managers:
@@ -56,9 +62,7 @@ class MultipleModelsManager(ModelManager):
         """ Returns meta-data about the model's type """
         return {
             "library": self.ml_library,
-            "models": [
-                manager._model_info(**kwargs) for manager in self.managers
-            ],
+            "models": [manager._model_info(**kwargs) for manager in self.managers],
         }
 
     def _get_params(self, **kwargs) -> dict:

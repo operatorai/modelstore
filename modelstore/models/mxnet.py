@@ -34,12 +34,10 @@ class MxnetManager(ModelManager):
     def __init__(self, storage: CloudStorage = None):
         super().__init__(self.NAME, storage)
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return ["mxnet"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         return super().optional_dependencies() + ["onnx"]
 
     def _required_kwargs(self):
@@ -57,9 +55,7 @@ class MxnetManager(ModelManager):
         if not self.matches_with(**kwargs):
             raise TypeError("Model is not an mxnet nn.HybridBlock!")
         if "epoch" not in kwargs:
-            raise ValueError(
-                "Mxnet uploads require the 'epoch' kwarg to be set."
-            )
+            raise ValueError("Mxnet uploads require the 'epoch' kwarg to be set.")
 
         return [
             partial(

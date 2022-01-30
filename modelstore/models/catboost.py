@@ -42,8 +42,7 @@ class CatBoostManager(ModelManager):
     def __init__(self, storage: CloudStorage = None):
         super().__init__(self.NAME, storage)
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return ["catboost", "onnxruntime"]
 
     def _required_kwargs(self):

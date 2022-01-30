@@ -26,16 +26,12 @@ class MissingDepManager(ModelManager):
     and gives the user informative error messages
     """
 
+    NAME = "missing"
+
     def __init__(self, library: str, storage: CloudStorage = None):
-        super().__init__(storage)
+        super().__init__(self.NAME, storage)
         self.library = library
 
-    @classmethod
-    def name(cls) -> str:
-        """ Returns the name of this model type """
-        return "missing"
-
-    @classmethod
     def required_dependencies(cls) -> list:
         return []
 

@@ -35,12 +35,10 @@ class TransformersManager(ModelManager):
     def __init__(self, storage: CloudStorage = None):
         super().__init__(self.NAME, storage)
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return ["transformers"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["torch", "tensorflow"]
 

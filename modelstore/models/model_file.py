@@ -34,15 +34,11 @@ class ModelFileManager(ModelManager):
     def __init__(self, storage: CloudStorage = None):
         super().__init__(self.NAME, storage)
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         # The model manager does not depend on anything
         return []
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
-        """Returns a list of dependencies that, if installed
-        are useful to log info about"""
+    def optional_dependencies(self) -> list:
         return [
             "pip",
             "setuptools",
