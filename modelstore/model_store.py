@@ -17,7 +17,8 @@ import tempfile
 from dataclasses import dataclass
 from typing import Optional
 
-from modelstore.models.managers import iter_libraries, matching_managers
+from modelstore.models.managers import iter_libraries, matching_managers, get_manager
+from modelstore.models.model_manager import ModelManager
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
@@ -150,13 +151,13 @@ class ModelStore:
     def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)
         ml_library = meta_data["model"]["model_type"]["library"]
-        # pylint: disable=no-member
-        for manager in self._ml_libraries:
-            if manager.ml_library == ml_library:
-                with tempfile.TemporaryDirectory() as tmp_dir:
-                    model_files = self.download(tmp_dir, domain, model_id)
-                    return manager.load(model_files, meta_data)
-        raise ValueError("unable to load model with type: ", ml_library)
+        if ml_library == MultipleModelsManager.NAME:
+            manager = MultipleModelsManager([], self.storage)
+        else:
+            manager = get_manager(ml_library, self.storage)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_files = self.download(tmp_dir, domain, model_id)
+            return manager.load(model_files, meta_data)
 
     def download(self, local_path: str, domain: str, model_id: str = None) -> str:
         local_path = os.path.abspath(local_path)

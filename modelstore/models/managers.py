@@ -82,3 +82,12 @@ def matching_managers(managers: list, **kwargs) -> List[ModelManager]:
     if len(managers) == 0:
         raise ValueError("could not find matching manager")
     return managers
+
+
+def get_manager(name: str, storage: CloudStorage = None) -> ModelManager:
+    manager = _LIBRARIES[name](storage)
+    if all(module_exists(x) for x in manager.required_dependencies()):
+        return manager
+    raise ValueError(
+        "could not create manager for %s: dependencies not installed", name
+    )
