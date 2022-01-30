@@ -67,13 +67,14 @@ def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
     the ones that are available in the current environment,
     based on checking for dependencies.
     """
-    for library, mngr in _LIBRARIES.items():
-        if all(module_exists(x) for x in mngr.required_dependencies()):
-            logger.debug("Adding: %s", library)
-            yield library, mngr(storage)
+    for name, library in _LIBRARIES.items():
+        manager = library(storage)
+        if all(module_exists(x) for x in manager.required_dependencies()):
+            logger.debug("Adding: %s", name)
+            yield name, manager
         else:
-            logger.debug("Skipping: %s, not installed.", library)
-            yield library, MissingDepManager(library, storage)
+            logger.debug("Skipping: %s, not installed.", name)
+            yield name, MissingDepManager(name, storage)
 
 
 def matching_managers(managers: list, **kwargs) -> List[ModelManager]:
