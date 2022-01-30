@@ -45,21 +45,18 @@ class ModelManager(ABC):
         are an instance of the current manager"""
         raise NotImplementedError()
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         """Returns a list of dependencies that
         must be pip installed for this ModelManager to work"""
         raise NotImplementedError()
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         """Returns a list of dependencies that, if installed
         are useful to log info about"""
         return ["pip", "setuptools", "numpy", "scipy", "pandas"]
 
-    @classmethod
-    def _get_dependencies(cls) -> list:
-        return cls.required_dependencies() + cls.optional_dependencies()
+    def _get_dependencies(self) -> list:
+        return self.required_dependencies() + self.optional_dependencies()
 
     @abstractmethod
     def _get_functions(self, **kwargs) -> list:
@@ -67,13 +64,16 @@ class ModelManager(ABC):
         Returns a list of functions to call to save the model
         and any other required data
         """
-        raise NotImplementedError()
+        if not self.matches_with(**kwargs):
+            raise TypeError(f"This model is not an {self.ml_library} model!")
+        return []
 
     def _get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
         that are available
         """
+        # Note: explainer params are currently omitted
         return {}
 
     @abstractmethod

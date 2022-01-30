@@ -119,7 +119,6 @@ def test_matches_with(sklearn_manager, sklearn_tree):
     assert sklearn_manager.matches_with(model=sklearn_tree)
     assert not sklearn_manager.matches_with(model="a-string-value")
     assert not sklearn_manager.matches_with(classifier=sklearn_tree)
-    # assert not sklearn_manager.matches_with(model=xgb_model)
 
 
 def test_get_functions(sklearn_manager, sklearn_tree):

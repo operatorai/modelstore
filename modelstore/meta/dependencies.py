@@ -20,20 +20,21 @@ def _get_version(modname: str) -> str:
         if modname in sys.modules:
             mod = sys.modules[modname]
         else:
+            logger.debug("Trying to import: %s", modname)
             mod = importlib.import_module(modname)
         return mod.__version__
     except AttributeError:
         try:
             #  Annoy does not have a __version__
             return pkg_resources.get_distribution(modname).version
-        except:
+        except Exception:
             logger.debug("Unable to get %s's version", modname)
             return None
     except ImportError:
         logger.debug("%s is not installed.", modname)
         return None
     except Exception:
-        logger.error("Error importing %s.", modname)
+        logger.error("Error importing: %s.", modname)
         return None
 
 

@@ -33,15 +33,15 @@ class PyTorchManager(ModelManager):
     https://pytorch.org/tutorials/recipes/recipes/saving_and_loading_models_for_inference.html
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("pytorch", storage)
+    NAME = "pytorch"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["torch"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["torchvision"]
 
@@ -83,9 +83,7 @@ class PyTorchManager(ModelManager):
 
         if isinstance(kwargs.get("model"), torch.nn.Module):
             if "optimizer" in kwargs:
-                return isinstance(
-                    kwargs.get("optimizer"), torch.optim.Optimizer
-                )
+                return isinstance(kwargs.get("optimizer"), torch.optim.Optimizer)
             return True
         return False
 

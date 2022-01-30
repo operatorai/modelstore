@@ -19,7 +19,6 @@ from typing import Any
 from modelstore.meta import datasets
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
-from modelstore.models.util import convert_numpy
 from modelstore.storage.storage import CloudStorage
 
 MODEL_JOBLIB = "model.joblib"
@@ -32,15 +31,15 @@ class SKLearnManager(ModelManager):
     https://scikit-learn.org/stable/modules/model_persistence.html
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("sklearn", storage)
+    NAME = "sklearn"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["sklearn"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["Cython", "joblib", "threadpoolctl"]
 
@@ -68,9 +67,7 @@ class SKLearnManager(ModelManager):
         data = {}
         if "X_train" in kwargs:
             features = datasets.describe_dataset(kwargs["X_train"])
-            features.update(
-                _feature_importances(kwargs["model"], kwargs["X_train"])
-            )
+            features.update(_feature_importances(kwargs["model"], kwargs["X_train"]))
             data["features"] = features
         if "y_train" in kwargs:
             data["labels"] = datasets.describe_dataset(kwargs["y_train"])
@@ -81,9 +78,7 @@ class SKLearnManager(ModelManager):
             raise TypeError("This model is not an sklearn model!")
 
         # @Future idea: export/save in onnx format?
-        return [
-            partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB)
-        ]
+        return [partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB)]
 
     def _get_params(self, **kwargs) -> dict:
         """
@@ -113,9 +108,7 @@ class SKLearnManager(ModelManager):
         return load_joblib(file_name)
 
 
-def _feature_importances(
-    model: "BaseEstimator", x_train: "pandas.DataFrame"
-) -> dict:
+def _feature_importances(model: "BaseEstimator", x_train: "pandas.DataFrame") -> dict:
     result = {}
     if datasets.is_pandas_dataframe(x_train):
         weights = _get_weights(model)

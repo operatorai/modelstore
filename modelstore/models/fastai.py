@@ -32,18 +32,16 @@ class FastAIManager(ModelManager):
     https://docs.fast.ai/learner.html#Learner.export
     """
 
+    NAME = "fastai"
+
     def __init__(self, storage: CloudStorage = None):
-        super().__init__("fastai", storage)
+        super().__init__(self.NAME, storage)
 
-    @classmethod
-    def required_dependencies(cls) -> list:
-        return [
-            "fastai",
-        ]
+    def required_dependencies(self) -> list:
+        return ["fastai"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
-        deps = super(FastAIManager, cls).optional_dependencies()
+    def optional_dependencies(self) -> list:
+        deps = super(FastAIManager, self).optional_dependencies()
         return deps + [
             "matplotlib",
             "pillow",

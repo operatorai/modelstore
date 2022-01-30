@@ -31,11 +31,12 @@ class KerasManager(ModelManager):
     https://keras.io/guides/serialization_and_saving/
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("keras", storage)
+    NAME = "keras"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return [
             "h5py",
             "numpy",

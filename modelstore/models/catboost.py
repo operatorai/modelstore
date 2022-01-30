@@ -37,11 +37,12 @@ class CatBoostManager(ModelManager):
     https://catboost.ai/docs/concepts/apply-onnx-ml.html
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("catboost", storage)
+    NAME = "catboost"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["catboost", "onnxruntime"]
 
     def _required_kwargs(self):

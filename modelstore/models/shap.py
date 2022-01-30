@@ -13,7 +13,6 @@
 #    limitations under the License.
 import os
 from functools import partial
-from typing import Any
 
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
@@ -28,11 +27,12 @@ class ShapManager(ModelManager):
     Model persistence for shap expainers
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("shap", storage)
+    NAME = "shap"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["shap", "joblib"]
 
     def _required_kwargs(self):
@@ -46,11 +46,6 @@ class ShapManager(ModelManager):
         }
 
     def matches_with(self, **kwargs) -> bool:
-        # Exclude cases where the user wants to upload a model AND explainer
-        # this use case will be dealt with in other model managers
-        if len(kwargs) > 1:
-            return False
-
         # pylint: disable=import-outside-toplevel
         from shap import Explainer
 
@@ -61,9 +56,7 @@ class ShapManager(ModelManager):
             raise TypeError("Explainer is not a shap.Explainer!")
 
         return [
-            partial(
-                save_joblib, model=kwargs["explainer"], file_name=EXPLAINER_FILE
-            ),
+            partial(save_joblib, model=kwargs["explainer"], file_name=EXPLAINER_FILE),
         ]
 
     def load(self, model_path: str, meta_data: dict) -> "shap.Explainer":

@@ -32,15 +32,15 @@ class XGBoostManager(ModelManager):
     https://xgboost.readthedocs.io/en/latest/tutorials/saving_model.html
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("xgboost", storage)
+    NAME = "xgboost"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["xgboost"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["sklearn"]
 
@@ -106,9 +106,7 @@ def dump_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
     """
     logger.debug("Dumping xgboost model")
     model_file = os.path.join(tmp_dir, MODEL_JSON)
-    model.get_booster().dump_model(
-        model_file, with_stats=True, dump_format="json"
-    )
+    model.get_booster().dump_model(model_file, with_stats=True, dump_format="json")
     return model_file
 
 

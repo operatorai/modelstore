@@ -38,14 +38,16 @@ def create_gcloud_model_store() -> ModelStore:
     # The modelstore library assumes you have already created
     # a Cloud Storage bucket and will raise an exception if it doesn't exist
     return ModelStore.from_gcloud(
-        os.environ["MODEL_STORE_GCP_PROJECT"], os.environ["MODEL_STORE_GCP_BUCKET"],
+        os.environ["MODEL_STORE_GCP_PROJECT"],
+        os.environ["MODEL_STORE_GCP_BUCKET"],
     )
 
 
 def create_file_system_model_store() -> ModelStore:
     # A model store in a local file system
-    # Here, we create a new local model store in our home directory
-    home_dir = os.path.expanduser("~")
-    root_dir = os.path.join(home_dir, "test-modelstore")
+    # Here, we create a local model store the location specified
+    # in the MODEL_STORE_ROOT environment variable; and default to the
+    # user's home directory if that environment variable does not exist
+    root_dir = os.environ.get("MODEL_STORE_ROOT", os.path.expanduser("~"))
     print(f"🏦  Creating store in: {root_dir}")
     return ModelStore.from_file_system(root_directory=root_dir)

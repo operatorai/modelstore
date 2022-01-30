@@ -17,14 +17,15 @@ import tempfile
 from dataclasses import dataclass
 from typing import Optional
 
-from modelstore.models.managers import iter_libraries
+from modelstore.models.managers import iter_libraries, matching_managers, get_manager
+from modelstore.models.model_manager import ModelManager
+from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.storage.hosted import HostedStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.storage import CloudStorage
-from modelstore.utils.log import logger
 
 
 @dataclass(frozen=True)
@@ -64,7 +65,8 @@ class ModelStore:
         cls, container_name: Optional[str] = None, root_prefix: Optional[str] = None
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an
-        Azure blob container. This assumes that the container already exists."""
+        Azure blob container. This assumes that the container
+        already exists."""
         if not AZURE_EXISTS:
             raise ModuleNotFoundError("azure-storage-blob is not installed!")
         return ModelStore(
@@ -81,7 +83,8 @@ class ModelStore:
         root_prefix: Optional[str] = None,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to a
-        Google Cloud Bucket. This assumes that the Cloud bucket already exists."""
+        Google Cloud Bucket. This assumes that the Cloud bucket
+        already exists."""
         if not GCLOUD_EXISTS:
             raise ModuleNotFoundError("google.cloud is not installed!")
         return ModelStore(
@@ -111,12 +114,13 @@ class ModelStore:
             raise Exception(
                 f"Failed to set up the {type(self.storage).__name__} storage."
             )
-        # Supported machine learning model libraries
-        managers = []
+        # Add attributes for ML libraries that exist in the current
+        # environment
+        libraries = []
         for library, manager in iter_libraries(self.storage):
             object.__setattr__(self, library, manager)
-            managers.append(manager)
-        object.__setattr__(self, "_managers", managers)
+            libraries.append(manager)
+        object.__setattr__(self, "_libraries", libraries)
 
     def list_domains(self) -> list:
         """Returns a list of dicts, containing info about all
@@ -134,25 +138,26 @@ class ModelStore:
         return self.storage.list_versions(domain, state_name)
 
     def upload(self, domain: str, **kwargs) -> dict:
-        # pylint: disable=no-member
-        for manager in self._managers:
-            if manager.matches_with(**kwargs):
-                logger.debug(f"Auto matched with: %s", manager.ml_library)
-                return manager.upload(domain, **kwargs)
-        raise ValueError(
-            "unable to upload: could not find matching manager (did you add all of the required kwargs?)"
-        )
+        # Figure out which library the kwargs match with
+        managers = matching_managers(self._libraries, **kwargs)
+        if len(managers) == 1:
+            return managers[0].upload(domain, **kwargs)
+
+        # If we match on more than one manager (e.g., a model
+        # and an explainer)
+        manager = MultipleModelsManager(managers, self.storage)
+        return manager.upload(domain, **kwargs)
 
     def load(self, domain: str, model_id: str):
         meta_data = self.get_model_info(domain, model_id)
         ml_library = meta_data["model"]["model_type"]["library"]
-        # pylint: disable=no-member
-        for manager in self._managers:
-            if manager.ml_library == ml_library:
-                with tempfile.TemporaryDirectory() as tmp_dir:
-                    model_files = self.download(tmp_dir, domain, model_id)
-                    return manager.load(model_files, meta_data)
-        raise ValueError("unable to load model with type: ", ml_library)
+        if ml_library == MultipleModelsManager.NAME:
+            manager = MultipleModelsManager([], self.storage)
+        else:
+            manager = get_manager(ml_library, self.storage)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            model_files = self.download(tmp_dir, domain, model_id)
+            return manager.load(model_files, meta_data)
 
     def download(self, local_path: str, domain: str, model_id: str = None) -> str:
         local_path = os.path.abspath(local_path)

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+🆕   You can upload multiple models to the same archive, if they don't share any keywords. For example `modelstore.upload(domain, model=sklearn_model, explainer=shap_explainer)` can be used to upload and download models and explainers together.
+
 🆕   You can now set the root prefix of your model registry storage (thank you, [@cdknorow](https://github.com/cdknorow)!).
 
 🆕   Added to the CLI functionality! You can now `python -m modelstore upload <domain> <model-file>` to upload a model. This requires you to [set environment variables](https://modelstore.readthedocs.io/en/latest/concepts/cli.html).

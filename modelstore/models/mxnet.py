@@ -29,15 +29,15 @@ class MxnetManager(ModelManager):
     https://mxnet.apache.org/versions/1.8.0/api/python/docs/tutorials/packages/gluon/blocks/save_load_params.html
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("mxnet", storage)
+    NAME = "mxnet"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["mxnet"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         return super().optional_dependencies() + ["onnx"]
 
     def _required_kwargs(self):
@@ -55,9 +55,7 @@ class MxnetManager(ModelManager):
         if not self.matches_with(**kwargs):
             raise TypeError("Model is not an mxnet nn.HybridBlock!")
         if "epoch" not in kwargs:
-            raise ValueError(
-                "Mxnet uploads require the 'epoch' kwarg to be set."
-            )
+            raise ValueError("Mxnet uploads require the 'epoch' kwarg to be set.")
 
         return [
             partial(

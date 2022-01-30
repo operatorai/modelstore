@@ -31,11 +31,12 @@ class LightGbmManager(ModelManager):
     https://lightgbm.readthedocs.io/en/latest/Python-Intro.html#training
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("lightgbm", storage)
+    NAME = "lightgbm"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["lightgbm"]
 
     def _required_kwargs(self):

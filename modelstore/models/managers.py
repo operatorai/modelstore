@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Iterator
+from typing import Iterator, List
 
 from modelstore.meta.dependencies import module_exists
 from modelstore.models.annoy import AnnoyManager
@@ -37,32 +37,57 @@ from modelstore.models.xgboost import XGBoostManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
-ML_LIBRARIES = {
-    "annoy": AnnoyManager,
-    "catboost": CatBoostManager,
-    "fastai": FastAIManager,
-    "file": ModelFileManager,
-    "gensim": GensimManager,
-    "keras": KerasManager,
-    "lightgbm": LightGbmManager,
-    "mxnet": MxnetManager,
-    "onnx": OnnxManager,
-    "prophet": ProphetManager,
-    "pytorch": PyTorchManager,
-    "pytorch_lightning": PyTorchLightningManager,
-    "shap": ShapManager,
-    "sklearn": SKLearnManager,
-    "skorch": SkorchManager,
-    "tensorflow": TensorflowManager,
-    "transformers": TransformersManager,
-    "xgboost": XGBoostManager,
+_LIBRARIES = {
+    m.NAME: m
+    for m in [
+        AnnoyManager,
+        CatBoostManager,
+        FastAIManager,
+        ModelFileManager,
+        GensimManager,
+        KerasManager,
+        LightGbmManager,
+        MxnetManager,
+        OnnxManager,
+        ProphetManager,
+        PyTorchManager,
+        PyTorchLightningManager,
+        ShapManager,
+        SKLearnManager,
+        SkorchManager,
+        TensorflowManager,
+        TransformersManager,
+        XGBoostManager,
+    ]
 }
 
 
 def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
-    for library, mngr in ML_LIBRARIES.items():
-        if all(module_exists(x) for x in mngr.required_dependencies()):
-            yield library, mngr(storage)
+    """Iterates of a dict of ModelManagers and yields
+    the ones that are available in the current environment,
+    based on checking for dependencies.
+    """
+    for name, library in _LIBRARIES.items():
+        manager = library(storage)
+        if all(module_exists(x) for x in manager.required_dependencies()):
+            logger.debug("Adding: %s", name)
+            yield name, manager
         else:
-            logger.debug("Skipping: %s, not installed.", library)
-            yield library, MissingDepManager(library, storage)
+            logger.debug("Skipping: %s, not installed.", name)
+            yield name, MissingDepManager(name, storage)
+
+
+def matching_managers(managers: list, **kwargs) -> List[ModelManager]:
+    managers = [m for m in managers if m.matches_with(**kwargs)]
+    if len(managers) == 0:
+        raise ValueError("could not find matching manager")
+    return managers
+
+
+def get_manager(name: str, storage: CloudStorage = None) -> ModelManager:
+    manager = _LIBRARIES[name](storage)
+    if all(module_exists(x) for x in manager.required_dependencies()):
+        return manager
+    raise ValueError(
+        "could not create manager for %s: dependencies not installed", name
+    )

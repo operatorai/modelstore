@@ -17,6 +17,7 @@ from libraries import (
     raw_file_example,
     shap_example,
     sklearn_example,
+    sklearn_with_explainer_example,
     skorch_example,
     tensorflow_example,
     transformers_example,
@@ -39,6 +40,7 @@ EXAMPLES = {
     "pytorch-lightning": pytorch_lightning_example,
     "shap": shap_example,
     "sklearn": sklearn_example,
+    "sklearn-with-explainer": sklearn_with_explainer_example,
     "skorch": skorch_example,
     "tensorflow": tensorflow_example,
     "transformers": transformers_example,
@@ -73,8 +75,8 @@ def main(modelstore_in, ml_framework):
     meta_data = example.train_and_upload(modelstore)
 
     if modelstore_in != "hosted":
-        # Run the example: download and load a model
-        # Currently unimplemented in the hosted storage
+        # Run the example: downloading and loading a model
+        # is currently unimplemented in the "hosted" storage
         model_id = meta_data["model"]["model_id"]
         example.load_and_test(modelstore, model_id)
 

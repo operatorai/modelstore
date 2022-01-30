@@ -31,15 +31,15 @@ class SkorchManager(ModelManager):
     https://skorch.readthedocs.io/en/stable/user/save_load.html
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("skorch", storage)
+    NAME = "skorch"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["skorch", "torch"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["Cython", "joblib", "threadpoolctl"]
 

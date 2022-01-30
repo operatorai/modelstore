@@ -52,7 +52,7 @@ def download(domain: str, model_id: str, parent_dir: str):
     except SystemExit:
         # Failed to instantiate a model store from environment variables
         pass
-    except:
+    except Exception:
         modelstorecli.failure("❌  Failed to download model:")
         raise
 
@@ -73,7 +73,7 @@ def upload(domain: str, model: str):
     except SystemExit:
         # Failed to instantiate a model store from environment variables
         pass
-    except:
+    except Exception:
         modelstorecli.failure("❌  Failed to upload model:")
         raise
 

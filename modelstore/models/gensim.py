@@ -29,15 +29,15 @@ class GensimManager(ModelManager):
     https://scikit-learn.org/stable/modules/model_persistence.html
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("gensim", storage)
+    NAME = "gensim"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["gensim"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["Levenshtein"]
 
@@ -63,9 +63,7 @@ class GensimManager(ModelManager):
         params = kwargs["model"].__dict__
         # The instance attributes contain a lot of information, including
         # the model's keyed vectors; so we filter this down for now
-        params = {
-            k: v for k, v in params.items() if type(v) in [int, str, float]
-        }
+        params = {k: v for k, v in params.items() if type(v) in [int, str, float]}
         return params
 
     def load(self, model_path: str, meta_data: dict) -> Any:
@@ -74,9 +72,7 @@ class GensimManager(ModelManager):
 
         model_type = self._get_model_type(meta_data)
         if model_type != "Word2Vec":
-            raise ValueError(
-                f"modelstore cannot load gensim '{model_type}' models"
-            )
+            raise ValueError(f"modelstore cannot load gensim '{model_type}' models")
 
         model_file = _model_file_path(model_path)
         return Word2Vec.load(model_file)

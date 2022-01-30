@@ -17,7 +17,6 @@ from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
-from modelstore.utils.log import logger
 
 # pylint disable=import-outside-toplevel
 MODEL_DIRECTORY = "transformers"
@@ -31,15 +30,15 @@ class TransformersManager(ModelManager):
     https://github.com/huggingface/transformers/blob/e50a931c118b9f55f77a743bf703f436bf7a7c29/src/transformers/modeling_utils.py#L676
     """
 
-    def __init__(self, storage: CloudStorage = None):
-        super().__init__("transformers", storage)
+    NAME = "transformers"
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def __init__(self, storage: CloudStorage = None):
+        super().__init__(self.NAME, storage)
+
+    def required_dependencies(self) -> list:
         return ["transformers"]
 
-    @classmethod
-    def optional_dependencies(cls) -> list:
+    def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
         return deps + ["torch", "tensorflow"]
 
