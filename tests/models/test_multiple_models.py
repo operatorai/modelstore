@@ -12,13 +12,15 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json
+import os
 
 import pytest
 import shap as shp
+import numpy as np
 from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
-from modelstore.models.shap import ShapManager
-from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager
+from modelstore.models.shap import ShapManager, EXPLAINER_FILE
+from modelstore.models.sklearn import SKLearnManager, MODEL_JOBLIB
 from sklearn.ensemble import RandomForestRegressor
 from tests.models.utils import classification_data
 
@@ -57,8 +59,8 @@ def test_model_info_with_explainer(
     exp = {
         "library": "multiple-models",
         "models": [
-            {"library": "sklearn", "type": "RandomForestRegressor"},
-            {"library": "shap", "type": "Tree"},
+            {"library": SKLearnManager.NAME, "type": "RandomForestRegressor"},
+            {"library": ShapManager.NAME, "type": "Tree"},
         ],
     }
     res = multiple_model_manager._model_info(
@@ -104,14 +106,37 @@ def test_get_params(multiple_model_manager, sklearn_tree, shap_explainer):
         pytest.fail(f"Exception when dumping params: {str(e)}")
 
 
-# def test_load_model(tmp_path, sklearn_manager, sklearn_tree):
-#     # Save the model to a tmp directory
-#     model_path = save_joblib(tmp_path, sklearn_tree, MODEL_JOBLIB)
-#     assert model_path == os.path.join(tmp_path, MODEL_JOBLIB)
+def test_load_model(tmp_path, multiple_model_manager, sklearn_tree, shap_explainer):
+    # Save the model to a tmp directory
+    model_path = save_joblib(tmp_path, sklearn_tree, MODEL_JOBLIB)
+    assert model_path == os.path.join(tmp_path, MODEL_JOBLIB)
 
-#     #  Load the model
-#     loaded_model = sklearn_manager.load(tmp_path, {})
+    # Save the explainer to file
+    exp = os.path.join(tmp_path, EXPLAINER_FILE)
+    res = save_joblib(tmp_path, shap_explainer, file_name=EXPLAINER_FILE)
+    assert exp == res
 
-#     # Expect the two to be the same
-#     assert type(loaded_model) == type(sklearn_tree)
-#     assert loaded_model.get_params() == sklearn_tree.get_params()
+    #  Load the model
+    loaded_models = multiple_model_manager.load(
+        tmp_path,
+        {
+            "model": {
+                "model_type": {
+                    "models": [
+                        {"library": ShapManager.NAME},
+                        {"library": SKLearnManager.NAME},
+                    ]
+                }
+            }
+        },
+    )
+
+    # Expect the two models to have been loaded
+    assert len(loaded_models) == 2
+
+    sklearn_model = loaded_models[SKLearnManager.NAME]
+    assert type(sklearn_model) == type(sklearn_tree)
+    assert sklearn_model.get_params() == sklearn_tree.get_params()
+
+    explainer_model = loaded_models[ShapManager.NAME]
+    assert type(explainer_model) == type(shap_explainer)
