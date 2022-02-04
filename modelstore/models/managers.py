@@ -18,7 +18,6 @@ from modelstore.models.annoy import AnnoyManager
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.fastai import FastAIManager
 from modelstore.models.gensim import GensimManager
-from modelstore.models.keras import KerasManager
 from modelstore.models.lightgbm import LightGbmManager
 from modelstore.models.missing_manager import MissingDepManager
 from modelstore.models.model_file import ModelFileManager
@@ -45,7 +44,6 @@ _LIBRARIES = {
         FastAIManager,
         ModelFileManager,
         GensimManager,
-        KerasManager,
         LightGbmManager,
         MxnetManager,
         OnnxManager,

@@ -15,9 +15,11 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.models.common import save_json
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
+MODEL_CONFIG = "model_config.json"
 MODEL_CHECKPOINT = "checkpoint"
 MODEL_DIRECTORY = "model"
 
@@ -56,10 +58,20 @@ class TensorflowManager(ModelManager):
         return [
             partial(_save_weights, model=model),
             partial(_save_model, model=model),
+            partial(
+                save_json,
+                file_name=MODEL_CONFIG,
+                data=kwargs["model"].to_json(),
+            ),
         ]
 
     def _get_params(self, **kwargs) -> dict:
         return kwargs["model"].optimizer.get_config()
+
+    def _is_same_library(self, meta_data: dict) -> bool:
+        is_tf = super()._is_same_library(meta_data)
+        is_keras = meta_data.get("library") == "keras"
+        return is_tf or is_keras
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
@@ -80,7 +92,7 @@ def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
     return weights_path
 
 
-def _save_model(tmp_dir: str, model) -> str:
+def _save_model(tmp_dir: str, model: "keras.Model") -> str:
     model_path = _model_file_path(tmp_dir)
     os.makedirs(model_path)
     model.save(model_path)
