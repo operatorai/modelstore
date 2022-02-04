@@ -128,7 +128,7 @@ class AWSStorage(BlobStorage):
     def _read_json_objects(self, path: str) -> list:
         results = []
         objects = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=path)
-        for version in objects["Contents"]:
+        for version in objects.get("Contents", []):
             if not version["Key"].endswith(".json"):
                 continue
             obj = self._read_json_object(version["Key"])
