@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+import json
 
 import numpy as np
 import pytest
@@ -21,6 +22,7 @@ from modelstore.models.tensorflow import (
     TensorflowManager,
     _save_model,
     _save_weights,
+    save_json,
 )
 
 # pylint: disable=protected-access
@@ -46,7 +48,9 @@ def tf_manager():
     return TensorflowManager()
 
 
-def assert_models_equal(model_a: tf.keras.Model, model_b: tf.keras.Model):
+def assert_models_equal(
+    model_a: tf.keras.Model, model_b: tf.keras.Model, assert_predictions: bool = True
+):
     # Same high-level structure
     assert type(model_a) == type(model_b)
     assert model_a.count_params() == model_b.count_params()
@@ -55,15 +59,15 @@ def assert_models_equal(model_a: tf.keras.Model, model_b: tf.keras.Model):
     # Same structure
     for i in range(len(model_a.layers)):
         assert (
-            model_a.layers[i].__class__.__name__
-            == model_b.layers[i].__class__.__name__
+            model_a.layers[i].__class__.__name__ == model_b.layers[i].__class__.__name__
         )
 
     # Same predictions
-    test_input = np.random.random((128, 10))
-    np.testing.assert_allclose(
-        model_a.predict(test_input), model_b.predict(test_input)
-    )
+    if assert_predictions:
+        test_input = np.random.random((128, 10))
+        np.testing.assert_allclose(
+            model_a.predict(test_input), model_b.predict(test_input)
+        )
 
 
 def test_model_info(tf_manager):
@@ -76,6 +80,7 @@ def test_model_info(tf_manager):
     "ml_library,should_match",
     [
         ("tensorflow", True),
+        ("keras", True),
         ("xgboost", False),
     ],
 )
@@ -100,7 +105,7 @@ def test_matches_with(tf_manager, tf_model):
 
 
 def test_get_functions(tf_manager, tf_model):
-    assert len(tf_manager._get_functions(model=tf_model)) == 2
+    assert len(tf_manager._get_functions(model=tf_model)) == 3
 
 
 def test_get_params(tf_manager, tf_model):
@@ -133,6 +138,16 @@ def test_save_weights(tf_model, tmp_path):
     )
     loaded_model.load_weights(file_path).expect_partial()
     assert_models_equal(tf_model, loaded_model)
+
+
+def test_model_json(tf_model, tmp_path):
+    exp = os.path.join(tmp_path, "model_config.json")
+    file_path = save_json(tmp_path, "model_config.json", tf_model.to_json())
+    assert file_path == exp
+    with open(file_path, "r") as lines:
+        model_json = json.loads(lines.read())
+    model = tf.keras.models.model_from_json(model_json)
+    assert_models_equal(model, tf_model, assert_predictions=False)
 
 
 def test_load_model(tmp_path, tf_manager, tf_model):
