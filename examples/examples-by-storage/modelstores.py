@@ -17,7 +17,10 @@ def create_aws_model_store() -> ModelStore:
     # A model store in an AWS S3 bucket
     # The modelstore library assumes you have already created
     # an s3 bucket and will raise an exception if it doesn't exist
-    return ModelStore.from_aws_s3(os.environ["MODEL_STORE_AWS_BUCKET"], root_dir='example-by-ml-library')
+    return ModelStore.from_aws_s3(
+        os.environ["MODEL_STORE_AWS_BUCKET"],
+        root_prefix="example-by-ml-library",
+    )
 
 
 def create_azure_model_store() -> ModelStore:
