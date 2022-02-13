@@ -1,8 +1,8 @@
 # Storage
-azure-core==1.13.0
-azure-storage-blob==12.8.0
-boto3==1.20.48
-google-cloud-storage==1.35.0
+azure-core==1.22.1
+azure-storage-blob==12.9.0
+boto3==1.20.54
+google-cloud-storage==2.1.0
 
 pystan==2.19.1.1 # required to be installed before prophet
 
@@ -22,7 +22,7 @@ scikit-learn==0.24.2
 shap==0.40.0
 skl2onnx==1.9.2
 skorch==0.8.0
-tensorflow==2.5.2
+tensorflow==2.8.0
 torch==1.7.1
 torchvision==0.8.2
 transformers==4.9.2
