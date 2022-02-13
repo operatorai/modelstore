@@ -15,16 +15,16 @@ rope==0.18.0
 twine==3.2.0
 
 # Data / dependencies for ML libraries
-numpy==1.19.2
+numpy>=1.22.2
 python-Levenshtein==0.12.2
-numba==0.53.1
+numba==0.55.1
 
 # Prophet
 pystan==2.19.1.1 # required to be installed before prophet
 
 # Machine Learning
 annoy==1.17.0
-catboost==0.24.3
+catboost==1.0.4
 fastai==2.2.7  # Note: 1.0.61 has different import paths!
 gensim==4.0.1
 Keras-Preprocessing==1.1.2
