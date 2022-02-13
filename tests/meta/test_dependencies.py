@@ -27,7 +27,7 @@ def test_get_version():
     if "isort" in sys.modules:
         # Force import
         del sys.modules["isort"]
-    assert dependencies._get_version("isort") == "5.6.4"
+    assert dependencies._get_version("isort") == "5.10.1"
 
 
 def test_get_dependency_versions():
@@ -43,11 +43,11 @@ def test_get_dependency_versions():
     ]
     expected = {
         "annoy": "1.17.0",
-        "black": "20.8b1",
+        "black": "22.1.0",
         "pytest": pytest.__version__,
-        "pylint": "2.6.0",
-        "flake8": "3.8.4",
-        "isort": "5.6.4",
+        "pylint": "2.12.2",
+        "flake8": "4.0.1",
+        "isort": "5.10.1",
         "a-missing-dependency": None,
         "pickle": "4.0",
     }
@@ -70,11 +70,11 @@ def test_save_dependencies(tmp_path):
         "a-missing-dependency",
     ]
     expected = {
-        "black": "20.8b1",
-        "flake8": "3.8.4",
-        "isort": "5.6.4",
+        "black": "22.1.0",
+        "flake8": "4.0.1",
+        "isort": "5.10.1",
         "pytest": pytest.__version__,
-        "pylint": "2.6.0",
+        "pylint": "2.12.2",
     }
     tmp_file = dependencies.save_dependencies(tmp_path, test_deps)
     assert os.path.split(tmp_file)[1] == "python-info.json"

@@ -1,5 +1,9 @@
 # Change log
 
+## Unreleased
+
+ℹ️  Python 3.6 has passed its end-of-life, so this library is now tested with Python 3.7 and above.
+
 ## modelstore 0.0.73
 
 🆕   You can upload multiple models to the same archive, if they don't share any keywords. For example `modelstore.upload(domain, model=sklearn_model, explainer=shap_explainer)` can be used to upload and download models and explainers together.
