@@ -13,4 +13,4 @@ numpy==1.19.5
 Cython==0.29.27
 python-Levenshtein==0.12.2
 numba==0.55.1
-pandas
+pandas==1.4.1
