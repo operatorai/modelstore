@@ -193,6 +193,18 @@ def test_list_versions(mock_blob_storage):
     assert versions[1] == "model-1"
 
 
+def test_list_model_states(mock_blob_storage):
+    # Create a model states
+    mock_blob_storage.create_model_state("staging")
+    mock_blob_storage.create_model_state("production")
+
+    # List them back
+    model_states = mock_blob_storage.list_model_states()
+    assert len(model_states) == 2
+    assert "production" in model_states
+    assert "staging" in model_states
+
+
 def test_create_model_state(mock_blob_storage):
     # Create a model state
     mock_blob_storage.create_model_state("production")

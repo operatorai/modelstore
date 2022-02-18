@@ -41,9 +41,7 @@ def main(modelstore_in):
             out.write(json.dumps(result))
 
         print(f"⤴️  Uploading to the {model_domain} domain.")
-        meta_data = modelstore.upload(
-            model_domain, model=model, extras=results_file
-        )
+        meta_data = modelstore.upload(model_domain, model=model, extras=results_file)
 
         # Currently, modelstore stores artifacts in a prefix
         #  that has the training timestamp encoded in it. If
@@ -76,13 +74,19 @@ def main(modelstore_in):
     # Load models back into memory
     demos.load_models(modelstore, model_domain, model_ids)
 
-    # Create a new model state
-    state_name = "production"
-    demos.create_a_model_state(modelstore, state_name)
+    # Create a couple of new model states
+    state_names = ["staging", "production"]
+    for state_name in state_names:
+        demos.create_a_model_state(modelstore, state_name)
+
+    # List them back
+    model_state_names = demos.list_model_states(modelstore)
+    for state_name in state_names:
+        assert state_name in model_state_names
 
     # Set the first model to the production state
     model_id = list(model_ids.values())[0]
-    demos.set_model_state(modelstore, model_domain, model_id, state_name)
+    demos.set_model_state(modelstore, model_domain, model_id, "production")
 
     # List the models that are in production - the new model is there
     model_ids = demos.list_models_in_domain_with_state(
@@ -91,7 +95,7 @@ def main(modelstore_in):
     assert model_id in model_ids
 
     # Remove a state from a model
-    demos.remove_model_state(modelstore, model_domain, model_id, state_name)
+    demos.remove_model_state(modelstore, model_domain, model_id, "production")
 
     # List the models that are in production - the removed model is not there
     model_ids = demos.list_models_in_domain_with_state(
