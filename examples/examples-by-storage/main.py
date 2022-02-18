@@ -41,9 +41,7 @@ def main(modelstore_in):
             out.write(json.dumps(result))
 
         print(f"⤴️  Uploading to the {model_domain} domain.")
-        meta_data = modelstore.upload(
-            model_domain, model=model, extras=results_file
-        )
+        meta_data = modelstore.upload(model_domain, model=model, extras=results_file)
 
         # Currently, modelstore stores artifacts in a prefix
         #  that has the training timestamp encoded in it. If
@@ -76,9 +74,13 @@ def main(modelstore_in):
     # Load models back into memory
     demos.load_models(modelstore, model_domain, model_ids)
 
-    # Create a new model state
-    state_name = "production"
-    demos.create_a_model_state(modelstore, state_name)
+    # Create a couple of new model states
+    state_names = ["staging", "production"]
+    for state_name in state_names:
+        demos.create_a_model_state(modelstore, state_name)
+
+    # List them back
+    demos.list_model_states(modelstore)
 
     # Set the first model to the production state
     model_id = list(model_ids.values())[0]

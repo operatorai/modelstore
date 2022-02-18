@@ -20,9 +20,7 @@ def list_models_in_domain(modelstore: ModelStore, model_domain: str):
 def list_models_in_domain_with_state(
     modelstore: ModelStore, model_domain: str, state_name: str
 ) -> list:
-    print(
-        f"✅  Listing models for {model_domain} that are in state={state_name}:"
-    )
+    print(f"✅  Listing models for {model_domain} that are in state={state_name}:")
     model_ids = modelstore.list_versions(model_domain, state_name=state_name)
     for model_id in model_ids:
         print(f"\t  Domain: {model_domain} has model with id={model_id}")
@@ -51,6 +49,12 @@ def download_latest_model(modelstore: ModelStore, model_domain: str):
     with tempfile.TemporaryDirectory() as tmp_dir:
         model_path = modelstore.download(tmp_dir, model_domain)
         print(f"\t  Downloaded latest model to: {model_path}")
+
+
+def list_model_states(modelstore: ModelStore):
+    print("✅  Listing available model states")
+    for model_state in modelstore.list_model_states():
+        print(f"\t  Model state: {model_state}")
 
 
 def create_a_model_state(modelstore: ModelStore, state_name: str):
