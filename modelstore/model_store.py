@@ -155,6 +155,9 @@ class ModelStore:
         os.remove(archive_path)
         return local_path
 
+    def list_model_states(self) -> list:
+        return self.storage.list_model_states()
+
     def create_model_state(self, state_name: str):
         """Creates a state label models (e.g., shadow/prod/archived)"""
         return self.storage.create_model_state(state_name)

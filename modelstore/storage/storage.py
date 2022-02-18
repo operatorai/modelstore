@@ -52,12 +52,12 @@ class CloudStorage(ABC):
 
     @abstractmethod
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
-        """ Annotates a model with some given meta data """
+        """Annotates a model with some given meta data"""
         raise NotImplementedError()
 
     @abstractmethod
     def get_meta_data(self, domain: str, model_id: str) -> dict:
-        """ Returns a model's meta data """
+        """Returns a model's meta data"""
         raise NotImplementedError()
 
     @abstractmethod
@@ -69,27 +69,30 @@ class CloudStorage(ABC):
 
     @abstractmethod
     def list_domains(self) -> list:
-        """ Returns a list of all the existing model domains """
+        """Returns a list of all the existing model domains"""
         raise NotImplementedError()
 
     @abstractmethod
-    def list_versions(
-        self, domain: str, state_name: Optional[str] = None
-    ) -> list:
-        """ Returns a list of a model's versions """
+    def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
+        """Returns a list of a model's versions"""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def list_model_states(self) -> list:
+        """Lists the model states that have been created"""
         raise NotImplementedError()
 
     @abstractmethod
     def create_model_state(self, state_name: str):
-        """ Creates a state label that can be used to tag models """
+        """Creates a state label that can be used to tag models"""
         raise NotImplementedError()
 
     @abstractmethod
     def set_model_state(self, domain: str, model_id: str, state_name: str):
-        """ Sets the given model ID to the given state """
+        """Sets the given model ID to the given state"""
         raise NotImplementedError()
 
     @abstractmethod
     def unset_model_state(self, domain: str, model_id: str, state_name: str):
-        """ Removes the given model ID from the set that are in the state_name path """
+        """Removes the given model ID from the set that are in the state_name path"""
         raise NotImplementedError()
