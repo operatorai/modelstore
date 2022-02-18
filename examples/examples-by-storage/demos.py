@@ -53,8 +53,10 @@ def download_latest_model(modelstore: ModelStore, model_domain: str):
 
 def list_model_states(modelstore: ModelStore):
     print("✅  Listing available model states")
-    for model_state in modelstore.list_model_states():
+    model_state_names = modelstore.list_model_states()
+    for model_state in model_state_names:
         print(f"\t  Model state: {model_state}")
+    return model_state_names
 
 
 def create_a_model_state(modelstore: ModelStore, state_name: str):
