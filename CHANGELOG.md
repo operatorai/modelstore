@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+🆕  You can now list your existing model states, with `modelstore.list_model_states()`.
+
 ℹ️  Python 3.6 has passed its end-of-life, so this library is now tested with Python 3.7 and above.
 
 ## modelstore 0.0.73
