@@ -25,6 +25,7 @@ from modelstore.storage.util.paths import (
     get_domain_path,
     get_domains_path,
     get_model_state_path,
+    get_model_states_path,
     get_versions_path,
     is_valid_state_name,
 )
@@ -50,37 +51,37 @@ class BlobStorage(CloudStorage):
 
     @abstractmethod
     def _push(self, source: str, destination: str) -> str:
-        """ Pushes a file from a source to a destination """
+        """Pushes a file from a source to a destination"""
         raise NotImplementedError()
 
     @abstractmethod
     def _pull(self, source: str, destination: str) -> str:
-        """ Pulls a model from a source to a destination """
+        """Pulls a model from a source to a destination"""
         raise NotImplementedError()
 
     @abstractmethod
     def _remove(self, destination: str) -> bool:
-        """ Removes a file from the destination path """
+        """Removes a file from the destination path"""
         raise NotImplementedError()
 
     @abstractmethod
     def _read_json_objects(self, path: str) -> list:
-        """ Returns a list of all the JSON in a path """
+        """Returns a list of all the JSON in a path"""
         raise NotImplementedError()
 
     @abstractmethod
     def _read_json_object(self, path: str) -> dict:
-        """ Returns a dictionary of the JSON stored in a given path """
+        """Returns a dictionary of the JSON stored in a given path"""
         raise NotImplementedError()
 
     @abstractmethod
     def _storage_location(self, prefix: str) -> dict:
-        """ Returns a dict of the location the artifact was stored """
+        """Returns a dict of the location the artifact was stored"""
         raise NotImplementedError()
 
     @abstractmethod
     def _get_storage_location(self, meta: dict) -> str:
-        """ Extracts the storage location from a meta data dictionary """
+        """Extracts the storage location from a meta data dictionary"""
         raise NotImplementedError()
 
     def _get_metadata_path(
@@ -140,7 +141,7 @@ class BlobStorage(CloudStorage):
             self._push(local_path, get_domain_path(self.root_prefix, domain))
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
-        """ Returns a model's meta data """
+        """Returns a model's meta data"""
         if any(x in [None, ""] for x in [domain, model_id]):
             raise ValueError("domain and model_id must be set")
         remote_path = self._get_metadata_path(domain, model_id)
@@ -166,7 +167,7 @@ class BlobStorage(CloudStorage):
         return self._pull(storage_path, local_path)
 
     def list_domains(self) -> list:
-        """ Returns a list of all the existing model domains """
+        """Returns a list of all the existing model domains"""
         domains = get_domains_path(self.root_prefix)
         domains = self._read_json_objects(domains)
         return [d["model"]["domain"] for d in domains]
@@ -180,7 +181,7 @@ class BlobStorage(CloudStorage):
         return [v["model"]["model_id"] for v in versions]
 
     def state_exists(self, state_name: str) -> bool:
-        """ Returns whether a model state with name state_name exists """
+        """Returns whether a model state with name state_name exists"""
         if not is_valid_state_name(state_name):
             return False
         try:
@@ -194,8 +195,14 @@ class BlobStorage(CloudStorage):
             logger.error("Error checking state: %s", str(e))
             return False
 
+    def list_model_states(self) -> list:
+        """Lists the model states that have been created"""
+        model_states_path = get_model_states_path(self.root_prefix)
+        model_states = self._read_json_objects(model_states_path)
+        return model_states
+
     def create_model_state(self, state_name: str):
-        """ Creates a state label that can be used to tag models """
+        """Creates a state label that can be used to tag models"""
         if not is_valid_state_name(state_name):
             raise Exception(f"Cannot create state with name: '{state_name}'")
         if self.state_exists(state_name):
@@ -213,7 +220,7 @@ class BlobStorage(CloudStorage):
             self._push(version_path, get_model_state_path(self.root_prefix, state_name))
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
-        """ Adds the given model ID to the set that are in the state_name path """
+        """Adds the given model ID to the set that are in the state_name path"""
         if not self.state_exists(state_name):
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
@@ -225,7 +232,7 @@ class BlobStorage(CloudStorage):
         logger.debug("Successfully set %s=%s from %s", domain, model_id, state_name)
 
     def unset_model_state(self, domain: str, model_id: str, state_name: str):
-        """ Removes the given model ID from the set that are in the state_name path """
+        """Removes the given model ID from the set that are in the state_name path"""
         if not self.state_exists(state_name):
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
