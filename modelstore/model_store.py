@@ -18,12 +18,10 @@ from dataclasses import dataclass
 from typing import Optional
 
 from modelstore.models.managers import iter_libraries, matching_managers, get_manager
-from modelstore.models.model_manager import ModelManager
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
-from modelstore.storage.hosted import HostedStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.storage import CloudStorage
 
@@ -99,16 +97,6 @@ class ModelStore:
         the local file system."""
         return ModelStore(storage=FileSystemStorage(root_directory))
 
-    @classmethod
-    def from_api_key(
-        cls,
-        access_key_id: Optional[str] = None,
-        secret_access_key: Optional[str] = None,
-    ) -> "ModelStore":
-        """Creates a ModelStore instance that stores models to
-        a managed system. Requires API keys."""
-        return ModelStore(storage=HostedStorage(access_key_id, secret_access_key))
-
     def __post_init__(self):
         if not self.storage.validate():
             raise Exception(
@@ -128,7 +116,7 @@ class ModelStore:
         return self.storage.list_domains()
 
     def get_model_info(self, domain: str, model_id: str) -> dict:
-        """ Returns the meta-data for a given model """
+        """Returns the meta-data for a given model"""
         return self.storage.get_meta_data(domain, model_id)
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
@@ -168,7 +156,7 @@ class ModelStore:
         return local_path
 
     def create_model_state(self, state_name: str):
-        """ Creates a state label models (e.g., shadow/prod/archived) """
+        """Creates a state label models (e.g., shadow/prod/archived)"""
         return self.storage.create_model_state(state_name)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):

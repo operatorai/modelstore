@@ -39,7 +39,6 @@ pip install modelstore
 * Azure Blob Storage ([example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L24-L31))
 * Google Cloud Storage Bucket ([example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L34-L41))
 * A filesystem directory ([example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L44-L49))
-* A hosted storage option (Get in touch for an API key! [example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L52-L56))
 
 ## Supported machine learning libraries
 
