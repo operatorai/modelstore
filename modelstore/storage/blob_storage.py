@@ -199,7 +199,7 @@ class BlobStorage(CloudStorage):
         """Lists the model states that have been created"""
         model_states_path = get_model_states_path(self.root_prefix)
         model_states = self._read_json_objects(model_states_path)
-        return model_states
+        return [x["state_name"] for x in model_states]
 
     def create_model_state(self, state_name: str):
         """Creates a state label that can be used to tag models"""

@@ -201,10 +201,8 @@ def test_list_model_states(mock_blob_storage):
     # List them back
     model_states = mock_blob_storage.list_model_states()
     assert len(model_states) == 2
-
-    state_names = [x["state_name"] for x in model_states]
-    assert "production" in state_names
-    assert "staging" in state_names
+    assert "production" in model_states
+    assert "staging" in model_states
 
 
 def test_create_model_state(mock_blob_storage):
