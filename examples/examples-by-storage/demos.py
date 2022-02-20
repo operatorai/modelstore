@@ -12,16 +12,16 @@ def list_domains(modelstore: ModelStore):
 
 def list_models_in_domain(modelstore: ModelStore, model_domain: str):
     print(f"✅  Listing models for {model_domain}:")
-    versions = modelstore.list_versions(domain=model_domain)
-    for version in versions:
-        print(f"\t  Domain: {model_domain} has model with id={version}")
+    model_ids = modelstore.list_models(domain=model_domain)
+    for model_id in model_ids:
+        print(f"\t  Domain: {model_domain} has model with id={model_id}")
 
 
 def list_models_in_domain_with_state(
     modelstore: ModelStore, model_domain: str, state_name: str
 ) -> list:
     print(f"✅  Listing models for {model_domain} that are in state={state_name}:")
-    model_ids = modelstore.list_versions(model_domain, state_name=state_name)
+    model_ids = modelstore.list_models(model_domain, state_name=state_name)
     for model_id in model_ids:
         print(f"\t  Domain: {model_domain} has model with id={model_id}")
     return model_ids
