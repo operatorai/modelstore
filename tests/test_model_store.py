@@ -26,11 +26,6 @@ from modelstore.storage.local import FileSystemStorage
 
 
 @pytest.fixture
-def file_system_model_store(tmp_path):
-    return ModelStore.from_file_system(root_directory=str(tmp_path))
-
-
-@pytest.fixture
 def libraries_without_sklearn():
     libraries = _LIBRARIES.copy()
     libraries.pop("sklearn")
@@ -45,7 +40,9 @@ def iter_only_sklearn(_):
             yield k, partial(MissingDepManager, library=k)()
 
 
-def validate_library_attributes(store: ModelStore, allowed: list, not_allowed: list):
+def validate_library_attributes(
+    store: ModelStore, allowed: list, not_allowed: list
+):
     # During dev mode, all libraries will be installed
     for library in allowed:
         assert hasattr(store, library)
@@ -82,20 +79,19 @@ def test_from_gcloud_only_sklearn(mock_gcloud, libraries_without_sklearn):
     )
 
 
-def test_from_file_system(file_system_model_store):
-    assert isinstance(file_system_model_store.storage, FileSystemStorage)
-    validate_library_attributes(
-        file_system_model_store, allowed=_LIBRARIES, not_allowed=[]
-    )
+def test_from_file_system(tmp_path):
+    store = ModelStore.from_file_system(root_directory=str(tmp_path))
+    assert isinstance(store.storage, FileSystemStorage)
+    validate_library_attributes(store, allowed=_LIBRARIES, not_allowed=[])
 
 
 @patch("modelstore.model_store.iter_libraries", side_effect=iter_only_sklearn)
-def test_from_file_system_only_sklearn(
-    _, libraries_without_sklearn, file_system_model_store
-):
-    assert isinstance(file_system_model_store.storage, FileSystemStorage)
+def test_from_file_system_only_sklearn(_, libraries_without_sklearn, tmp_path):
+    store = ModelStore.from_file_system(root_directory=str(tmp_path))
+    assert isinstance(store.storage, FileSystemStorage)
     validate_library_attributes(
-        file_system_model_store,
-        allowed=["sklearn"],
-        not_allowed=libraries_without_sklearn,
+        store, allowed=["sklearn"], not_allowed=libraries_without_sklearn
     )
+
+
+# @TODO test upload function
