@@ -14,6 +14,7 @@
 import json
 import os
 import tempfile
+import click
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
 from typing import Optional, Union
@@ -117,7 +118,7 @@ class BlobStorage(CloudStorage):
         return self._storage_location(prefix)
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
-        logger.debug("Copying meta-data: %s", meta_data)
+        logger.debug("Setting meta-data for %s=%s", domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = os.path.join(tmp_dir, f"{model_id}.json")
             with open(local_path, "w") as out:
@@ -128,14 +129,19 @@ class BlobStorage(CloudStorage):
             self._push(local_path, get_domain_path(self.root_prefix, domain))
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
-        """Returns a model's meta data"""
         if any(x in [None, ""] for x in [domain, model_id]):
             raise ValueError("domain and model_id must be set")
+        logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
         remote_path = self._get_metadata_path(domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = self._pull(remote_path, tmp_dir)
             with open(local_path, "r") as lines:
                 return json.loads(lines.read())
+
+    def delete_meta_data(self, domain: str, model_id: str):
+        logger.debug("Deleting meta-data for %s=%s", domain, model_id)
+        remote_path = self._get_metadata_path(domain, model_id)
+        self._remove(remote_path)
 
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
@@ -152,6 +158,20 @@ class BlobStorage(CloudStorage):
             model_meta = self._read_json_object(model_meta_path)
         storage_path = self._get_storage_location(model_meta["storage"])
         return self._pull(storage_path, local_path)
+
+    def delete_model(
+        self, domain: str, model_id: str, meta_data: dict, skip_prompt: bool = False
+    ) -> bool:
+        """Deletes a model artifact from storage."""
+        prefix = self._get_storage_location(meta_data)
+        if not skip_prompt:
+            message = f"Delete model from domain={domain} with model_id={model_id}?"
+            if not click.confirm(message):
+                logger.info("Aborting; not deleting model")
+                return
+        self._remove(prefix)
+        # self._remove(self._get_metadata_path(domain, model_id))
+        return True
 
     def list_domains(self) -> list:
         """Returns a list of all the existing model domains"""
