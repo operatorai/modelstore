@@ -27,8 +27,8 @@ from modelstore.storage.util.paths import (
     get_model_state_path,
     get_model_states_path,
     get_models_path,
-    is_valid_state_name,
 )
+from modelstore.storage.states.model_states import is_valid_state_name
 from modelstore.utils.log import logger
 
 

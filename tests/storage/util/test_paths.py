@@ -79,17 +79,3 @@ def test_get_model_state_path(tmp_path, has_root_prefix):
     exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "model_states", "prod.json")
     res = paths.get_model_state_path(root, "prod")
     assert exp == res
-
-
-@pytest.mark.parametrize(
-    "state_name,is_valid",
-    [
-        (None, False),
-        ("", False),
-        ("a", False),
-        ("path/to/place", False),
-        ("other", True),
-    ],
-)
-def test_is_valid_state_name(state_name, is_valid):
-    assert paths.is_valid_state_name(state_name) == is_valid
