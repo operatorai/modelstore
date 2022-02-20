@@ -32,20 +32,20 @@ def test_get_archive_path(tmp_path, has_root_prefix):
 
 
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
-def test_get_versions_path_no_root_prefix(tmp_path, has_root_prefix):
+def test_get_models_path_no_root_prefix(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
     exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions")
-    res = paths.get_versions_path(root, "example-domain")
+    res = paths.get_models_path(root, "example-domain")
     assert exp == res
 
 
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
-def test_get_versions_path_with_state(tmp_path, has_root_prefix):
+def test_get_models_path_with_state(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
     exp = os.path.join(
         root, paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions", "prod"
     )
-    res = paths.get_versions_path(root, "example-domain", "prod")
+    res = paths.get_models_path(root, "example-domain", "prod")
     assert exp == res
 
 

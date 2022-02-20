@@ -105,7 +105,7 @@ class FileSystemStorage(BlobStorage):
         return os.path.join(os.path.abspath(destination), file_name)
 
     def _remove(self, destination: str) -> bool:
-        """ Removes a file from the destination path """
+        """Removes a file from the destination path"""
         destination = self.relative_dir(destination)
         if not os.path.exists(destination):
             logger.debug("Remote file does not exist: %s", destination)
@@ -135,14 +135,14 @@ class FileSystemStorage(BlobStorage):
         return os.path.join(parent_dir, paths[1])
 
     def _storage_location(self, prefix: str) -> dict:
-        """ Returns a dict of the location the artifact was stored """
+        """Returns a dict of the location the artifact was stored"""
         return {
             "type": "file_system",
             "path": os.path.abspath(self.relative_dir(prefix)),
         }
 
     def _get_storage_location(self, meta: dict) -> str:
-        """ Extracts the storage location from a meta data dictionary """
+        """Extracts the storage location from a meta data dictionary"""
         return meta["path"]
 
     def _read_json_object(self, path: str) -> dict:
@@ -150,7 +150,7 @@ class FileSystemStorage(BlobStorage):
         return _read_json_file(path)
 
     def state_exists(self, state_name: str) -> bool:
-        """ Returns whether a model state with name state_name exists """
+        """Returns whether a model state with name state_name exists"""
         if not is_valid_state_name(state_name):
             return False
         # @TODO this function can be removed once get_model_state_path

@@ -133,9 +133,9 @@ def test_read_json_object_fails_gracefully(tmp_path, file_system_storage):
     assert item is None
 
 
-def test_list_versions_missing_domain(file_system_storage):
-    versions = file_system_storage.list_versions("domain-that-doesnt-exist")
-    assert len(versions) == 0
+def test_list_models_missing_domain(file_system_storage):
+    models = file_system_storage.list_models("domain-that-doesnt-exist")
+    assert len(models) == 0
 
 
 def test_storage_location(file_system_storage):

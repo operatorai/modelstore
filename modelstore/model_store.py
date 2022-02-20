@@ -14,6 +14,7 @@
 import os
 import tarfile
 import tempfile
+import warnings
 from dataclasses import dataclass
 from typing import Optional
 
@@ -120,10 +121,17 @@ class ModelStore:
         return self.storage.get_meta_data(domain, model_id)
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
+        warnings.warn(
+            "list_versions() is deprecated; use list_models()",
+            warnings.DeprecationWarning,
+        )
+        return self.list_models(domain, state_name)
+
+    def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         """Returns a list of dicts, containing info about the
         models that have been uploaded to a domain; if state_name
         is given results are filtered to models set to that state"""
-        return self.storage.list_versions(domain, state_name)
+        return self.storage.list_models(domain, state_name)
 
     def upload(self, domain: str, **kwargs) -> dict:
         # Figure out which library the kwargs match with

@@ -184,13 +184,13 @@ def test_list_domains(mock_blob_storage):
     assert domains[1] == "domain-1"
 
 
-def test_list_versions(mock_blob_storage):
+def test_list_models(mock_blob_storage):
     # List the models in domain-1; we expect two
-    versions = mock_blob_storage.list_versions("domain-1")
-    assert len(versions) == 2
+    models = mock_blob_storage.list_models("domain-1")
+    assert len(models) == 2
     # The results should be reverse time sorted
-    assert versions[0] == "model-2"
-    assert versions[1] == "model-1"
+    assert models[0] == "model-2"
+    assert models[1] == "model-1"
 
 
 def test_list_model_states(mock_blob_storage):
@@ -236,7 +236,7 @@ def test_set_model_state(mock_blob_storage):
     mock_blob_storage.set_model_state("domain-1", "model-1", "production")
 
     # Listing versions
-    items = mock_blob_storage.list_versions("domain-1", "production")
+    items = mock_blob_storage.list_models("domain-1", "production")
     assert len(items) == 1
     assert items[0] == "model-1"
 
@@ -246,7 +246,7 @@ def test_unset_model_state(mock_blob_storage):
     mock_blob_storage.set_model_state("domain-1", "model-1", "production")
 
     # State now exists
-    items = mock_blob_storage.list_versions("domain-1", "production")
+    items = mock_blob_storage.list_models("domain-1", "production")
     assert len(items) == 1
     assert items[0] == "model-1"
 
@@ -254,5 +254,5 @@ def test_unset_model_state(mock_blob_storage):
     mock_blob_storage.unset_model_state("domain-1", "model-1", "production")
 
     # State has been removed
-    items = mock_blob_storage.list_versions("domain-1", "production")
+    items = mock_blob_storage.list_models("domain-1", "production")
     assert len(items) == 0

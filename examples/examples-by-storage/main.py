@@ -13,9 +13,7 @@ from modelstores import create_model_store
 @click.command()
 @click.option(
     "--modelstore-in",
-    type=click.Choice(
-        ["aws", "azure", "gcloud", "filesystem", "hosted"], case_sensitive=False
-    ),
+    type=click.Choice(["aws", "azure", "gcloud", "filesystem"], case_sensitive=False),
 )
 def main(modelstore_in):
     print(f"🆕  Running modelstore example with {modelstore_in} backend.")

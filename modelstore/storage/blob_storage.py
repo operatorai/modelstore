@@ -26,7 +26,7 @@ from modelstore.storage.util.paths import (
     get_domains_path,
     get_model_state_path,
     get_model_states_path,
-    get_versions_path,
+    get_models_path,
     is_valid_state_name,
 )
 from modelstore.utils.log import logger
@@ -97,8 +97,9 @@ class BlobStorage(CloudStorage):
             model_id (str): A UUID4 string that identifies this specific
             model.
         """
-        versions_path = get_versions_path(self.root_prefix, domain, state_name)
-        return os.path.join(versions_path, f"{model_id}.json")
+        return os.path.join(
+            get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
+        )
 
     def _upload_extra(self, local_path: str, remote_path: str):
         if os.path.isdir(local_path):
@@ -172,13 +173,13 @@ class BlobStorage(CloudStorage):
         domains = self._read_json_objects(domains)
         return [d["model"]["domain"] for d in domains]
 
-    def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
+    def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
-        versions_path = get_versions_path(self.root_prefix, domain, state_name)
-        versions = self._read_json_objects(versions_path)
+        models_path = get_models_path(self.root_prefix, domain, state_name)
+        models = self._read_json_objects(models_path)
         # @TODO sort models by creation time stamp
-        return [v["model"]["model_id"] for v in versions]
+        return [v["model"]["model_id"] for v in models]
 
     def state_exists(self, state_name: str) -> bool:
         """Returns whether a model state with name state_name exists"""
@@ -210,14 +211,16 @@ class BlobStorage(CloudStorage):
             return
         logger.debug("Creating model state: %s", state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            version_path = os.path.join(tmp_dir, f"{state_name}.json")
-            with open(version_path, "w") as out:
+            state_data_path = os.path.join(tmp_dir, f"{state_name}.json")
+            with open(state_data_path, "w") as out:
                 state_data = {
                     "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
                     "state_name": state_name,
                 }
                 out.write(json.dumps(state_data))
-            self._push(version_path, get_model_state_path(self.root_prefix, state_name))
+            self._push(
+                state_data_path, get_model_state_path(self.root_prefix, state_name)
+            )
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """Adds the given model ID to the set that are in the state_name path"""
