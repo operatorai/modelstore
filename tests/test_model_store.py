@@ -40,9 +40,7 @@ def iter_only_sklearn(_):
             yield k, partial(MissingDepManager, library=k)()
 
 
-def validate_library_attributes(
-    store: ModelStore, allowed: list, not_allowed: list
-):
+def validate_library_attributes(store: ModelStore, allowed: list, not_allowed: list):
     # During dev mode, all libraries will be installed
     for library in allowed:
         assert hasattr(store, library)
@@ -92,6 +90,3 @@ def test_from_file_system_only_sklearn(_, libraries_without_sklearn, tmp_path):
     validate_library_attributes(
         store, allowed=["sklearn"], not_allowed=libraries_without_sklearn
     )
-
-
-# @TODO test upload function
