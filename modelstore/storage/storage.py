@@ -73,7 +73,7 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
+    def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         """Returns a list of a model's versions"""
         raise NotImplementedError()
 

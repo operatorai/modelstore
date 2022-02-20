@@ -40,7 +40,7 @@ def get_archive_path(root_dir: str, domain: str, local_path: str) -> str:
     return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, prefix, file_name)
 
 
-def get_versions_path(
+def get_models_path(
     root_dir: str, domain: str, state_name: Optional[str] = None
 ) -> str:
     """Creates a path where a meta-data file about a model is stored.
