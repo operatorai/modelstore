@@ -51,9 +51,7 @@ EXAMPLES = {
 @click.command()
 @click.option(
     "--modelstore-in",
-    type=click.Choice(
-        ["aws", "azure", "gcloud", "filesystem", "hosted"], case_sensitive=False
-    ),
+    type=click.Choice(["aws", "azure", "gcloud", "filesystem"], case_sensitive=False),
 )
 @click.option(
     "--ml-framework",
@@ -73,12 +71,6 @@ def main(modelstore_in, ml_framework):
     # Run the example: train and upload a model
     example = EXAMPLES[ml_framework]
     meta_data = example.train_and_upload(modelstore)
-
-    if modelstore_in != "hosted":
-        # Run the example: downloading and loading a model
-        # is currently unimplemented in the "hosted" storage
-        model_id = meta_data["model"]["model_id"]
-        example.load_and_test(modelstore, model_id)
 
     # The upload returns meta-data about the model that was uploaded
     # In this example, we just print it out to the terminal
