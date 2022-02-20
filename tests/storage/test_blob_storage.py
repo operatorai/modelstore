@@ -26,9 +26,6 @@ from modelstore.storage.util.paths import (
     get_model_state_path,
 )
 
-# pylint: disable=redefined-outer-name
-# pylint: disable=protected-access
-
 
 @pytest.fixture
 def mock_blob_storage(tmp_path):
@@ -193,18 +190,6 @@ def test_list_models(mock_blob_storage):
     assert models[1] == "model-1"
 
 
-def test_list_model_states(mock_blob_storage):
-    # Create a model states
-    mock_blob_storage.create_model_state("staging")
-    mock_blob_storage.create_model_state("production")
-
-    # List them back
-    model_states = mock_blob_storage.list_model_states()
-    assert len(model_states) == 2
-    assert "production" in model_states
-    assert "staging" in model_states
-
-
 def test_create_model_state(mock_blob_storage):
     # Create a model state
     mock_blob_storage.create_model_state("production")
@@ -216,6 +201,18 @@ def test_create_model_state(mock_blob_storage):
     )
     state_meta = json.loads(get_file_contents(state_path))
     assert state_meta["state_name"] == "production"
+
+
+def test_list_model_states(mock_blob_storage):
+    # Create a model states
+    mock_blob_storage.create_model_state("staging")
+    mock_blob_storage.create_model_state("production")
+
+    # List them back
+    model_states = mock_blob_storage.list_model_states()
+    assert len(model_states) == 2
+    assert "production" in model_states
+    assert "staging" in model_states
 
 
 def test_create_model_state_exists(mock_blob_storage):
