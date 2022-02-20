@@ -24,15 +24,16 @@ from modelstore.storage.states.model_states import (
 
 
 @pytest.mark.parametrize(
-    "state_name,is_valid",
+    "state_name,allow_reserved_states,is_valid",
     [
-        (None, False),
-        ("", False),
-        ("a", False),
-        ("path/to/place", False),
-        ("other", True),
-        (ReservedModelStates.DELETED.value, False),
+        (None, False, False),
+        ("", False, False),
+        ("a", False, False),
+        ("path/to/place", False, False),
+        ("other", False, True),
+        (ReservedModelStates.DELETED.value, False, False),
+        (ReservedModelStates.DELETED.value, True, True),
     ],
 )
-def test_is_valid_state_name(state_name, is_valid):
-    assert is_valid_state_name(state_name) == is_valid
+def test_is_valid_state_name(state_name, allow_reserved_states, is_valid):
+    assert is_valid_state_name(state_name, allow_reserved_states) == is_valid

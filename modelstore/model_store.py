@@ -143,12 +143,14 @@ class ModelStore:
         return self.storage.list_model_states()
 
     def create_model_state(self, state_name: str):
-        """Creates a state label models (e.g., shadow/prod/archived)"""
+        """Creates a state label models (e.g., shadow/prod/archived).
+        There are some values that are reserved, see modelstore/storage/states/model_states.py"""
         return self.storage.create_model_state(state_name)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """Sets the model_id model to a specific state.
-        That state must already exist (ref: `create_model_state()`)
+        That state must already exist (ref: `create_model_state()`) unless
+        it is a reserved value (modelstore/storage/states/model_states.py)
         """
         return self.storage.set_model_state(domain, model_id, state_name)
 

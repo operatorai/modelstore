@@ -28,7 +28,10 @@ from modelstore.storage.util.paths import (
     get_model_states_path,
     get_models_path,
 )
-from modelstore.storage.states.model_states import is_valid_state_name
+from modelstore.storage.states.model_states import (
+    is_valid_state_name,
+    is_reserved_state,
+)
 from modelstore.utils.log import logger
 
 
@@ -112,10 +115,7 @@ class BlobStorage(CloudStorage):
         self._push(local_path, remote_file_path)
 
     def upload(
-        self,
-        domain: str,
-        local_path: str,
-        extras: Optional[Union[str, list]] = None,
+        self, domain: str, local_path: str, extras: Optional[Union[str, list]] = None
     ) -> dict:
         # Upload the archive into storage
         archive_remote_path = get_archive_path(self.root_prefix, domain, local_path)
@@ -129,7 +129,6 @@ class BlobStorage(CloudStorage):
                     self._upload_extra(extra_path, remote_path)
             else:
                 self._upload_extra(extras, remote_path)
-
         return self._storage_location(prefix)
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
@@ -139,6 +138,8 @@ class BlobStorage(CloudStorage):
             with open(local_path, "w") as out:
                 out.write(json.dumps(meta_data))
             self._push(local_path, self._get_metadata_path(domain, model_id))
+
+            # @TODO this is setting the "latest" model implicitly
             self._push(local_path, get_domain_path(self.root_prefix, domain))
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
@@ -183,8 +184,6 @@ class BlobStorage(CloudStorage):
 
     def state_exists(self, state_name: str) -> bool:
         """Returns whether a model state with name state_name exists"""
-        if not is_valid_state_name(state_name):
-            return False
         try:
             state_path = get_model_state_path(self.root_prefix, state_name)
             with tempfile.TemporaryDirectory() as tmp_dir:
@@ -200,15 +199,17 @@ class BlobStorage(CloudStorage):
         """Lists the model states that have been created"""
         model_states_path = get_model_states_path(self.root_prefix)
         model_states = self._read_json_objects(model_states_path)
-        return [x["state_name"] for x in model_states]
+        # Filters out state_names that are reserved
+        return [x["state_name"] for x in model_states if is_valid_state_name(x)]
 
     def create_model_state(self, state_name: str):
         """Creates a state label that can be used to tag models"""
-        if not is_valid_state_name(state_name):
-            raise Exception(f"Cannot create state with name: '{state_name}'")
+        if not is_reserved_state(state_name):
+            if not is_valid_state_name(state_name):
+                raise ValueError(f"Cannot create state with name: '{state_name}'")
         if self.state_exists(state_name):
             logger.info("Model state '%s' already exists", state_name)
-            return
+            return  # Exception is not raised; create_model_state() is idempotent
         logger.debug("Creating model state: %s", state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
             state_data_path = os.path.join(tmp_dir, f"{state_name}.json")
@@ -224,7 +225,14 @@ class BlobStorage(CloudStorage):
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """Adds the given model ID to the set that are in the state_name path"""
-        if not self.state_exists(state_name):
+        if is_reserved_state(state_name):
+            # Reserved states are created automatically when modelstore
+            # sets the state of a model to that state
+            self.create_model_state(state_name)
+        elif not self.state_exists(state_name):
+            # Non-reserved states need to be created manually by modelstore users
+            # before model states can be modified, to avoid creating states
+            # with typos and other similar mistakes
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
         model_path = self._get_metadata_path(domain, model_id)
@@ -236,7 +244,14 @@ class BlobStorage(CloudStorage):
 
     def unset_model_state(self, domain: str, model_id: str, state_name: str):
         """Removes the given model ID from the set that are in the state_name path"""
+        if is_reserved_state(state_name):
+            # Reserved model states (e.g. 'deleted') cannot be undone
+            logger.debug("Cannot unset from model state '%s'", state_name)
+            return
         if not self.state_exists(state_name):
+            # Non-reserved states need to be created manually by modelstore users
+            # before model states can be modified, to avoid creating states
+            # with typos and other similar mistakes
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
         model_state_path = self._get_metadata_path(domain, model_id, state_name)

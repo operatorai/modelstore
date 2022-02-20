@@ -83,7 +83,7 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def create_model_state(self, state_name: str):
+    def create_model_state(self, state_name: str, is_reserved_state: bool = False):
         """Creates a state label that can be used to tag models"""
         raise NotImplementedError()
 
