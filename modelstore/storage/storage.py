@@ -60,11 +60,6 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def delete_meta_data(self, domain: str, model_id: str) -> dict:
-        """Deletes a model's meta data."""
-        raise NotImplementedError()
-
-    @abstractmethod
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that
@@ -74,7 +69,7 @@ class CloudStorage(ABC):
     @abstractmethod
     def delete_model(
         self, domain: str, model_id: str, meta_data: dict, skip_prompt: bool = False
-    ) -> bool:
+    ):
         """Deletes a model artifact from storage."""
         raise NotImplementedError()
 
