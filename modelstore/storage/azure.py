@@ -46,7 +46,7 @@ class AzureBlobStorage(BlobStorage):
             "AZURE_STORAGE_CONNECTION_STRING",
         ],
         "optional": [
-            "MODEL_STORE_ROOT_PREFIX",
+            "MODEL_STORE_AZURE_ROOT_PREFIX",
         ],
     }
 
@@ -57,7 +57,9 @@ class AzureBlobStorage(BlobStorage):
         client: "azure.storage.blobage.BlobClient" = None,
         environ_key: str = "AZURE_STORAGE_CONNECTION_STRING",
     ):
-        super().__init__(["azure.storage.blob"], root_prefix)
+        super().__init__(
+            ["azure.storage.blob"], root_prefix, "MODEL_STORE_AZURE_ROOT_PREFIX"
+        )
         # If arguments are None, try to populate them using environment variables
         self.container_name = environment.get_value(
             container_name, "MODEL_STORE_AZURE_CONTAINER"
@@ -95,7 +97,7 @@ class AzureBlobStorage(BlobStorage):
         return blob_client
 
     def validate(self) -> bool:
-        """ Checks that the Azure container exists """
+        """Checks that the Azure container exists"""
         logger.debug("Querying for containers with name=%s...", self.container_name)
         return self._container_client().exists()
 
@@ -108,7 +110,7 @@ class AzureBlobStorage(BlobStorage):
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
-        """ Pulls a model to a destination """
+        """Pulls a model to a destination"""
         logger.info("Downloading from: %s...", source)
         blob_client = self._blob_client(source)
         target = os.path.join(destination, os.path.split(source)[1])
@@ -118,7 +120,7 @@ class AzureBlobStorage(BlobStorage):
         return target
 
     def _remove(self, destination: str) -> bool:
-        """ Removes a file from the destination path """
+        """Removes a file from the destination path"""
         blob_client = self._blob_client(destination)
         if not blob_client.exists():
             logger.debug("Remote file does not exist: %s", destination)
@@ -127,7 +129,7 @@ class AzureBlobStorage(BlobStorage):
         return True
 
     def _storage_location(self, prefix: str) -> dict:
-        """ Returns a dict of the location the artifact was stored """
+        """Returns a dict of the location the artifact was stored"""
         return {
             "type": "azure:blob-storage",
             "container": self.container_name,
@@ -135,7 +137,7 @@ class AzureBlobStorage(BlobStorage):
         }
 
     def _get_storage_location(self, meta: dict) -> str:
-        """ Extracts the storage location from a meta data dictionary """
+        """Extracts the storage location from a meta data dictionary"""
         if self.container_name != meta.get("container"):
             raise ValueError("Meta-data has a different container name")
         return meta["prefix"]
@@ -153,7 +155,7 @@ class AzureBlobStorage(BlobStorage):
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
-        """ Returns a dictionary of the JSON stored in a given path """
+        """Returns a dictionary of the JSON stored in a given path"""
         blob_client = self._blob_client(path)
         body = blob_client.download_blob().readall()
         try:

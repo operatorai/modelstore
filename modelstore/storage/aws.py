@@ -47,7 +47,7 @@ class AWSStorage(BlobStorage):
         ],
         "optional": [
             "MODEL_STORE_REGION",
-            "MODEL_STORE_ROOT_PREFIX",
+            "MODEL_STORE_AWS_ROOT_PREFIX",
         ],
     }
 
@@ -57,7 +57,7 @@ class AWSStorage(BlobStorage):
         region: Optional[str] = None,
         root_prefix: Optional[str] = None,
     ):
-        super().__init__(["boto3"], root_prefix)
+        super().__init__(["boto3"], root_prefix, "MODEL_STORE_AWS_ROOT_PREFIX")
         # If arguments are None, try to populate them using environment variables
         self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_AWS_BUCKET")
         self.region = environment.get_value(
@@ -100,7 +100,7 @@ class AWSStorage(BlobStorage):
         return destination
 
     def _remove(self, destination: str) -> bool:
-        """ Removes a file from the destination path """
+        """Removes a file from the destination path"""
         try:
             self.client.head_object(Bucket=self.bucket_name, Key=destination)
             self.client.delete_object(Bucket=self.bucket_name, Key=destination)
@@ -112,7 +112,7 @@ class AWSStorage(BlobStorage):
             return False
 
     def _storage_location(self, prefix: str) -> dict:
-        """ Returns a dict of the location the artifact was stored """
+        """Returns a dict of the location the artifact was stored"""
         return {
             "type": "aws:s3",
             "bucket": self.bucket_name,
@@ -120,7 +120,7 @@ class AWSStorage(BlobStorage):
         }
 
     def _get_storage_location(self, meta: dict) -> str:
-        """ Extracts the storage location from a meta data dictionary """
+        """Extracts the storage location from a meta data dictionary"""
         if self.bucket_name != meta.get("bucket"):
             raise ValueError("Meta-data has a different bucket name")
         return meta["prefix"]
