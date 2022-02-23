@@ -137,17 +137,18 @@ class BlobStorage(CloudStorage):
     def delete_model(
         self, domain: str, model_id: str, meta_data: dict, skip_prompt: bool = False
     ):
-        """Deletes a model artifact from storage.
+        """Deletes a model artifact from storage. Other than the artifact itself
+        being deleted:
         - The model is unset from all states.
         - The model will no longer be returned when using list_models()
         - One meta data file is preserved, using the reserved DELETED state"""
-        prefix = self._get_storage_location(meta_data)
         if not skip_prompt:
             message = f"Delete model from domain={domain} with model_id={model_id}?"
             if not click.confirm(message):
                 logger.info("Aborting; not deleting model")
 
         # Delete the artifact itself
+        prefix = self._get_storage_location(meta_data)
         self._remove(prefix)
 
         # Set the model as deleted in the meta data by unsetting it from
@@ -276,12 +277,14 @@ class BlobStorage(CloudStorage):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = os.path.join(tmp_dir, f"{model_id}.json")
+            remote_path = self._get_metadata_path(domain, model_id)
             with open(local_path, "w") as out:
                 out.write(json.dumps(meta_data))
-            self._push(local_path, self._get_metadata_path(domain, model_id))
+            self._push(local_path, remote_path)
 
             # @TODO this is setting the "latest" model implicitly
-            self._push(local_path, get_domain_path(self.root_prefix, domain))
+            remote_path = get_domain_path(self.root_prefix, domain)
+            self._push(local_path, remote_path)
 
     def get_meta_data(self, domain: str, model_id: str) -> dict:
         if any(x in [None, ""] for x in [domain, model_id]):

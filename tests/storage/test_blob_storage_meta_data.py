@@ -13,7 +13,8 @@
 #    limitations under the License.
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+from pathlib import Path
 import uuid
 
 import modelstore
@@ -21,23 +22,28 @@ import pytest
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
-    get_archive_path,
     get_domain_path,
-    get_model_state_path,
     get_models_path,
 )
 
 
-@pytest.fixture
-def mock_meta_data():
+def mock_meta_data(domain: str, model_id: str, inc_time: int):
+    upload_time = datetime.now() + timedelta(hours=inc_time)
     return {
         "model": {
-            "domain": str(uuid.uuid4()),
-            "model_id": str(uuid.uuid4()),
+            "domain": domain,
+            "model_id": model_id,
         },
-        "code": {"created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S")},
+        "code": {"created": upload_time.strftime("%Y/%m/%d/%H:%M:%S")},
         "modelstore": modelstore.__version__,
     }
+
+
+@pytest.fixture
+def mock_model_file(tmp_path):
+    model_file = os.path.join(tmp_path, "test-file.txt")
+    Path(model_file).touch()
+    return model_file
 
 
 @pytest.fixture
@@ -52,19 +58,32 @@ def assert_file_contents_equals(file_path: str, expected: dict):
 
 
 def test_list_domains(mock_blob_storage):
-    # @TODO create domains
+    # Create two models in two domains
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+
+    meta_data = mock_meta_data("domain-2", "model-1", inc_time=1)
+    mock_blob_storage.set_meta_data("domain-2", "model-1", meta_data)
+
+    # The results should be reverse time sorted
     domains = mock_blob_storage.list_domains()
     assert len(domains) == 2
-    # The results should be reverse time sorted
     assert domains[0] == "domain-2"
     assert domains[1] == "domain-1"
 
 
 def test_list_models(mock_blob_storage):
-    # @TODO create models
+    # Create two models in one domain
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+
+    meta_data = mock_meta_data("domain-1", "model-2", inc_time=1)
+    mock_blob_storage.set_meta_data("domain-1", "model-2", meta_data)
+
     # List the models in domain-1; we expect two
     models = mock_blob_storage.list_models("domain-1")
     assert len(models) == 2
+
     # The results should be reverse time sorted
     assert models[0] == "model-2"
     assert models[1] == "model-1"
@@ -82,32 +101,31 @@ def test_get_metadata_path(mock_blob_storage):
     assert exp == res
 
 
-def test_set_meta_data(mock_blob_storage, mock_meta_data):
+def test_set_meta_data(mock_blob_storage):
     # Set the meta data of a fake model
-    mock_blob_storage.set_meta_data("test-domain", "model-123", mock_meta_data)
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
 
-    # Expected two uploads
+    # Expected two files to be created
     # (1) The meta data for the 'latest' model
-    domain_meta_data_path = get_domain_path(
-        mock_blob_storage.root_prefix, "test-domain"
-    )
-    assert_file_contents_equals(domain_meta_data_path, mock_meta_data)
+    domain_meta_data_path = get_domain_path(mock_blob_storage.root_prefix, "domain-1")
+    assert_file_contents_equals(domain_meta_data_path, meta_data)
 
     # (2) The meta data for a specific model
-    model_meta_data_path = (
-        get_models_path(mock_blob_storage.root_prefix, "test-domain", state_name=None),
-        f"model-123.json",
+    model_meta_data_path = os.path.join(
+        get_models_path(mock_blob_storage.root_prefix, "domain-1"),
+        f"model-1.json",
     )
-    assert_file_contents_equals(model_meta_data_path, mock_meta_data)
+    assert_file_contents_equals(model_meta_data_path, meta_data)
 
 
-def test_get_meta_data(mock_blob_storage, mock_meta_data):
+def test_get_meta_data(mock_blob_storage):
     # Set the meta data of a fake model
-    mock_blob_storage.set_meta_data("test-domain", "model-123", mock_meta_data)
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
 
     # Retrieve it back
-    meta_data = mock_blob_storage.get_meta_data("domain-1", "model-2")
-    assert meta_data == mock_meta_data
+    assert mock_blob_storage.get_meta_data("domain-1", "model-1") == meta_data
 
 
 @pytest.mark.parametrize(
