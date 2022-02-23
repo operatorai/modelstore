@@ -42,7 +42,6 @@ class CloudStorage(ABC):
         self,
         domain: str,
         local_path: str,
-        extras: Optional[Union[str, list]] = None,
     ) -> dict:
         """Uploads an archive to this type of storage
         :param extras can be a path to a file or list of files

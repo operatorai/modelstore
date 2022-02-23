@@ -121,56 +121,12 @@ def test_upload(mock_blob_storage, tmp_path):
     assert os.path.exists(model_path)
 
 
-def test_upload_extras(mock_blob_storage, tmp_path):
-    # A 'model' file to be uploaded
-    source = os.path.join(tmp_path, "test-file.txt")
-    Path(source).touch()
-
-    # An additional file to upload alongside the model
-    extra_path = os.path.join(tmp_path, "extra-file.txt")
-    Path(extra_path).touch()
-
-    # Upload the model
-    rsp = mock_blob_storage.upload("test-domain", source, extras=extra_path)
-    assert rsp["type"] == "file_system"
-
-    # The model will be uploaded to the right place
-    model_path = os.path.join(
-        mock_blob_storage.root_prefix,
-        get_archive_path(mock_blob_storage.root_prefix, "test-domain", source),
-    )
-    assert rsp["path"] == model_path
-    assert os.path.exists(model_path)
-
-    # The extras are also uploaded alongside the model
-    uploaded_extra_path = os.path.join(
-        os.path.split(model_path)[0],
-        "extra-file.txt",
-    )
-    assert os.path.exists(uploaded_extra_path)
-
-
 def test_download_latest(mock_blob_storage):
     pass
 
 
 def test_download(mock_blob_storage):
     pass
-
-
-#     def download(self, local_path: str, domain: str, model_id: str = None):
-#         """Downloads an artifacts archive for a given (domain, model_id) pair.
-#         If no model_id is given, it defaults to the latest model in that
-#         domain"""
-#         model_meta = None
-#         if model_id is None:
-#             model_domain = get_domain_path(domain)
-#             model_meta = self._read_json_object(model_domain)
-#             logger.info("Latest model is: %f", model_meta["model"]["model_id"])
-#         else:
-#             model_meta_path = get_metadata_path(domain, model_id)
-#             model_meta = self._read_json_object(model_meta_path)
-#         return self._pull(model_meta["storage"], local_path)
 
 
 def test_list_domains(mock_blob_storage):
