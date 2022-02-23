@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+🐛   Updated the names of the environment variables that are checked for setting the modelstore storage root (prefixes). Previously, this was using the same variable name and this would cause issues if you were creating more than one type of modelstore.
+
+🆕  Added an example of uploading a model with some additional files
+
 ℹ️  The `list_versions()` function is deprecated and has been replaced with `list_models()`.
 
 🆕  You can now list your existing model states, with `modelstore.list_model_states()`.

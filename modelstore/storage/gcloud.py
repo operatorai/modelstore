@@ -45,7 +45,7 @@ class GoogleCloudStorage(BlobStorage):
     NAME = "google-cloud-storage"
     BUILD_FROM_ENVIRONMENT = {
         "required": ["MODEL_STORE_GCP_PROJECT", "MODEL_STORE_GCP_BUCKET"],
-        "optional": ["MODEL_STORE_ROOT_PREFIX"],
+        "optional": ["MODEL_STORE_GCP_ROOT_PREFIX"],
     }
 
     def __init__(
@@ -55,7 +55,9 @@ class GoogleCloudStorage(BlobStorage):
         root_prefix: Optional[str] = None,
         client: "storage.Client" = None,
     ):
-        super().__init__(["google.cloud.storage"], root_prefix)
+        super().__init__(
+            ["google.cloud.storage"], root_prefix, "MODEL_STORE_GCP_ROOT_PREFIX"
+        )
         # If arguments are None, try to populate them using environment variables
         self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_GCP_BUCKET")
         self.project_name = environment.get_value(
@@ -110,7 +112,7 @@ class GoogleCloudStorage(BlobStorage):
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
-        """ Pulls a model to a destination """
+        """Pulls a model to a destination"""
         logger.info("Downloading from: %s...", source)
         file_name = os.path.split(source)[1]
         destination = os.path.join(destination, file_name)
@@ -121,7 +123,7 @@ class GoogleCloudStorage(BlobStorage):
         return destination
 
     def _remove(self, destination: str) -> bool:
-        """ Removes a file from the destination path """
+        """Removes a file from the destination path"""
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
         if not blob.exists():
@@ -131,7 +133,7 @@ class GoogleCloudStorage(BlobStorage):
         return True
 
     def _storage_location(self, prefix: str) -> dict:
-        """ Returns a dict of the location the artifact was stored """
+        """Returns a dict of the location the artifact was stored"""
         return {
             "type": "google:cloud-storage",
             "bucket": self.bucket_name,
@@ -139,7 +141,7 @@ class GoogleCloudStorage(BlobStorage):
         }
 
     def _get_storage_location(self, meta: dict) -> str:
-        """ Extracts the storage location from a meta data dictionary """
+        """Extracts the storage location from a meta data dictionary"""
         if self.bucket_name != meta.get("bucket"):
             raise ValueError("Meta-data has a different bucket name")
         return meta["prefix"]
@@ -161,7 +163,7 @@ class GoogleCloudStorage(BlobStorage):
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
-        """ Returns a dictionary of the JSON stored in a given path """
+        """Returns a dictionary of the JSON stored in a given path"""
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(path)
         obj = blob.download_as_string()

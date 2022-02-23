@@ -44,11 +44,17 @@ class BlobStorage(CloudStorage):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, required_deps: list, root_prefix: str = None):
+    def __init__(
+        self,
+        required_deps: list,
+        root_prefix: str = None,
+        root_prefix_env_key: str = None,
+    ):
         super().__init__(required_deps)
-        root_prefix = environment.get_value(
-            root_prefix, "MODEL_STORE_ROOT_PREFIX", allow_missing=True
-        )
+        if root_prefix_env_key is not None:
+            root_prefix = environment.get_value(
+                root_prefix, root_prefix_env_key, allow_missing=True
+            )
         self.root_prefix = root_prefix if root_prefix is not None else ""
         logger.debug("Root prefix is: %s", self.root_prefix)
 
