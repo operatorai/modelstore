@@ -13,19 +13,38 @@
 #    limitations under the License.
 import os
 import json
+from datetime import datetime, timedelta
 
 import pytest
+import modelstore
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
     get_model_state_path,
-    get_file_contents,
 )
 
 
 @pytest.fixture
 def mock_blob_storage(tmp_path):
     return FileSystemStorage(str(tmp_path))
+
+
+def mock_meta_data(domain: str, model_id: str, inc_time: int):
+    upload_time = datetime.now() + timedelta(hours=inc_time)
+    return {
+        "model": {
+            "domain": domain,
+            "model_id": model_id,
+        },
+        "code": {"created": upload_time.strftime("%Y/%m/%d/%H:%M:%S")},
+        "modelstore": modelstore.__version__,
+    }
+
+
+def assert_file_contents_equals(file_path: str, expected: dict):
+    with open(file_path, "r") as lines:
+        actual = lines.read()
+    assert json.dumps(expected) == actual
 
 
 def test_state_exists(mock_blob_storage):
@@ -41,8 +60,13 @@ def test_create_model_state(mock_blob_storage):
         mock_blob_storage.root_prefix,
         get_model_state_path(mock_blob_storage.root_prefix, "production"),
     )
-    state_meta = json.loads(get_file_contents(state_path))
-    assert state_meta["state_name"] == "production"
+    assert_file_contents_equals(
+        state_path,
+        {
+            "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+            "state_name": "production",
+        },
+    )
 
 
 def test_create_model_state_exists(mock_blob_storage):
@@ -71,6 +95,11 @@ def test_set_model_state_unknown_state(mock_blob_storage):
 
 
 def test_set_model_state(mock_blob_storage):
+    # Create a models in a domain
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+
+    # Create a state and set the model to that state
     mock_blob_storage.create_model_state("production")
     mock_blob_storage.set_model_state("domain-1", "model-1", "production")
 
@@ -81,6 +110,11 @@ def test_set_model_state(mock_blob_storage):
 
 
 def test_unset_model_state(mock_blob_storage):
+    # Create a models in a domain
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+
+    # Create a state and set the model to that state
     mock_blob_storage.create_model_state("production")
     mock_blob_storage.set_model_state("domain-1", "model-1", "production")
 
