@@ -105,7 +105,7 @@ def main(modelstore_in):
     assert model_id in model_ids
 
     # Delete the model!
-    demos.delete_model(model_domain, model_id)
+    demos.delete_model(modelstore, model_domain, model_id)
     for state_name in state_names:
         # The model no longer appears in the listing by state
         model_ids = demos.list_models_in_domain_with_state(
