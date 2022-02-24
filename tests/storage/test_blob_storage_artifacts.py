@@ -49,35 +49,6 @@ def test_upload(mock_blob_storage, mock_model_file):
     assert os.path.exists(model_path)
 
 
-def test_upload_extras(mock_blob_storage, mock_model_file, tmp_path):
-    # An additional file to upload alongside the model
-    extra_path = os.path.join(tmp_path, "extra-file.txt")
-    Path(extra_path).touch()
-
-    # Upload the model
-    rsp = mock_blob_storage.upload("test-domain", mock_model_file, extras=extra_path)
-    assert rsp["type"] == "file_system"
-
-    # The model will be uploaded to the right place
-    model_path = os.path.join(
-        mock_blob_storage.root_prefix,
-        get_archive_path(
-            mock_blob_storage.root_prefix,
-            "test-domain",
-            mock_model_file,
-        ),
-    )
-    assert rsp["path"] == model_path
-    assert os.path.exists(model_path)
-
-    # The extras are also uploaded alongside the model
-    uploaded_extra_path = os.path.join(
-        os.path.split(model_path)[0],
-        "extra-file.txt",
-    )
-    assert os.path.exists(uploaded_extra_path)
-
-
 def test_download_latest():
     pass
 
