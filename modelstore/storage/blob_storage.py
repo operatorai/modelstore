@@ -146,6 +146,7 @@ class BlobStorage(CloudStorage):
             message = f"Delete model from domain={domain} with model_id={model_id}?"
             if not click.confirm(message):
                 logger.info("Aborting; not deleting model")
+                return
 
         # Delete the artifact itself
         prefix = self._get_storage_location(meta_data)
