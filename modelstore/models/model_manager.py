@@ -99,7 +99,7 @@ class ModelManager(ABC):
                 raise TypeError(f"Please specify {arg}=<value>")
 
     def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
+        """Returns meta-data about the model's type"""
         model_info = {"library": self.ml_library}
         if "model" in kwargs:
             model_info["type"] = type(kwargs["model"]).__name__
@@ -109,11 +109,11 @@ class ModelManager(ABC):
         return meta_data["model"]["model_type"]["type"]
 
     def _is_same_library(self, meta_data: dict) -> bool:
-        """ Whether the meta-data of a model artifact matches a model manager """
+        """Whether the meta-data of a model artifact matches a model manager"""
         return meta_data.get("library") == self.ml_library
 
     def _model_data(self, **kwargs) -> dict:
-        """ Returns meta-data about the data used to train the model """
+        """Returns meta-data about the data used to train the model"""
         # @ Future
         return {}
 
@@ -135,6 +135,13 @@ class ModelManager(ABC):
                 file_paths.append(rsp)
         return file_paths
 
+    def _collect_extras(self, **kwargs):
+        extras = kwargs.get("extras")
+        if extras is None:
+            return []
+        extra_paths = extras if isinstance(extras, list) else [extras]
+        return set([f for f in extra_paths if os.path.isfile(f)])
+
     def _create_archive(self, **kwargs) -> str:
         """
         Creates the `artifacts.tar.gz` archive which contains
@@ -143,14 +150,22 @@ class ModelManager(ABC):
         self._validate_kwargs(**kwargs)
         archive_name = "artifacts.tar.gz"
         with tempfile.TemporaryDirectory() as tmp_dir:
-            file_paths = self._collect_files(tmp_dir, **kwargs)
             result = os.path.join(tmp_dir, archive_name)
-
-            # Creates a tarfile and adds all of the files to it
             with tarfile.open(result, "w:gz") as tar:
-                for file_path in file_paths:
+                # Add all of the model files to the top-level
+                # of the archive
+                for file_path in self._collect_files(tmp_dir, **kwargs):
                     file_name = os.path.split(file_path)[1]
                     tar.add(name=file_path, arcname=file_name)
+
+                # Add any extra files to a sub-directory of
+                # the archive
+                for file_path in self._collect_extras(**kwargs):
+                    file_name = os.path.split(file_path)[1]
+                    tar.add(
+                        name=file_path,
+                        arcname=os.path.join("extras", file_name),
+                    )
 
             # Move the archive to the current working directory
             archive_path = os.path.join(os.getcwd(), archive_name)
@@ -186,9 +201,7 @@ class ModelManager(ABC):
         archive_path = self._create_archive(**kwargs)
 
         # Upload the model archive and any additional extras
-        storage_meta = self.storage.upload(
-            domain, archive_path, extras=kwargs.get("extras")
-        )
+        storage_meta = self.storage.upload(domain, archive_path)
 
         # Generate the combined meta-data and add it to the store
         meta_data = metadata.generate(model_meta, storage_meta, code_meta)

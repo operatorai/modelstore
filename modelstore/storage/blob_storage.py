@@ -110,31 +110,10 @@ class BlobStorage(CloudStorage):
             get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
         )
 
-    def _upload_extra(self, local_path: str, remote_path: str):
-        if os.path.isdir(local_path):
-            #  Currently ignoring directories
-            return
-        local_file_name = os.path.split(local_path)[1]
-        if local_file_name == "artifacts.tar.gz":
-            raise ValueError("Name conflict in extras: cannot use 'artifacts.tar.gz'")
-        remote_file_path = os.path.join(remote_path, local_file_name)
-        self._push(local_path, remote_file_path)
-
-    def upload(
-        self, domain: str, local_path: str, extras: Optional[Union[str, list]] = None
-    ) -> dict:
+    def upload(self, domain: str, local_path: str) -> dict:
         # Upload the archive into storage
         archive_remote_path = get_archive_path(self.root_prefix, domain, local_path)
         prefix = self._push(local_path, archive_remote_path)
-        if extras:
-            # If any extras have been defined, they are uploaded
-            # to the same place
-            remote_path = os.path.split(archive_remote_path)[0]
-            if isinstance(extras, list):
-                for extra_path in extras:
-                    self._upload_extra(extra_path, remote_path)
-            else:
-                self._upload_extra(extras, remote_path)
         return self._storage_location(prefix)
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
