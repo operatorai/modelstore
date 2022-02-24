@@ -58,6 +58,8 @@ def main(modelstore_in):
     # How does modelstore enable you to manage them?
 
     # Let's demo all the different things you can do!
+
+    # List all of the domains
     demos.list_domains(modelstore)
 
     # List the models in the diabest-boosting-demo domain
@@ -88,18 +90,34 @@ def main(modelstore_in):
 
     # List the models that are in production - the new model is there
     model_ids = demos.list_models_in_domain_with_state(
-        modelstore, model_domain, state_name
+        modelstore, model_domain, "production"
     )
     assert model_id in model_ids
 
     # Remove a state from a model
     demos.remove_model_state(modelstore, model_domain, model_id, "production")
 
-    # List the models that are in production - the removed model is not there
+    # Set the model to a different state
+    demos.set_model_state(modelstore, model_domain, model_id, "staging")
     model_ids = demos.list_models_in_domain_with_state(
-        modelstore, model_domain, state_name
+        modelstore, model_domain, "staging"
     )
+    assert model_id in model_ids
+
+    # Delete the model!
+    demos.delete_model(model_domain, model_id)
+    for state_name in state_names:
+        # The model no longer appears in the listing by state
+        model_ids = demos.list_models_in_domain_with_state(
+            modelstore, model_domain, state_name
+        )
+        assert model_id not in model_ids
+
+    # The model no longer appears when listing all of them
+    model_ids = demos.list_models_in_domain(modelstore, model_domain)
     assert model_id not in model_ids
+
+    # @TODO catch the exception if trying to download a deleted model
 
 
 if __name__ == "__main__":
