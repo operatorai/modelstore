@@ -89,6 +89,13 @@ def mock_save_config(tmp_dir: str) -> str:
 
 
 @pytest.fixture
+def mock_file(tmpdir: str) -> str:
+    path = os.path.join(tmpdir, "extra-file.csv")
+    Path(path).touch()
+    return path
+
+
+@pytest.fixture
 def mock_manager(tmpdir):
     return MockModelManager(tmpdir)
 
@@ -107,6 +114,30 @@ def test_collect_files(mock_manager):
     assert res == exp
 
 
+def test_collect_extras_single_file(mock_manager, mock_file):
+    res = mock_manager._collect_extras(extras=mock_file)
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+
+def test_collect_extras_removes_duplicates(mock_manager, mock_file):
+    res = mock_manager._collect_extras(extras=[mock_file, mock_file])
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+
+def test_collect_extras_removes_missing_files(mock_manager, mock_file):
+    res = mock_manager._collect_extras(extras=[mock_file, "missing-file.txt"])
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+
+def test_collect_extras_removes_missing_directories(mock_manager, mock_file, tmpdir):
+    res = mock_manager._collect_extras(extras=[mock_file, tmpdir])
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+
 def test_validate_kwargs(mock_manager):
     with pytest.raises(TypeError):
         # Missing model= kwarg
@@ -119,18 +150,23 @@ def test_upload(mock_manager):
     assert mock_manager.storage.called
 
 
-def test_create_archive(mock_manager):
+def test_create_archive(mock_manager, mock_file):
     target = os.path.join(os.getcwd(), "artifacts.tar.gz")
     if os.path.exists(target):
         os.remove(target)
 
-    mock_manager._create_archive(model="model", config="config")
+    mock_manager._create_archive(
+        model="model",
+        config="config",
+        extras=mock_file,
+    )
     exp = sorted(
         [
             "model-info.json",
             "python-info.json",
             "model.joblib",
             "config.json",
+            os.path.join("extras", "extra-file.csv"),
         ]
     )
     with tarfile.open(target) as tar:

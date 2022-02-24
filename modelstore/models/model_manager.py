@@ -140,7 +140,7 @@ class ModelManager(ABC):
         if extras is None:
             return []
         extra_paths = extras if isinstance(extras, list) else [extras]
-        return [f for f in extra_paths if os.path.isfile(f)]
+        return set([f for f in extra_paths if os.path.isfile(f)])
 
     def _create_archive(self, **kwargs) -> str:
         """
@@ -164,7 +164,7 @@ class ModelManager(ABC):
                     file_name = os.path.split(file_path)[1]
                     tar.add(
                         name=file_path,
-                        arcname=os.path.join("extras", file_path),
+                        arcname=os.path.join("extras", file_name),
                     )
 
             # Move the archive to the current working directory
