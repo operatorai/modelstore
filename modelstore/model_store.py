@@ -135,6 +135,8 @@ class ModelStore:
     """
     MODEL STATES: a model state is a string that has a 1:many relationship
     with models.
+
+    @TODO: There is no function to get the meta-data for a state
     """
 
     def list_model_states(self) -> list:
