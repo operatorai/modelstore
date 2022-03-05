@@ -26,6 +26,7 @@ from modelstore.storage.util.paths import (
 from modelstore.storage.states.model_states import is_valid_state_name
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
+from modelstore.utils.exceptions import FilePullFailedException
 
 
 class FileSystemStorage(BlobStorage):
@@ -95,14 +96,17 @@ class FileSystemStorage(BlobStorage):
 
     def _push(self, source: str, destination: str) -> str:
         destination = self.relative_dir(destination)
-
         shutil.copy(source, destination)
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
-        file_name = os.path.split(source)[1]
-        shutil.copy(source, destination)
-        return os.path.join(os.path.abspath(destination), file_name)
+        try:
+            file_name = os.path.split(source)[1]
+            shutil.copy(source, destination)
+            return os.path.join(os.path.abspath(destination), file_name)
+        except Exception as e:
+            logger.exception(e)
+            raise FilePullFailedException(e)
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""

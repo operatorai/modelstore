@@ -19,6 +19,7 @@ from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
+from modelstore.utils.exceptions import FilePullFailedException
 
 try:
     import boto3
@@ -92,12 +93,17 @@ class AWSStorage(BlobStorage):
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
-        logger.info("Downloading from: %s...", source)
-        file_name = os.path.split(source)[1]
-        destination = os.path.join(destination, file_name)
-        self.client.download_file(self.bucket_name, source, destination)
-        logger.debug("Finished: %s", destination)
-        return destination
+        try:
+            logger.debug("Downloading from: %s...", source)
+            file_name = os.path.split(source)[1]
+            destination = os.path.join(destination, file_name)
+            self.client.download_file(self.bucket_name, source, destination)
+            logger.debug("Finished: %s", destination)
+            return destination
+        except ClientError as e:
+            if int(e.response["Error"]["Code"]) == 404:
+                raise FilePullFailedException(e)
+            raise e
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
@@ -106,10 +112,10 @@ class AWSStorage(BlobStorage):
             self.client.delete_object(Bucket=self.bucket_name, Key=destination)
             return True
         except ClientError as e:
-            if int(e.response["Error"]["Code"]) != 404:
-                raise
-            logger.debug("Remote file does not exist: %s", destination)
-            return False
+            if int(e.response["Error"]["Code"]) == 404:
+                logger.debug("Remote file does not exist: %s", destination)
+                return True
+            raise
 
     def _storage_location(self, prefix: str) -> dict:
         """Returns a dict of the location the artifact was stored"""

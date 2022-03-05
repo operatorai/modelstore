@@ -19,9 +19,11 @@ from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
+from modelstore.utils.exceptions import FilePullFailedException
 
 try:
     from azure.storage.blob import BlobServiceClient
+    from azure.core.exceptions import ResourceNotFoundError
 
     AZURE_EXISTS = True
 except ImportError:
@@ -111,13 +113,16 @@ class AzureBlobStorage(BlobStorage):
 
     def _pull(self, source: str, destination: str) -> str:
         """Pulls a model to a destination"""
-        logger.info("Downloading from: %s...", source)
-        blob_client = self._blob_client(source)
-        target = os.path.join(destination, os.path.split(source)[1])
-        with open(target, "wb") as download_file:
-            download_file.write(blob_client.download_blob().readall())
-        logger.debug("Finished: %s", destination)
-        return target
+        try:
+            logger.debug("Downloading from: %s...", source)
+            blob_client = self._blob_client(source)
+            target = os.path.join(destination, os.path.split(source)[1])
+            with open(target, "wb") as download_file:
+                download_file.write(blob_client.download_blob().readall())
+            logger.debug("Finished: %s", destination)
+            return target
+        except ResourceNotFoundError as e:
+            raise FilePullFailedException(e)
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""

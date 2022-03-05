@@ -39,6 +39,7 @@ from modelstore.utils.log import logger
 from modelstore.utils.exceptions import (
     ModelDeletedException,
     ModelNotFoundException,
+    FilePullFailedException,
 )
 
 
@@ -131,11 +132,10 @@ class BlobStorage(CloudStorage):
         if model_id is None:
             model_domain = get_domain_path(self.root_prefix, domain)
             model_meta = self._read_json_object(model_domain)
-            logger.info("Latest model is: %s", model_meta["model"]["model_id"])
-        else:
-            model_meta_path = self._get_metadata_path(domain, model_id)
-            # Note: this will fail if the model does not exist (needs a more informative exception)
-            model_meta = self._read_json_object(model_meta_path)
+            model_id = model_meta["model"]["model_id"]
+            logger.info("Latest model is: %s", model_id)
+
+        model_meta = self.get_meta_data(domain, model_id)
         storage_path = self._get_storage_location(model_meta["storage"])
         return self._pull(storage_path, local_path)
 
@@ -167,6 +167,10 @@ class BlobStorage(CloudStorage):
         logger.debug("Deleting meta-data for %s=%s", domain, model_id)
         remote_path = self._get_metadata_path(domain, model_id)
         self._remove(remote_path)
+
+        # @TODO (future): the model that is being deleted may be also set
+        # as the "latest" model in a domain; this will cause download() to fail
+        # if a model_id is not provided
 
     def list_domains(self) -> list:
         """Returns a list of all the existing model domains"""
@@ -304,16 +308,19 @@ class BlobStorage(CloudStorage):
         remote_path = self._get_metadata_path(domain, model_id)
         try:
             return self._pull_and_load(remote_path)
-        except FileNotFoundError:
+        except FilePullFailedException:
             logger.debug("failed to pull: %s", remote_path)
-            # A meta-data file may not be found because it either
-            # 1. Never existed to begin with, or
-            # 2. Has been deleted
+            # A meta-data file may not be downloaded if:
+            # 1. The domain does not exist (e.g., typo)
+            # 2. The model never existed in that domain
+            # 3. The model has been deleted from that domain
+            # 4. A different error occurred (e.g. connectivity)
+            # The block below currently checks for (2) and (3)
             try:
                 remote_path = self._get_metadata_path(
                     domain, model_id, ReservedModelStates.DELETED.value
                 )
                 self._pull_and_load(remote_path)
                 raise ModelDeletedException(domain, model_id)
-            except FileNotFoundError:
+            except FilePullFailedException:
                 raise ModelNotFoundException(domain, model_id)

@@ -13,6 +13,12 @@
 #    limitations under the License.
 
 
+class FilePullFailedException(Exception):
+    def __init__(self, base_exception: Exception):
+        super().__init__()
+        self.base_exception = base_exception
+
+
 class ModelDeletedException(Exception):
     def __init__(self, domain: str, model_id: str):
         super().__init__(f"model='{model_id}' has been deleted from domain='{domain}'")
