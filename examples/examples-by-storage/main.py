@@ -18,7 +18,8 @@ from modelstore.utils.exceptions import ModelDeletedException, ModelNotFoundExce
 )
 @click.option(
     "--model-type",
-    type=click.Choice(["sklearn", "xgboost"], case_sensitive=False, default="sklearn"),
+    type=click.Choice(["sklearn", "xgboost"], case_sensitive=False),
+    default="sklearn",
 )
 def main(modelstore_in: str, model_type: str):
     print(f"🆕  Running modelstore example with {modelstore_in} backend.")

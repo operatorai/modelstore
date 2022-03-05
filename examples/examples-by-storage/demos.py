@@ -19,13 +19,18 @@ def list_models_in_domain(modelstore: ModelStore, model_domain: str) -> list:
 
 
 def list_models_in_domain_with_state(
-    modelstore: ModelStore, model_domain: str, state_name: str, expected_model_id: str
-):
+    modelstore: ModelStore,
+    model_domain: str,
+    state_name: str,
+    expected_model_id: str = None,
+) -> list:
     print(f"✅  Listing models for {model_domain} that are in state={state_name}:")
     model_ids = modelstore.list_models(model_domain, state_name=state_name)
     for model_id in model_ids:
         print(f"\t  Domain: {model_domain} has model with id={model_id}")
-    assert expected_model_id in model_ids
+    if expected_model_id is not None:
+        assert expected_model_id in model_ids
+    return model_ids
 
 
 def load_model(modelstore: ModelStore, model_domain: str, model_id: str):
