@@ -160,8 +160,11 @@ class BlobStorage(CloudStorage):
         # Set the model as deleted in the meta data by unsetting it from
         # all custom states, setting it to a reserved state, and then deleting
         # the main meta-data file
+        logger.debug("Removing model from all states %s=%s", domain, model_id)
         for state_name in self.list_model_states():
             self.unset_model_state(domain, model_id, state_name)
+
+        logger.debug("Setting to state=deleted %s=%s", domain, model_id)
         self.set_model_state(domain, model_id, ReservedModelStates.DELETED.value)
 
         logger.debug("Deleting meta-data for %s=%s", domain, model_id)
@@ -264,6 +267,10 @@ class BlobStorage(CloudStorage):
             logger.debug(
                 "Successfully unset %s=%s from state=%s", domain, model_id, state_name
             )
+        else:
+            logger.debug(
+                "Model  %s=%s was not set to state=%s", domain, model_id, state_name
+            )
 
     def _get_metadata_path(
         self, domain: str, model_id: str, state_name: Optional[str] = None
@@ -309,7 +316,7 @@ class BlobStorage(CloudStorage):
         try:
             return self._pull_and_load(remote_path)
         except FilePullFailedException:
-            logger.debug("failed to pull: %s", remote_path)
+            logger.debug("Failed to pull: %s", remote_path)
             # A meta-data file may not be downloaded if:
             # 1. The domain does not exist (e.g., typo)
             # 2. The model never existed in that domain

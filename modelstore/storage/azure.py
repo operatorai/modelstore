@@ -119,7 +119,6 @@ class AzureBlobStorage(BlobStorage):
             target = os.path.join(destination, os.path.split(source)[1])
             with open(target, "wb") as download_file:
                 download_file.write(blob_client.download_blob().readall())
-            logger.debug("Finished: %s", destination)
             return target
         except ResourceNotFoundError as e:
             raise FilePullFailedException(e)
@@ -148,6 +147,7 @@ class AzureBlobStorage(BlobStorage):
         return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.container_name, path)
         results = []
         blobs = self._container_client().list_blobs(name_starts_with=path + "/")
         for blob in blobs:

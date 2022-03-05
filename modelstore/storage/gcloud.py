@@ -110,7 +110,6 @@ class GoogleCloudStorage(BlobStorage):
 
         with open(source, "rb") as f:
             blob.upload_from_file(f)
-        logger.debug("Finished: %s", destination)
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
@@ -122,7 +121,6 @@ class GoogleCloudStorage(BlobStorage):
             bucket = self.client.get_bucket(self.bucket_name)
             blob = bucket.blob(source)
             blob.download_to_filename(destination)
-            logger.debug("Finished: %s", destination)
             return destination
         except NotFound as e:
             raise FilePullFailedException(e)
@@ -152,6 +150,7 @@ class GoogleCloudStorage(BlobStorage):
         return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.bucket_name, path)
         results = []
         blobs = self.client.list_blobs(
             self.bucket_name, prefix=path + "/", delimiter="/"

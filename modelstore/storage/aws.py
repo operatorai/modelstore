@@ -89,7 +89,6 @@ class AWSStorage(BlobStorage):
     def _push(self, source: str, destination: str) -> str:
         logger.info("Uploading to: %s...", destination)
         self.client.upload_file(source, self.bucket_name, destination)
-        logger.debug("Finished: %s", destination)
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
@@ -98,7 +97,6 @@ class AWSStorage(BlobStorage):
             file_name = os.path.split(source)[1]
             destination = os.path.join(destination, file_name)
             self.client.download_file(self.bucket_name, source, destination)
-            logger.debug("Finished: %s", destination)
             return destination
         except ClientError as e:
             if int(e.response["Error"]["Code"]) == 404:
@@ -109,12 +107,13 @@ class AWSStorage(BlobStorage):
         """Removes a file from the destination path"""
         try:
             self.client.head_object(Bucket=self.bucket_name, Key=destination)
+            logger.debug("Deleting: %s...", destination)
             self.client.delete_object(Bucket=self.bucket_name, Key=destination)
             return True
         except ClientError as e:
             if int(e.response["Error"]["Code"]) == 404:
                 logger.debug("Remote file does not exist: %s", destination)
-                return True
+                return False
             raise
 
     def _storage_location(self, prefix: str) -> dict:
@@ -132,17 +131,26 @@ class AWSStorage(BlobStorage):
         return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.bucket_name, path)
         results = []
         objects = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=path)
         for version in objects.get("Contents", []):
-            if not version["Key"].endswith(".json"):
+            object_path = version["Key"]
+            if not object_path.endswith(".json"):
+                logger.debug("Skipping non-json file: %s", object_path)
                 continue
-            obj = self._read_json_object(version["Key"])
+            if os.path.split(object_path)[0] != path:
+                # We don't want to read files in a sub-prefix
+                logger.debug("Skipping path-level file: %s", object_path)
+                continue
+
+            obj = self._read_json_object(object_path)
             if obj is not None:
                 results.append(obj)
         return sorted_by_created(results)
 
     def _read_json_object(self, path: str) -> dict:
+        logger.debug("Reading: %s/%s", self.bucket_name, path)
         obj = self.client.get_object(Bucket=self.bucket_name, Key=path)
         body = obj["Body"].read()
         try:
