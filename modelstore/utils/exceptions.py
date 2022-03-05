@@ -13,15 +13,12 @@
 #    limitations under the License.
 
 
-<<<<<<< HEAD
 class FilePullFailedException(Exception):
     def __init__(self, base_exception: Exception):
         super().__init__()
         self.base_exception = base_exception
 
 
-=======
->>>>>>> 0f0542c (Create custom exceptions and add them to get_meta_data())
 class ModelDeletedException(Exception):
     def __init__(self, domain: str, model_id: str):
         super().__init__(f"model='{model_id}' has been deleted from domain='{domain}'")
