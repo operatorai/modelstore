@@ -8,6 +8,7 @@ import click
 import demos
 from model import train
 from modelstores import create_model_store
+from modelstore.utils.exceptions import ModelDeletedException, ModelNotFoundException
 
 
 @click.command()
@@ -58,6 +59,12 @@ def main(modelstore_in):
     # How does modelstore enable you to manage them?
 
     # Let's demo all the different things you can do!
+
+    # Get the meta-data about a missing model
+    try:
+        meta_data = modelstore.get_model_info("missing-domain", "missing-model")
+    except ModelNotFoundException:
+        print(f"✅  Modelstore raises a ModelNotFoundException if it can't find a model")
 
     # List all of the domains
     demos.list_domains(modelstore)
@@ -117,7 +124,13 @@ def main(modelstore_in):
     model_ids = demos.list_models_in_domain(modelstore, model_domain)
     assert model_id not in model_ids
 
-    # @TODO catch the exception if trying to download a deleted model
+    # You get an informative exception message
+    try:
+        meta_data = modelstore.get_model_info(model_domain, model_id)
+    except ModelDeletedException:
+        print(
+            f"✅  Modelstore raises a ModelDeletedException if a model has been deleted"
+        )
 
 
 if __name__ == "__main__":
