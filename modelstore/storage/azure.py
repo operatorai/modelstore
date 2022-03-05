@@ -152,6 +152,11 @@ class AzureBlobStorage(BlobStorage):
         blobs = self._container_client().list_blobs(name_starts_with=path + "/")
         for blob in blobs:
             if not blob.name.endswith(".json"):
+                logger.debug("Skipping non-json file: %s", blob.name)
+                continue
+            if os.path.split(blob.name)[0] != path:
+                # We don't want to read files in a sub-prefix
+                logger.debug("Skipping file in sub-prefix: %s", blob.name)
                 continue
             blob_client = self._blob_client(blob)
             obj = blob_client.download_blob().readall()

@@ -141,7 +141,7 @@ class AWSStorage(BlobStorage):
                 continue
             if os.path.split(object_path)[0] != path:
                 # We don't want to read files in a sub-prefix
-                logger.debug("Skipping path-level file: %s", object_path)
+                logger.debug("Skipping file in sub-prefix: %s", object_path)
                 continue
 
             obj = self._read_json_object(object_path)
