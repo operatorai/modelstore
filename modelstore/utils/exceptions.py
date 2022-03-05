@@ -12,20 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-import logging
-import sys
+
+class ModelDeletedException(Exception):
+    def __init__(self, domain: str, model_id: str):
+        super().__init__(f"model='{model_id}' has been deleted from domain='{domain}'")
 
 
-def get_logger():
-    log = logging.getLogger(name="modelstore")
-    formatter = logging.Formatter("%(asctime)s - %(message)s")
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.INFO)
-    handler.setFormatter(formatter)
-
-    log.setLevel(logging.INFO)
-    log.addHandler(handler)
-    return log
-
-
-logger = get_logger()
+class ModelNotFoundException(Exception):
+    def __init__(self, domain: str, model_id: str):
+        super().__init__(f"model='{model_id}' does not exist in domain={domain}.")

@@ -33,8 +33,13 @@ from modelstore.storage.util.paths import (
 from modelstore.storage.states.model_states import (
     is_valid_state_name,
     is_reserved_state,
+    ReservedModelStates,
 )
 from modelstore.utils.log import logger
+from modelstore.utils.exceptions import (
+    ModelDeletedException,
+    ModelNotFoundException,
+)
 
 
 class BlobStorage(CloudStorage):
@@ -286,14 +291,29 @@ class BlobStorage(CloudStorage):
             remote_path = get_domain_path(self.root_prefix, domain)
             self._push(local_path, remote_path)
 
+    def _pull_and_load(self, remote_path: str) -> dict:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_path = self._pull(remote_path, tmp_dir)
+            with open(local_path, "r") as lines:
+                return json.loads(lines.read())
+
     def get_meta_data(self, domain: str, model_id: str) -> dict:
         if any(x in [None, ""] for x in [domain, model_id]):
             raise ValueError("domain and model_id must be set")
         logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
         remote_path = self._get_metadata_path(domain, model_id)
-        # @TODO: if the file does not exist, check if it is in
-        # the ReservedModelStates.DELETED state and raise the right exception
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            local_path = self._pull(remote_path, tmp_dir)
-            with open(local_path, "r") as lines:
-                return json.loads(lines.read())
+        try:
+            return self._pull_and_load(remote_path)
+        except FileNotFoundError:
+            logger.debug("failed to pull: %s", remote_path)
+            # A meta-data file may not be found because it either
+            # 1. Never existed to begin with, or
+            # 2. Has been deleted
+            try:
+                remote_path = self._get_metadata_path(
+                    domain, model_id, ReservedModelStates.DELETED.value
+                )
+                self._pull_and_load(remote_path)
+                raise ModelDeletedException(domain, model_id)
+            except FileNotFoundError:
+                raise ModelNotFoundException(domain, model_id)
