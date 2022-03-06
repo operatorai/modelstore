@@ -192,6 +192,7 @@ class BlobStorage(CloudStorage):
     def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
+        _ = self.get_domain(domain)
         models_path = get_models_path(self.root_prefix, domain, state_name)
         models = self._read_json_objects(models_path)
         # @TODO sort models by creation time stamp
