@@ -115,6 +115,10 @@ class ModelStore:
         of the domains"""
         return self.storage.list_domains()
 
+    def get_domain(self, domain: str) -> dict:
+        """Returns the meta-data about a domain"""
+        return self.storage.get_domain(domain)
+
     """
     MODELS: multiple models can be added to a domain; 
     """
