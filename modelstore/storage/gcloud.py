@@ -120,6 +120,11 @@ class GoogleCloudStorage(BlobStorage):
                 return True
 
     def _push(self, source: str, destination: str) -> str:
+        if self.client.project is None:
+            raise NotImplementedError(
+                "File upload is only supported for authenticated clients."
+            )
+
         logger.info("Uploading to: %s...", destination)
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
@@ -148,6 +153,11 @@ class GoogleCloudStorage(BlobStorage):
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
+        if self.client.project is None:
+            raise NotImplementedError(
+                "File removal is only supported for authenticated clients."
+            )
+
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
         if not blob.exists():
