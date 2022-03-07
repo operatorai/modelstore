@@ -196,7 +196,7 @@ class GoogleCloudStorage(BlobStorage):
                 continue
         return sorted_by_created(results)
 
-    def _read_json_object(self, path: str) -> dict:
+    def _read_json_object(self, path: str) -> Optional[dict]:
         """Returns a dictionary of the JSON stored in a given path"""
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(path)
