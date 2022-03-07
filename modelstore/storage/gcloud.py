@@ -145,7 +145,7 @@ class GoogleCloudStorage(BlobStorage):
         if self.client.project is None:
             bucket = self.client.bucket(bucket_name=self.bucket_name)
         else:
-            bucket = self.client.bucket(self.bucket_name)
+            bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(source)
         blob.download_to_filename(destination)
         logger.debug("Finished: %s", destination)

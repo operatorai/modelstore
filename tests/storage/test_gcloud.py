@@ -32,6 +32,7 @@ from tests.storage.test_utils import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 _MOCK_BUCKET_NAME = "gcloud-bucket"
+_MOCK_PROJECT_NAME = "project-name"
 
 
 def gcloud_bucket():
@@ -44,8 +45,13 @@ def gcloud_client(
     bucket_exists: bool,
     files_exist: bool,
     file_contents: str = TEST_FILE_CONTENTS,
+    anonymous: bool = False,
 ):
     mock_client = mock.create_autospec(storage.Client)
+    if anonymous:
+        mock_client.project = None
+    else:
+        mock_client.project = _MOCK_PROJECT_NAME
     mock_buckets = []
     if bucket_exists:
         mock_bucket = gcloud_bucket()
@@ -66,7 +72,7 @@ def gcloud_storage(
     mock_client: storage.Client, bucket_name: str = _MOCK_BUCKET_NAME
 ):
     return GoogleCloudStorage(
-        project_name="project-name",
+        project_name=_MOCK_PROJECT_NAME,
         bucket_name=bucket_name,
         client=mock_client,
     )
@@ -141,7 +147,7 @@ def test_pull(tmp_path):
     local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
     assert result == local_destination
 
-    #  Assert download happened
+    # Assert download happened
     mock_bucket = storage.client.get_bucket(storage.bucket_name)
     mock_blob = mock_bucket.blob(prefix)
     mock_blob.download_to_filename.assert_called_with(local_destination)
