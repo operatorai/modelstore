@@ -153,6 +153,25 @@ def test_pull(tmp_path):
     mock_blob.download_to_filename.assert_called_with(local_destination)
 
 
+def test_anonymous_pull(tmp_path):
+    # Create a client
+    mock_client = gcloud_client(bucket_exists=True, files_exist=True, anonymous=True)
+    storage = gcloud_storage(mock_client)
+
+    # Pull the file back from storage
+    prefix = remote_file_path()
+    result = storage._pull(prefix, tmp_path)
+
+    # Assert returned path
+    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
+    assert result == local_destination
+
+    # Assert download happened
+    mock_bucket = storage.client.bucket(storage.bucket_name)
+    mock_blob = mock_bucket.blob(prefix)
+    mock_blob.download_to_filename.assert_called_with(local_destination)
+
+
 @pytest.mark.parametrize(
     "file_exists,should_call_delete",
     [
