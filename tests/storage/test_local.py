@@ -37,6 +37,11 @@ def file_system_storage(tmp_path):
     return FileSystemStorage(root_dir=str(tmp_path))
 
 
+def test_create_model_store_with_at_location(tmp_path):
+    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST'))
+    assert file_system_storage.validate()
+    assert os.path.exists(file_system_storage.root_prefix)
+
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     monkeypatch.setenv("MODEL_STORE_ROOT_PREFIX", "~")
