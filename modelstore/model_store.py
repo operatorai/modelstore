@@ -14,6 +14,7 @@
 import os
 import tarfile
 import tempfile
+import uuid
 import warnings
 from dataclasses import dataclass
 from typing import Optional
@@ -176,18 +177,20 @@ class ModelStore:
         """Returns the meta-data for a given model"""
         return self.storage.get_meta_data(domain, model_id)
 
-    def upload(self, domain: str, **kwargs) -> dict:
+    def upload(self, domain: str, model_id: Optional[uuid.uuid4]=None, **kwargs) -> dict:
         """Creates an archive for a model (from the kwargs), uploads it
         to storage, and returns a dictionary of meta-data about the model"""
         # Figure out which library the kwargs match with
         managers = matching_managers(self._libraries, **kwargs)
+        
         if len(managers) == 1:
-            return managers[0].upload(domain, **kwargs)
+            return managers[0].upload(domain, model_id=model_id, **kwargs)
 
         # If we match on more than one manager (e.g., a model
         # and an explainer)
         manager = MultipleModelsManager(managers, self.storage)
-        return manager.upload(domain, **kwargs)
+
+        return manager.upload(domain, model_id=model_id, **kwargs)
 
     def load(self, domain: str, model_id: str):
         """Loads a model into memory"""
