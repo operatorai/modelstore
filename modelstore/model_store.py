@@ -26,6 +26,7 @@ from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.storage import CloudStorage
+from modelstore.utils.exceptions import ModelExistsException, ModelNotFoundException, FilePullFailedException
 
 
 @dataclass(frozen=True)
@@ -181,8 +182,17 @@ class ModelStore:
         """Creates an archive for a model (from the kwargs), uploads it
         to storage, and returns a dictionary of meta-data about the model"""
         # Figure out which library the kwargs match with
-        managers = matching_managers(self._libraries, **kwargs)
-        
+        managers = matching_managers(self._libraries, **kwargs)      
+
+        # Meta-data about the model
+        if model_id is None:
+            model_id = str(uuid.uuid4())
+        else:            
+            model_id = str(model_id)         
+
+        if self.check_model_exists(domain, model_id) is True:
+            raise ModelExistsException(domain, model_id)   
+
         if len(managers) == 1:
             return managers[0].upload(domain, model_id=model_id, **kwargs)
 
@@ -217,3 +227,17 @@ class ModelStore:
         """Deletes a model artifact from storage."""
         meta_data = self.get_model_info(domain, model_id)
         self.storage.delete_model(domain, model_id, meta_data, skip_prompt)
+
+
+    def check_model_exists(self, domain: str, model_id: str):
+        #TODO: use head_object instead of full pull 
+        
+        try:
+            self.storage.get_meta_data(domain, model_id)
+            return True
+        except ModelNotFoundException:
+            pass
+        except FilePullFailedException:
+            pass
+
+        return False

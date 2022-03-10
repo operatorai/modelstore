@@ -54,7 +54,7 @@ class MissingDepManager(ModelManager):
     def _model_data(self, **kwargs) -> dict:
         return None
 
-    def upload(self, domain: str,  model_id: Optional[uuid.uuid4]=None, **kwargs) -> str:
+    def upload(self, domain: str,  model_id: str, **kwargs) -> str:
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")

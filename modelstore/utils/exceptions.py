@@ -32,3 +32,7 @@ class ModelNotFoundException(Exception):
 class DomainNotFoundException(Exception):
     def __init__(self, domain: str):
         super().__init__(f"The domain='{domain}' does not exist.")
+
+class ModelExistsException(Exception):
+    def __init__(self, domain: str, model_id: str):
+        super().__init__(f"model='{model_id}' already exists in this domain={domain}.")
