@@ -20,7 +20,10 @@ from modelstore.models.managers import _LIBRARIES
 from modelstore.models.missing_manager import MissingDepManager
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
-from modelstore.utils.exceptions import ModelNotFoundException
+from modelstore.utils.exceptions import (
+    ModelNotFoundException,
+    ModelNotFoundException,
+)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name

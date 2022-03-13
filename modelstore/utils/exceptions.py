@@ -26,4 +26,9 @@ class ModelDeletedException(Exception):
 
 class ModelNotFoundException(Exception):
     def __init__(self, domain: str, model_id: str):
-        super().__init__(f"model='{model_id}' does not exist in domain={domain}.")
+        super().__init__(f"model='{model_id}' does not exist in domain='{domain}'.")
+
+
+class DomainNotFoundException(Exception):
+    def __init__(self, domain: str):
+        super().__init__(f"The domain='{domain}' does not exist.")

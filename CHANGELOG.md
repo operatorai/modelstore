@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+🆕  Added a `get_domain()` function, which returns key meta data about a domain.
+
 🐛   Updated the names of the environment variables that are checked for setting the modelstore storage root (prefixes). Previously, this was using the same variable name and this would cause issues if you were creating more than one type of modelstore.
 
 🆕  Added `delete_model()` to delete models from `modelstore`. If the user attempts to query for a model after it has been deleted, `modelstore` will raise a `ModelDeletedException`.

@@ -17,7 +17,7 @@ import tempfile
 import click
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.states.model_states import ReservedModelStates
@@ -37,6 +37,7 @@ from modelstore.storage.states.model_states import (
 )
 from modelstore.utils.log import logger
 from modelstore.utils.exceptions import (
+    DomainNotFoundException,
     ModelDeletedException,
     ModelNotFoundException,
     FilePullFailedException,
@@ -181,9 +182,17 @@ class BlobStorage(CloudStorage):
         domains = self._read_json_objects(domains)
         return [d["model"]["domain"] for d in domains]
 
+    def get_domain(self, domain: str) -> dict:
+        remote_path = get_domain_path(self.root_prefix, domain)
+        try:
+            return self._pull_and_load(remote_path)
+        except FilePullFailedException:
+            raise DomainNotFoundException(domain)
+
     def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
+        _ = self.get_domain(domain)
         models_path = get_models_path(self.root_prefix, domain, state_name)
         models = self._read_json_objects(models_path)
         # @TODO sort models by creation time stamp
