@@ -104,8 +104,7 @@ class FileSystemStorage(BlobStorage):
             file_name = os.path.split(source)[1]
             shutil.copy(source, destination)
             return os.path.join(os.path.abspath(destination), file_name)
-        except Exception as e:
-            logger.exception(e)
+        except FileNotFoundError as e:
             raise FilePullFailedException(e)
 
     def _remove(self, destination: str) -> bool:
