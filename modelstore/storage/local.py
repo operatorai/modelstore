@@ -110,6 +110,8 @@ class FileSystemStorage(BlobStorage):
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
+        # @TODO: Empty directories are left behind after the destination file
+        # has been deleted
         destination = self.relative_dir(destination)
         if not os.path.exists(destination):
             logger.debug("Remote file does not exist: %s", destination)
