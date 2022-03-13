@@ -8,7 +8,11 @@ import click
 import demos
 from model import train
 from modelstores import create_model_store
-from modelstore.utils.exceptions import ModelDeletedException, ModelNotFoundException
+from modelstore.utils.exceptions import (
+    ModelDeletedException,
+    ModelNotFoundException,
+    DomainNotFoundException,
+)
 
 
 @click.command()
@@ -52,14 +56,27 @@ def main(modelstore_in: str, model_type: str):
 
     # Let's demo all the different things you can do!
 
-    # Get the meta-data about a missing model
+    # Trying to get the meta-data about a missing domain raises an exception
     try:
-        meta_data = modelstore.get_model_info("missing-domain", "missing-model")
+        meta_data = modelstore.get_domain("missing-domain")
+    except DomainNotFoundException:
+        print(
+            f"✅  Modelstore raises a DomainNotFoundException if it can't find a domain"
+        )
+
+    # Trying to get the meta-data about a missing model in an existing domain
+    # also raises an exception
+    try:
+        meta_data = modelstore.get_model_info(model_domain, "missing-model")
     except ModelNotFoundException:
         print(f"✅  Modelstore raises a ModelNotFoundException if it can't find a model")
 
     # List all of the domains
     demos.list_domains(modelstore)
+
+    # Get the information about a specific domain
+    meta_data = modelstore.get_domain(model_domain)
+    print(f"✅  Meta data about domain={model_domain}: {meta_data}")
 
     # List the models in the diabest-boosting-demo domain
     demos.list_models_in_domain(modelstore, model_domain)
@@ -119,6 +136,8 @@ def main(modelstore_in: str, model_type: str):
         print(
             f"✅  Modelstore raises a ModelDeletedException if a model has been deleted"
         )
+
+    print(f"✅  Demo finished!")
 
 
 if __name__ == "__main__":
