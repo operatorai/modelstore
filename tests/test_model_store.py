@@ -20,6 +20,7 @@ from modelstore.models.managers import _LIBRARIES
 from modelstore.models.missing_manager import MissingDepManager
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
+from modelstore.utils.exceptions import ModelNotFoundException
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -90,3 +91,9 @@ def test_from_file_system_only_sklearn(_, libraries_without_sklearn, tmp_path):
     validate_library_attributes(
         store, allowed=["sklearn"], not_allowed=libraries_without_sklearn
     )
+
+
+def test_model_not_found(tmp_path):
+    store = ModelStore.from_file_system(root_directory=str(tmp_path))
+    with pytest.raises(ModelNotFoundException):
+        store.get_model_info("missing-domain", "missing-model")
