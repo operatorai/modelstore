@@ -60,17 +60,11 @@ class FileSystemStorage(BlobStorage):
         """This validates that the directory exists and can be written to"""
         # pylint: disable=broad-except
         # Check that the directory exists & we can write to it
-        parent_dir = os.path.split(self.root_prefix)[0]
-
-        if not os.path.exists(parent_dir):
+        if not os.path.exists(self.root_prefix):
             raise Exception(
                 "Error: Parent directory to root dir '%s' does not exist",
-                parent_dir,
+                self.root_prefix,
             )
-
-        if not os.path.exists(self.root_prefix):
-            logger.debug("creating root directory %s", self.root_prefix)
-            os.mkdir(self.root_prefix)
 
         if not os.path.isdir(self.root_prefix):
             raise Exception("Error: root_dir needs to be a directory")
