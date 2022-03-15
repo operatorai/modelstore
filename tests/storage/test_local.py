@@ -16,6 +16,7 @@ import os
 
 import pytest
 from modelstore.storage.local import FileSystemStorage
+import shutil
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
@@ -37,9 +38,17 @@ def file_system_storage(tmp_path):
 
 
 def test_create_model_store_with_at_location(tmp_path):
-    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST'))
+    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST'), create_directory=True)
     assert file_system_storage.validate()
     assert os.path.exists(file_system_storage.root_prefix)
+    shutil.rmtree(file_system_storage.root_prefix)
+
+def test_create_model_store_with_at_location(tmp_path):
+    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST_FALSE'), create_directory=False)
+    with pytest.raises(Exception):
+        _ = file_system_storage.validate()
+
+
 
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist

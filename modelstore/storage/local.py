@@ -42,7 +42,7 @@ class FileSystemStorage(BlobStorage):
         "optional": [],
     }
 
-    def __init__(self, root_dir: Optional[str] = None):
+    def __init__(self, root_dir: Optional[str] = None, create_directory: bool = False):
         super().__init__([], root_dir, "MODEL_STORE_ROOT_PREFIX")
         if self.root_prefix == "":
             raise Exception(
@@ -54,6 +54,7 @@ class FileSystemStorage(BlobStorage):
                 + " that this library usually appends. Is this intended?"
             )
         self.root_prefix = os.path.abspath(self.root_prefix)
+        self._create_directory=create_directory
 
     def validate(self) -> bool:
         """This validates that the directory exists and can be written to"""
@@ -67,7 +68,7 @@ class FileSystemStorage(BlobStorage):
                 parent_dir,
             )
 
-        if not os.path.exists(self.root_prefix):
+        if not os.path.exists(self.root_prefix) and self._create_directory:
             logger.debug("creating root directory %s", self.root_prefix)
             os.mkdir(self.root_prefix)
 
