@@ -36,7 +36,7 @@ def get_archive_path(root_dir: str, domain: str, local_path: str) -> str:
     file_name = os.path.split(local_path)[1]
     # Future: enable different types of prefixes
     # Warning! Mac OS translates ":" in paths to "/"
-    prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+    prefix = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
     return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, prefix, file_name)
 
 
