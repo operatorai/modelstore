@@ -3,7 +3,15 @@
 
 name: Python package
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types:
+      - opened
+    branches:
+      - 'main'
+  push:
+    paths:
+      - '**.py'
 
 jobs:
   build:
