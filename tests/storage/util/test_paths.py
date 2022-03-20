@@ -23,7 +23,7 @@ from modelstore.storage.util import paths
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
 def test_get_archive_path(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
-    prefix = datetime.now().strftime("%Y/%m/%d/%H:%M:%S")
+    prefix = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
     exp = os.path.join(
         root, paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "file-name"
     )
