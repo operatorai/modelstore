@@ -19,9 +19,11 @@ from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
+from modelstore.utils.exceptions import FilePullFailedException
 
 try:
     from azure.storage.blob import BlobServiceClient
+    from azure.core.exceptions import ResourceNotFoundError
 
     AZURE_EXISTS = True
 except ImportError:
@@ -111,13 +113,15 @@ class AzureBlobStorage(BlobStorage):
 
     def _pull(self, source: str, destination: str) -> str:
         """Pulls a model to a destination"""
-        logger.info("Downloading from: %s...", source)
-        blob_client = self._blob_client(source)
-        target = os.path.join(destination, os.path.split(source)[1])
-        with open(target, "wb") as download_file:
-            download_file.write(blob_client.download_blob().readall())
-        logger.debug("Finished: %s", destination)
-        return target
+        try:
+            logger.debug("Downloading from: %s...", source)
+            blob_client = self._blob_client(source)
+            target = os.path.join(destination, os.path.split(source)[1])
+            with open(target, "wb") as download_file:
+                download_file.write(blob_client.download_blob().readall())
+            return target
+        except ResourceNotFoundError as e:
+            raise FilePullFailedException(e)
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
@@ -143,10 +147,16 @@ class AzureBlobStorage(BlobStorage):
         return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.container_name, path)
         results = []
         blobs = self._container_client().list_blobs(name_starts_with=path + "/")
         for blob in blobs:
             if not blob.name.endswith(".json"):
+                logger.debug("Skipping non-json file: %s", blob.name)
+                continue
+            if os.path.split(blob.name)[0] != path:
+                # We don't want to read files in a sub-prefix
+                logger.debug("Skipping file in sub-prefix: %s", blob.name)
                 continue
             blob_client = self._blob_client(blob)
             obj = blob_client.download_blob().readall()

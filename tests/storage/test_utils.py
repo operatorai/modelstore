@@ -34,7 +34,7 @@ def file_contains_expected_contents(file_path):
 
 
 def remote_path():
-    return "prefix/to/file/"
+    return "prefix/to/file"
 
 
 def remote_file_path():

@@ -16,7 +16,8 @@ def _repo_name(repo: "git.Repo") -> str:
     try:
         repo_url = repo.remotes.origin.url
         return repo_url.split(".git")[0].split("/")[-1]
-    except Exception:
+    except Exception as e:
+        logger.debug("error extracting git repo: %s", str(e))
         return ""
 
 
@@ -32,5 +33,6 @@ def git_meta() -> dict:
             "local_changes": repo.is_dirty(),
             "branch": repo.active_branch.name,
         }
-    except Exception:
+    except Exception as e:
+        logger.debug("error generating git meta-data: %s", str(e))
         return None

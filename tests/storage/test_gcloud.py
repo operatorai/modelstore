@@ -23,9 +23,7 @@ from modelstore.storage.gcloud import GoogleCloudStorage
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_NAME,
-    file_contains_expected_contents,
     remote_file_path,
-    remote_path,
     temp_file,
 )
 
@@ -62,9 +60,7 @@ def gcloud_client(
     return mock_client
 
 
-def gcloud_storage(
-    mock_client: storage.Client, bucket_name: str = _MOCK_BUCKET_NAME
-):
+def gcloud_storage(mock_client: storage.Client, bucket_name: str = _MOCK_BUCKET_NAME):
     return GoogleCloudStorage(
         project_name="project-name",
         bucket_name=bucket_name,

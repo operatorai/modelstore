@@ -13,10 +13,12 @@
 #    limitations under the License.
 import json
 import os
+import shutil
 
 import pytest
+
 from modelstore.storage.local import FileSystemStorage
-import shutil
+from modelstore.utils.exceptions import DomainNotFoundException
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
@@ -148,8 +150,8 @@ def test_read_json_object_fails_gracefully(tmp_path, file_system_storage):
 
 
 def test_list_models_missing_domain(file_system_storage):
-    models = file_system_storage.list_models("domain-that-doesnt-exist")
-    assert len(models) == 0
+    with pytest.raises(DomainNotFoundException):
+        file_system_storage.list_models("domain-that-doesnt-exist")
 
 
 def test_storage_location(file_system_storage):
