@@ -8,7 +8,7 @@ azure-core==1.23.1
 azure-storage-blob==12.11.0
 
 # Data / dependencies for ML libraries
-numpy==1.21.0
+numpy>=1.19.2
 python-Levenshtein==0.12.2
 numba==0.55.1
 
