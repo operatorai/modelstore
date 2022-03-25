@@ -35,4 +35,4 @@ def git_meta() -> dict:
         }
     except Exception as e:
         logger.debug("error generating git meta-data: %s", str(e))
-        return str(e)
+        raise
