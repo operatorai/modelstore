@@ -1,6 +1,6 @@
 # Change log
 
-## Unreleased
+## modelstore 0.0.74 (March 2022)
 
 **🆕  New functionality**
 
