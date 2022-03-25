@@ -2,31 +2,34 @@
 
 ## Unreleased
 
-### 🆕  New functionality
+**🆕  New functionality**
 
-🆕  Added a `get_domain()` function, which returns key meta data about a domain ([#141](https://github.com/operatorai/modelstore/pull/141))
+`get_domain()` returns key meta data about a domain ([#141](https://github.com/operatorai/modelstore/pull/141))
 
-🆕  Added `delete_model()` to delete models from `modelstore`. If the user attempts to query for a model after it has been deleted, `modelstore` will raise a `ModelDeletedException` ([#137](https://github.com/operatorai/modelstore/pull/137))
+`delete_model()` delete models from `modelstore`. 
+- If the user attempts to query for a model after it has been deleted, `modelstore` will raise a `ModelDeletedException` ([#137](https://github.com/operatorai/modelstore/pull/137))
 
-🆕  You can now list your existing model states, with `list_model_states()` ([#131](https://github.com/operatorai/modelstore/pull/131))
+`list_model_states()` lists all of the existing model states ([#131](https://github.com/operatorai/modelstore/pull/131))
 
-### 🆕  Storage improvements
+**🆕  Storage improvements**
 
-🆕  The file system storage can now be configured to create its root directory if it doesn't already exist ([#143](https://github.com/operatorai/modelstore/pull/143/), thanks [@cdknorow](https://github.com/cdknorow))
+The file system storage can now be configured to create its root directory if it doesn't already exist ([#143](https://github.com/operatorai/modelstore/pull/143/), thanks [@cdknorow](https://github.com/cdknorow))
 
-🆕  Public, read-only Google Cloud Storage containers can now be read from using `modelstore` ([#142](https://github.com/operatorai/modelstore/pull/142), thanks [@ionicsolutions](https://github.com/ionicsolutions))
+Public, read-only Google Cloud Storage containers can now be read from using `modelstore` ([#142](https://github.com/operatorai/modelstore/pull/142), thanks [@ionicsolutions](https://github.com/ionicsolutions))
 
-🆕  Previously, any extra files you wanted to upload were uploaded separately to the model archive. Now, they are added into the archive in a subdirectory called "extras" so that you can easily download them back ([#139](https://github.com/operatorai/modelstore/pull/139)). I've also added an example of uploading a model with some additional files ([#138](https://github.com/operatorai/modelstore/pull/138)). 
+Previously, any extra files you wanted to upload were uploaded separately to the model archive. Now, they are added into the archive in a subdirectory called "extras" so that you can easily download them back ([#139](https://github.com/operatorai/modelstore/pull/139)). I've also added an example of uploading a model with some additional files ([#138](https://github.com/operatorai/modelstore/pull/138)). 
 
-### 🐛  Bug fixes & general updates
+** 🐛  Bug fixes & general updates**
 
-🐛   Fixed a regression: `keras` models saved with an older version of `modelstore` couldn't be loaded ([#145](https://github.com/operatorai/modelstore/pull/145)).
+Fixed a regression: `keras` models saved with an older version of `modelstore` couldn't be loaded ([#145](https://github.com/operatorai/modelstore/pull/145)).
 
-🐛   Updated the names of the environment variables that are checked for setting the modelstore storage root (prefixes). Previously, this was using the same variable name and this would cause issues if you were creating more than one type of modelstore.
+Updated the names of the environment variables that are checked for setting the modelstore storage root (prefixes). Previously, this was using the same variable name and this would cause issues if you were creating more than one type of modelstore.
 
-ℹ️  The `list_versions()` function is deprecated and has been replaced with `list_models()` ([#132](https://github.com/operatorai/modelstore/pull/132))
+**ℹ️  General updates**
 
-ℹ️  Python 3.6 has passed its end-of-life, so this library is now tested with Python 3.7 and above.
+The `list_versions()` function is deprecated and has been replaced with `list_models()` ([#132](https://github.com/operatorai/modelstore/pull/132))
+
+Python 3.6 has passed its end-of-life, so this library is now tested with Python 3.7 and above.
 
 ## modelstore 0.0.73
 
