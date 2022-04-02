@@ -53,40 +53,46 @@ def test_state_exists(mock_blob_storage):
 
 
 def test_create_model_state(mock_blob_storage):
+    state_name = "production"
     # Create a model state
-    mock_blob_storage.create_model_state("production")
+    mock_blob_storage.create_model_state(state_name)
 
     # Assert that a file at this location was created
     state_path = os.path.join(
         mock_blob_storage.root_prefix,
-        get_model_state_path(mock_blob_storage.root_prefix, "production"),
+        get_model_state_path(mock_blob_storage.root_prefix, state_name),
     )
     assert_file_contents_equals(
         state_path,
         {
             "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
-            "state_name": "production",
+            "state_name": state_name,
         },
     )
 
 
 def test_create_model_state_exists(mock_blob_storage):
+    state_name = "production"
+
     # Create a model state
-    mock_blob_storage.create_model_state("production")
-    assert mock_blob_storage.state_exists("production")
+    mock_blob_storage.create_model_state(state_name)
+
+    # Assert it exists
+    assert mock_blob_storage.state_exists(state_name)
     assert not mock_blob_storage.state_exists("a-new-state")
 
 
 def test_list_model_states(mock_blob_storage):
-    # Create a model states
-    mock_blob_storage.create_model_state("staging")
-    mock_blob_storage.create_model_state("production")
+    model_states = ["staging", "production"]
+    # Create model states
+    for model_state in model_states:
+        mock_blob_storage.create_model_state(model_state)
 
     # List them back
-    model_states = mock_blob_storage.list_model_states()
-    assert len(model_states) == 2
-    assert "production" in model_states
-    assert "staging" in model_states
+    results = mock_blob_storage.list_model_states()
+    assert len(results) == 2
+    for model_state in model_states:
+        assert model_state in model_states
 
 
 def test_set_model_state_unknown_state(mock_blob_storage):
@@ -95,92 +101,72 @@ def test_set_model_state_unknown_state(mock_blob_storage):
         mock_blob_storage.set_model_state("domain", "model-id", "a-new-state")
 
 
-def test_set_model_state(mock_blob_storage):
+def test_set_and_unset_model_state(mock_blob_storage):
+    state_name = "production"
+    model_id = "model-1"
+    domain_id = "domain-1"
+
     # Create a models in a domain
-    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
-    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+    meta_data = mock_meta_data("domain-1", model_id, inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", model_id, meta_data)
 
     # Create a state and set the model to that state
-    mock_blob_storage.create_model_state("production")
-    mock_blob_storage.set_model_state("domain-1", "model-1", "production")
+    mock_blob_storage.create_model_state(state_name)
+    assert mock_blob_storage.state_exists(state_name)
+
+    # Set the model to that state
+    mock_blob_storage.set_model_state(domain_id, model_id, state_name)
 
     # Listing versions
-    items = mock_blob_storage.list_models("domain-1", "production")
+    items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 1
-    assert items[0] == "model-1"
-
-
-def test_unset_model_state(mock_blob_storage):
-    # Create a models in a domain
-    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
-    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
-
-    # Create a state and set the model to that state
-    mock_blob_storage.create_model_state("production")
-    mock_blob_storage.set_model_state("domain-1", "model-1", "production")
-
-    # State now exists
-    items = mock_blob_storage.list_models("domain-1", "production")
-    assert len(items) == 1
-    assert items[0] == "model-1"
+    assert items[0] == model_id
 
     # Unset the state
-    mock_blob_storage.unset_model_state("domain-1", "model-1", "production")
+    mock_blob_storage.unset_model_state(domain_id, model_id, state_name)
 
-    # State has been removed
-    items = mock_blob_storage.list_models("domain-1", "production")
+    # Model has been removed from the state
+    items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 0
 
 
-def test_no_op_on_unset_reserved_model_state(mock_blob_storage):
+def test_set_and_unset_reserved_model_state(mock_blob_storage):
+    state_name = ReservedModelStates.DELETED.value
+    model_id = "model-1"
+    domain_id = "domain-1"
+
     # Create a models in a domain
-    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
-    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+    meta_data = mock_meta_data("domain-1", model_id, inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", model_id, meta_data)
 
-    # Set a model to a reserved model state
-    mock_blob_storage.set_model_state(
-        "domain-1", "model-1", ReservedModelStates.DELETED.value
-    )
+    # Set the model to that state
+    mock_blob_storage.set_model_state(domain_id, model_id, state_name)
 
-    # State now exists
-    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
+    # The state exists, without needing to be explicitly created
+    assert mock_blob_storage.state_exists(state_name)
+
+    # The model is in the new state
+    items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 1
-    assert items[0] == "model-1"
+    assert items[0] == model_id
 
     # Unset the state
-    mock_blob_storage.unset_model_state(
-        "domain-1", "model-1", ReservedModelStates.DELETED.value
-    )
+    mock_blob_storage.unset_model_state(domain_id, model_id, state_name)
 
     # The action was not allowed, so the model still exists in this state
-    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
+    items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 1
-    assert items[0] == "model-1"
+    assert items[0] == model_id
 
-
-def test_force_unset_reserved_model_state(mock_blob_storage):
-    # Create a models in a domain
-    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
-    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
-
-    # Set a model to a reserved model state
-    mock_blob_storage.set_model_state(
-        "domain-1", "model-1", ReservedModelStates.DELETED.value
-    )
-
-    # State now exists
-    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
-    assert len(items) == 1
-    assert items[0] == "model-1"
-
-    # Unset the state
+    # Unset the state, explicitly flagging that we are modifying a
+    # reserved state
     mock_blob_storage.unset_model_state(
-        "domain-1",
-        "model-1",
-        ReservedModelStates.DELETED.value,
+        domain_id,
+        model_id,
+        state_name,
         modifying_reserved=True,
     )
 
-    # State has been removed
-    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
+    # The model has been removed from the state
+    items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 0
