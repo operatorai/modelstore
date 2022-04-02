@@ -55,7 +55,7 @@ class FileSystemStorage(BlobStorage):
                 + " that this library usually appends. Is this intended?"
             )
         self.root_prefix = os.path.abspath(self.root_prefix)
-        self._create_directory=create_directory
+        self._create_directory = create_directory
 
     def validate(self) -> bool:
         """This validates that the directory exists and can be written to"""
@@ -161,17 +161,6 @@ class FileSystemStorage(BlobStorage):
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)
         return _read_json_file(path)
-
-    def state_exists(self, state_name: str) -> bool:
-        """Returns whether a model state with name state_name exists"""
-        if not is_valid_state_name(state_name):
-            return False
-        # @TODO this function can be removed once get_model_state_path
-        # doesn't need to be called with relative_dir()
-        state_path = self.relative_dir(
-            get_model_state_path(self.root_prefix, state_name)
-        )
-        return os.path.exists(state_path)
 
 
 def _read_json_file(path: str) -> dict:
