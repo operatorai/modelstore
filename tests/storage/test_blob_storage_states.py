@@ -18,6 +18,7 @@ from datetime import datetime, timedelta
 import pytest
 import modelstore
 from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
     get_model_state_path,
@@ -128,4 +129,58 @@ def test_unset_model_state(mock_blob_storage):
 
     # State has been removed
     items = mock_blob_storage.list_models("domain-1", "production")
+    assert len(items) == 0
+
+
+def test_no_op_on_unset_reserved_model_state(mock_blob_storage):
+    # Create a models in a domain
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+
+    # Set a model to a reserved model state
+    mock_blob_storage.set_model_state(
+        "domain-1", "model-1", ReservedModelStates.DELETED.value
+    )
+
+    # State now exists
+    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
+    assert len(items) == 1
+    assert items[0] == "model-1"
+
+    # Unset the state
+    mock_blob_storage.unset_model_state(
+        "domain-1", "model-1", ReservedModelStates.DELETED.value
+    )
+
+    # The action was not allowed, so the model still exists in this state
+    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
+    assert len(items) == 1
+    assert items[0] == "model-1"
+
+
+def test_force_unset_reserved_model_state(mock_blob_storage):
+    # Create a models in a domain
+    meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
+    mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
+
+    # Set a model to a reserved model state
+    mock_blob_storage.set_model_state(
+        "domain-1", "model-1", ReservedModelStates.DELETED.value
+    )
+
+    # State now exists
+    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
+    assert len(items) == 1
+    assert items[0] == "model-1"
+
+    # Unset the state
+    mock_blob_storage.unset_model_state(
+        "domain-1",
+        "model-1",
+        ReservedModelStates.DELETED.value,
+        modifying_reserved=True,
+    )
+
+    # State has been removed
+    items = mock_blob_storage.list_models("domain-1", ReservedModelStates.DELETED.value)
     assert len(items) == 0
