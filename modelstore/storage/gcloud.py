@@ -14,6 +14,7 @@
 import json
 import os
 from typing import Optional
+import warnings
 
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
@@ -25,6 +26,7 @@ from modelstore.utils.exceptions import FilePullFailedException
 
 try:
     from google.auth.exceptions import DefaultCredentialsError
+    from google.api_core.exceptions import NotFound, BadRequest
     from google.cloud import storage
     from google.api_core.exceptions import NotFound
 
@@ -63,7 +65,7 @@ class GoogleCloudStorage(BlobStorage):
         # If arguments are None, try to populate them using environment variables
         self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_GCP_BUCKET")
         self.project_name = environment.get_value(
-            project_name, "MODEL_STORE_GCP_PROJECT"
+            project_name, "MODEL_STORE_GCP_PROJECT", allow_missing=True
         )
         self.__client = client
 
@@ -71,36 +73,60 @@ class GoogleCloudStorage(BlobStorage):
     def client(self) -> "storage.Client":
         if not GCLOUD_EXISTS:
             raise ImportError("Please install google-cloud-storage")
-        try:
-            if self.__client is None:
-                self.__client = storage.Client(self.project_name)
-            return self.__client
-        except DefaultCredentialsError:
-            try:
-                # Try to authenticate, if in a Colab notebook
-                # pylint: disable=no-name-in-module,import-error,import-outside-toplevel
-                from google.colab import auth
 
-                auth.authenticate_user()
+        if self.__client is not None:
+            return self.__client
+
+        if self.project_name is not None:
+            try:
                 self.__client = storage.Client(self.project_name)
-                return self.__client
-            except ModuleNotFoundError:
-                pass
-            logger.error(
-                "Missing credentials: https://cloud.google.com/docs/authentication/getting-started#command-line"  # noqa
-            )
-            raise
+            except DefaultCredentialsError:
+                try:
+                    # Try to authenticate, if in a Colab notebook
+                    # pylint: disable=no-name-in-module,import-error,import-outside-toplevel
+                    from google.colab import auth
+
+                    auth.authenticate_user()
+                    self.__client = storage.Client(self.project_name)
+                    return self.__client
+                except ModuleNotFoundError:
+                    logger.warning(
+                        "Missing credentials: https://cloud.google.com/docs/authentication/getting-started#command-line"  # noqa
+                    )
+                    warnings.warn(
+                        "No credentials given, falling back to anonymous access."
+                    )
+
+        self.__client = storage.Client.create_anonymous_client()
+        return self.__client
 
     def validate(self) -> bool:
         """Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
-        for bucket in list(self.client.list_buckets(prefix=self.bucket_name)):
-            if bucket.name == self.bucket_name:
+        if self.client.project is not None:
+            for bucket in list(self.client.list_buckets(prefix=self.bucket_name)):
+                if bucket.name == self.bucket_name:
+                    return True
+            return False
+        else:
+            bucket = self.client.bucket(bucket_name=self.bucket_name)
+            try:
+                _ = list(bucket.list_blobs())
+            except (NotFound, BadRequest):
+                logger.error(
+                    f"Bucket '{self.bucket_name}' does not exist or is not accessible for anonymous clients."
+                )
+                return False
+            else:
                 return True
-        return False
 
     def _push(self, source: str, destination: str) -> str:
+        if self.client.project is None:
+            raise NotImplementedError(
+                "File upload is only supported for authenticated clients."
+            )
+
         logger.info("Uploading to: %s...", destination)
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
@@ -118,7 +144,10 @@ class GoogleCloudStorage(BlobStorage):
             logger.debug("Downloading from: %s...", source)
             file_name = os.path.split(source)[1]
             destination = os.path.join(destination, file_name)
-            bucket = self.client.get_bucket(self.bucket_name)
+            if self.client.project is None:
+                bucket = self.client.bucket(bucket_name=self.bucket_name)
+            else:
+                bucket = self.client.get_bucket(self.bucket_name)
             blob = bucket.blob(source)
             blob.download_to_filename(destination)
             return destination
@@ -127,6 +156,11 @@ class GoogleCloudStorage(BlobStorage):
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
+        if self.client.project is None:
+            raise NotImplementedError(
+                "File removal is only supported for authenticated clients."
+            )
+
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(destination)
         if not blob.exists():
@@ -166,7 +200,7 @@ class GoogleCloudStorage(BlobStorage):
                 continue
         return sorted_by_created(results)
 
-    def _read_json_object(self, path: str) -> dict:
+    def _read_json_object(self, path: str) -> Optional[dict]:
         """Returns a dictionary of the JSON stored in a given path"""
         bucket = self.client.get_bucket(self.bucket_name)
         blob = bucket.blob(path)
