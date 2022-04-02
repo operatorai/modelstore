@@ -4,14 +4,10 @@
 name: Python package
 
 on:
-  pull_request:
-    types:
-      - opened
-    branches:
-      - 'main'
   push:
-    paths:
-      - '**.py'
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
