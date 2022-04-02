@@ -60,13 +60,21 @@ class GoogleCloudStorage(BlobStorage):
         client: "storage.Client" = None,
     ):
         super().__init__(
-            ["google.cloud.storage"], root_prefix, "MODEL_STORE_GCP_ROOT_PREFIX"
+            ["google.cloud.storage"],
+            root_prefix,
+            "MODEL_STORE_GCP_ROOT_PREFIX",
         )
         # If arguments are None, try to populate them using environment variables
         self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_GCP_BUCKET")
+
+        # If the project_name is not given and not available as an environment
+        # variable, this storage client will connect to the bucket_name anonymously
+        # and will be read-only
         self.project_name = environment.get_value(
             project_name, "MODEL_STORE_GCP_PROJECT", allow_missing=True
         )
+
+        # This can be set in the constructor to faciliate unit testing
         self.__client = client
 
     @property
@@ -79,6 +87,8 @@ class GoogleCloudStorage(BlobStorage):
 
         if self.project_name is not None:
             try:
+                # If the user gives a project name, return an
+                # explicit storage.Client
                 self.__client = storage.Client(self.project_name)
             except DefaultCredentialsError:
                 try:
@@ -88,7 +98,6 @@ class GoogleCloudStorage(BlobStorage):
 
                     auth.authenticate_user()
                     self.__client = storage.Client(self.project_name)
-                    return self.__client
                 except ModuleNotFoundError:
                     logger.warning(
                         "Missing credentials: https://cloud.google.com/docs/authentication/getting-started#command-line"  # noqa
@@ -96,33 +105,30 @@ class GoogleCloudStorage(BlobStorage):
                     warnings.warn(
                         "No credentials given, falling back to anonymous access."
                     )
-
-        self.__client = storage.Client.create_anonymous_client()
+        else:
+            # If no project name is given, create a read- and list-only client
+            # Note: uploads will not work
+            self.__client = storage.Client.create_anonymous_client()
         return self.__client
+
+    @property
+    def is_read_only(self):
+        return self.client.project is None
 
     def validate(self) -> bool:
         """Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
-        if self.client.project is not None:
-            for bucket in list(self.client.list_buckets(prefix=self.bucket_name)):
-                if bucket.name == self.bucket_name:
-                    return True
+        bucket = self.client.get_bucket(self.bucket_name)
+        if not bucket.exists():
+            logger.error(
+                f"Bucket '{self.bucket_name}' does not exist or is not accessible for your client."
+            )
             return False
-        else:
-            bucket = self.client.bucket(bucket_name=self.bucket_name)
-            try:
-                _ = list(bucket.list_blobs())
-            except (NotFound, BadRequest):
-                logger.error(
-                    f"Bucket '{self.bucket_name}' does not exist or is not accessible for anonymous clients."
-                )
-                return False
-            else:
-                return True
+        return True
 
     def _push(self, source: str, destination: str) -> str:
-        if self.client.project is None:
+        if self.is_read_only():
             raise NotImplementedError(
                 "File upload is only supported for authenticated clients."
             )
