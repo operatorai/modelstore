@@ -1,3 +1,16 @@
+#    Copyright 2022 Neal Lathia
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
 import os
 import sys
 from enum import Enum
@@ -54,12 +67,8 @@ def info(message: str):
 
 
 def assert_environ_exists(storage_type: str, keys: dict):
-    missing_required_keys = [
-        k for k in keys.get("required", []) if k not in os.environ
-    ]
-    missing_optional_keys = [
-        k for k in keys.get("optional", []) if k not in os.environ
-    ]
+    missing_required_keys = [k for k in keys.get("required", []) if k not in os.environ]
+    missing_optional_keys = [k for k in keys.get("optional", []) if k not in os.environ]
     if len(missing_required_keys) != 0:
         failure(
             f"❌ Failed to create {storage_type} modelstore.\nYour environment is missing:"
@@ -78,9 +87,7 @@ def model_store_from_env() -> ModelStore:
 
     storage_name = os.environ["MODEL_STORE_STORAGE"]
     if storage_name not in STORAGE_TYPES:
-        failure(
-            f"❌  Unknown storage name in MODEL_STORE_STORAGE: {storage_name}"
-        )
+        failure(f"❌  Unknown storage name in MODEL_STORE_STORAGE: {storage_name}")
         sys.exit(1)
 
     storage_type = STORAGE_TYPES[storage_name]

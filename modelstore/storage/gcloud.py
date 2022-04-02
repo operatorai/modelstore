@@ -20,6 +20,7 @@ from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
+from modelstore.utils.exceptions import FilePullFailedException
 
 # pylint: disable=protected-access
 
@@ -27,6 +28,7 @@ try:
     from google.auth.exceptions import DefaultCredentialsError
     from google.api_core.exceptions import NotFound, BadRequest
     from google.cloud import storage
+    from google.api_core.exceptions import NotFound
 
     storage.blob._DEFAULT_CHUNKSIZE = 2097152  # 1024 * 1024 B * 2 = 2 MB
     storage.blob._MAX_MULTIPART_SIZE = 2097152  # 2 MB
@@ -134,22 +136,23 @@ class GoogleCloudStorage(BlobStorage):
 
         with open(source, "rb") as f:
             blob.upload_from_file(f)
-        logger.debug("Finished: %s", destination)
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
         """Pulls a model to a destination"""
-        logger.info("Downloading from: %s...", source)
-        file_name = os.path.split(source)[1]
-        destination = os.path.join(destination, file_name)
-        if self.client.project is None:
-            bucket = self.client.bucket(bucket_name=self.bucket_name)
-        else:
-            bucket = self.client.get_bucket(self.bucket_name)
-        blob = bucket.blob(source)
-        blob.download_to_filename(destination)
-        logger.debug("Finished: %s", destination)
-        return destination
+        try:
+            logger.debug("Downloading from: %s...", source)
+            file_name = os.path.split(source)[1]
+            destination = os.path.join(destination, file_name)
+            if self.client.project is None:
+                bucket = self.client.bucket(bucket_name=self.bucket_name)
+            else:
+                bucket = self.client.get_bucket(self.bucket_name)
+            blob = bucket.blob(source)
+            blob.download_to_filename(destination)
+            return destination
+        except NotFound as e:
+            raise FilePullFailedException(e)
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
@@ -181,6 +184,7 @@ class GoogleCloudStorage(BlobStorage):
         return meta["prefix"]
 
     def _read_json_objects(self, path: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.bucket_name, path)
         results = []
         blobs = self.client.list_blobs(
             self.bucket_name, prefix=path + "/", delimiter="/"

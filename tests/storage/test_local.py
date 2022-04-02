@@ -13,9 +13,12 @@
 #    limitations under the License.
 import json
 import os
+import shutil
 
 import pytest
+
 from modelstore.storage.local import FileSystemStorage
+from modelstore.utils.exceptions import DomainNotFoundException
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
@@ -34,6 +37,19 @@ from tests.storage.test_utils import (
 @pytest.fixture
 def file_system_storage(tmp_path):
     return FileSystemStorage(root_dir=str(tmp_path))
+
+
+def test_create_model_store_with_at_location(tmp_path):
+    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST'), create_directory=True)
+    assert file_system_storage.validate()
+    assert os.path.exists(file_system_storage.root_prefix)
+    shutil.rmtree(file_system_storage.root_prefix)
+
+def test_create_model_store_with_at_location(tmp_path):
+    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST_FALSE'), create_directory=False)
+    with pytest.raises(Exception):
+        _ = file_system_storage.validate()
+
 
 
 def test_create_from_environment_variables(monkeypatch):
@@ -134,8 +150,8 @@ def test_read_json_object_fails_gracefully(tmp_path, file_system_storage):
 
 
 def test_list_models_missing_domain(file_system_storage):
-    models = file_system_storage.list_models("domain-that-doesnt-exist")
-    assert len(models) == 0
+    with pytest.raises(DomainNotFoundException):
+        file_system_storage.list_models("domain-that-doesnt-exist")
 
 
 def test_storage_location(file_system_storage):

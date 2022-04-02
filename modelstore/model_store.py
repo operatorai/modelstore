@@ -1,4 +1,4 @@
-#    Copyright 2020 Neal Lathia
+#    Copyright 2022 Neal Lathia
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -86,10 +86,10 @@ class ModelStore:
         )
 
     @classmethod
-    def from_file_system(cls, root_directory: Optional[str] = None) -> "ModelStore":
+    def from_file_system(cls, root_directory: Optional[str] = None, create_directory: bool = False) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         the local file system."""
-        return ModelStore(storage=FileSystemStorage(root_directory))
+        return ModelStore(storage=FileSystemStorage(root_directory, create_directory))
 
     def __post_init__(self):
         if not self.storage.validate():
@@ -115,6 +115,10 @@ class ModelStore:
         of the domains"""
         return self.storage.list_domains()
 
+    def get_domain(self, domain: str) -> dict:
+        """Returns the meta-data about a domain"""
+        return self.storage.get_domain(domain)
+
     """
     MODELS: multiple models can be added to a domain; 
     """
@@ -135,6 +139,8 @@ class ModelStore:
     """
     MODEL STATES: a model state is a string that has a 1:many relationship
     with models.
+
+    @TODO: There is no function to get the meta-data for a state
     """
 
     def list_model_states(self) -> list:
@@ -203,3 +209,8 @@ class ModelStore:
             tar.extractall(local_path)
         os.remove(archive_path)
         return local_path
+
+    def delete_model(self, domain: str, model_id: str, skip_prompt: bool = False):
+        """Deletes a model artifact from storage."""
+        meta_data = self.get_model_info(domain, model_id)
+        self.storage.delete_model(domain, model_id, meta_data, skip_prompt)

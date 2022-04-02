@@ -24,9 +24,7 @@ from modelstore.storage.gcloud import GoogleCloudStorage
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_NAME,
-    file_contains_expected_contents,
     remote_file_path,
-    remote_path,
     temp_file,
 )
 

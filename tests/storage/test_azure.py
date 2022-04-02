@@ -46,9 +46,7 @@ _MOCK_CONTAINER_NAME = "existing-container"
 def mock_settings_env_vars():
     # The AzureStorage client assumes that this environ variable
     #  has been set
-    with mock.patch.dict(
-        os.environ, {"AZURE_STORAGE_CONNECTION_STRING": "test-value"}
-    ):
+    with mock.patch.dict(os.environ, {"AZURE_STORAGE_CONNECTION_STRING": "test-value"}):
         yield
 
 
@@ -73,8 +71,9 @@ def mock_container_client(container_exists: bool, files_exist: bool):
         file_exists=files_exist
     )
     if files_exist:
+        prefix = remote_path()
         mock_container_client.list_blobs.return_value = [
-            BlobProperties(name=x) for x in TEST_FILE_LIST
+            BlobProperties(name=os.path.join(prefix, x)) for x in TEST_FILE_LIST
         ]
     return mock_container_client
 
@@ -215,8 +214,9 @@ def test_read_json_objects():
     storage = azure_storage(blob_service_client)
     # Assert that listing the files at a prefix results in 3
     # files (returned statically in the mock)
-    result = storage._read_json_objects("path/to/files")
-    storage._container_client().list_blobs.assert_called_with("path/to/files/")
+    prefix = remote_path()
+    result = storage._read_json_objects(prefix)
+    storage._container_client().list_blobs.assert_called_with(prefix + "/")
     assert len(result) == 3
 
 

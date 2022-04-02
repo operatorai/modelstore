@@ -14,11 +14,13 @@
 import json
 import os
 import tempfile
+import click
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
 from modelstore.storage.storage import CloudStorage
+from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
     get_archive_path,
@@ -31,8 +33,15 @@ from modelstore.storage.util.paths import (
 from modelstore.storage.states.model_states import (
     is_valid_state_name,
     is_reserved_state,
+    ReservedModelStates,
 )
 from modelstore.utils.log import logger
+from modelstore.utils.exceptions import (
+    DomainNotFoundException,
+    ModelDeletedException,
+    ModelNotFoundException,
+    FilePullFailedException,
+)
 
 
 class BlobStorage(CloudStorage):
@@ -116,27 +125,6 @@ class BlobStorage(CloudStorage):
         prefix = self._push(local_path, archive_remote_path)
         return self._storage_location(prefix)
 
-    def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
-        logger.debug("Copying meta-data: %s", meta_data)
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            local_path = os.path.join(tmp_dir, f"{model_id}.json")
-            with open(local_path, "w") as out:
-                out.write(json.dumps(meta_data))
-            self._push(local_path, self._get_metadata_path(domain, model_id))
-
-            # @TODO this is setting the "latest" model implicitly
-            self._push(local_path, get_domain_path(self.root_prefix, domain))
-
-    def get_meta_data(self, domain: str, model_id: str) -> dict:
-        """Returns a model's meta data"""
-        if any(x in [None, ""] for x in [domain, model_id]):
-            raise ValueError("domain and model_id must be set")
-        remote_path = self._get_metadata_path(domain, model_id)
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            local_path = self._pull(remote_path, tmp_dir)
-            with open(local_path, "r") as lines:
-                return json.loads(lines.read())
-
     def download(self, local_path: str, domain: str, model_id: str = None):
         """Downloads an artifacts archive for a given (domain, model_id) pair.
         If no model_id is given, it defaults to the latest model in that
@@ -145,13 +133,48 @@ class BlobStorage(CloudStorage):
         if model_id is None:
             model_domain = get_domain_path(self.root_prefix, domain)
             model_meta = self._read_json_object(model_domain)
-            logger.info("Latest model is: %s", model_meta["model"]["model_id"])
-        else:
-            model_meta_path = self._get_metadata_path(domain, model_id)
-            # Note: this will fail if the model does not exist (needs a more informative exception)
-            model_meta = self._read_json_object(model_meta_path)
+            model_id = model_meta["model"]["model_id"]
+            logger.info("Latest model is: %s", model_id)
+
+        model_meta = self.get_meta_data(domain, model_id)
         storage_path = self._get_storage_location(model_meta["storage"])
         return self._pull(storage_path, local_path)
+
+    def delete_model(
+        self, domain: str, model_id: str, meta_data: dict, skip_prompt: bool = False
+    ):
+        """Deletes a model artifact from storage. Other than the artifact itself
+        being deleted:
+        - The model is unset from all states.
+        - The model will no longer be returned when using list_models()
+        - One meta data file is preserved, using the reserved DELETED state"""
+        if not skip_prompt:
+            message = f"Delete model from domain={domain} with model_id={model_id}?"
+            if not click.confirm(message):
+                logger.info("Aborting; not deleting model")
+                return
+
+        # Delete the artifact itself
+        storage_path = self._get_storage_location(meta_data["storage"])
+        self._remove(storage_path)
+
+        # Set the model as deleted in the meta data by unsetting it from
+        # all custom states, setting it to a reserved state, and then deleting
+        # the main meta-data file
+        logger.debug("Removing model from all states %s=%s", domain, model_id)
+        for state_name in self.list_model_states():
+            self.unset_model_state(domain, model_id, state_name)
+
+        logger.debug("Setting to state=deleted %s=%s", domain, model_id)
+        self.set_model_state(domain, model_id, ReservedModelStates.DELETED.value)
+
+        logger.debug("Deleting meta-data for %s=%s", domain, model_id)
+        remote_path = self._get_metadata_path(domain, model_id)
+        self._remove(remote_path)
+
+        # @TODO (future): the model that is being deleted may be also set
+        # as the "latest" model in a domain; this will cause download() to fail
+        # if a model_id is not provided
 
     def list_domains(self) -> list:
         """Returns a list of all the existing model domains"""
@@ -159,9 +182,17 @@ class BlobStorage(CloudStorage):
         domains = self._read_json_objects(domains)
         return [d["model"]["domain"] for d in domains]
 
+    def get_domain(self, domain: str) -> dict:
+        remote_path = get_domain_path(self.root_prefix, domain)
+        try:
+            return self._pull_and_load(remote_path)
+        except FilePullFailedException:
+            raise DomainNotFoundException(domain)
+
     def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
+        _ = self.get_domain(domain)
         models_path = get_models_path(self.root_prefix, domain, state_name)
         models = self._read_json_objects(models_path)
         # @TODO sort models by creation time stamp
@@ -226,7 +257,7 @@ class BlobStorage(CloudStorage):
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_model_path = self._pull(model_path, tmp_dir)
             self._push(local_model_path, model_state_path)
-        logger.debug("Successfully set %s=%s from %s", domain, model_id, state_name)
+        logger.debug("Successfully set %s=%s to state=%s", domain, model_id, state_name)
 
     def unset_model_state(self, domain: str, model_id: str, state_name: str):
         """Removes the given model ID from the set that are in the state_name path"""
@@ -243,5 +274,69 @@ class BlobStorage(CloudStorage):
         model_state_path = self._get_metadata_path(domain, model_id, state_name)
         if self._remove(model_state_path):
             logger.debug(
-                "Successfully unset %s=%s from %s", domain, model_id, state_name
+                "Successfully unset %s=%s from state=%s", domain, model_id, state_name
             )
+        else:
+            logger.debug(
+                "Model  %s=%s was not set to state=%s", domain, model_id, state_name
+            )
+
+    def _get_metadata_path(
+        self, domain: str, model_id: str, state_name: Optional[str] = None
+    ) -> str:
+        """Creates a path where a meta-data file about a model is stored.
+        I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
+
+        Args:
+            domain (str): A group of models that are trained for the
+            same end-use are given the same domain.
+
+            model_id (str): A UUID4 string that identifies this specific
+            model.
+        """
+        return os.path.join(
+            get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
+        )
+
+    def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
+        logger.debug("Setting meta-data for %s=%s", domain, model_id)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_path = os.path.join(tmp_dir, f"{model_id}.json")
+            remote_path = self._get_metadata_path(domain, model_id)
+            with open(local_path, "w") as out:
+                out.write(json.dumps(meta_data))
+            self._push(local_path, remote_path)
+
+            # @TODO this is setting the "latest" model implicitly
+            remote_path = get_domain_path(self.root_prefix, domain)
+            self._push(local_path, remote_path)
+
+    def _pull_and_load(self, remote_path: str) -> dict:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_path = self._pull(remote_path, tmp_dir)
+            with open(local_path, "r") as lines:
+                return json.loads(lines.read())
+
+    def get_meta_data(self, domain: str, model_id: str) -> dict:
+        if any(x in [None, ""] for x in [domain, model_id]):
+            raise ValueError("domain and model_id must be set")
+        logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
+        remote_path = self._get_metadata_path(domain, model_id)
+        try:
+            return self._pull_and_load(remote_path)
+        except FilePullFailedException:
+            logger.debug("Failed to pull: %s", remote_path)
+            # A meta-data file may not be downloaded if:
+            # 1. The domain does not exist (e.g., typo)
+            # 2. The model never existed in that domain
+            # 3. The model has been deleted from that domain
+            # 4. A different error occurred (e.g. connectivity)
+            # The block below currently checks for (2) and (3)
+            try:
+                remote_path = self._get_metadata_path(
+                    domain, model_id, ReservedModelStates.DELETED.value
+                )
+                self._pull_and_load(remote_path)
+                raise ModelDeletedException(domain, model_id)
+            except FilePullFailedException:
+                raise ModelNotFoundException(domain, model_id)

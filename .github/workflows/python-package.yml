@@ -3,7 +3,15 @@
 
 name: Python package
 
-on: [push]
+on:
+  pull_request:
+    types:
+      - opened
+    branches:
+      - 'main'
+  push:
+    paths:
+      - '**.py'
 
 jobs:
   build:
@@ -11,7 +19,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8]
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
