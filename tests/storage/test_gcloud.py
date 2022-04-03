@@ -34,9 +34,10 @@ _MOCK_BUCKET_NAME = "gcloud-bucket"
 _MOCK_PROJECT_NAME = "project-name"
 
 
-def gcloud_bucket():
+def gcloud_bucket(bucket_exists: bool):
     mock_bucket = mock.create_autospec(storage.Bucket)
     mock_bucket.name = _MOCK_BUCKET_NAME
+    mock_bucket.exists.return_value = bucket_exists
     return mock_bucket
 
 
@@ -46,37 +47,26 @@ def gcloud_client(
     file_contents: str = TEST_FILE_CONTENTS,
     anonymous: bool = False,
 ):
+    # Create a storage client
     mock_client = mock.create_autospec(storage.Client)
-    if anonymous:
-        mock_client.project = None
+    mock_client.project = _MOCK_PROJECT_NAME if not anonymous else None
+
+    # Add a bucket to the client
+    mock_bucket = gcloud_bucket(bucket_exists)
+    if not anonymous:
+        mock_client.get_bucket.return_value = mock_bucket
     else:
-        mock_client.project = _MOCK_PROJECT_NAME
+        mock_client.bucket.return_value = mock_bucket
 
-    mock_buckets = []
-    mock_bucket = gcloud_bucket()
-
+    # If the bucket exists, add a file to it
     if bucket_exists:
-        mock_bucket.client = mock_client
+        # mock_bucket.client = mock_client
 
         mock_blob = mock.create_autospec(storage.Blob)
         mock_blob.exists.return_value = files_exist
         if files_exist:
             mock_blob.download_as_string.return_value = file_contents
         mock_bucket.blob.return_value = mock_blob
-
-        if not anonymous:
-            mock_client.get_bucket.return_value = mock_bucket
-            mock_buckets.append(mock_bucket)
-        else:
-            mock_client.bucket.return_value = mock_bucket
-            mock_bucket.list_blobs.return_value = [mock_blob]
-    else:
-        if anonymous:
-            mock_client.bucket.return_value = mock_bucket
-            mock_bucket.list_blobs = mock.Mock(side_effect=NotFound(""))
-
-    if not anonymous:
-        mock_client.list_buckets.return_value = mock_buckets
 
     return mock_client
 
@@ -110,17 +100,13 @@ def test_create_fails_with_missing_environment_variables(monkeypatch):
 @pytest.mark.parametrize(
     "bucket_exists,anonymous,validate_should_pass",
     [
-        (
-            False,
-            False,
-            False,
-        ),
+        (False, False, False),
         (True, False, True),
         (False, True, False),
         (True, True, True),
     ],
 )
-def test_validate(bucket_exists, validate_should_pass, anonymous):
+def test_validate(bucket_exists, anonymous, validate_should_pass):
     mock_client = gcloud_client(
         bucket_exists=bucket_exists, files_exist=False, anonymous=anonymous
     )

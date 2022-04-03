@@ -112,12 +112,12 @@ class GoogleCloudStorage(BlobStorage):
         return self.__client
 
     @property
-    def is_read_only(self):
+    def is_read_only(self) -> bool:
         return self.client.project is None
 
     @property
     def bucket(self):
-        if self.is_read_only():
+        if self.is_read_only:
             return self.client.bucket(bucket_name=self.bucket_name)
         return self.client.get_bucket(self.bucket_name)
 
@@ -133,7 +133,7 @@ class GoogleCloudStorage(BlobStorage):
         return True
 
     def _push(self, source: str, destination: str) -> str:
-        if self.is_read_only():
+        if self.is_read_only:
             raise NotImplementedError(
                 "File upload is only supported for authenticated clients."
             )
