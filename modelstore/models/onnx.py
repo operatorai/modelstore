@@ -37,6 +37,9 @@ class OnnxManager(ModelManager):
     def required_dependencies(self) -> list:
         return ["onnx", "onnxruntime"]
 
+    def optional_dependencies(self) -> list:
+        return super().optional_dependencies() + ["skl2onnx"]
+
     def _required_kwargs(self):
         return ["model"]
 
