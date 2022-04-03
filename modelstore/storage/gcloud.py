@@ -115,12 +115,17 @@ class GoogleCloudStorage(BlobStorage):
     def is_read_only(self):
         return self.client.project is None
 
+    @property
+    def bucket(self):
+        if self.is_read_only():
+            return self.client.bucket(bucket_name=self.bucket_name)
+        return self.client.get_bucket(self.bucket_name)
+
     def validate(self) -> bool:
         """Runs any required validation steps - e.g.,
         checking that a cloud bucket exists"""
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
-        bucket = self.client.get_bucket(self.bucket_name)
-        if not bucket.exists():
+        if not self.bucket.exists():
             logger.error(
                 f"Bucket '{self.bucket_name}' does not exist or is not accessible for your client."
             )
@@ -134,8 +139,7 @@ class GoogleCloudStorage(BlobStorage):
             )
 
         logger.info("Uploading to: %s...", destination)
-        bucket = self.client.get_bucket(self.bucket_name)
-        blob = bucket.blob(destination)
+        blob = self.bucket.blob(destination)
 
         ## For slow upload speed
         # https://stackoverflow.com/questions/61001454/why-does-upload-from-file-google-cloud-storage-function-throws-timeout-error
@@ -150,11 +154,7 @@ class GoogleCloudStorage(BlobStorage):
             logger.debug("Downloading from: %s...", source)
             file_name = os.path.split(source)[1]
             destination = os.path.join(destination, file_name)
-            if self.client.project is None:
-                bucket = self.client.bucket(bucket_name=self.bucket_name)
-            else:
-                bucket = self.client.get_bucket(self.bucket_name)
-            blob = bucket.blob(source)
+            blob = self.bucket.blob(source)
             blob.download_to_filename(destination)
             return destination
         except NotFound as e:
@@ -167,8 +167,7 @@ class GoogleCloudStorage(BlobStorage):
                 "File removal is only supported for authenticated clients."
             )
 
-        bucket = self.client.get_bucket(self.bucket_name)
-        blob = bucket.blob(destination)
+        blob = self.bucket.blob(destination)
         if not blob.exists():
             logger.debug("Remote file does not exist: %s", destination)
             return False
@@ -208,8 +207,7 @@ class GoogleCloudStorage(BlobStorage):
 
     def _read_json_object(self, path: str) -> Optional[dict]:
         """Returns a dictionary of the JSON stored in a given path"""
-        bucket = self.client.get_bucket(self.bucket_name)
-        blob = bucket.blob(path)
+        blob = self.bucket.blob(path)
         obj = blob.download_as_string()
         try:
             return json.loads(obj)
