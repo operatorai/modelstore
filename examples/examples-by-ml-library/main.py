@@ -69,15 +69,19 @@ def main(modelstore_in, ml_framework):
 
     # Create a model store instance
     modelstore = create_model_store(modelstore_in)
-
-    # Run the example: train and upload a model
     example = EXAMPLES[ml_framework]
-    meta_data = example.train_and_upload(modelstore)
 
-    # The upload returns meta-data about the model that was uploaded
-    # In this example, we just print it out to the terminal
+    # Demo how we train and upload a model
+    domain, model_id = example.train_and_upload(modelstore)
     print(f"✅  Finished uploading the {ml_framework} model!")
-    print(json.dumps(meta_data, indent=4))
+
+    # Demo how we can load the model back
+    example.load_and_test(modelstore, model_id)
+    print(f"✅  Finished loading the {ml_framework} model!")
+
+    # Since this is a demo-only, the model is deleted
+    modelstore.delete_model(domain, model_id, skip_prompt=True)
+    print(f"✅  The {ml_framework} model has been deleted!")
 
 
 if __name__ == "__main__":
