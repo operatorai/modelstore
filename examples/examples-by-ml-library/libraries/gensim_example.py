@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
 
@@ -18,7 +20,7 @@ def _train_example_model() -> word2vec.Word2Vec:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train a word2vec model
     model = _train_example_model()
 
@@ -27,7 +29,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
         f"⤴️  Uploading the word2vec model to the {NEWSGROUP_EMBEDDINGS_DOMAIN} domain."
     )
     meta_data = modelstore.upload(NEWSGROUP_EMBEDDINGS_DOMAIN, model=model)
-    return meta_data
+    return NEWSGROUP_EMBEDDINGS_DOMAIN, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):

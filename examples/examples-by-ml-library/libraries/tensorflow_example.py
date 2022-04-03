@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import tensorflow as tf
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
@@ -27,23 +29,19 @@ def _train_example_model() -> tf.keras.models.Sequential:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train a model
     model = _train_example_model()
 
     # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the tensorflow model to the "{DIABETES_DOMAIN}" domain.'
-    )
+    print(f'⤴️  Uploading the tensorflow model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model)
-    return meta_data
+    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):
     # Load the model back into memory!
-    print(
-        f'⤵️  Loading the tensorflow "{DIABETES_DOMAIN}" domain model={model_id}'
-    )
+    print(f'⤵️  Loading the tensorflow "{DIABETES_DOMAIN}" domain model={model_id}')
     model = modelstore.load(DIABETES_DOMAIN, model_id)
 
     # Run some test predictions

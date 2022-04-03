@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 
 from annoy import AnnoyIndex
 from modelstore.model_store import ModelStore
@@ -24,7 +25,7 @@ def _train_example_model() -> AnnoyIndex:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train an Annoy index
     model = _train_example_model()
 
@@ -37,7 +38,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
         metric=_METRIC,
         num_trees=_NUM_TREES,
     )
-    return meta_data
+    return _DOMAIN_NAME, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):

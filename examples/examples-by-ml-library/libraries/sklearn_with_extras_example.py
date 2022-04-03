@@ -36,7 +36,7 @@ def _train_example_model(tmp_dir: str) -> Tuple[Pipeline, str]:
     return model, file_path
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train a scikit-learn model and create an extra file (with predictions)
     # in a temporary directory
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -45,7 +45,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
         # Upload the model to the model store, with an extra file
         print(f'⤴️  Uploading the sklearn model to the "{DIABETES_DOMAIN}" domain.')
         meta_data = modelstore.upload(DIABETES_DOMAIN, model=model, extras=file_path)
-    return meta_data
+    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):

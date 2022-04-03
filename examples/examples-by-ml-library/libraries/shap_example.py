@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import shap
 from modelstore.model_store import ModelStore
 from sklearn.ensemble import GradientBoostingRegressor
@@ -35,14 +37,14 @@ def _train_example_model() -> Pipeline:
     return explainer
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train a model and return the explainer
     explainer = _train_example_model()
 
     # Upload the explainer to the model store
     print(f'⤴️  Uploading the explainer to the "{EXPLAINER_DOMAIN}" domain.')
     meta_data = modelstore.upload(EXPLAINER_DOMAIN, explainer=explainer)
-    return meta_data
+    return EXPLAINER_DOMAIN, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):

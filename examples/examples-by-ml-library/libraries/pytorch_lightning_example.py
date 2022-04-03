@@ -1,3 +1,4 @@
+from typing import Tuple
 import tempfile
 
 import pytorch_lightning as pl
@@ -36,9 +37,7 @@ class ExampleLightningNet(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters())
-        scheduler = torch.optim.lr_scheduler.StepLR(
-            optimizer, step_size=3, gamma=0.05
-        )
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.05)
         return [optimizer], [scheduler]
 
 
@@ -62,7 +61,7 @@ def _train_example_model() -> ExampleLightningNet:
     return model, trainer
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train a PyTorch model
     model, trainer = _train_example_model()
 
@@ -71,7 +70,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
         f'⤴️  Uploading the pytorch lightning model to the "{DIABETES_DOMAIN}" domain.'
     )
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model, trainer=trainer)
-    return meta_data
+    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):

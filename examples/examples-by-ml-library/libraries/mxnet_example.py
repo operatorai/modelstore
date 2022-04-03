@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import mxnet as mx
 import numpy as np
 from modelstore.model_store import ModelStore
@@ -29,7 +31,7 @@ def run_example_predictions(model: nn.HybridSequential):
     print(f"📊  Model has mse={mean_squared_error(y_pred, y_test)}.")
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train a scikit-learn model
     model = _train_example_model()
     run_example_predictions(model)
@@ -37,7 +39,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     # Upload the model to the model store
     print(f'⤴️  Uploading the mxnet model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model, epoch=0)
-    return meta_data
+    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):

@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from modelstore.model_store import ModelStore
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
@@ -31,21 +33,19 @@ def _train_example_model() -> Pipeline:
     return pipeline
 
 
-def train_and_upload(modelstore: ModelStore) -> dict:
+def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
     # Train a scikit-learn model
     model = _train_example_model()
 
     # Upload the model to the model store
     print(f'⤴️  Uploading the sklearn model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model)
-    return meta_data
+    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
 
 
 def load_and_test(modelstore: ModelStore, model_id: str):
     # Load the model back into memory!
-    print(
-        f'⤵️  Loading the sklearn "{DIABETES_DOMAIN}" domain model={model_id}'
-    )
+    print(f'⤵️  Loading the sklearn "{DIABETES_DOMAIN}" domain model={model_id}')
     model = modelstore.load(DIABETES_DOMAIN, model_id)
 
     # Run some example predictions
