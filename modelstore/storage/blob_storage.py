@@ -225,7 +225,7 @@ class BlobStorage(CloudStorage):
             if not is_valid_state_name(state_name):
                 raise ValueError(f"Cannot create state with name: '{state_name}'")
         if self.state_exists(state_name):
-            logger.info("Model state '%s' already exists", state_name)
+            logger.debug("Model state '%s' already exists", state_name)
             return  # Exception is not raised; create_model_state() is idempotent
         logger.debug("Creating model state: %s", state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
