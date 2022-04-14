@@ -1,7 +1,4 @@
-from typing import Tuple
-
 import tensorflow as tf
-from gensim.models import word2vec
 from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 
@@ -29,20 +26,20 @@ def _train_example_model() -> tf.keras.models.Sequential:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a model
     model = _train_example_model()
 
     # Upload the model to the model store
     print(f'⤴️  Uploading the tensorflow model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model)
-    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the tensorflow "{DIABETES_DOMAIN}" domain model={model_id}')
-    model = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f'⤵️  Loading the tensorflow "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
 
     # Run some test predictions
     _, X_test, _, y_test = load_regression_dataset()

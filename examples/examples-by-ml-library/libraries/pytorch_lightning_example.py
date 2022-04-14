@@ -1,4 +1,3 @@
-from typing import Tuple
 import tempfile
 
 import pytorch_lightning as pl
@@ -61,7 +60,7 @@ def _train_example_model() -> ExampleLightningNet:
     return model, trainer
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a PyTorch model
     model, trainer = _train_example_model()
 
@@ -70,15 +69,13 @@ def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
         f'⤴️  Uploading the pytorch lightning model to the "{DIABETES_DOMAIN}" domain.'
     )
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model, trainer=trainer)
-    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(
-        f'⤵️  Loading the pytorch lightning "{DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f'⤵️  Loading the pytorch lightning "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
     model.eval()
 
     _, X_test, _, y_test = load_regression_dataset(as_numpy=True)

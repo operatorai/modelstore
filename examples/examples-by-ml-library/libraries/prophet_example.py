@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import random
 from datetime import datetime, timedelta
 
@@ -27,7 +25,7 @@ def _train_example_model() -> Prophet:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train an Annoy index
     model = _train_example_model()
 
@@ -37,13 +35,13 @@ def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
         _DOMAIN_NAME,
         model=model,
     )
-    return _DOMAIN_NAME, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the Prophet "{_DOMAIN_NAME}" domain model={model_id}')
-    model = modelstore.load(_DOMAIN_NAME, model_id)
+    print(f'⤵️  Loading the Prophet "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
 
     # Show some predictions
     future = model.make_future_dataframe(periods=5)

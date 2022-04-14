@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from modelstore.model_store import ModelStore
 from transformers import (
     AutoConfig,
@@ -35,7 +33,7 @@ def _train_example_model():
     return model, tokenizer, config
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a model
     model, tokenizer, config = _train_example_model()
 
@@ -47,13 +45,13 @@ def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
         model=model,
         tokenizer=tokenizer,
     )
-    return _DOMAIN_NAME, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the transformers "{_DOMAIN_NAME}" domain model={model_id}')
-    model, tokenizer, config = modelstore.load(_DOMAIN_NAME, model_id)
+    print(f'⤵️  Loading the transformers "{model_domain}" domain model={model_id}')
+    model, tokenizer, config = modelstore.load(model_domain, model_id)
 
     # Run some example predictions
     # ...

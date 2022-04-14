@@ -72,15 +72,17 @@ def main(modelstore_in, ml_framework):
     example = EXAMPLES[ml_framework]
 
     # Demo how we train and upload a model
-    domain, model_id = example.train_and_upload(modelstore)
+    meta_data = example.train_and_upload(modelstore)
+    model_domain = meta_data["model"]["domain"]
+    model_id = meta_data["model"]["model_id"]
     print(f"✅  Finished uploading the {ml_framework} model!")
 
     # Demo how we can load the model back
-    example.load_and_test(modelstore, model_id)
+    example.load_and_test(modelstore, model_domain, model_id)
     print(f"✅  Finished loading the {ml_framework} model!")
 
     # Since this is a demo-only, the model is deleted
-    modelstore.delete_model(domain, model_id, skip_prompt=True)
+    modelstore.delete_model(model_domain, model_id, skip_prompt=True)
     print(f"✅  The {ml_framework} model has been deleted!")
 
 

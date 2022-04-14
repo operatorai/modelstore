@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
 
@@ -20,7 +18,7 @@ def _train_example_model() -> word2vec.Word2Vec:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a word2vec model
     model = _train_example_model()
 
@@ -29,15 +27,13 @@ def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
         f"⤴️  Uploading the word2vec model to the {NEWSGROUP_EMBEDDINGS_DOMAIN} domain."
     )
     meta_data = modelstore.upload(NEWSGROUP_EMBEDDINGS_DOMAIN, model=model)
-    return NEWSGROUP_EMBEDDINGS_DOMAIN, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(
-        f'⤵️  Loading the word2vec "{NEWSGROUP_EMBEDDINGS_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(NEWSGROUP_EMBEDDINGS_DOMAIN, model_id)
+    print(f'⤵️  Loading the word2vec "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
 
     # Find some nearest neighbours
     most_similar = set([k[0] for k in model.wv.most_similar("cool", topn=5)])

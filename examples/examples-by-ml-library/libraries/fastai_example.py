@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from fastai.tabular.all import *
 from modelstore.model_store import ModelStore
 
@@ -19,18 +17,18 @@ def _train_example_model() -> TabularLearner:
     return learner
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a fast.ai model
     learner = _train_example_model()
 
     # Upload the model to the model store
     print(f'⤴️  Uploading the fastai model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, learner=learner)
-    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the fastai "{DIABETES_DOMAIN}" domain model={model_id}')
-    model = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f'⤵️  Loading the fastai "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
     # ... use for inference

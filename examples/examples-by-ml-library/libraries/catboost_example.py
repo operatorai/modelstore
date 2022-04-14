@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import catboost as ctb
 from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
@@ -22,20 +20,20 @@ def _train_example_model() -> ctb.CatBoostRegressor:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a Catboost model
     model = _train_example_model()
 
     # Upload the model to the model store
     print(f'⤴️  Uploading the catboost model to the "{DIABETES_DOMAIN}" domain.')
     meta_data = modelstore.upload(DIABETES_DOMAIN, model=model)
-    return DIABETES_DOMAIN, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the catboost "{DIABETES_DOMAIN}" domain model={model_id}')
-    model = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f'⤵️  Loading the catboost "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
 
     # Run some example predictions
     _, X_test, _, y_test = load_regression_dataset()

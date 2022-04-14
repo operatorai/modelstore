@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 import onnx
 from modelstore.model_store import ModelStore
@@ -53,20 +51,20 @@ def _train_example_model() -> onnx.ModelProto:
     return model
 
 
-def train_and_upload(modelstore: ModelStore) -> Tuple[str, str]:
+def train_and_upload(modelstore: ModelStore) -> dict:
     # Train a scikit-learn model
     model = _train_example_model()
 
     # Upload the model to the model store
     print(f'⤴️  Uploading the onnx model to the "{BREAST_CANCER_DOMAIN}" domain.')
     meta_data = modelstore.upload(BREAST_CANCER_DOMAIN, model=model)
-    return BREAST_CANCER_DOMAIN, meta_data["model"]["model_id"]
+    return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the onnx "{BREAST_CANCER_DOMAIN}" domain model={model_id}')
-    sess = modelstore.load(BREAST_CANCER_DOMAIN, model_id)
+    print(f'⤵️  Loading the onnx "{model_domain}" domain model={model_id}')
+    sess = modelstore.load(model_domain, model_id)
 
     # Run some example predictions
     _, X_test, _, y_test = load_classification_dataset()
