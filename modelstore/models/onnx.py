@@ -42,6 +42,7 @@ class OnnxManager(ModelManager):
             "skl2onnx",
             "onnxmltools",
             "onnxruntime",
+            "onnxconverter-common",
         ]
 
     def _required_kwargs(self):
