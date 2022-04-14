@@ -3,13 +3,13 @@ from typing import Tuple
 from gensim.models import word2vec
 from modelstore.model_store import ModelStore
 
-from libraries.util.datasets import load_newsgroup_sentences
+from libraries.util.datasets import load_text_dataset
 from libraries.util.domains import NEWSGROUP_EMBEDDINGS_DOMAIN
 
 
 def _train_example_model() -> word2vec.Word2Vec:
     # Load the data
-    sentences = load_newsgroup_sentences()
+    sentences = load_text_dataset()
 
     # Train a word2vec model
     print(f"🤖  Training a word2vec model...")

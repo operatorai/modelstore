@@ -4,13 +4,13 @@ import catboost as ctb
 from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 
-from libraries.util.datasets import load_diabetes_dataset
+from libraries.util.datasets import load_regression_dataset
 from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> ctb.CatBoostRegressor:
     # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_regression_dataset()
 
     # Train the model
     print("🤖  Training a CatBoostRegressor")
@@ -38,6 +38,6 @@ def load_and_test(modelstore: ModelStore, model_id: str):
     model = modelstore.load(DIABETES_DOMAIN, model_id)
 
     # Run some example predictions
-    _, X_test, _, y_test = load_diabetes_dataset()
+    _, X_test, _, y_test = load_regression_dataset()
     results = mean_squared_error(y_test, model.predict(X_test))
     print(f"🔍  Loaded model MSE={results}.")

@@ -8,12 +8,12 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 
-from libraries.util.datasets import load_diabetes_dataset
+from libraries.util.datasets import load_regression_dataset
 from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model(tmp_dir: str) -> Tuple[Pipeline, str]:
-    X_train, X_test, y_train, y_test = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_regression_dataset()
 
     # Train a model using an sklearn pipeline
     params = {
@@ -54,8 +54,10 @@ def load_and_test(modelstore: ModelStore, model_id: str):
         f'⤵️  Loading sklearn/shap modelsL domain="{DIABETES_DOMAIN}" model={model_id}'
     )
     models = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f"ℹ️  In the archive: {models.keys()}")
+    clf = models["sklearn"]
 
     # Run some example predictions
-    _, X_test, _, y_test = load_diabetes_dataset()
-    results = mean_squared_error(y_test, models["sklearn"].predict(X_test))
+    _, X_test, _, y_test = load_regression_dataset()
+    results = mean_squared_error(y_test, clf.predict(X_test))
     print(f"🔍  Loaded model MSE={results}.")

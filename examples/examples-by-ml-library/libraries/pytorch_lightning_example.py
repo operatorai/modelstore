@@ -9,7 +9,7 @@ from sklearn.metrics import mean_squared_error
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from libraries.util.datasets import load_diabetes_dataset
+from libraries.util.datasets import load_regression_dataset
 from libraries.util.domains import DIABETES_DOMAIN
 
 
@@ -43,7 +43,7 @@ class ExampleLightningNet(pl.LightningModule):
 
 def _train_example_model() -> ExampleLightningNet:
     # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset(as_numpy=True)
+    X_train, X_test, y_train, y_test = load_regression_dataset(as_numpy=True)
     data_set = TensorDataset(X_test, y_test)
     val_dataloader = DataLoader(data_set)
 
@@ -81,6 +81,6 @@ def load_and_test(modelstore: ModelStore, model_id: str):
     model = modelstore.load(DIABETES_DOMAIN, model_id)
     model.eval()
 
-    _, X_test, _, y_test = load_diabetes_dataset(as_numpy=True)
+    _, X_test, _, y_test = load_regression_dataset(as_numpy=True)
     results = mean_squared_error(y_test, model(X_test).detach().numpy())
     print(f"🔍  Loaded model MSE={results}.")

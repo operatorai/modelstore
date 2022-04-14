@@ -3,13 +3,13 @@ from typing import Tuple
 from fastai.tabular.all import *
 from modelstore.model_store import ModelStore
 
-from libraries.util.datasets import load_diabetes_dataframe
+from libraries.util.datasets import load_regression_dataframe
 from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> TabularLearner:
     # Load the data
-    df = load_diabetes_dataframe()
+    df = load_regression_dataframe()
 
     # Train the model
     print(f"🤖  Training a fastai tabular learner...")

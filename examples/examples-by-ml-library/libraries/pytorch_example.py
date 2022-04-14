@@ -5,7 +5,7 @@ from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 from torch import nn
 
-from libraries.util.datasets import load_diabetes_dataset
+from libraries.util.datasets import load_regression_dataset
 from libraries.util.domains import DIABETES_DOMAIN
 
 
@@ -21,7 +21,7 @@ class ExampleNet(nn.Module):
 
 def _train_example_model() -> ExampleNet:
     # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset(as_numpy=True)
+    X_train, X_test, y_train, y_test = load_regression_dataset(as_numpy=True)
 
     # Train the model
     model = ExampleNet()
@@ -57,6 +57,6 @@ def load_and_test(modelstore: ModelStore, model_id: str):
     model = modelstore.load(DIABETES_DOMAIN, model_id)
     model.eval()
 
-    _, X_test, _, y_test = load_diabetes_dataset(as_numpy=True)
+    _, X_test, _, y_test = load_regression_dataset(as_numpy=True)
     results = mean_squared_error(y_test, model(X_test).detach().numpy())
     print(f"🔍  Loaded model MSE={results}.")

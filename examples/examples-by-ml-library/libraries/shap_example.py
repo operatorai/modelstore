@@ -6,14 +6,14 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 
-from libraries.util.datasets import load_diabetes_dataset
+from libraries.util.datasets import load_regression_dataset
 from libraries.util.domains import DIABETES_DOMAIN
 
 EXPLAINER_DOMAIN = f"{DIABETES_DOMAIN}-explainer"
 
 
 def _train_example_model() -> Pipeline:
-    X_train, X_test, y_train, y_test = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_regression_dataset()
 
     # Train a model using an sklearn pipeline
     params = {
@@ -53,6 +53,6 @@ def load_and_test(modelstore: ModelStore, model_id: str):
     explainer = modelstore.load(EXPLAINER_DOMAIN, model_id)
 
     # Run some example predictions
-    _, X_test, _, _ = load_diabetes_dataset()
+    _, X_test, _, _ = load_regression_dataset()
     shap_values = explainer.shap_values(X_test)[0]
     print(f"🔍  Shap values={shap_values[:10]}.")

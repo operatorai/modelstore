@@ -1,5 +1,5 @@
 set -e
-backends=( filesystem aws azure gcloud )
+backends=( filesystem ) # aws azure gcloud )
 frameworks=( annoy catboost fastai file gensim keras lightgbm \
 	mxnet onnx prophet pytorch pytorch-lightning sklearn \
 	sklearn-with-explainer sklearn-with-extras skorch \
