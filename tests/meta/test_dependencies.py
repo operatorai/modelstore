@@ -43,9 +43,9 @@ def test_get_dependency_versions():
     ]
     expected = {
         "annoy": "1.17.0",
-        "black": "22.1.0",
+        "black": "22.3.0",
         "pytest": pytest.__version__,
-        "pylint": "2.12.2",
+        "pylint": "2.13.5",
         "flake8": "4.0.1",
         "isort": "5.10.1",
         "a-missing-dependency": None,
@@ -70,11 +70,11 @@ def test_save_dependencies(tmp_path):
         "a-missing-dependency",
     ]
     expected = {
-        "black": "22.1.0",
+        "black": "22.3.0",
         "flake8": "4.0.1",
         "isort": "5.10.1",
         "pytest": pytest.__version__,
-        "pylint": "2.12.2",
+        "pylint": "2.13.5",
     }
     tmp_file = dependencies.save_dependencies(tmp_path, test_deps)
     assert os.path.split(tmp_file)[1] == "python-info.json"
