@@ -27,7 +27,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Loading the model back into memory is not supported
     # for models that have been saved to disk manually
     pass

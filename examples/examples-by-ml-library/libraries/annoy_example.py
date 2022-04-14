@@ -40,10 +40,10 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the Annoy "{_DOMAIN_NAME}" domain model={model_id}')
-    model = modelstore.load(_DOMAIN_NAME, model_id)
+    print(f'⤵️  Loading the Annoy "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
 
     # Find some nearest neighbours
     results = model.get_nns_by_item(0, 10)

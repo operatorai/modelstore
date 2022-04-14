@@ -38,10 +38,10 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the Prophet "{_DOMAIN_NAME}" domain model={model_id}')
-    model = modelstore.load(_DOMAIN_NAME, model_id)
+    print(f'⤵️  Loading the Prophet "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
 
     # Show some predictions
     future = model.make_future_dataframe(periods=5)

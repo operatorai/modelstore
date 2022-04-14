@@ -38,9 +38,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     model, tokenizer, config = _train_example_model()
 
     # Upload the model to the model store
-    print(
-        f'⤴️  Uploading the transformers model to the "{_DOMAIN_NAME}" domain.'
-    )
+    print(f'⤴️  Uploading the transformers model to the "{_DOMAIN_NAME}" domain.')
     meta_data = modelstore.upload(
         _DOMAIN_NAME,
         config=config,
@@ -50,12 +48,10 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(
-        f'⤵️  Loading the transformers "{_DOMAIN_NAME}" domain model={model_id}'
-    )
-    model, tokenizer, config = modelstore.load(_DOMAIN_NAME, model_id)
+    print(f'⤵️  Loading the transformers "{model_domain}" domain model={model_id}')
+    model, tokenizer, config = modelstore.load(model_domain, model_id)
 
     # Run some example predictions
     # ...

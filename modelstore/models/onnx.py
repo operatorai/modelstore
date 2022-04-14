@@ -35,7 +35,15 @@ class OnnxManager(ModelManager):
         super().__init__(self.NAME, storage)
 
     def required_dependencies(self) -> list:
-        return ["onnx", "onnxruntime"]
+        return ["onnx"]
+
+    def optional_dependencies(self) -> list:
+        return super().optional_dependencies() + [
+            "skl2onnx",
+            "onnxmltools",
+            "onnxruntime",
+            "onnxconverter-common",
+        ]
 
     def _required_kwargs(self):
         return ["model"]
