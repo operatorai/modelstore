@@ -24,7 +24,7 @@ lightgbm==3.2.1
 mxnet==1.8.0.post0
 onnx==1.11.0
 onnxruntime==1.11.0
-onnxmltools==1.10.0
+onnxmltools==1.11.0
 prophet==1.0.1
 pytorch-lightning==1.6.0
 scikit-learn==1.0.2

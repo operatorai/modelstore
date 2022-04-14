@@ -3,6 +3,7 @@ from typing import Tuple
 import numpy as np
 import onnx
 from modelstore.model_store import ModelStore
+
 from onnxruntime import InferenceSession
 from skl2onnx import to_onnx
 from sklearn.ensemble import RandomForestRegressor

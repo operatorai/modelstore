@@ -3,8 +3,17 @@ from typing import Tuple
 import numpy as np
 import onnx
 from modelstore.model_store import ModelStore
+
 from onnxruntime import InferenceSession
-from skl2onnx import to_onnx
+from skl2onnx import convert_sklearn, update_registered_converter
+from skl2onnx.common.shape_calculator import (
+    calculate_linear_classifier_output_shapes,
+)
+from skl2onnx.common.data_types import FloatTensorType
+from onnxmltools.convert.lightgbm.operator_converters.LightGbm import (
+    convert_lightgbm,
+)
+
 from lightgbm import LGBMClassifier
 from sklearn.metrics import mean_squared_error
 
@@ -20,7 +29,20 @@ def _train_example_model() -> onnx.ModelProto:
     clf.fit(X_train, y_train)
 
     print(f"🔍  Converting the model to onnx")
-    model = to_onnx(clf, X_train[:1].astype(np.float32), target_opset=12)
+    update_registered_converter(
+        LGBMClassifier,
+        "LightGbmLGBMClassifier",
+        calculate_linear_classifier_output_shapes,
+        convert_lightgbm,
+        options={"nocl": [True, False], "zipmap": [True, False, "columns"]},
+    )
+
+    model = convert_sklearn(
+        clf,
+        "lightgbm",
+        [("X", FloatTensorType([None, X_train.shape[1]]))],
+        target_opset={"": 12, "ai.onnx.ml": 2},
+    )
 
     print(f"🔍  Loading the onnx model as an inference session")
     sess = InferenceSession(model.SerializeToString())
