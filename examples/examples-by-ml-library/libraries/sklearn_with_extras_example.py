@@ -51,9 +51,7 @@ def train_and_upload(modelstore: ModelStore) -> dict:
 def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
     print(f'⤵️  Loading sklearn/shap modelsL domain="{model_domain}" model={model_id}')
-    models = modelstore.load(model_domain, model_id)
-    print(f"ℹ️  In the archive: {models.keys()}")
-    clf = models["sklearn"]
+    clf = modelstore.load(model_domain, model_id)
 
     # Run some example predictions
     _, X_test, _, y_test = load_regression_dataset()

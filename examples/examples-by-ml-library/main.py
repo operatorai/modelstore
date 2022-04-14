@@ -75,7 +75,9 @@ def main(modelstore_in, ml_framework):
     meta_data = example.train_and_upload(modelstore)
     model_domain = meta_data["model"]["domain"]
     model_id = meta_data["model"]["model_id"]
-    print(f"✅  Finished uploading the {ml_framework} model!")
+    model_type = meta_data["model"]["model_type"]["library"]
+
+    print(f"✅  Finished uploading the {ml_framework} model! (detected: {model_type})")
 
     # Demo how we can load the model back
     example.load_and_test(modelstore, model_domain, model_id)
