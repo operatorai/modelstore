@@ -226,7 +226,7 @@ class ModelStore:
             self.storage.unset_model_state(
                 domain,
                 model_id,
-                ReservedModelStates.DELETED,
+                ReservedModelStates.DELETED.value,
                 modifying_reserved=True,
             )
 
