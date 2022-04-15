@@ -1,6 +1,6 @@
 # Change log
 
-## modelstore 0.0.74 (April 2022)
+## modelstore 0.0.74 ([April 2022](https://github.com/operatorai/modelstore/pull/155))
 
 **🆕  New functionality**
 
@@ -32,110 +32,140 @@ The `list_versions()` function is deprecated and has been replaced with `list_mo
 
 Python 3.6 has passed its end-of-life, so this library is now tested with Python 3.7 and above.
 
-## modelstore 0.0.73
+## modelstore 0.0.73 ([February 2022](https://github.com/operatorai/modelstore/pull/121))
 
-🆕   You can upload multiple models to the same archive, if they don't share any keywords. For example `modelstore.upload(domain, model=sklearn_model, explainer=shap_explainer)` can be used to upload and download models and explainers together.
+**🆕  New functionality**
 
-🐛   Merged the model managers for `keras` and `tensorflow` into one.
+You can upload multiple models to the same archive, if they don't share any keywords. For example `modelstore.upload(domain, model=sklearn_model, explainer=shap_explainer)` can be used to upload and download models and explainers together.
 
-🆕   You can now set the root prefix of your model registry storage (thank you, [@cdknorow](https://github.com/cdknorow)!).
+You can now set the root prefix of your model registry storage (thank you, [@cdknorow](https://github.com/cdknorow)!).
 
-🆕   Added to the CLI functionality! You can now `python -m modelstore upload <domain> <model-file>` to upload a model. This requires you to [set environment variables](https://modelstore.readthedocs.io/en/latest/concepts/cli.html).
+Added to the CLI functionality! You can now `python -m modelstore upload <domain> <model-file>` to upload a model. This requires you to [set environment variables](https://modelstore.readthedocs.io/en/latest/concepts/cli.html).
 
-🆕   Added support for uploading [skorch](https://github.com/skorch-dev/skorch) models
+Added support for uploading [skorch](https://github.com/skorch-dev/skorch) models.
 
-## modelstore 0.0.72
+**🐛  Bug fixes**
 
-🐛  Saving complex sklearn pipelines was [raising a TypeError](https://github.com/operatorai/modelstore/issues/96). This is because the `get_params()` function, which `modelstore` uses to save meta data about the model, returns a lot of things that are not JSON serializable. For now, I've patched this by not returning metadata for `sklearn.pipeline.Pipeline` models.
+Merged the model managers for `keras` and `tensorflow` into one.
 
-🐛  Colab is currently running `fastai==1.0.61`, while `modelstore` was designed for `fastai>2`, so things would [break in Colab Notebooks](https://github.com/operatorai/modelstore/issues/95) due to the different import paths in the two versions of `fastai`: the import paths are now version-dependent..
+## modelstore 0.0.72 ([November 2021](https://github.com/operatorai/modelstore/pull/100))
 
-🐛  Updated the library so that PyTorch models can be uploaded [without an optimizer](https://github.com/operatorai/modelstore/issues/94). This is useful for uploading pretrained embedding models!
+**🆕  New functionality**
 
-🐛  Fixed [a logging bug when trying to download the latest model](https://github.com/operatorai/modelstore/issues/91) in a domain - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who found the issue.
+Added support for uploading [unsetting model states](https://github.com/operatorai/modelstore/issues/82) - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who opened an issue about this.
 
-🆕   Added support for uploading [unsetting model states](https://github.com/operatorai/modelstore/issues/82) - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who opened an issue about this.
+Added support for uploading [shap](https://shap.readthedocs.io/en/latest/generated/shap.Explainer.html) explainers.
 
-🆕   Added support for uploading [shap](https://shap.readthedocs.io/en/latest/generated/shap.Explainer.html) explainers.
+Added CLI functionality! You can now `python -m modelstore download <domain> <model-id> <directory>` to download a model. This requires you to [set environment variables](https://modelstore.readthedocs.io/en/latest/concepts/cli.html).
 
-🐛  Fixed an `ImportError` bug when trying to use `modelstore` on an instance [that does not have git installed](https://github.com/operatorai/modelstore/pull/86).
+Added [Prophet](https://facebook.github.io/prophet/) support.
 
-🆕   Added CLI functionality! You can now `python -m modelstore download <domain> <model-id> <directory>` to download a model. This requires you to [set environment variables](https://modelstore.readthedocs.io/en/latest/concepts/cli.html).
+Need to upload additional files alongside your model? You can now use the `extras=` kwarg in `modelstore.upload()` to point modelstore to a file (or list of files) to upload as well.
 
-🆕  Added [Prophet](https://facebook.github.io/prophet/) support.
+**🐛  Bug fixes**
 
-🆕  Need to upload additional files alongside your model? You can now use the `extras=` kwarg in `modelstore.upload()` to point modelstore to a file (or list of files) to upload as well.
+Saving complex sklearn pipelines was [raising a TypeError](https://github.com/operatorai/modelstore/issues/96). This is because the `get_params()` function, which `modelstore` uses to save meta data about the model, returns a lot of things that are not JSON serializable. For now, I've patched this by not returning metadata for `sklearn.pipeline.Pipeline` models.
 
-## modelstore 0.0.71
+Colab is currently running `fastai==1.0.61`, while `modelstore` was designed for `fastai>2`, so things would [break in Colab Notebooks](https://github.com/operatorai/modelstore/issues/95) due to the different import paths in the two versions of `fastai`: the import paths are now version-dependent..
 
-🆕  Load models straight into memory! Model Store previously had `modelstore.download()` to download an artifact archive to a local path, it now also has `modelstore.load()` to load a model straight into memory.
+Updated the library so that PyTorch models can be uploaded [without an optimizer](https://github.com/operatorai/modelstore/issues/94). This is useful for uploading pretrained embedding models!
 
-🆕  Upload models from frameworks that are not (yet) supported by modelstore! The `modelstore.upload()` function now works if you give it a `model=` kwarg that is a path to a file.
+Fixed [a logging bug when trying to download the latest model](https://github.com/operatorai/modelstore/issues/91) in a domain - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who found the issue.
 
-🆕  Read a specific model's metadata with `modelstore.get_model_info()`
+Fixed an `ImportError` bug when trying to use `modelstore` on an instance [that does not have git installed](https://github.com/operatorai/modelstore/pull/86).
 
-🆕  Added [Annoy](https://github.com/spotify/annoy), [ONNX](https://github.com/onnx/onnx), and [MXNet](https://mxnet.apache.org) (hybrid models) support.
+## modelstore 0.0.71 ([September 2021](https://github.com/operatorai/modelstore/pull/78))
 
-## modelstore 0.0.65
+**🆕  New functionality**
 
-🆕  Added model states, and updated listing models to listing by state.
+Load models straight into memory! Model Store previously had `modelstore.download()` to download an artifact archive to a local path, it now also has `modelstore.load()` to load a model straight into memory.
 
-🆕  Created a unified upload function. You can now use `modelstore.upload()` for all ML frameworks.
+Upload models from frameworks that are not (yet) supported by modelstore! The `modelstore.upload()` function now works if you give it a `model=` kwarg that is a path to a file.
 
-🆕  Added [Gensim](https://github.com/RaRe-Technologies/gensim) support.
+Read a specific model's metadata with `modelstore.get_model_info()`
 
-🆕  Added Azure blob storage support.
+Added [Annoy](https://github.com/spotify/annoy), [ONNX](https://github.com/onnx/onnx), and [MXNet](https://mxnet.apache.org) (hybrid models) support.
 
-🐛  Minor fixes to how modelstore uses env variables for the hosted storage, bug fixes for local file system storage.
+## modelstore 0.0.65 (July 2021)
 
-🐛  Downgraded `requests` due to a version conflict with the version in Google Colab.
+**🆕  New functionality**
 
-## modelstore 0.0.6
+Added model states, and updated listing models to listing by state.
 
-🆕  Added FastAI support.
+Created a unified upload function. You can now use `modelstore.upload()` for all ML frameworks.
 
-🆕  Add support for scikit-learn pipelines.
+Added [Gensim](https://github.com/RaRe-Technologies/gensim) support.
 
-## modelstore 0.0.52
+Added Azure blob storage support.
 
-🆕  Added PyTorch Lightning and LightGBM support.
+**🐛  Bug fixes**
 
-🆕  Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and do not want to manage your own storage, get in touch with me for an API key.
+Minor fixes to how modelstore uses env variables for the hosted storage, bug fixes for local file system storage.
 
-🐛  Fixed bugs related to listing domains and the models inside of a domain.
+Downgraded `requests` due to a version conflict with the version in Google Colab.
 
-🆕  Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models.
+## modelstore 0.0.6 ([March 2021](https://github.com/operatorai/modelstore/pull/29))
 
-## modelstore 0.0.4
+**🆕  New functionality**
 
-🆕  Clean up how meta-data is generated
+Added FastAI support.
 
-🆕  Add interactive authentication when using Google Colab
+Add support for scikit-learn pipelines.
 
-🐛  Upgraded dependencies to deal with an issue using `modelstore` in Colab
+## modelstore 0.0.52 ([February 2021](https://github.com/operatorai/modelstore/pull/24))
 
-🆕  Added auto-extraction of model params and model info into the meta-data
+**🆕  New functionality**
 
-## modelstore 0.0.3
+Added PyTorch Lightning and LightGBM support.
 
-🆕  Simplied the API to just requiring `upload()` (no more `create_archive()`).
+Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and do not want to manage your own storage, get in touch with me for an API key.
 
-## modelstore 0.0.2
+Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models.
 
-🆕  Added models: `transformers`, `tensorflow`
+**🐛  Bug fixes**
 
-🆕  Storage: downloading models via `download()`
+Fixed bugs related to listing domains and the models inside of a domain.
 
-🆕  Extended support to Python 3.6, 3.7, 3.8
+## modelstore 0.0.4 ([December 2020](https://github.com/operatorai/modelstore/pull/17))
 
-🆕  Repo: added Github actions
+**🆕  New functionality**
 
-## modelstore 0.0.1b
+Clean up how meta-data is generated
 
-🆕  First release! Supports (and tested on) Python 3.7 only. ☢️
+Add interactive authentication when using Google Colab
 
-🆕  Storage: GCP buckets, AWS S3 buckets, file systems. Upload only!
+Added auto-extraction of model params and model info into the meta-data
 
-🆕  Initial models: `catboost`, `keras`, `torch`, `sklearn`, `xgboost`
+**🐛  Bug fixes**
 
-🆕  Meta-data: Python runtime, user, dependency versions, git hash
+Upgraded dependencies to deal with an issue using `modelstore` in Colab
+
+## modelstore 0.0.3 ([November 2020](https://github.com/operatorai/modelstore/pull/9))
+
+**🆕  New functionality**
+
+Simplied the API to just requiring `upload()` (no more `create_archive()`).
+
+## modelstore 0.0.2 ([September 2020](https://github.com/operatorai/modelstore/pull/7))
+
+**🆕  New functionality**
+
+Added models: `transformers`, `tensorflow`
+
+Storage: downloading models via `download()`
+
+Extended support to Python 3.6, 3.7, 3.8
+
+Repo: added Github actions
+
+## modelstore 0.0.1b (September 2020)
+
+**🆕  First release!**
+
+Supports (and tested on) Python 3.7 only. ☢️
+
+Storage: GCP buckets, AWS S3 buckets, file systems. Upload only!
+
+Initial models: `catboost`, `keras`, `torch`, `sklearn`, `xgboost`
+
+Meta-data: Python runtime, user, dependency versions, git hash
