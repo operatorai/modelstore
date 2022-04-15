@@ -225,7 +225,7 @@ class BlobStorage(CloudStorage):
             if not is_valid_state_name(state_name):
                 raise ValueError(f"Cannot create state with name: '{state_name}'")
         if self.state_exists(state_name):
-            logger.info("Model state '%s' already exists", state_name)
+            logger.debug("Model state '%s' already exists", state_name)
             return  # Exception is not raised; create_model_state() is idempotent
         logger.debug("Creating model state: %s", state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -236,9 +236,8 @@ class BlobStorage(CloudStorage):
                     "state_name": state_name,
                 }
                 out.write(json.dumps(state_data))
-            self._push(
-                state_data_path, get_model_state_path(self.root_prefix, state_name)
-            )
+            state_path = get_model_state_path(self.root_prefix, state_name)
+            self._push(state_data_path, state_path)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """Adds the given model ID to the set that are in the state_name path"""
@@ -259,12 +258,22 @@ class BlobStorage(CloudStorage):
             self._push(local_model_path, model_state_path)
         logger.debug("Successfully set %s=%s to state=%s", domain, model_id, state_name)
 
-    def unset_model_state(self, domain: str, model_id: str, state_name: str):
+    def unset_model_state(
+        self,
+        domain: str,
+        model_id: str,
+        state_name: str,
+        modifying_reserved: bool = False,
+    ):
         """Removes the given model ID from the set that are in the state_name path"""
         if is_reserved_state(state_name):
-            # Reserved model states (e.g. 'deleted') cannot be undone
-            logger.debug("Cannot unset from model state '%s'", state_name)
-            return
+            # Reserved model states (e.g. 'deleted') cannot be undone by the user
+            # but they can be undone by modelstore, so we have an extra modifying_reserved
+            # flag that is not exposed in the ModelStore class to allow modelstore
+            # to do this
+            if not modifying_reserved:
+                logger.debug("Cannot unset from model state '%s'", state_name)
+                return
         if not self.state_exists(state_name):
             # Non-reserved states need to be created manually by modelstore users
             # before model states can be modified, to avoid creating states

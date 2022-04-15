@@ -83,7 +83,13 @@ def matching_managers(managers: list, **kwargs) -> List[ModelManager]:
 
 
 def get_manager(name: str, storage: CloudStorage = None) -> ModelManager:
-    manager = _LIBRARIES[name](storage)
+    if name == "keras":
+        # Older versions of modelstore (before 0.0.73) had separate
+        # managers for Keras and Tensorflow. Setting this explicitly
+        # here ensures that modelstore remains backward compatible
+        manager = TensorflowManager(storage)
+    else:
+        manager = _LIBRARIES[name](storage)
     if all(module_exists(x) for x in manager.required_dependencies()):
         return manager
     raise ValueError(

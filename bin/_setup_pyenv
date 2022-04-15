@@ -7,12 +7,14 @@ if [[ $(pyenv versions | grep -L $PYTHON_VERSION) ]]; then
     pyenv install $PYTHON_VERSION
 fi
 
-echo "\n ⏱  Creating a $PYTHON_VERSION environment: $1"
+VIRTUALENV_NAME="$1-${PYTHON_VERSION//./-}"
+
+echo "\n ⏱  Creating a $PYTHON_VERSION environment: $VIRTUALENV_NAME"
 env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" \
     pyenv virtualenv \
         --force $PYTHON_VERSION \
-        $1
-pyenv local $1
+        "$VIRTUALENV_NAME"
+pyenv local $VIRTUALENV_NAME
 
 pip install --upgrade pip setuptools wheel
 for i in ./requirements*txt; do

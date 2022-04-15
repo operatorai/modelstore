@@ -1,13 +1,13 @@
 from fastai.tabular.all import *
 from modelstore.model_store import ModelStore
 
-from libraries.util.datasets import load_diabetes_dataframe
+from libraries.util.datasets import load_regression_dataframe
 from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> TabularLearner:
     # Load the data
-    df = load_diabetes_dataframe()
+    df = load_regression_dataframe()
 
     # Train the model
     print(f"🤖  Training a fastai tabular learner...")
@@ -27,8 +27,8 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the fastai "{DIABETES_DOMAIN}" domain model={model_id}')
-    model = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f'⤵️  Loading the fastai "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
     # ... use for inference

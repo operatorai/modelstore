@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from libraries.util.datasets import load_diabetes_dataset
+from libraries.util.datasets import load_regression_dataset
 from libraries.util.domains import DIABETES_DOMAIN
 
 
@@ -36,15 +36,13 @@ class ExampleLightningNet(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters())
-        scheduler = torch.optim.lr_scheduler.StepLR(
-            optimizer, step_size=3, gamma=0.05
-        )
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.05)
         return [optimizer], [scheduler]
 
 
 def _train_example_model() -> ExampleLightningNet:
     # Load the data
-    X_train, X_test, y_train, y_test = load_diabetes_dataset(as_numpy=True)
+    X_train, X_test, y_train, y_test = load_regression_dataset(as_numpy=True)
     data_set = TensorDataset(X_test, y_test)
     val_dataloader = DataLoader(data_set)
 
@@ -74,14 +72,12 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(
-        f'⤵️  Loading the pytorch lightning "{DIABETES_DOMAIN}" domain model={model_id}'
-    )
-    model = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f'⤵️  Loading the pytorch lightning "{model_domain}" domain model={model_id}')
+    model = modelstore.load(model_domain, model_id)
     model.eval()
 
-    _, X_test, _, y_test = load_diabetes_dataset(as_numpy=True)
+    _, X_test, _, y_test = load_regression_dataset(as_numpy=True)
     results = mean_squared_error(y_test, model(X_test).detach().numpy())
     print(f"🔍  Loaded model MSE={results}.")

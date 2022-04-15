@@ -11,11 +11,14 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import pytest
+
 from modelstore.models import managers
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.pytorch_lightning import PyTorchLightningManager
 from modelstore.models.sklearn import SKLearnManager
+from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.xgboost import XGBoostManager
 
 
@@ -27,3 +30,34 @@ def test_iter_libraries():
     assert isinstance(mgrs["xgboost"], XGBoostManager)
     assert isinstance(mgrs["catboost"], CatBoostManager)
     assert isinstance(mgrs["pytorch_lightning"], PyTorchLightningManager)
+
+
+def test_matching_managers_empty_set():
+    with pytest.raises(ValueError):
+        managers.matching_managers([], model="none")
+
+
+def test_no_matching_managers():
+    libraries = [m for _, m in managers.iter_libraries()]
+    with pytest.raises(ValueError):
+        managers.matching_managers(libraries, model="none")
+
+
+def test_get_keras_manager():
+    # The keras manager was merged with the tensorflow one
+    # in modelstore==0.0.73; here we test explicitly that
+    # modelstore returns the TensorflowManager for
+    # backwards compatibility
+    manager = managers.get_manager("keras")
+    assert isinstance(manager, TensorflowManager)
+
+
+def test_get_manager():
+    for name, managerType in managers._LIBRARIES.items():
+        manager = managers.get_manager(name)
+        assert isinstance(manager, managerType)
+
+
+def test_get_unknown_manager():
+    with pytest.raises(KeyError):
+        managers.get_manager("an-unknown-library")

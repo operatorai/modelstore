@@ -77,7 +77,7 @@ class PyTorchLightningManager(ModelManager):
                 classes = [c for c in classes if c[0] == class_name]
                 if len(classes) == 1:
                     return classes[0][1]
-            except (ImportError, TypeError, ModuleNotFoundError):
+            except (ImportError, TypeError, ModuleNotFoundError, RuntimeError):
                 continue
         raise ValueError(f"Please import {class_name} before calling load()")
 

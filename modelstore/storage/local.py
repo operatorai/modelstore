@@ -43,7 +43,7 @@ class FileSystemStorage(BlobStorage):
         "optional": [],
     }
 
-    def __init__(self, root_dir: Optional[str] = None):
+    def __init__(self, root_dir: Optional[str] = None, create_directory: bool = False):
         super().__init__([], root_dir, "MODEL_STORE_ROOT_PREFIX")
         if self.root_prefix == "":
             raise Exception(
@@ -55,18 +55,24 @@ class FileSystemStorage(BlobStorage):
                 + " that this library usually appends. Is this intended?"
             )
         self.root_prefix = os.path.abspath(self.root_prefix)
+        self._create_directory = create_directory
 
     def validate(self) -> bool:
         """This validates that the directory exists and can be written to"""
         # pylint: disable=broad-except
         # Check that the directory exists & we can write to it
-        if not os.path.exists(self.root_prefix):
+        parent_dir = os.path.split(self.root_prefix)[0]
+
+        if not os.path.exists(parent_dir):
             raise Exception(
                 "Error: Parent directory to root dir '%s' does not exist",
-                self.root_prefix,
+                parent_dir,
             )
 
-        if not os.path.isdir(self.root_prefix):
+        if not os.path.isdir(self.root_prefix) and self._create_directory:
+            logger.debug("creating root directory %s", self.root_prefix)
+            os.mkdir(self.root_prefix)
+        else:
             raise Exception("Error: root_dir needs to be a directory")
 
         try:
@@ -157,17 +163,6 @@ class FileSystemStorage(BlobStorage):
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)
         return _read_json_file(path)
-
-    def state_exists(self, state_name: str) -> bool:
-        """Returns whether a model state with name state_name exists"""
-        if not is_valid_state_name(state_name):
-            return False
-        # @TODO this function can be removed once get_model_state_path
-        # doesn't need to be called with relative_dir()
-        state_path = self.relative_dir(
-            get_model_state_path(self.root_prefix, state_name)
-        )
-        return os.path.exists(state_path)
 
 
 def _read_json_file(path: str) -> dict:

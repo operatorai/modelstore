@@ -36,9 +36,12 @@ def test_generate_for_code():
     deps_list = ["pytest"]
     res = metadata.generate_for_code(deps_list)
     assert res["runtime"].startswith("python")
-    assert all(k in res for k in ["user", "created", "dependencies", "git"])
+    # Warning: not testing for presence of "git" key, as this is flaky
+    # when run via Github actions
+    assert all([k in res for k in ["user", "created", "dependencies"]])
     assert res["dependencies"]["pytest"] == pytest.__version__
-    assert res["git"]["repository"] == "modelstore"
+    if "git" in res:
+        assert res["git"]["repository"] == "modelstore"
 
 
 def test_generate():

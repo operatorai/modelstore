@@ -1,5 +1,3 @@
-import json
-
 import click
 
 from libraries import (
@@ -10,7 +8,8 @@ from libraries import (
     keras_example,
     lightgbm_example,
     mxnet_example,
-    onnx_example,
+    onnx_sklearn_example,
+    onnx_lightgbm_example,
     prophet_example,
     pytorch_example,
     pytorch_lightning_example,
@@ -35,7 +34,8 @@ EXAMPLES = {
     "keras": keras_example,
     "lightgbm": lightgbm_example,
     "mxnet": mxnet_example,
-    "onnx": onnx_example,
+    "onnx-sklearn": onnx_sklearn_example,
+    "onnx-lightgbm": onnx_lightgbm_example,
     "prophet": prophet_example,
     "pytorch": pytorch_example,
     "pytorch-lightning": pytorch_lightning_example,
@@ -69,15 +69,23 @@ def main(modelstore_in, ml_framework):
 
     # Create a model store instance
     modelstore = create_model_store(modelstore_in)
-
-    # Run the example: train and upload a model
     example = EXAMPLES[ml_framework]
-    meta_data = example.train_and_upload(modelstore)
 
-    # The upload returns meta-data about the model that was uploaded
-    # In this example, we just print it out to the terminal
-    print(f"✅  Finished uploading the {ml_framework} model!")
-    print(json.dumps(meta_data, indent=4))
+    # Demo how we train and upload a model
+    meta_data = example.train_and_upload(modelstore)
+    model_domain = meta_data["model"]["domain"]
+    model_id = meta_data["model"]["model_id"]
+    model_type = meta_data["model"]["model_type"]["library"]
+
+    print(f"✅  Finished uploading the {ml_framework} model! (detected: {model_type})")
+
+    # Demo how we can load the model back
+    example.load_and_test(modelstore, model_domain, model_id)
+    print(f"✅  Finished loading the {ml_framework} model!")
+
+    # Since this is a demo-only, the model is deleted
+    modelstore.delete_model(model_domain, model_id, skip_prompt=True)
+    print(f"✅  The {ml_framework} model has been deleted!")
 
 
 if __name__ == "__main__":

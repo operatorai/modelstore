@@ -1,6 +1,6 @@
 include ../Makefile-example
 
 .PHONY: run
-run:
+run: refresh
 	@./run-all.sh
 	

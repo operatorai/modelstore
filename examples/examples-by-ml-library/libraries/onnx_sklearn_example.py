@@ -1,17 +1,18 @@
 import numpy as np
 import onnx
 from modelstore.model_store import ModelStore
+
 from onnxruntime import InferenceSession
 from skl2onnx import to_onnx
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
-from libraries.util.datasets import load_diabetes_dataset
+from libraries.util.datasets import load_regression_dataset
 from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> onnx.ModelProto:
-    X_train, X_test, y_train, y_test = load_diabetes_dataset()
+    X_train, X_test, y_train, y_test = load_regression_dataset()
 
     print(f"🔍  Training a random forest regressor")
     clf = RandomForestRegressor(random_state=12)
@@ -39,13 +40,13 @@ def train_and_upload(modelstore: ModelStore) -> dict:
     return meta_data
 
 
-def load_and_test(modelstore: ModelStore, model_id: str):
+def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
-    print(f'⤵️  Loading the onnx "{DIABETES_DOMAIN}" domain model={model_id}')
-    sess = modelstore.load(DIABETES_DOMAIN, model_id)
+    print(f'⤵️  Loading the onnx "{model_domain}" domain model={model_id}')
+    sess = modelstore.load(model_domain, model_id)
 
     # Run some example predictions
-    _, X_test, _, y_test = load_diabetes_dataset()
+    _, X_test, _, y_test = load_regression_dataset()
     y_pred = sess.run(None, {"X": X_test.astype(np.float32)})[0]
     results = mean_squared_error(y_test, y_pred)
     print(f"🔍  Loaded model MSE={results}.")

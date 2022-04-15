@@ -17,6 +17,7 @@ from unittest import mock
 import pytest
 from google.cloud import storage
 from google.cloud.storage.blob import Blob
+from google.api_core.exceptions import NotFound
 from modelstore.storage.gcloud import GoogleCloudStorage
 
 # pylint: disable=unused-import
@@ -30,11 +31,13 @@ from tests.storage.test_utils import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 _MOCK_BUCKET_NAME = "gcloud-bucket"
+_MOCK_PROJECT_NAME = "project-name"
 
 
-def gcloud_bucket():
+def gcloud_bucket(bucket_exists: bool):
     mock_bucket = mock.create_autospec(storage.Bucket)
     mock_bucket.name = _MOCK_BUCKET_NAME
+    mock_bucket.exists.return_value = bucket_exists
     return mock_bucket
 
 
@@ -42,34 +45,42 @@ def gcloud_client(
     bucket_exists: bool,
     files_exist: bool,
     file_contents: str = TEST_FILE_CONTENTS,
+    anonymous: bool = False,
 ):
+    # Create a storage client
     mock_client = mock.create_autospec(storage.Client)
-    mock_buckets = []
-    if bucket_exists:
-        mock_bucket = gcloud_bucket()
-        mock_bucket.client = mock_client
+    mock_client.project = _MOCK_PROJECT_NAME if not anonymous else None
+
+    # Add a bucket to the client
+    mock_bucket = gcloud_bucket(bucket_exists)
+    if not anonymous:
         mock_client.get_bucket.return_value = mock_bucket
-        mock_buckets.append(mock_bucket)
+    else:
+        mock_client.bucket.return_value = mock_bucket
+
+    # If the bucket exists, add a file to it
+    if bucket_exists:
+        # mock_bucket.client = mock_client
 
         mock_blob = mock.create_autospec(storage.Blob)
         mock_blob.exists.return_value = files_exist
         if files_exist:
             mock_blob.download_as_string.return_value = file_contents
         mock_bucket.blob.return_value = mock_blob
-    mock_client.list_buckets.return_value = mock_buckets
+
     return mock_client
 
 
 def gcloud_storage(mock_client: storage.Client, bucket_name: str = _MOCK_BUCKET_NAME):
     return GoogleCloudStorage(
-        project_name="project-name",
+        project_name=_MOCK_PROJECT_NAME,
         bucket_name=bucket_name,
         client=mock_client,
     )
 
 
 def test_create_from_environment_variables(monkeypatch):
-    monkeypatch.setenv("MODEL_STORE_GCP_PROJECT", "project")
+    monkeypatch.setenv("MODEL_STORE_GCP_PROJECT", _MOCK_PROJECT_NAME)
     monkeypatch.setenv("MODEL_STORE_GCP_BUCKET", _MOCK_BUCKET_NAME)
     # Does not fail when environment variables exist
     try:
@@ -87,20 +98,18 @@ def test_create_fails_with_missing_environment_variables(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "bucket_exists,validate_should_pass",
+    "bucket_exists,anonymous,validate_should_pass",
     [
-        (
-            False,
-            False,
-        ),
-        (
-            True,
-            True,
-        ),
+        (False, False, False),
+        (True, False, True),
+        (False, True, False),
+        (True, True, True),
     ],
 )
-def test_validate(bucket_exists, validate_should_pass):
-    mock_client = gcloud_client(bucket_exists=bucket_exists, files_exist=False)
+def test_validate(bucket_exists, anonymous, validate_should_pass):
+    mock_client = gcloud_client(
+        bucket_exists=bucket_exists, files_exist=False, anonymous=anonymous
+    )
     storage = gcloud_storage(mock_client)
     assert storage.validate() == validate_should_pass
 
@@ -124,6 +133,17 @@ def test_push(tmp_path):
     mock_blob.upload_from_file.assert_called()
 
 
+def test_anonymous_push(tmp_path):
+    # Create a client
+    mock_client = gcloud_client(bucket_exists=True, files_exist=False, anonymous=True)
+    storage = gcloud_storage(mock_client)
+
+    # Push a file
+    prefix = remote_file_path()
+    with pytest.raises(NotImplementedError):
+        result = storage._push(temp_file(tmp_path), prefix)
+
+
 def test_pull(tmp_path):
     # Create a client
     mock_client = gcloud_client(bucket_exists=True, files_exist=True)
@@ -137,8 +157,27 @@ def test_pull(tmp_path):
     local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
     assert result == local_destination
 
-    #  Assert download happened
+    # Assert download happened
     mock_bucket = storage.client.get_bucket(storage.bucket_name)
+    mock_blob = mock_bucket.blob(prefix)
+    mock_blob.download_to_filename.assert_called_with(local_destination)
+
+
+def test_anonymous_pull(tmp_path):
+    # Create a client
+    mock_client = gcloud_client(bucket_exists=True, files_exist=True, anonymous=True)
+    storage = gcloud_storage(mock_client)
+
+    # Pull the file back from storage
+    prefix = remote_file_path()
+    result = storage._pull(prefix, tmp_path)
+
+    # Assert returned path
+    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
+    assert result == local_destination
+
+    # Assert download happened
+    mock_bucket = storage.client.bucket(storage.bucket_name)
     mock_blob = mock_bucket.blob(prefix)
     mock_blob.download_to_filename.assert_called_with(local_destination)
 
@@ -177,6 +216,16 @@ def test_remove(file_exists, should_call_delete):
     except:
         # Should fail gracefully here
         pytest.fail("Remove raised an exception")
+
+
+def test_anonymous_remove():
+    # Create a client
+    mock_client = gcloud_client(bucket_exists=True, files_exist=True, anonymous=True)
+    storage = gcloud_storage(mock_client)
+    prefix = remote_file_path()
+
+    with pytest.raises(NotImplementedError):
+        file_removed = storage._remove(prefix)
 
 
 def test_read_json_objects_ignores_non_json():

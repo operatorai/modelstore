@@ -88,10 +88,10 @@ class ModelStore:
         )
 
     @classmethod
-    def from_file_system(cls, root_directory: Optional[str] = None) -> "ModelStore":
+    def from_file_system(cls, root_directory: Optional[str] = None, create_directory: bool = False) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         the local file system."""
-        return ModelStore(storage=FileSystemStorage(root_directory))
+        return ModelStore(storage=FileSystemStorage(root_directory, create_directory))
 
     def __post_init__(self):
         if not self.storage.validate():
