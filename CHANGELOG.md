@@ -6,10 +6,11 @@
 
 `get_domain()` returns key meta data about a domain ([#141](https://github.com/operatorai/modelstore/pull/141))
 
-`delete_model()` delete models from `modelstore`. 
-- If the user attempts to query for a model after it has been deleted, `modelstore` will raise a `ModelDeletedException` ([#137](https://github.com/operatorai/modelstore/pull/137))
+`delete_model()` delete models from `modelstore`. If the user attempts to query for a model after it has been deleted, `modelstore` will raise a `ModelDeletedException` ([#137](https://github.com/operatorai/modelstore/pull/137))
 
 `list_model_states()` lists all of the existing model states ([#131](https://github.com/operatorai/modelstore/pull/131))
+
+You can optionally set a `model_id` when uploading a model ([#147](https://github.com/operatorai/modelstore/pull/147/)), thanks [@cdknorow](https://github.com/cdknorow)). 
 
 **🆕  Storage improvements**
 
@@ -19,7 +20,7 @@ Public, read-only Google Cloud Storage containers can now be read from using `mo
 
 Previously, any extra files you wanted to upload were uploaded separately to the model archive. Now, they are added into the archive in a subdirectory called "extras" so that you can easily download them back ([#139](https://github.com/operatorai/modelstore/pull/139)). I've also added an example of uploading a model with some additional files ([#138](https://github.com/operatorai/modelstore/pull/138)). 
 
-** 🐛  Bug fixes & general updates**
+**🐛  Bug fixes & general updates**
 
 Fixed a regression: `keras` models saved with an older version of `modelstore` couldn't be loaded ([#145](https://github.com/operatorai/modelstore/pull/145)).
 
