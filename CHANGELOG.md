@@ -10,7 +10,7 @@
 
 `list_model_states()` lists all of the existing model states ([#131](https://github.com/operatorai/modelstore/pull/131))
 
-You can optionally set a `model_id` when uploading a model ([#147](https://github.com/operatorai/modelstore/pull/147/)), thanks [@cdknorow](https://github.com/cdknorow)). 
+You can optionally set a `model_id` when uploading a model ([#147](https://github.com/operatorai/modelstore/pull/147/)), thanks [@cdknorow](https://github.com/cdknorow). 
 
 **🆕  Storage improvements**
 
