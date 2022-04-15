@@ -52,7 +52,7 @@ Merged the model managers for `keras` and `tensorflow` into one.
 
 **🆕  New functionality**
 
-Added support for uploading [unsetting model states](https://github.com/operatorai/modelstore/issues/82) - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who opened an issue about this.
+Added support for uploading unsetting model states ([#82](https://github.com/operatorai/modelstore/issues/82) - hat tip to [@erosenthal-square](https://github.com/erosenthal-square) who opened an issue about this).
 
 Added support for uploading [shap](https://shap.readthedocs.io/en/latest/generated/shap.Explainer.html) explainers.
 
