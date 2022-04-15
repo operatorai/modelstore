@@ -221,7 +221,7 @@ class ModelStore:
                 raise ModelExistsException(domain, model_id)
         except ModelDeletedException:
             # If a model has been deleted, then it _technically_ does not
-            # exist anymore and we allow a new models to replace it. To
+            # exist anymore and we allow a new model to replace it. To
             # ensure that meta-data remains consistent, we remove the model
             # from the 'deleted' state here before uploading the new model
             self.storage.unset_model_state(

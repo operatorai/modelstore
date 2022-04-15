@@ -146,7 +146,12 @@ def test_validate_kwargs(mock_manager):
 
 
 def test_upload(mock_manager):
-    mock_manager.upload(domain="model", model="model", config="config")
+    mock_manager.upload(
+        domain="test-domain",
+        model_id="test-model",
+        model="model",
+        config="config",
+    )
     assert mock_manager.storage.called
 
 
