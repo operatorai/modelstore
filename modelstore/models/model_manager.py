@@ -172,7 +172,12 @@ class ModelManager(ABC):
             shutil.move(result, archive_path)
         return archive_path
 
-    def upload(self, domain: str, model_id: str, **kwargs, ) -> dict:
+    def upload(
+        self,
+        domain: str,
+        model_id: str,
+        **kwargs,
+    ) -> dict:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model and uploads the archive to storage.
@@ -183,7 +188,6 @@ class ModelManager(ABC):
         _validate_domain(domain)
         self._validate_kwargs(**kwargs)
 
-    
         model_meta = metadata.generate_for_model(
             domain=domain,
             model_id=model_id,

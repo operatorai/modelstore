@@ -24,7 +24,7 @@ def missing_library_manager():
 
 def test_missing_dep_create(missing_library_manager):
     with pytest.raises(ModuleNotFoundError):
-        missing_library_manager.upload("test-domain")
+        missing_library_manager.upload("test-domain", "model-id")
 
 
 def test_missing_manager_matches_with(missing_library_manager):

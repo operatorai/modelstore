@@ -62,17 +62,18 @@ class FileSystemStorage(BlobStorage):
         # pylint: disable=broad-except
         # Check that the directory exists & we can write to it
         parent_dir = os.path.split(self.root_prefix)[0]
-
         if not os.path.exists(parent_dir):
             raise Exception(
                 "Error: Parent directory to root dir '%s' does not exist",
                 parent_dir,
             )
 
-        if not os.path.isdir(self.root_prefix) and self._create_directory:
+        if not os.path.exists(self.root_prefix):
+            if not self._create_directory:
+                raise Exception("Error: root_dir does not exist")
             logger.debug("creating root directory %s", self.root_prefix)
             os.mkdir(self.root_prefix)
-        else:
+        if not os.path.isdir(self.root_prefix):
             raise Exception("Error: root_dir needs to be a directory")
 
         try:
@@ -125,7 +126,7 @@ class FileSystemStorage(BlobStorage):
         if not os.path.exists(destination):
             logger.debug("Remote file does not exist: %s", destination)
             return False
-        os.remove(destination)        
+        os.remove(destination)
         return True
 
     def _read_json_objects(self, path: str) -> list:

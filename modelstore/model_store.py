@@ -14,11 +14,12 @@
 import os
 import tarfile
 import tempfile
-import uuid
 import warnings
 from dataclasses import dataclass
 from typing import Optional
 
+from modelstore.ids import model_ids
+from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.models.managers import iter_libraries, matching_managers, get_manager
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
@@ -26,7 +27,12 @@ from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.storage import CloudStorage
-from modelstore.utils.exceptions import ModelExistsException, ModelNotFoundException, FilePullFailedException
+from modelstore.utils.exceptions import (
+    ModelExistsException,
+    DomainNotFoundException,
+    ModelNotFoundException,
+    ModelDeletedException,
+)
 
 
 @dataclass(frozen=True)
@@ -88,7 +94,9 @@ class ModelStore:
         )
 
     @classmethod
-    def from_file_system(cls, root_directory: Optional[str] = None, create_directory: bool = False) -> "ModelStore":
+    def from_file_system(
+        cls, root_directory: Optional[str] = None, create_directory: bool = False
+    ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         the local file system."""
         return ModelStore(storage=FileSystemStorage(root_directory, create_directory))
@@ -178,28 +186,54 @@ class ModelStore:
         """Returns the meta-data for a given model"""
         return self.storage.get_meta_data(domain, model_id)
 
-    def upload(self, domain: str, model_id: Optional[uuid.uuid4]=None, **kwargs) -> dict:
+    def model_exists(self, domain: str, model_id: str) -> bool:
+        # @TODO: use head_object instead of full pull
+        try:
+            self.storage.get_meta_data(domain, model_id)
+            return True
+        except DomainNotFoundException:
+            # The domain does not exist, so the model
+            # does not exist either
+            return False
+        except ModelNotFoundException:
+            # The domain exists, but the model_id in that
+            # domain does not
+            return False
+
+    def upload(self, domain: str, model_id: Optional[str] = None, **kwargs) -> dict:
         """Creates an archive for a model (from the kwargs), uploads it
         to storage, and returns a dictionary of meta-data about the model"""
+        # Generate an ID and validate it -- if no model id is given, then modelstore
+        # defaults to using a uuid4 ID.
+        model_id = str(model_id) if model_id is not None else model_ids.new()
+        if not model_ids.validate(model_id):
+            raise ValueError(f"model_id='{model_id}' contains invalid characters")
+
         # Figure out which library the kwargs match with
-        managers = matching_managers(self._libraries, **kwargs)      
+        # We do this _before_ checking whether the model exists to raise
+        # catch if the kwargs aren't quite right before potentially modifying
+        # model state, below
+        managers = matching_managers(self._libraries, **kwargs)
 
-        # Meta-data about the model
-        if model_id is None:
-            model_id = str(uuid.uuid4())
-        else:            
-            model_id = str(model_id)         
-
-        if self.check_model_exists(domain, model_id) is True:
-            raise ModelExistsException(domain, model_id)   
+        try:
+            if self.model_exists(domain, model_id):
+                raise ModelExistsException(domain, model_id)
+        except ModelDeletedException:
+            # If a model has been deleted, then it _technically_ does not
+            # exist anymore and we allow a new model to replace it. To
+            # ensure that meta-data remains consistent, we remove the model
+            # from the 'deleted' state here before uploading the new model
+            self.storage.unset_model_state(
+                domain,
+                model_id,
+                ReservedModelStates.DELETED.value,
+                modifying_reserved=True,
+            )
 
         if len(managers) == 1:
             return managers[0].upload(domain, model_id=model_id, **kwargs)
-
-        # If we match on more than one manager (e.g., a model
-        # and an explainer)
+        # If we match on more than one manager (e.g., a model and an explainer)
         manager = MultipleModelsManager(managers, self.storage)
-
         return manager.upload(domain, model_id=model_id, **kwargs)
 
     def load(self, domain: str, model_id: str):
@@ -227,17 +261,3 @@ class ModelStore:
         """Deletes a model artifact from storage."""
         meta_data = self.get_model_info(domain, model_id)
         self.storage.delete_model(domain, model_id, meta_data, skip_prompt)
-
-
-    def check_model_exists(self, domain: str, model_id: str):
-        #TODO: use head_object instead of full pull 
-        
-        try:
-            self.storage.get_meta_data(domain, model_id)
-            return True
-        except ModelNotFoundException:
-            pass
-        except FilePullFailedException:
-            pass
-
-        return False
