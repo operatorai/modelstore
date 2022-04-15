@@ -1,29 +1,29 @@
 # Storage
-azure-core==1.22.1
-azure-storage-blob==12.9.0
-boto3==1.20.54
-google-cloud-storage==2.1.0
+azure-core==1.23.1
+azure-storage-blob==12.11.0
+boto3==1.21.41
+google-cloud-storage==2.3.0
 
 pystan==2.19.1.1 # required to be installed before prophet
 
 # Machine Learning
 annoy==1.17.0
-catboost==1.0.4
-fastai==2.2.7  # Note: 1.0.61 has different import paths!
-gensim==4.0.1
+catboost==1.0.5
+fastai==2.5.6  # Note: 1.0.61 has different import paths!
+gensim==4.1.2
 Keras-Preprocessing==1.1.2
-lightgbm==3.1.1
+lightgbm==3.3.2
 mxnet==1.8.0.post0
-onnx==1.10.1
-onnxruntime==1.8.1
+onnx==1.11.0
+onnxruntime==1.11.0
 prophet==1.0.1
-pytorch-lightning==1.5.10
-scikit-learn==0.24.2
+pytorch-lightning==1.6.1
+scikit-learn==1.0.2
 shap==0.40.0
-skl2onnx==1.9.2
-skorch==0.8.0
+skl2onnx==1.11.1
+skorch==0.11.0
 tensorflow==2.8.0
-torch==1.7.1
-torchvision==0.8.2
-transformers==4.9.2
-xgboost==1.4.2
+torch==1.11.0
+torchvision==0.12.0
+transformers==4.18.0
+xgboost==1.5.2
