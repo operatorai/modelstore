@@ -13,6 +13,9 @@
 #    limitations under the License.
 from functools import partial
 from unittest.mock import patch
+from pathlib import PosixPath
+import shutil
+import os
 
 import pytest
 from modelstore.model_store import ModelStore
@@ -58,7 +61,7 @@ def validate_library_attributes(store: ModelStore, allowed: list, not_allowed: l
         assert issubclass(type(mgr), ModelManager)
         assert isinstance(mgr, MissingDepManager)
         with pytest.raises(ModuleNotFoundError):
-            mgr.upload(domain="test", model="test")
+            mgr.upload(domain="test", model_id="model-id", model="test")
 
 
 @patch("modelstore.model_store.GoogleCloudStorage", autospec=True)
@@ -81,14 +84,52 @@ def test_from_gcloud_only_sklearn(mock_gcloud, libraries_without_sklearn):
     )
 
 
-def test_from_file_system(tmp_path):
-    store = ModelStore.from_file_system(root_directory=str(tmp_path))
+@pytest.mark.parametrize(
+    "should_create",
+    [
+        True,
+        False,
+    ],
+)
+def test_from_file_system_existing_root(tmp_path: PosixPath, should_create: bool):
+    store = ModelStore.from_file_system(
+        root_directory=str(tmp_path), create_directory=should_create
+    )
     assert isinstance(store.storage, FileSystemStorage)
     validate_library_attributes(store, allowed=_LIBRARIES, not_allowed=[])
 
 
+@pytest.mark.parametrize(
+    "should_create",
+    [
+        True,
+        False,
+    ],
+)
+def test_from_file_system_missing_root(should_create: bool):
+    root_directory = "unit-test"
+    assert not os.path.exists(root_directory)
+    if should_create:
+        store = ModelStore.from_file_system(
+            root_directory=root_directory, create_directory=should_create
+        )
+        assert os.path.exists(root_directory)
+        assert os.path.isdir(root_directory)
+        assert isinstance(store.storage, FileSystemStorage)
+        validate_library_attributes(store, allowed=_LIBRARIES, not_allowed=[])
+        # Clean up
+        shutil.rmtree(root_directory)
+    else:
+        with pytest.raises(Exception):
+            _ = ModelStore.from_file_system(
+                root_directory=root_directory, create_directory=should_create
+            )
+
+
 @patch("modelstore.model_store.iter_libraries", side_effect=iter_only_sklearn)
-def test_from_file_system_only_sklearn(_, libraries_without_sklearn, tmp_path):
+def test_from_file_system_only_sklearn(
+    _mock_iter_libraries, libraries_without_sklearn, tmp_path
+):
     store = ModelStore.from_file_system(root_directory=str(tmp_path))
     assert isinstance(store.storage, FileSystemStorage)
     validate_library_attributes(
@@ -96,7 +137,7 @@ def test_from_file_system_only_sklearn(_, libraries_without_sklearn, tmp_path):
     )
 
 
-def test_model_not_found(tmp_path):
+def test_model_not_found(tmp_path: PosixPath):
     store = ModelStore.from_file_system(root_directory=str(tmp_path))
     with pytest.raises(ModelNotFoundException):
         store.get_model_info("missing-domain", "missing-model")
