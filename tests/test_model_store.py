@@ -11,17 +11,46 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from pathlib import PosixPath
+from pathlib import PosixPath, Path
+import os
 
 import pytest
 from modelstore.model_store import ModelStore
 from modelstore.utils.exceptions import (
+    DomainNotFoundException,
     ModelNotFoundException,
     ModelNotFoundException,
 )
 
 
-def test_model_not_found(tmp_path: PosixPath):
-    store = ModelStore.from_file_system(root_directory=str(tmp_path))
+@pytest.fixture
+def model_store(tmp_path: PosixPath):
+    return ModelStore.from_file_system(root_directory=str(tmp_path))
+
+
+@pytest.fixture
+def model_file(tmp_path: PosixPath):
+    file_path = os.path.join(tmp_path, "model.txt")
+    Path(file_path).touch()
+    return file_path
+
+
+def test_model_not_found(model_store: ModelStore):
     with pytest.raises(ModelNotFoundException):
-        store.get_model_info("missing-domain", "missing-model")
+        model_store.get_model_info("missing-domain", "missing-model")
+
+
+def test_model_exists(model_store: ModelStore, model_file: str):
+    domain = "test-domain"
+    model_id = "test-model-id-1"
+
+    # No models = domain not found = model doesn't exist
+    assert not model_store.model_exists(domain, model_id)
+
+    # Domain exists, but the model does not
+    model_store.upload(domain, "test-model-id-2", model=model_file)
+    assert not model_store.model_exists(domain, model_id)
+
+    # Model exists
+    model_store.upload(domain, model_id, model=model_file)
+    assert model_store.model_exists(domain, model_id)

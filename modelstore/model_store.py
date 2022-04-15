@@ -14,7 +14,6 @@
 import os
 import tarfile
 import tempfile
-import uuid
 import warnings
 from dataclasses import dataclass
 from typing import Optional
