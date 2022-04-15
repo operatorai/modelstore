@@ -69,11 +69,10 @@ class FileSystemStorage(BlobStorage):
                 parent_dir,
             )
 
-        if not os.path.exists(self.root_prefix) and self._create_directory:
+        if not os.path.isdir(self.root_prefix) and self._create_directory:
             logger.debug("creating root directory %s", self.root_prefix)
             os.mkdir(self.root_prefix)
-
-        if not os.path.isdir(self.root_prefix):
+        else:
             raise Exception("Error: root_dir needs to be a directory")
 
         try:
@@ -108,6 +107,9 @@ class FileSystemStorage(BlobStorage):
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
+        if not os.path.exists(source):
+            raise FilePullFailedException(f"File {source} does not exist.")
+
         try:
             file_name = os.path.split(source)[1]
             shutil.copy(source, destination)
@@ -123,7 +125,7 @@ class FileSystemStorage(BlobStorage):
         if not os.path.exists(destination):
             logger.debug("Remote file does not exist: %s", destination)
             return False
-        os.remove(destination)
+        os.remove(destination)        
         return True
 
     def _read_json_objects(self, path: str) -> list:

@@ -17,7 +17,7 @@ import tarfile
 import tempfile
 import uuid
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 from modelstore.meta import metadata
@@ -172,7 +172,7 @@ class ModelManager(ABC):
             shutil.move(result, archive_path)
         return archive_path
 
-    def upload(self, domain: str, **kwargs) -> dict:
+    def upload(self, domain: str, model_id: str, **kwargs, ) -> dict:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model and uploads the archive to storage.
@@ -183,8 +183,7 @@ class ModelManager(ABC):
         _validate_domain(domain)
         self._validate_kwargs(**kwargs)
 
-        # Meta-data about the model
-        model_id = str(uuid.uuid4())
+    
         model_meta = metadata.generate_for_model(
             domain=domain,
             model_id=model_id,
