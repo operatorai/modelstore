@@ -15,10 +15,12 @@ import getpass
 import sys
 
 
-def get_python_version():
+def get_python_version() -> str:
+    """ Returns the current python version """
     vers = sys.version_info
     return ".".join(str(x) for x in [vers.major, vers.minor, vers.micro])
 
 
-def get_user():
+def get_user() -> str:
+    """ Returns the current user """
     return getpass.getuser()

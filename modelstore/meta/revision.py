@@ -29,12 +29,13 @@ def _repo_name(repo: "git.Repo") -> str:
     try:
         repo_url = repo.remotes.origin.url
         return repo_url.split(".git")[0].split("/")[-1]
-    except Exception as e:
-        logger.debug("error extracting git repo: %s", str(e))
+    except Exception as exc:
+        logger.debug("error extracting git repo: %s", str(exc))
         return ""
 
 
 def git_meta() -> dict:
+    """ Returns meta data about the current git repo """
     if not GIT_EXISTS:
         return {}
     # pylint: disable=broad-except
@@ -46,6 +47,6 @@ def git_meta() -> dict:
             "local_changes": repo.is_dirty(),
             "branch": repo.active_branch.name,
         }
-    except Exception as e:
-        logger.debug("error generating git meta-data: %s", str(e))
+    except Exception as exc:
+        logger.debug("error generating git meta-data: %s", str(exc))
         return None

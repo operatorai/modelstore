@@ -38,6 +38,10 @@ from modelstore.utils.exceptions import (
 @dataclass(frozen=True)
 class ModelStore:
 
+    """ ModelStore is the main object that encapsulates a 
+    model registry. To create a new model store, use one of the
+    ModelStore.from_ functions """
+
     # The backend provider, e.g. "gcloud"
     storage: CloudStorage
 
@@ -114,6 +118,7 @@ class ModelStore:
             libraries.append(manager)
         object.__setattr__(self, "_libraries", libraries)
 
+    # pylint: disable=pointless-string-statement
     """
     DOMAINS: a domain is a string that is used to group several models together
     (e.g., belonging to the same end usage). Domains are created automatically
@@ -134,9 +139,10 @@ class ModelStore:
     """
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
+        """ Lists the models in a domain (deprecated) """
         warnings.warn(
             "list_versions() is deprecated; use list_models()",
-            warnings.DeprecationWarning,
+            category=DeprecationWarning,
         )
         return self.list_models(domain, state_name)
 
@@ -187,6 +193,7 @@ class ModelStore:
         return self.storage.get_meta_data(domain, model_id)
 
     def model_exists(self, domain: str, model_id: str) -> bool:
+        """ Returns True if a model with the given id exists in the domain """
         # @TODO: use head_object instead of full pull
         try:
             self.storage.get_meta_data(domain, model_id)
@@ -213,6 +220,7 @@ class ModelStore:
         # We do this _before_ checking whether the model exists to raise
         # catch if the kwargs aren't quite right before potentially modifying
         # model state, below
+        # pylint: disable=no-member
         managers = matching_managers(self._libraries, **kwargs)
 
         try:

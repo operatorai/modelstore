@@ -23,7 +23,8 @@ def generate_for_model(
     model_info: dict,
     model_params: dict = None,
     model_data: dict = None,
-):
+) -> dict:
+    """ Generates the meta-data dict for a model """
     metadata = {
         "domain": domain,
         "model_id": model_id,
@@ -36,7 +37,8 @@ def generate_for_model(
     return metadata
 
 
-def generate_for_code(deps_list: dict):
+def generate_for_code(deps_list: dict) -> dict:
+    """ Generates the meta data for the code being run to create the model """
     versioned_deps = dependencies.get_dependency_versions(deps_list)
     metadata = {
         "runtime": f"python:{runtime.get_python_version()}",
@@ -54,7 +56,8 @@ def generate(
     model_meta: dict,
     storage_meta: dict,
     code_meta: dict,
-):
+) -> dict:
+    """ Combines all of the meta data into a single dictionary """
     return {
         "model": model_meta,
         "storage": storage_meta,

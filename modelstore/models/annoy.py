@@ -82,6 +82,7 @@ def _model_file_path(tmp_dir: str) -> str:
 
 
 def save_model(tmp_dir: str, model: "annoy.AnnoyIndex") -> str:
+    """ Saves an annoy index to file """
     file_path = _model_file_path(tmp_dir)
     logger.debug("Saving annoy model to %s", file_path)
     model.save(file_path)
