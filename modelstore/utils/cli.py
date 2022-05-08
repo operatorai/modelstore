@@ -45,9 +45,9 @@ class MessageStatus(Enum):
     associated color
     """
 
-    Sucess: str = "green"
-    Failure: str = "red"
-    Info: str = "blue"
+    SUCCESS: str = "green"
+    FAILURE: str = "red"
+    INFO: str = "blue"
 
 
 def _echo(message: str, status: MessageStatus):
@@ -55,18 +55,23 @@ def _echo(message: str, status: MessageStatus):
 
 
 def success(message: str):
-    _echo(message, MessageStatus.Sucess)
+    """Echos a message in green"""
+    _echo(message, MessageStatus.SUCCESS)
 
 
 def failure(message: str):
-    _echo(message, MessageStatus.Failure)
+    """Echos a message in red"""
+    _echo(message, MessageStatus.FAILURE)
 
 
 def info(message: str):
-    _echo(message, MessageStatus.Info)
+    """Echos a message in blue"""
+    _echo(message, MessageStatus.INFO)
 
 
 def assert_environ_exists(storage_type: str, keys: dict):
+    """Checks that environment variables that are required to use the modelstore CLI
+    are set. If not, logs the failure and exits."""
     missing_required_keys = [k for k in keys.get("required", []) if k not in os.environ]
     missing_optional_keys = [k for k in keys.get("optional", []) if k not in os.environ]
     if len(missing_required_keys) != 0:
@@ -81,6 +86,7 @@ def assert_environ_exists(storage_type: str, keys: dict):
 
 
 def model_store_from_env() -> ModelStore:
+    """Builds a modelstore instance from environment variables."""
     if "MODEL_STORE_STORAGE" not in os.environ:
         failure("❌  No value for MODEL_STORE_STORAGE set in os.environ")
         sys.exit(1)

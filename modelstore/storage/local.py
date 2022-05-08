@@ -21,9 +21,7 @@ from typing import Optional
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
-    get_model_state_path,
 )
-from modelstore.storage.states.model_states import is_valid_state_name
 from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
@@ -64,8 +62,7 @@ class FileSystemStorage(BlobStorage):
         parent_dir = os.path.split(self.root_prefix)[0]
         if not os.path.exists(parent_dir):
             raise Exception(
-                "Error: Parent directory to root dir '%s' does not exist",
-                parent_dir,
+                f"Error: Parent directory to root dir '{parent_dir}' does not exist"
             )
 
         if not os.path.exists(self.root_prefix):
@@ -115,8 +112,8 @@ class FileSystemStorage(BlobStorage):
             file_name = os.path.split(source)[1]
             shutil.copy(source, destination)
             return os.path.join(os.path.abspath(destination), file_name)
-        except FileNotFoundError as e:
-            raise FilePullFailedException(e)
+        except FileNotFoundError as exc:
+            raise FilePullFailedException(exc) from exc
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
@@ -144,6 +141,8 @@ class FileSystemStorage(BlobStorage):
         return sorted_by_created(results)
 
     def relative_dir(self, file_path: str) -> str:
+        """Returns the file_path, relative to the root_prefix for
+        this local file system storage"""
         paths = os.path.split(file_path)
         parent_dir = os.path.join(self.root_prefix, paths[0])
         if not os.path.exists(parent_dir):

@@ -120,8 +120,8 @@ class AzureBlobStorage(BlobStorage):
             with open(target, "wb") as download_file:
                 download_file.write(blob_client.download_blob().readall())
             return target
-        except ResourceNotFoundError as e:
-            raise FilePullFailedException(e)
+        except ResourceNotFoundError as exc:
+            raise FilePullFailedException(exc) from exc
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""

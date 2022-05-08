@@ -33,6 +33,7 @@ from transformers.file_utils import CONFIG_NAME
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture

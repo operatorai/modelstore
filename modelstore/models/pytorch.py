@@ -58,7 +58,7 @@ class PyTorchManager(ModelManager):
             # we therefore check specifically for this case
             return isinstance(kwargs.get("model"), LightningModule)
         except (ImportError, ValueError):
-            False
+            return False
 
     def _is_transformers(self, **kwargs) -> bool:
         try:
@@ -70,15 +70,15 @@ class PyTorchManager(ModelManager):
             # we therefore check specifically for this case
             return isinstance(kwargs.get("model"), transformers.PreTrainedModel)
         except (ImportError, ValueError):
-            False
+            return False
 
     def matches_with(self, **kwargs) -> bool:
-        # pylint: disable=import-outside-toplevel
         if self._is_pytorch_lightning(**kwargs):
             return False
         if self._is_transformers(**kwargs):
             return False
 
+        # pylint: disable=import-outside-toplevel
         import torch
 
         if isinstance(kwargs.get("model"), torch.nn.Module):

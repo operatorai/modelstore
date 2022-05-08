@@ -21,6 +21,8 @@ from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.xgboost import XGBoostManager
 
+# pylint: disable=missing-function-docstring
+
 
 def test_iter_libraries():
     mgrs = {library: manager for library, manager in managers.iter_libraries()}

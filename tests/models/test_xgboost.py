@@ -16,10 +16,13 @@ import os
 import pytest
 import xgboost as xgb
 from modelstore.models import xgboost
+
+# pylint: disable=unused-import
 from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture

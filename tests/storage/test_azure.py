@@ -29,7 +29,6 @@ from modelstore.storage.azure import AzureBlobStorage
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_LIST,
-    TEST_FILE_NAME,
     file_contains_expected_contents,
     remote_file_path,
     remote_path,
@@ -39,6 +38,7 @@ from tests.storage.test_utils import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 # pylint: disable=no-member
+# pylint: disable=missing-function-docstring
 _MOCK_CONTAINER_NAME = "existing-container"
 
 

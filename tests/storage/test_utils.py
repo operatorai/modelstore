@@ -15,6 +15,7 @@ import json
 import os
 
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 TEST_FILE_NAME = "test-file.txt"
 TEST_FILE_CONTENTS = json.dumps({"k": "v"})
 TEST_FILE_LIST = [f"test-file-{i}.json" for i in range(3)]

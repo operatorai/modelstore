@@ -19,20 +19,19 @@ import numpy as np
 import pandas as pd
 import pytest
 from modelstore.models.common import save_joblib
-from modelstore.models.sklearn import (
-    MODEL_JOBLIB,
-    SKLearnManager,
-    _feature_importances,
-)
+from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+# pylint: disable=unused-import
 from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -78,9 +77,7 @@ def sklearn_manager():
             {"library": "sklearn", "type": "LogisticRegression"},
         ),
         (
-            partial(
-                Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]
-            ),
+            partial(Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]),
             {"library": "sklearn", "type": "Pipeline"},
         ),
     ],
@@ -98,10 +95,7 @@ def test_model_info(sklearn_manager, model_type, expected):
     ],
 )
 def test_is_same_library(sklearn_manager, ml_library, should_match):
-    assert (
-        sklearn_manager._is_same_library({"library": ml_library})
-        == should_match
-    )
+    assert sklearn_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(sklearn_manager, sklearn_tree):
@@ -163,9 +157,7 @@ def test_get_params_from_pipeline(sklearn_manager):
 
 def test_feature_importances_tree_model(sklearn_tree, classification_data):
     X_train, y_train = classification_data
-    df = pd.DataFrame(
-        X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])]
-    )
+    df = pd.DataFrame(X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])])
     sklearn_tree.fit(df, y_train)
     exp = dict(zip(df, sklearn_tree.feature_importances_))
     res = _feature_importances(sklearn_tree, df)
@@ -174,9 +166,7 @@ def test_feature_importances_tree_model(sklearn_tree, classification_data):
 
 def test_feature_importances_pipeline(sklearn_pipeline, classification_data):
     X_train, y_train = classification_data
-    df = pd.DataFrame(
-        X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])]
-    )
+    df = pd.DataFrame(X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])])
     sklearn_pipeline.fit(df, y_train)
     exp = {"regressor": sklearn_pipeline.steps[1][1].feature_importances_}
     res = _feature_importances(sklearn_pipeline, df)

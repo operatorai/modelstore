@@ -11,13 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import Any
 import os
 import shutil
 import tarfile
 import tempfile
-import uuid
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Any, Optional
 
 import numpy as np
 from modelstore.meta import metadata
@@ -87,8 +86,7 @@ class ModelManager(ABC):
     @abstractmethod
     def load(self, model_path: str, meta_data: dict) -> Any:
         """
-        Loads a model, stored in model_path,
-        back into memory
+        Loads a model, stored in model_path, back into memory
         """
         raise NotImplementedError()
 

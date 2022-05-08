@@ -17,7 +17,6 @@ from unittest import mock
 import pytest
 from google.cloud import storage
 from google.cloud.storage.blob import Blob
-from google.api_core.exceptions import NotFound
 from modelstore.storage.gcloud import GoogleCloudStorage
 
 # pylint: disable=unused-import
@@ -30,6 +29,7 @@ from tests.storage.test_utils import (
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
+# pylint: disable=missing-function-docstring
 _MOCK_BUCKET_NAME = "gcloud-bucket"
 _MOCK_PROJECT_NAME = "project-name"
 

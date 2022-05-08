@@ -18,8 +18,7 @@ import pytest
 import git
 from modelstore.meta import revision
 
-# pylint: disable=protected-access
-# pylint: disable=bare-except
+# pylint: disable=protected-access,missing-function-docstring,bare-except
 
 
 def test_repo_name():

@@ -31,6 +31,8 @@ from tests.storage.test_utils import (
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
+# pylint: disable=missing-function-docstring
+
 _MOCK_BUCKET_NAME = "existing-bucket"
 
 
@@ -54,6 +56,7 @@ def get_file_contents(moto_boto, prefix):
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     monkeypatch.setenv("MODEL_STORE_AWS_BUCKET", _MOCK_BUCKET_NAME)
+    # pylint: disable=bare-except
     try:
         _ = AWSStorage()
     except:
@@ -137,6 +140,7 @@ def test_remove(tmp_path, file_exists, should_call_delete):
     if file_exists:
         storage._push(temp_file(tmp_path), remote_destination)
 
+    # pylint: disable=bare-except
     try:
         assert storage._remove(remote_destination) == should_call_delete
     except:

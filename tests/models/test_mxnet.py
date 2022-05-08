@@ -11,18 +11,21 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import pytest
 import os
 import warnings
 
 import mxnet as mx
 import numpy as np
-import pytest
-from modelstore.models import mxnet
 from mxnet.gluon import nn
+
+from modelstore.models import mxnet
 
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+
+
 def random_x():
     y = np.random.rand(10, 10)
     return mx.ndarray.array(y)
@@ -58,9 +61,7 @@ def test_model_info(mxnet_manager, mxnet_model):
     ],
 )
 def test_is_same_library(mxnet_manager, ml_library, should_match):
-    assert (
-        mxnet_manager._is_same_library({"library": ml_library}) == should_match
-    )
+    assert mxnet_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(mxnet_manager, mxnet_model):

@@ -78,10 +78,7 @@ def test_model_info(prophet_manager, prophet_model):
     ],
 )
 def test_is_same_library(prophet_manager, ml_library, should_match):
-    assert (
-        prophet_manager._is_same_library({"library": ml_library})
-        == should_match
-    )
+    assert prophet_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(prophet_manager, prophet_model):

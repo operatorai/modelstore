@@ -22,7 +22,6 @@ from modelstore.utils.exceptions import DomainNotFoundException
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
-    TEST_FILE_CONTENTS,
     TEST_FILE_NAME,
     file_contains_expected_contents,
     remote_file_path,
@@ -32,6 +31,7 @@ from tests.storage.test_utils import (
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture

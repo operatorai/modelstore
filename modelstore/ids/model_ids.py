@@ -59,5 +59,5 @@ def validate(model_id: str) -> bool:
     matches = [x for x in _RESERVED_CHARACTERS if x in model_id]
     if len(matches) == 0:
         return True
-    logger.info(f"Model id contains reserved characters: {matches}")
+    logger.info("Model id contains reserved characters: %s", matches)
     return False

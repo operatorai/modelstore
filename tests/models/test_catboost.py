@@ -18,17 +18,16 @@ import catboost as ctb
 import numpy as np
 import pytest
 from modelstore.models import catboost
+
+# pylint: disable=unused-import
 from tests.models.utils import classification_data
 
-# pylint: disable=protected-access
-# pylint: disable=redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
 
 
 @pytest.fixture
 def catb_model(tmpdir, classification_data):
-    model = ctb.CatBoostClassifier(
-        loss_function="MultiClass", train_dir=str(tmpdir)
-    )
+    model = ctb.CatBoostClassifier(loss_function="MultiClass", train_dir=str(tmpdir))
     X_train, y_train = classification_data
     model.fit(X_train, y_train)
     return model
@@ -53,9 +52,7 @@ def test_model_info(catb_manager, catb_model):
     ],
 )
 def test_is_same_library(catb_manager, ml_library, should_match):
-    assert (
-        catb_manager._is_same_library({"library": ml_library}) == should_match
-    )
+    assert catb_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(catb_manager, catb_model):
@@ -120,9 +117,7 @@ def test_dump_attributes(catb_model, tmp_path):
 def test_load_model(tmp_path, catb_manager, catb_model):
     # Save the model to a tmp directory
     model_path = catboost.save_model(tmp_path, catb_model, fmt="cbm")
-    assert model_path == os.path.join(
-        tmp_path, catboost._MODEL_PREFIX.format("cbm")
-    )
+    assert model_path == os.path.join(tmp_path, catboost._MODEL_PREFIX.format("cbm"))
 
     #  Load the model
     loaded_model = catb_manager.load(
@@ -137,5 +132,5 @@ def test_load_model(tmp_path, catb_manager, catb_model):
     )
 
     # Expect the two to be the same
-    assert type(loaded_model) == type(catb_model)
+    assert isinstance(loaded_model, type(catb_model))
     assert loaded_model.get_params() == catb_model.get_params()

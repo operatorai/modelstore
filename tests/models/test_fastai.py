@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from fastai.callback.schedule import fit_one_cycle
+
 from fastai.learner import load_learner
 from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import TabularLearner, tabular_learner
@@ -26,6 +26,9 @@ from modelstore.models.fastai import (
     _export_model,
     _save_model,
 )
+
+# pylint: disable=unused-import
+from fastai.callback.schedule import fit_one_cycle
 from tests.models.utils import (
     classification_data,
     classification_df,
@@ -41,9 +44,7 @@ from tests.models.utils import (
 
 @pytest.fixture
 def fai_dl(classification_df, tmp_path):
-    return TabularDataLoaders.from_df(
-        classification_df, path=tmp_path, y_names=["y"]
-    )
+    return TabularDataLoaders.from_df(classification_df, path=tmp_path, y_names=["y"])
 
 
 @pytest.fixture

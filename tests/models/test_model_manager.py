@@ -23,6 +23,7 @@ from modelstore.storage.local import FileSystemStorage
 # pylint: disable=protected-access
 # pylint: disable=missing-class-docstring
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 class MockCloudStorage(FileSystemStorage):

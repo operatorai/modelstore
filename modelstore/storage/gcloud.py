@@ -26,7 +26,7 @@ from modelstore.utils.exceptions import FilePullFailedException
 
 try:
     from google.auth.exceptions import DefaultCredentialsError
-    from google.api_core.exceptions import NotFound, BadRequest
+    from google.api_core.exceptions import NotFound
     from google.cloud import storage
     from google.api_core.exceptions import NotFound
 
@@ -79,6 +79,7 @@ class GoogleCloudStorage(BlobStorage):
 
     @property
     def client(self) -> "storage.Client":
+        """Returns a gcloud storage client"""
         if not GCLOUD_EXISTS:
             raise ImportError("Please install google-cloud-storage")
 
@@ -113,6 +114,8 @@ class GoogleCloudStorage(BlobStorage):
 
     @property
     def is_read_only(self) -> bool:
+        """A storage bucket is read only if the project is None; in this
+        case modelstore can download models, but can't upload them."""
         return self.client.project is None
 
     @property
@@ -127,7 +130,8 @@ class GoogleCloudStorage(BlobStorage):
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
         if not self.bucket.exists():
             logger.error(
-                f"Bucket '{self.bucket_name}' does not exist or is not accessible for your client."
+                "Bucket '%s' does not exist or is not accessible for your client.",
+                self.bucket_name,
             )
             return False
         return True
@@ -157,8 +161,8 @@ class GoogleCloudStorage(BlobStorage):
             blob = self.bucket.blob(source)
             blob.download_to_filename(destination)
             return destination
-        except NotFound as e:
-            raise FilePullFailedException(e)
+        except NotFound as exc:
+            raise FilePullFailedException(exc) from exc
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""

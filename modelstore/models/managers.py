@@ -76,6 +76,8 @@ def iter_libraries(storage: CloudStorage = None) -> Iterator[ModelManager]:
 
 
 def matching_managers(managers: list, **kwargs) -> List[ModelManager]:
+    """Returns the list of model managers that match with the given
+    set of kwargs"""
     managers = [m for m in managers if m.matches_with(**kwargs)]
     if len(managers) == 0:
         raise ValueError("could not find matching manager")
@@ -83,6 +85,7 @@ def matching_managers(managers: list, **kwargs) -> List[ModelManager]:
 
 
 def get_manager(name: str, storage: CloudStorage = None) -> ModelManager:
+    """Returns a model manager, given a name"""
     if name == "keras":
         # Older versions of modelstore (before 0.0.73) had separate
         # managers for Keras and Tensorflow. Setting this explicitly
@@ -92,6 +95,4 @@ def get_manager(name: str, storage: CloudStorage = None) -> ModelManager:
         manager = _LIBRARIES[name](storage)
     if all(module_exists(x) for x in manager.required_dependencies()):
         return manager
-    raise ValueError(
-        "could not create manager for %s: dependencies not installed", name
-    )
+    raise ValueError(f"could not create manager for {name}: dependencies not installed")

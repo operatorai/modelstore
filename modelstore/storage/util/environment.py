@@ -15,9 +15,7 @@ import os
 from typing import Optional
 
 
-def get_value(
-    arg: str, env_key: str, allow_missing: bool = False
-) -> Optional[str]:
+def get_value(arg: str, env_key: str, allow_missing: bool = False) -> Optional[str]:
     """Modelstore storage can optionally be instantiated using
     environment variables. This function is used to decide whether to
     - pull a variable from the user's environment;
