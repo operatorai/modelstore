@@ -14,6 +14,7 @@
 
 
 def convert_tensors(model_params):
+    """Converts torch.Tensor types to numpy types"""
     import torch
 
     if isinstance(model_params, torch.Tensor):
@@ -29,6 +30,7 @@ def convert_tensors(model_params):
 
 
 def convert_numpy(model_params):
+    """Converts numpy types to json serializable types"""
     import numpy as np
 
     if isinstance(model_params, np.ndarray):

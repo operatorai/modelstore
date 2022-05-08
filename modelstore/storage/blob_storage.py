@@ -11,16 +11,16 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import json
-import os
-import tempfile
-import click
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
 from typing import Optional
 
+import json
+import os
+import tempfile
+import click
+
 from modelstore.storage.storage import CloudStorage
-from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
     get_archive_path,
@@ -183,11 +183,12 @@ class BlobStorage(CloudStorage):
         return [d["model"]["domain"] for d in domains]
 
     def get_domain(self, domain: str) -> dict:
+        """Returns the meta data for a given domain"""
         remote_path = get_domain_path(self.root_prefix, domain)
         try:
             return self._pull_and_load(remote_path)
-        except FilePullFailedException:
-            raise DomainNotFoundException(domain)
+        except FilePullFailedException as exc:
+            raise DomainNotFoundException(domain) from exc
 
     def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
@@ -333,7 +334,7 @@ class BlobStorage(CloudStorage):
         remote_path = self._get_metadata_path(domain, model_id)
         try:
             return self._pull_and_load(remote_path)
-        except FilePullFailedException:
+        except FilePullFailedException as exc:
             logger.debug("Failed to pull: %s", remote_path)
             # A meta-data file may not be downloaded if:
             # 1. The domain does not exist (e.g., typo)
@@ -346,6 +347,6 @@ class BlobStorage(CloudStorage):
                     domain, model_id, ReservedModelStates.DELETED.value
                 )
                 self._pull_and_load(remote_path)
-                raise ModelDeletedException(domain, model_id)
+                raise ModelDeletedException(domain, model_id) from exc
             except FilePullFailedException:
-                raise ModelNotFoundException(domain, model_id)
+                raise ModelNotFoundException(domain, model_id) from exc

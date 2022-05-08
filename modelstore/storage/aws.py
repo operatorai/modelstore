@@ -98,10 +98,10 @@ class AWSStorage(BlobStorage):
             destination = os.path.join(destination, file_name)
             self.client.download_file(self.bucket_name, source, destination)
             return destination
-        except ClientError as e:
-            if int(e.response["Error"]["Code"]) == 404:
-                raise FilePullFailedException(e)
-            raise e
+        except ClientError as exc:
+            if int(exc.response["Error"]["Code"]) == 404:
+                raise FilePullFailedException(exc) from exc
+            raise exc
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
@@ -110,8 +110,8 @@ class AWSStorage(BlobStorage):
             logger.debug("Deleting: %s...", destination)
             self.client.delete_object(Bucket=self.bucket_name, Key=destination)
             return True
-        except ClientError as e:
-            if int(e.response["Error"]["Code"]) == 404:
+        except ClientError as exc:
+            if int(exc.response["Error"]["Code"]) == 404:
                 logger.debug("Remote file does not exist: %s", destination)
                 return False
             raise

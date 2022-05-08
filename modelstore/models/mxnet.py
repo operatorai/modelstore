@@ -83,14 +83,18 @@ class MxnetManager(ModelManager):
 
 
 def model_file_path(parent_dir: str) -> str:
+    """Returns the path to the model file in parent_dir"""
     return os.path.join(parent_dir, MODEL_FILE)
 
 
 def params_file_path(parent_dir: str, epoch: int) -> str:
+    """Returns the path to the params file for #epoch in parent_dir"""
     return os.path.join(parent_dir, PARAMS_FILE.format(f"{epoch:04d}"))
 
 
 def save_model(tmp_dir: str, model: "nn.HybridBlock", epoch: int) -> str:
+    """Saves the model in tmp_dir"""
+
     # model.export() stores files in the current directory, so we chdir()
     # to the target directory where we want the files saved
     cwd = os.getcwd()

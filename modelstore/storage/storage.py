@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Optional, Union
+from typing import Optional
 
 from modelstore.meta.dependencies import module_exists
 

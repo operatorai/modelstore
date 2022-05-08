@@ -15,8 +15,6 @@ import os
 from datetime import datetime
 from typing import Optional
 
-from modelstore.utils.log import logger
-
 MODELSTORE_ROOT_PREFIX = "operatorai-model-store"
 
 # @TODO move into blob_storage / override in local

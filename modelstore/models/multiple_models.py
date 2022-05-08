@@ -38,6 +38,7 @@ class MultipleModelsManager(ModelManager):
     def _required_kwargs(self) -> list:
         requirements = []
         for manager in self.managers:
+            # pylint: disable=protected-access
             requirements += manager._required_kwargs()
         return list(set(requirements))
 
@@ -56,18 +57,21 @@ class MultipleModelsManager(ModelManager):
     def _get_functions(self, **kwargs) -> list:
         functions = []
         for manager in self.managers:
+            # pylint: disable=protected-access
             functions += manager._get_functions(**kwargs)
         return functions
 
     def _model_info(self, **kwargs) -> dict:
-        """ Returns meta-data about the model's type """
+        """Returns meta-data about the model's type"""
         return {
             "library": self.ml_library,
+            # pylint: disable=protected-access
             "models": [manager._model_info(**kwargs) for manager in self.managers],
         }
 
     def _get_params(self, **kwargs) -> dict:
         return {
+            # pylint: disable=protected-access
             manager.ml_library: manager._get_params(**kwargs)
             for manager in self.managers
         }

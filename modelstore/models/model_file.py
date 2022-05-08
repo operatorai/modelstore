@@ -84,6 +84,8 @@ class ModelFileManager(ModelManager):
 
 
 def copy_file(tmp_dir, source) -> str:
+    """Copies a file from source to tmp_dir with the
+    same file name"""
     destination = os.path.join(
         tmp_dir,
         os.path.split(source)[1],

@@ -11,12 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-
 import logging
 import sys
 
 
 def get_logger():
+    """Builds the modelstore logger"""
     log = logging.getLogger(name="modelstore")
     formatter = logging.Formatter("%(asctime)s - %(message)s")
     handler = logging.StreamHandler(sys.stdout)

@@ -11,8 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any, Optional
-import uuid
+from typing import Any
 
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -33,7 +32,7 @@ class MissingDepManager(ModelManager):
         super().__init__(self.NAME, storage)
         self.library = library
 
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return []
 
     def matches_with(self, **kwargs) -> bool:
@@ -54,7 +53,7 @@ class MissingDepManager(ModelManager):
     def _model_data(self, **kwargs) -> dict:
         return None
 
-    def upload(self, domain: str,  model_id: str, **kwargs) -> str:
+    def upload(self, domain: str, model_id: str, **kwargs) -> str:
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")

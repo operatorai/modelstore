@@ -80,8 +80,9 @@ def _model_file_path(tmp_dir: str) -> str:
 
 
 def save_model(tmp_dir: str, model: "onnx.ModelProto") -> str:
+    """Saves the onnx model in tmp_dir"""
     file_path = _model_file_path(tmp_dir)
     logger.debug("Saving onnx model to %s", file_path)
-    with open(file_path, "wb") as f:
-        f.write(model.SerializeToString())
+    with open(file_path, "wb") as model_file:
+        model_file.write(model.SerializeToString())
     return file_path

@@ -14,25 +14,39 @@
 
 
 class FilePullFailedException(Exception):
+    """Raised when modelstore was unable to download a file"""
+
     def __init__(self, base_exception: Exception):
         super().__init__()
         self.base_exception = base_exception
 
 
 class ModelDeletedException(Exception):
+    """Raised when a modelstore user tries to download a model
+    that has been deleted."""
+
     def __init__(self, domain: str, model_id: str):
         super().__init__(f"model='{model_id}' has been deleted from domain='{domain}'")
 
 
 class ModelNotFoundException(Exception):
+    """Raised when a modelstore user tries to download a model
+    that does not exist in the given domain."""
+
     def __init__(self, domain: str, model_id: str):
         super().__init__(f"model='{model_id}' does not exist in domain='{domain}'.")
 
 
 class DomainNotFoundException(Exception):
+    """Raised when a modelstore user tries to retrieve/amend a domain
+    that does not exist."""
+
     def __init__(self, domain: str):
         super().__init__(f"The domain='{domain}' does not exist.")
 
+
 class ModelExistsException(Exception):
+    """Raised when a modelstore user tries to upload a model that already exists"""
+
     def __init__(self, domain: str, model_id: str):
         super().__init__(f"model='{model_id}' already exists in this domain={domain}.")
