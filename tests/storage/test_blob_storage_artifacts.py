@@ -24,6 +24,8 @@ from modelstore.utils.exceptions import (
     ModelDeletedException,
 )
 
+# pylint: disable=missing-function-docstring
+
 
 @pytest.fixture
 def mock_blob_storage(tmp_path):

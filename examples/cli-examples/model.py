@@ -1,10 +1,12 @@
 import joblib
 import numpy as np
-from modelstore.utils.cli import info
+
 from sklearn.datasets import load_diabetes
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
+
+from modelstore.utils.cli import info
 
 
 def train_and_save():

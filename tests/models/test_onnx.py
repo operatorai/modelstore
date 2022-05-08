@@ -28,6 +28,7 @@ from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -73,9 +74,7 @@ def test_model_info(onnx_manager, onnx_model):
     ],
 )
 def test_is_same_library(onnx_manager, ml_library, should_match):
-    assert (
-        onnx_manager._is_same_library({"library": ml_library}) == should_match
-    )
+    assert onnx_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(onnx_manager, onnx_model):

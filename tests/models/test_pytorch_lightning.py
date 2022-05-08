@@ -88,9 +88,7 @@ def lightning_manager():
     return PyTorchLightningManager()
 
 
-def assert_models_equal(
-    model_a: pl.LightningModule, module_b: pl.LightningModule
-):
+def assert_models_equal(model_a: pl.LightningModule, module_b: pl.LightningModule):
     for a_params, lb_params in zip(model_a.parameters(), module_b.parameters()):
         assert a_params.data.ne(lb_params.data).sum() == 0
 
@@ -109,10 +107,7 @@ def test_model_info(lightning_manager, lightning_model):
     ],
 )
 def test_is_same_library(lightning_manager, ml_library, should_match):
-    assert (
-        lightning_manager._is_same_library({"library": ml_library})
-        == should_match
-    )
+    assert lightning_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(lightning_manager, lightning_model):

@@ -17,8 +17,7 @@ from tempfile import TemporaryDirectory
 import pytest
 from modelstore.models.model_file import ModelFileManager, copy_file
 
-# pylint: disable=protected-access
-# pylint: disable=redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
 
 
 @pytest.fixture
@@ -48,10 +47,7 @@ def test_model_info(model_file_manager):
     ],
 )
 def test_is_same_library(model_file_manager, ml_library, should_match):
-    assert (
-        model_file_manager._is_same_library({"library": ml_library})
-        == should_match
-    )
+    assert model_file_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_required_kwargs(model_file_manager):

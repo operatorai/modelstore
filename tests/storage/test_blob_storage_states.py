@@ -20,9 +20,11 @@ import modelstore
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.util.paths import (
-    MODELSTORE_ROOT_PREFIX,
     get_model_state_path,
 )
+
+# pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture

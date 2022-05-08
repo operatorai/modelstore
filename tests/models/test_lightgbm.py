@@ -26,10 +26,11 @@ from modelstore.models.lightgbm import (
     dump_model,
     save_model,
 )
+
+# pylint: disable=unused-import
 from tests.models.utils import classification_data
 
-# pylint: disable=protected-access
-# pylint: disable=redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
 
 
 @pytest.fixture
@@ -54,9 +55,7 @@ def assert_models_equal(
 
     # Same predictions
     X_train, _ = classification_data
-    np.testing.assert_allclose(
-        model_a.predict(X_train), model_b.predict(X_train)
-    )
+    np.testing.assert_allclose(model_a.predict(X_train), model_b.predict(X_train))
 
 
 def test_model_info(lgb_manager, lgb_model):
@@ -117,7 +116,7 @@ def test_save_model(tmp_path, lgb_model, classification_data):
     assert_models_equal(lgb_model, loaded_model, classification_data)
 
 
-def test_dump_model(tmp_path, lgb_model, classification_data):
+def test_dump_model(tmp_path, lgb_model):
     exp = os.path.join(tmp_path, MODEL_JSON)
     res = dump_model(tmp_path, lgb_model)
 
@@ -126,6 +125,7 @@ def test_dump_model(tmp_path, lgb_model, classification_data):
 
     # Models can't be loaded back from JSON
     # https://stackoverflow.com/questions/52170236/lightgbm-loading-from-json
+    # pylint: disable=bare-except
     try:
         with open(res, "r") as lines:
             json.loads(lines.read())

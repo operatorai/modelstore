@@ -27,6 +27,7 @@ from modelstore.models.tensorflow import (
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 tf.config.threading.set_inter_op_parallelism_threads(1)
 
 

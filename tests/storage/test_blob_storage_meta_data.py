@@ -15,16 +15,19 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-import uuid
+import pytest
 
 import modelstore
-import pytest
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
     get_domain_path,
     get_models_path,
 )
+
+# pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=protected-access
 
 
 def mock_meta_data(domain: str, model_id: str, inc_time: int):

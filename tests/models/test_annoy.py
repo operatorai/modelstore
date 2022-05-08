@@ -18,8 +18,7 @@ import pytest
 from annoy import AnnoyIndex
 from modelstore.models.annoy import MODEL_FILE, AnnoyManager, save_model
 
-# pylint: disable=protected-access
-# pylint: disable=redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
 
 
 @pytest.fixture
@@ -39,7 +38,7 @@ def annoy_manager():
 
 
 def assert_same_model(model_a: AnnoyIndex, model_b: AnnoyIndex):
-    assert type(model_a) == type(model_b)
+    assert isinstance(model_b, type(model_a))
     assert model_a.get_nns_by_item(0, 10) == model_b.get_nns_by_item(0, 10)
 
 
@@ -57,9 +56,7 @@ def test_model_info(annoy_manager, annoy_model):
     ],
 )
 def test_is_same_library(annoy_manager, ml_library, should_match):
-    assert (
-        annoy_manager._is_same_library({"library": ml_library}) == should_match
-    )
+    assert annoy_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(annoy_manager, annoy_model):
@@ -88,9 +85,7 @@ def test_get_params(annoy_manager, annoy_model):
         "num_trees": 10,
         "metric": "angular",
     }
-    res = annoy_manager._get_params(
-        model=annoy_model, num_trees=10, metric="angular"
-    )
+    res = annoy_manager._get_params(model=annoy_model, num_trees=10, metric="angular")
     assert exp == res
 
 

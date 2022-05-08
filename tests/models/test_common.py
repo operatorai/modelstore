@@ -17,7 +17,7 @@ import os
 import pytest
 from modelstore.models import common
 
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,missing-function-docstring
 
 
 @pytest.fixture
@@ -35,9 +35,7 @@ def test_save_json(tmp_path, value_to_save):
 def test_save_joblib(tmp_path, value_to_save):
     exp_path = os.path.join(tmp_path, "model.joblib")
     # Save returns the full path
-    target = common.save_joblib(
-        tmp_path, value_to_save, file_name="model.joblib"
-    )
+    target = common.save_joblib(tmp_path, value_to_save, file_name="model.joblib")
     assert target == exp_path
     assert os.path.exists(exp_path)
 

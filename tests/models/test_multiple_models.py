@@ -16,16 +16,19 @@ import os
 
 import pytest
 import shap as shp
-import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+
 from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.models.shap import ShapManager, EXPLAINER_FILE
 from modelstore.models.sklearn import SKLearnManager, MODEL_JOBLIB
-from sklearn.ensemble import RandomForestRegressor
+
+# pylint: disable=unused-import
 from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture

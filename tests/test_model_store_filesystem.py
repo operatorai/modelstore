@@ -11,7 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from functools import partial
 from unittest.mock import patch
 from pathlib import PosixPath
 import shutil
@@ -20,19 +19,17 @@ import os
 import pytest
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES
-from modelstore.models.missing_manager import MissingDepManager
-from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
-from modelstore.utils.exceptions import (
-    ModelNotFoundException,
-    ModelNotFoundException,
-)
+from modelstore.utils.exceptions import ModelNotFoundException
 
+# pylint: disable=unused-import
 from tests.test_utils import (
-    libraries_without_sklearn,  # pylint: disable=unused-import
+    libraries_without_sklearn,
     iter_only_sklearn,
     validate_library_attributes,
 )
+
+# pylint: disable=missing-function-docstring
 
 
 @pytest.mark.parametrize(
@@ -78,13 +75,11 @@ def test_from_file_system_missing_root(should_create: bool):
 
 
 @patch("modelstore.model_store.iter_libraries", side_effect=iter_only_sklearn)
-def test_from_file_system_only_sklearn(
-    _mock_iter_libraries, libraries_without_sklearn, tmp_path
-):
+def test_from_file_system_only_sklearn(_mock_iter_libraries, tmp_path):
     store = ModelStore.from_file_system(root_directory=str(tmp_path))
     assert isinstance(store.storage, FileSystemStorage)
     validate_library_attributes(
-        store, allowed=["sklearn"], not_allowed=libraries_without_sklearn
+        store, allowed=["sklearn"], not_allowed=libraries_without_sklearn()
     )
 
 

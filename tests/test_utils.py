@@ -21,9 +21,9 @@ from modelstore.models.model_manager import ModelManager
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
-@pytest.fixture
 def libraries_without_sklearn():
     libraries = _LIBRARIES.copy()
     libraries.pop("sklearn")

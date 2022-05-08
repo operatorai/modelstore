@@ -84,10 +84,7 @@ def test_model_info(pytorch_manager, pytorch_model):
     ],
 )
 def test_is_same_library(pytorch_manager, ml_library, should_match):
-    assert (
-        pytorch_manager._is_same_library({"library": ml_library})
-        == should_match
-    )
+    assert pytorch_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(pytorch_manager, pytorch_model):
@@ -101,9 +98,7 @@ def test_required_kwargs(pytorch_manager):
 
 
 def test_matches_with(pytorch_manager, pytorch_model, pytorch_optim):
-    assert pytorch_manager.matches_with(
-        model=pytorch_model, optimizer=pytorch_optim
-    )
+    assert pytorch_manager.matches_with(model=pytorch_model, optimizer=pytorch_optim)
     assert not pytorch_manager.matches_with(model="a-string-value")
     assert not pytorch_manager.matches_with(classifier=pytorch_model)
 
@@ -111,9 +106,7 @@ def test_matches_with(pytorch_manager, pytorch_model, pytorch_optim):
 def test_get_functions(pytorch_manager, pytorch_model, pytorch_optim):
     assert (
         len(
-            pytorch_manager._get_functions(
-                model=pytorch_model, optimizer=pytorch_optim
-            )
+            pytorch_manager._get_functions(model=pytorch_model, optimizer=pytorch_optim)
         )
         == 2
     )
@@ -121,9 +114,7 @@ def test_get_functions(pytorch_manager, pytorch_model, pytorch_optim):
 
 def test_get_params(pytorch_manager, pytorch_model, pytorch_optim):
     exp = pytorch_optim.state_dict()
-    res = pytorch_manager._get_params(
-        model=pytorch_model, optimizer=pytorch_optim
-    )
+    res = pytorch_manager._get_params(model=pytorch_model, optimizer=pytorch_optim)
     assert exp == res
 
 

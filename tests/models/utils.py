@@ -17,6 +17,8 @@ import pandas as pd
 import pytest
 from sklearn.datasets import make_classification
 
+# pylint: disable=missing-function-docstring
+
 
 @pytest.fixture(scope="session")
 def classification_data():

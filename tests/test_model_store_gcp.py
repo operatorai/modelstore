@@ -16,11 +16,13 @@ from unittest.mock import patch
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES
 
+# pylint: disable=unused-import
 from tests.test_utils import (
-    libraries_without_sklearn,  # pylint: disable=unused-import
     iter_only_sklearn,
     validate_library_attributes,
 )
+
+# pylint: disable=missing-function-docstring
 
 
 @patch("modelstore.model_store.GoogleCloudStorage", autospec=True)

@@ -18,13 +18,15 @@ import numpy as np
 import pytest
 from modelstore.models.common import save_joblib
 from modelstore.models.skorch import MODEL_JOBLIB, SkorchManager
-from sklearn.ensemble import RandomForestRegressor
 from skorch import NeuralNetClassifier
-from tests.models.utils import classification_data
 from torch import nn
+
+# pylint: disable=unused-import
+from tests.models.utils import classification_data
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 class ExampleModule(nn.Module):
@@ -90,9 +92,7 @@ def test_model_info(skorch_manager, skorch_model):
     ],
 )
 def test_is_same_library(skorch_manager, ml_library, should_match):
-    assert (
-        skorch_manager._is_same_library({"library": ml_library}) == should_match
-    )
+    assert skorch_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(skorch_manager, skorch_model):

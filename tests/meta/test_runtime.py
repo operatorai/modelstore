@@ -16,6 +16,8 @@ from unittest.mock import patch
 
 from modelstore.meta import runtime
 
+# pylint: disable=missing-function-docstring
+
 
 def test_get_python_version():
     vers = sys.version_info

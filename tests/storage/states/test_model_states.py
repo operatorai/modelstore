@@ -18,6 +18,8 @@ from modelstore.storage.states.model_states import (
     is_reserved_state,
 )
 
+# pylint: disable=missing-function-docstring
+
 
 @pytest.mark.parametrize(
     "state_name,is_valid",

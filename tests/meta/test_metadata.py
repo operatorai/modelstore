@@ -11,11 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import modelstore
 import pytest
+
+import modelstore
 from modelstore.meta import metadata
 
-# pylint: disable=protected-access
+# pylint: disable=protected-access,missing-function-docstring
 
 
 def test_generate_for_model():

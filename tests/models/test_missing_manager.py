@@ -14,7 +14,7 @@
 import pytest
 from modelstore.models.missing_manager import MissingDepManager
 
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,missing-function-docstring
 
 
 @pytest.fixture

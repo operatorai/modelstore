@@ -18,6 +18,7 @@ import pytest
 from modelstore.storage.util import paths
 
 # pylint: disable=protected-access
+# pylint: disable=missing-function-docstring
 
 
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])

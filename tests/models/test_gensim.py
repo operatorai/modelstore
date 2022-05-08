@@ -19,8 +19,7 @@ from gensim.models import word2vec
 from gensim.test.utils import common_texts
 from modelstore.models.gensim import GENSIM_MODEL, GensimManager
 
-# pylint: disable=protected-access
-# pylint: disable=redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
 
 
 @pytest.fixture
@@ -55,9 +54,7 @@ def test_model_info(gensim_manager, model_type, expected):
     ],
 )
 def test_is_same_library(gensim_manager, ml_library, should_match):
-    assert (
-        gensim_manager._is_same_library({"library": ml_library}) == should_match
-    )
+    assert gensim_manager._is_same_library({"library": ml_library}) == should_match
 
 
 def test_model_data(gensim_manager, word2vec_model):
