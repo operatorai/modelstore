@@ -38,6 +38,10 @@ from modelstore.utils.exceptions import (
 @dataclass(frozen=True)
 class ModelStore:
 
+    """ ModelStore is the main object that encapsulates a 
+    model registry. To create a new model store, use one of the
+    ModelStore.from_ functions """
+
     # The backend provider, e.g. "gcloud"
     storage: CloudStorage
 
@@ -189,6 +193,7 @@ class ModelStore:
         return self.storage.get_meta_data(domain, model_id)
 
     def model_exists(self, domain: str, model_id: str) -> bool:
+        """ Returns True if a model with the given id exists in the domain """
         # @TODO: use head_object instead of full pull
         try:
             self.storage.get_meta_data(domain, model_id)
