@@ -114,6 +114,7 @@ class ModelStore:
             libraries.append(manager)
         object.__setattr__(self, "_libraries", libraries)
 
+    # pylint: disable=pointless-string-statement
     """
     DOMAINS: a domain is a string that is used to group several models together
     (e.g., belonging to the same end usage). Domains are created automatically
@@ -134,9 +135,10 @@ class ModelStore:
     """
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
+        """ Lists the models in a domain (deprecated) """
         warnings.warn(
             "list_versions() is deprecated; use list_models()",
-            warnings.DeprecationWarning,
+            category=DeprecationWarning,
         )
         return self.list_models(domain, state_name)
 
@@ -213,6 +215,7 @@ class ModelStore:
         # We do this _before_ checking whether the model exists to raise
         # catch if the kwargs aren't quite right before potentially modifying
         # model state, below
+        # pylint: disable=no-member
         managers = matching_managers(self._libraries, **kwargs)
 
         try:

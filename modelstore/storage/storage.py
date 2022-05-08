@@ -74,6 +74,11 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def get_domain(self, domain: str) -> dict:
+        """ Returns information about the domain """
+        raise NotImplementedError()
+
+    @abstractmethod
     def list_domains(self) -> list:
         """Returns a list of all the existing model domains"""
         raise NotImplementedError()
@@ -99,6 +104,6 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def unset_model_state(self, domain: str, model_id: str, state_name: str):
+    def unset_model_state(self, domain: str, model_id: str, state_name: str, modifying_reserved: bool = False):
         """Removes the given model ID from the set that are in the state_name path"""
         raise NotImplementedError()
