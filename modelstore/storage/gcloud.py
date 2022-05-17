@@ -26,7 +26,6 @@ try:
     from google.auth.exceptions import DefaultCredentialsError
     from google.api_core.exceptions import NotFound
     from google.cloud import storage
-    from google.api_core.exceptions import NotFound
 
     # pylint: disable=protected-access
     storage.blob._DEFAULT_CHUNKSIZE = 2097152  # 1024 * 1024 B * 2 = 2 MB
@@ -127,37 +126,37 @@ class GoogleCloudStorage(BlobStorage):
         return self.client.get_bucket(self.bucket_name)
 
     def validate(self) -> bool:
-        """Runs any required validation steps - e.g.,
-        checking that a cloud bucket exists"""
-        if self.is_anon_client:
-            # The anonymous client does not appear to be able to use bucket.exists()
+        """ Validates that the cloud bucket exists"""
+        try:
+            logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
+            if not self.bucket.exists():
+                logger.error(
+                    "Bucket '%s' does not exist or is not accessible to your client.",
+                    self.bucket_name,
+                )
+                return False
+            return True
+        except ValueError:
+            # The anonymous client appears to fail when using bucket.exists()
+            # for buckets that _do_ exist.
             # https://github.com/operatorai/modelstore/issues/173
-            # To validate that the bucket is readable, we list a blob from it
-            # pylint: disable=bare-except
+            # So we fall back on listing the contents of the bucket to check
+            # whether we can read its contents
             try:
-                _ = list(self.client.list_blobs(self.bucket_name, max_results=1))    
-                return True
-            except:
+                logger.debug("Querying for blobs in bucket=%s...", self.bucket_name)
+                return list(self.client.list_blobs(self.bucket_name, max_results=1)) is not None
+            except NotFound:
                 logger.error(
                     "Cannot list blobs in '%s' with an anonymous client.",
                     self.bucket_name,
                 )
                 return False
-        logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
-        if not self.bucket.exists():
-            logger.error(
-                "Bucket '%s' does not exist or is not accessible to your client.",
-                self.bucket_name,
-            )
-            return False
-        return True
 
     def _push(self, source: str, destination: str) -> str:
         if self.is_anon_client:
             raise NotImplementedError(
                 "File upload is only supported for authenticated clients."
             )
-
         logger.info("Uploading to: %s...", destination)
         blob = self.bucket.blob(destination)
 
@@ -182,7 +181,7 @@ class GoogleCloudStorage(BlobStorage):
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
-        if self.client.project is None:
+        if self.is_anon_client:
             raise NotImplementedError(
                 "File removal is only supported for authenticated clients."
             )
