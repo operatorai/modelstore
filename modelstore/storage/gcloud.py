@@ -126,8 +126,8 @@ class GoogleCloudStorage(BlobStorage):
         try:
             # Try to retrieve a bucket (this makes an API request)
             return self.client.get_bucket(self.bucket_name)
-        except NotFound:
-            # NotFound can be raised when both
+        except (NotFound, Forbidden):
+            # NotFound/Forbidden can be raised when both
             # (a) The self.project_name is not None; e.g. it was sourced
             # from environment variables in the constructor
             # (b) The bucket is a public, read-only bucket
