@@ -124,7 +124,7 @@ class GoogleCloudStorage(BlobStorage):
         if self.is_anon_client:
             return self.client.bucket(bucket_name=self.bucket_name)
         try:
-            # Try to retrive a bucket (this makes an API request)
+            # Try to retrieve a bucket (this makes an API request)
             return self.client.get_bucket(self.bucket_name)
         except NotFound:
             # NotFound can be raised when
