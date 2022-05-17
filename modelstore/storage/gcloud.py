@@ -128,7 +128,7 @@ class GoogleCloudStorage(BlobStorage):
     def validate(self) -> bool:
         """ Validates that the cloud bucket exists"""
         try:
-            logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
+            logger.debug("Checking if bucket exists (%s)...", self.bucket_name)
             if not self.bucket.exists():
                 logger.error(
                     "Bucket '%s' does not exist or is not accessible to your client.",
@@ -143,7 +143,7 @@ class GoogleCloudStorage(BlobStorage):
             # So we fall back on listing the contents of the bucket to check
             # whether we can read its contents
             try:
-                logger.debug("Querying for blobs in bucket=%s...", self.bucket_name)
+                logger.debug("Querying for blobs in bucket (%s)...", self.bucket_name)
                 return list(self.client.list_blobs(self.bucket_name, max_results=1)) is not None
             except NotFound:
                 logger.error(
