@@ -24,7 +24,7 @@ from modelstore.utils.exceptions import FilePullFailedException
 
 try:
     from google.auth.exceptions import DefaultCredentialsError
-    from google.api_core.exceptions import NotFound
+    from google.api_core.exceptions import NotFound, Forbidden
     from google.cloud import storage
 
     # pylint: disable=protected-access
@@ -123,7 +123,15 @@ class GoogleCloudStorage(BlobStorage):
         """ The bucket where model artifacts will be stored """
         if self.is_anon_client:
             return self.client.bucket(bucket_name=self.bucket_name)
-        return self.client.get_bucket(self.bucket_name)
+        try:
+            # Try to retrive a bucket (this makes an API request)
+            return self.client.get_bucket(self.bucket_name)
+        except NotFound:
+            # NotFound can be raised when
+            # (a) The self.project_name is not None; e.g. it was sourced
+            #  from environment variables in the constructor
+            # (b) The bucket is a public, read-only bucket
+            return self.client.bucket(bucket_name=self.bucket_name)
 
     def validate(self) -> bool:
         """ Validates that the cloud bucket exists"""
@@ -136,12 +144,14 @@ class GoogleCloudStorage(BlobStorage):
                 )
                 return False
             return True
-        except ValueError:
-            # The anonymous client appears to fail when using bucket.exists()
-            # for buckets that _do_ exist.
+        except (ValueError, Forbidden):
+            # ValueError: the anonymous client appears to fail when using
+            # bucket.exists() for buckets that _do_ exist.
             # https://github.com/operatorai/modelstore/issues/173
-            # So we fall back on listing the contents of the bucket to check
-            # whether we can read its contents
+            # Forbidden: the non-anonymous client appears to fail when using
+            # bucket.exists() on public/read-only buckets.
+            # In both cases, we fall back on listing the contents of the bucket
+            # to check whether we can read its contents
             try:
                 logger.debug("Querying for blobs in bucket (%s)...", self.bucket_name)
                 return list(self.client.list_blobs(self.bucket_name, max_results=1)) is not None
