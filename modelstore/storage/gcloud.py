@@ -22,14 +22,12 @@ from modelstore.storage.util.versions import sorted_by_created
 from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
 
-# pylint: disable=protected-access
-
 try:
     from google.auth.exceptions import DefaultCredentialsError
-    from google.api_core.exceptions import NotFound
+    from google.api_core.exceptions import NotFound, Forbidden
     from google.cloud import storage
-    from google.api_core.exceptions import NotFound
 
+    # pylint: disable=protected-access
     storage.blob._DEFAULT_CHUNKSIZE = 2097152  # 1024 * 1024 B * 2 = 2 MB
     storage.blob._MAX_MULTIPART_SIZE = 2097152  # 2 MB
 
@@ -58,6 +56,7 @@ class GoogleCloudStorage(BlobStorage):
         bucket_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
         client: "storage.Client" = None,
+        is_anon_client: bool = False,
     ):
         super().__init__(
             ["google.cloud.storage"],
@@ -75,21 +74,26 @@ class GoogleCloudStorage(BlobStorage):
         )
 
         # This can be set in the constructor to faciliate unit testing
+        self.is_anon_client = is_anon_client
         self.__client = client
 
     @property
     def client(self) -> "storage.Client":
         """Returns a gcloud storage client"""
         if not GCLOUD_EXISTS:
+            # Google cloud is not installed or cannot be imported
             raise ImportError("Please install google-cloud-storage")
 
         if self.__client is not None:
+            # Return the existing client, which may have been passed
+            # as an argument to GoogleCloudStorage's init()
             return self.__client
 
         if self.project_name is not None:
             try:
                 # If the user gives a project name, return an
                 # explicit storage.Client
+                self.is_anon_client = False
                 self.__client = storage.Client(self.project_name)
             except DefaultCredentialsError:
                 try:
@@ -98,6 +102,7 @@ class GoogleCloudStorage(BlobStorage):
                     from google.colab import auth
 
                     auth.authenticate_user()
+                    self.is_anon_client = False
                     self.__client = storage.Client(self.project_name)
                 except ModuleNotFoundError:
                     logger.warning(
@@ -109,39 +114,59 @@ class GoogleCloudStorage(BlobStorage):
         else:
             # If no project name is given, create a read- and list-only client
             # Note: uploads will not work
+            self.is_anon_client = True
             self.__client = storage.Client.create_anonymous_client()
         return self.__client
 
     @property
-    def is_read_only(self) -> bool:
-        """A storage bucket is read only if the project is None; in this
-        case modelstore can download models, but can't upload them."""
-        return self.client.project is None
-
-    @property
     def bucket(self):
-        if self.is_read_only:
+        """ The bucket where model artifacts will be stored """
+        if self.is_anon_client:
             return self.client.bucket(bucket_name=self.bucket_name)
-        return self.client.get_bucket(self.bucket_name)
+        try:
+            # Try to retrieve a bucket (this makes an API request)
+            return self.client.get_bucket(self.bucket_name)
+        except (NotFound, Forbidden):
+            # NotFound/Forbidden can be raised when both
+            # (a) The self.project_name is not None; e.g. it was sourced
+            # from environment variables in the constructor
+            # (b) The bucket is a public, read-only bucket
+            return self.client.bucket(bucket_name=self.bucket_name)
 
     def validate(self) -> bool:
-        """Runs any required validation steps - e.g.,
-        checking that a cloud bucket exists"""
-        logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
-        if not self.bucket.exists():
-            logger.error(
-                "Bucket '%s' does not exist or is not accessible for your client.",
-                self.bucket_name,
-            )
-            return False
-        return True
+        """ Validates that the cloud bucket exists"""
+        try:
+            logger.debug("Checking if bucket exists (%s)...", self.bucket_name)
+            if not self.bucket.exists():
+                logger.error(
+                    "Bucket '%s' does not exist or is not accessible to your client.",
+                    self.bucket_name,
+                )
+                return False
+            return True
+        except (ValueError, Forbidden):
+            # ValueError: the anonymous client appears to fail when using
+            # bucket.exists() for buckets that _do_ exist.
+            # https://github.com/operatorai/modelstore/issues/173
+            # Forbidden: the non-anonymous client appears to fail when using
+            # bucket.exists() on public/read-only buckets.
+            # In both cases, we fall back on listing the contents of the bucket
+            # to check whether we can read its contents
+            try:
+                logger.debug("Querying for blobs in bucket (%s)...", self.bucket_name)
+                return list(self.client.list_blobs(self.bucket_name, max_results=1)) is not None
+            except NotFound:
+                logger.error(
+                    "Cannot list blobs in '%s' with an anonymous client.",
+                    self.bucket_name,
+                )
+                return False
 
     def _push(self, source: str, destination: str) -> str:
-        if self.is_read_only:
+        if self.is_anon_client:
             raise NotImplementedError(
                 "File upload is only supported for authenticated clients."
             )
-
         logger.info("Uploading to: %s...", destination)
         blob = self.bucket.blob(destination)
 
@@ -166,7 +191,7 @@ class GoogleCloudStorage(BlobStorage):
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
-        if self.client.project is None:
+        if self.is_anon_client:
             raise NotImplementedError(
                 "File removal is only supported for authenticated clients."
             )

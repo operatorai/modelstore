@@ -1,5 +1,11 @@
 # Change log
 
+## Unreleased
+
+**🐛  Bug fixes & general updates**
+
+Fixed a bug when creating a GCP model store instance that reads from a public bucket ([#176](https://github.com/operatorai/modelstore/pull/176)).
+
 ## modelstore 0.0.74 ([April 2022](https://github.com/operatorai/modelstore/pull/155))
 
 **🆕  New functionality**
@@ -10,7 +16,7 @@
 
 `list_model_states()` lists all of the existing model states ([#131](https://github.com/operatorai/modelstore/pull/131))
 
-You can optionally set a `model_id` value when uploading a model ([#147](https://github.com/operatorai/modelstore/pull/147/), [#165](https://github.com/operatorai/modelstore/pull/165)), thanks [@cdknorow](https://github.com/cdknorow). 
+You can optionally set a `model_id` value when uploading a model ([#147](https://github.com/operatorai/modelstore/pull/147/), [#165](https://github.com/operatorai/modelstore/pull/165)), thanks [@cdknorow](https://github.com/cdknorow).
 
 **🆕  Storage improvements**
 
@@ -18,7 +24,7 @@ The file system storage can now be configured to create its root directory if it
 
 Public, read-only Google Cloud Storage containers can now be read from using `modelstore` ([#142](https://github.com/operatorai/modelstore/pull/142), thanks [@ionicsolutions](https://github.com/ionicsolutions))
 
-Previously, any extra files you wanted to upload were uploaded separately to the model archive. Now, they are added into the archive in a subdirectory called "extras" so that you can easily download them back ([#139](https://github.com/operatorai/modelstore/pull/139)). I've also added an example of uploading a model with some additional files ([#138](https://github.com/operatorai/modelstore/pull/138)). 
+Previously, any extra files you wanted to upload were uploaded separately to the model archive. Now, they are added into the archive in a subdirectory called "extras" so that you can easily download them back ([#139](https://github.com/operatorai/modelstore/pull/139)). I've also added an example of uploading a model with some additional files ([#138](https://github.com/operatorai/modelstore/pull/138)).
 
 **🐛  Bug fixes & general updates**
 
