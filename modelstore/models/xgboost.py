@@ -13,7 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
-from typing import Any
+from typing import Any, Union
 
 from modelstore.models.common import save_json
 from modelstore.models.model_manager import ModelManager
@@ -51,7 +51,8 @@ class XGBoostManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 
-        return isinstance(kwargs.get("model"), xgb.XGBModel)
+        return any((isinstance(kwargs.get("model"), xgb.XGBModel), 
+        isinstance(kwargs.get("model"), xgb.Booster)))
 
     def _get_functions(self, **kwargs) -> list:
         return [
@@ -61,6 +62,9 @@ class XGBoostManager(ModelManager):
         ]
 
     def _get_params(self, **kwargs) -> dict:
+        if type(kwargs["model"]).__name__ == "Booster":
+            logger.warning("Cannot retrieve xgb params for low-level xgboost xgb.Booster object")
+            return {}
         return kwargs["model"].get_xgb_params()
 
     def load(self, model_path: str, meta_data: dict) -> Any:
@@ -71,6 +75,7 @@ class XGBoostManager(ModelManager):
             "XGBRegressor": xgb.XGBRegressor,
             "XGBClassifier": xgb.XGBClassifier,
             "XGBModel": xgb.XGBModel,
+            "XGBBooster": xgb.Booster,
             # Future: other types
         }
         model_type = self._get_model_type(meta_data)
@@ -88,7 +93,7 @@ def _model_file_path(tmp_dir: str) -> str:
     return os.path.join(tmp_dir, MODEL_FILE)
 
 
-def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
+def save_model(tmp_dir: str, model: Union["xgb.XGBModel", "xgb.Booster"]) -> str:
     """From the docs:
     The model is saved in an XGBoost internal format which is universal
     among the various XGBoost interfaces.
@@ -99,18 +104,24 @@ def save_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
     return file_path
 
 
-def dump_model(tmp_dir: str, model: "xgb.XGBModel") -> str:
+def dump_model(tmp_dir: str, model: Union["xgb.XGBModel", "xgb.Booster"]) -> str:
     """From the docs:
     Dump model into a text or JSON file.  Unlike `save_model`, the
     output format is primarily used for visualization or interpretation
     """
     logger.debug("Dumping xgboost model")
     model_file = os.path.join(tmp_dir, MODEL_JSON)
-    model.get_booster().dump_model(model_file, with_stats=True, dump_format="json")
+    if model.__class__.__name__ == "Booster":
+        model.dump_model(model_file, with_stats=True, dump_format="json")
+    else:
+        model.get_booster().dump_model(model_file, with_stats=True, dump_format="json")
     return model_file
 
 
-def model_config(tmp_dir: str, model: "xgb.XGBModel") -> str:
+def model_config(tmp_dir: str, model: Union["xgb.XGBModel", "xgb.Booster"]) -> str:
     logger.debug("Dumping model config")
-    config = model.get_booster().save_config()
+    if model.__class__.__name__ == "Booster":
+        config = model.save_config()
+    else:
+        config = model.get_booster().save_config()
     return save_json(tmp_dir, MODEL_CONFIG, config)
