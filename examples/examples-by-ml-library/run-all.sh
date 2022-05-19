@@ -3,7 +3,7 @@ backends=( filesystem aws azure gcloud )
 frameworks=( annoy catboost fastai file gensim keras lightgbm \
 	mxnet onnx-sklearn onnx-lightgbm prophet pytorch pytorch-lightning sklearn \
 	sklearn-with-explainer sklearn-with-extras skorch \
-	tensorflow transformers xgboost )
+	tensorflow transformers xgboost xgboost-booster )
 
 for framework in "${frameworks[@]}"
 do

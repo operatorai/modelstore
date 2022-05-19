@@ -24,7 +24,7 @@ def _train_example_model() -> xgb.Booster:
 
     results = mean_squared_error(y_test, booster.predict(xgb.DMatrix(X_test)))
     print(f"🔍  Trained model MSE={results}.")
-    return model
+    return booster
 
 
 def train_and_upload(modelstore: ModelStore) -> dict:
