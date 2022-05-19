@@ -51,18 +51,32 @@ class XGBoostManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 
-        return any((isinstance(kwargs.get("model"), xgb.XGBModel), 
-        isinstance(kwargs.get("model"), xgb.Booster)))
+        return any([
+            isinstance(kwargs.get("model"), xgb.XGBModel),
+            isinstance(kwargs.get("model"), xgb.Booster)
+        ])
 
     def _get_functions(self, **kwargs) -> list:
+        # pylint: disable=import-outside-toplevel
+        import xgboost as xgb
+
+        model = kwargs["model"]
+        if isinstance(model, xgb.Booster):
+            booster = model
+        else:
+            booster = model.get_booster()
+
         return [
-            partial(save_model, model=kwargs["model"]),
-            partial(dump_model, model=kwargs["model"]),
-            partial(model_config, model=kwargs["model"]),
+            partial(save_model, model=model),
+            partial(dump_booster, booster=booster),
+            partial(save_booster_config, booster=booster),
         ]
 
     def _get_params(self, **kwargs) -> dict:
-        if type(kwargs["model"]).__name__ == "Booster":
+        # pylint: disable=import-outside-toplevel
+        import xgboost as xgb
+
+        if isinstance(kwargs.get("model"), xgb.Booster):
             logger.warning("Cannot retrieve xgb params for low-level xgboost xgb.Booster object")
             return {}
         return kwargs["model"].get_xgb_params()
@@ -104,24 +118,19 @@ def save_model(tmp_dir: str, model: Union["xgb.XGBModel", "xgb.Booster"]) -> str
     return file_path
 
 
-def dump_model(tmp_dir: str, model: Union["xgb.XGBModel", "xgb.Booster"]) -> str:
+def dump_booster(tmp_dir: str, booster: "xgb.Booster") -> str:
     """From the docs:
     Dump model into a text or JSON file.  Unlike `save_model`, the
     output format is primarily used for visualization or interpretation
     """
-    logger.debug("Dumping xgboost model")
+    logger.debug("Dumping xgboost booster model")
     model_file = os.path.join(tmp_dir, MODEL_JSON)
-    if model.__class__.__name__ == "Booster":
-        model.dump_model(model_file, with_stats=True, dump_format="json")
-    else:
-        model.get_booster().dump_model(model_file, with_stats=True, dump_format="json")
+    booster.dump_model(model_file, with_stats=True, dump_format="json")
     return model_file
 
 
-def model_config(tmp_dir: str, model: Union["xgb.XGBModel", "xgb.Booster"]) -> str:
+def save_booster_config(tmp_dir: str, booster: "xgb.Booster") -> str:
+    """ Saves the booster config to file """
     logger.debug("Dumping model config")
-    if model.__class__.__name__ == "Booster":
-        config = model.save_config()
-    else:
-        config = model.get_booster().save_config()
+    config = booster.save_config()
     return save_json(tmp_dir, MODEL_CONFIG, config)

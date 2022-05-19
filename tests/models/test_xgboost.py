@@ -34,6 +34,11 @@ def xgb_model(classification_data):
 
 
 @pytest.fixture
+def xgb_booster(xgb_model):
+    return xgb_model.get_booster()
+
+
+@pytest.fixture
 def xgb_manager():
     return xgboost.XGBoostManager()
 
@@ -71,8 +76,8 @@ def test_matches_with(xgb_manager, xgb_model):
     assert not xgb_manager.matches_with(classifier=xgb_model)
 
 
-def test_get_functions(xgb_manager):
-    assert len(xgb_manager._get_functions(model="model")) == 3
+def test_get_functions(xgb_manager, xgb_model):
+    assert len(xgb_manager._get_functions(model=xgb_model)) == 3
 
 
 def test_get_params(xgb_manager, xgb_model):
@@ -88,21 +93,21 @@ def test_save_model(xgb_model, tmp_path):
     assert res == exp
 
 
-def test_dump_model(xgb_model, tmp_path):
-    res = xgboost.dump_model(tmp_path, xgb_model)
+def test_dump_booster(xgb_booster, tmp_path):
+    res = xgboost.dump_booster(tmp_path, xgb_booster)
     exp = os.path.join(tmp_path, "model.json")
     assert os.path.exists(exp)
     assert res == exp
 
 
-def test_model_config(xgb_model, tmp_path):
-    res = xgboost.model_config(tmp_path, xgb_model)
+def test_save_booster_config(xgb_booster, tmp_path):
+    res = xgboost.save_booster_config(tmp_path, xgb_booster)
     exp = os.path.join(tmp_path, "config.json")
     assert os.path.exists(exp)
     assert res == exp
 
 
-def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
+def test_load_model(tmp_path, xgb_manager, xgb_model):
     # Some fields in xgboost get_params change when loading
     # or are nans; we cannot compare them in this test
     ignore_params = ["missing", "tree_method"]
@@ -127,7 +132,7 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
     )
 
     # Expect the two to be the same
-    assert type(loaded_model) == type(xgb_model)
+    assert isinstance(loaded_model, type(xgb_model))
 
     # They should also have the same params
     loaded_model_params = loaded_model.get_params()
