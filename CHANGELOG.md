@@ -6,6 +6,8 @@
 
 Fixed a bug when creating a GCP model store instance that reads from a public bucket ([#176](https://github.com/operatorai/modelstore/pull/176)).
 
+Added support for storing xgboost Booster models ([#170](https://github.com/operatorai/modelstore/pull/170), [#177](https://github.com/operatorai/modelstore/pull/177)).
+
 ## modelstore 0.0.74 ([April 2022](https://github.com/operatorai/modelstore/pull/155))
 
 **🆕  New functionality**
@@ -31,8 +33,6 @@ Previously, any extra files you wanted to upload were uploaded separately to the
 Fixed a regression: `keras` models saved with an older version of `modelstore` couldn't be loaded ([#145](https://github.com/operatorai/modelstore/pull/145)).
 
 Updated the names of the environment variables that are checked for setting the modelstore storage root (prefixes). Previously, this was using the same variable name and this would cause issues if you were creating more than one type of modelstore.
-
-**ℹ️  General updates**
 
 The `list_versions()` function is deprecated and has been replaced with `list_models()` ([#132](https://github.com/operatorai/modelstore/pull/132))
 
