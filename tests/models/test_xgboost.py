@@ -15,6 +15,7 @@ import os
 
 import pytest
 import xgboost as xgb
+import numpy as np
 from modelstore.models import xgboost
 
 # pylint: disable=unused-import
@@ -44,9 +45,15 @@ def xgb_manager():
 
 
 def test_model_info(xgb_manager, xgb_model):
-    exp = {"library": "xgboost", "type": "XGBClassifier"}
-    res = xgb_manager._model_info(model=xgb_model)
-    assert exp == res
+    model_info = {"library": "xgboost", "type": "XGBClassifier"}
+    result = xgb_manager._model_info(model=xgb_model)
+    assert model_info == result
+
+
+def test_booster_model_info(xgb_manager, xgb_booster):
+    model_info = {"library": "xgboost", "type": "Booster"}
+    result = xgb_manager._model_info(model=xgb_booster)
+    assert model_info == result
 
 
 @pytest.mark.parametrize(
@@ -61,17 +68,18 @@ def test_is_same_library(xgb_manager, ml_library, should_match):
 
 
 def test_model_data(xgb_manager, xgb_model):
-    exp = {}
-    res = xgb_manager._model_data(model=xgb_model)
-    assert exp == res
+    # Note: currently unimplemented for xgboost
+    result = xgb_manager._model_data(model=xgb_model)
+    assert result == {}
 
 
 def test_required_kwargs(xgb_manager):
     assert xgb_manager._required_kwargs() == ["model"]
 
 
-def test_matches_with(xgb_manager, xgb_model):
+def test_matches_with(xgb_manager, xgb_model, xgb_booster):
     assert xgb_manager.matches_with(model=xgb_model)
+    assert xgb_manager.matches_with(model=xgb_booster)
     assert not xgb_manager.matches_with(model="a-string-value")
     assert not xgb_manager.matches_with(classifier=xgb_model)
 
@@ -82,8 +90,14 @@ def test_get_functions(xgb_manager, xgb_model):
 
 def test_get_params(xgb_manager, xgb_model):
     exp = xgb_model.get_xgb_params()
-    res = xgb_manager._get_params(model=xgb_model)
-    assert exp == res
+    result = xgb_manager._get_params(model=xgb_model)
+    assert exp == result
+
+
+def test_get_booster_params(xgb_manager, xgb_booster):
+    # Cannot retrieve xgb params for low-level xgboost xgb.Booster object
+    result = xgb_manager._get_params(model=xgb_booster)
+    assert result == {}
 
 
 def test_save_model(xgb_model, tmp_path):
@@ -107,10 +121,14 @@ def test_save_booster_config(xgb_booster, tmp_path):
     assert res == exp
 
 
-def test_load_model(tmp_path, xgb_manager, xgb_model):
+def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
     # Some fields in xgboost get_params change when loading
     # or are nans; we cannot compare them in this test
     ignore_params = ["missing", "tree_method"]
+
+    # Get the model predictions
+    X_train, _ = classification_data
+    y_pred = xgb_model.predict(X_train)
 
     # Save the model to a tmp directory
     model_path = os.path.join(tmp_path, xgboost.MODEL_FILE)
@@ -134,8 +152,41 @@ def test_load_model(tmp_path, xgb_manager, xgb_model):
     # Expect the two to be the same
     assert isinstance(loaded_model, type(xgb_model))
 
+    # They should have the same predictions
+    y_loaded_pred = xgb_model.predict(X_train)
+    assert np.allclose(y_pred, y_loaded_pred)
+
     # They should also have the same params
     loaded_model_params = loaded_model.get_params()
     for param in ignore_params:
         loaded_model_params.pop(param)
     assert xgb_model_params == loaded_model_params
+
+
+def test_load_booster(tmp_path, xgb_manager, xgb_booster, classification_data):
+    # Get the model predictions
+    X_train, _ = classification_data
+    y_pred = xgb_booster.predict(xgb.DMatrix(X_train))
+
+    # Save the model to a tmp directory
+    model_path = os.path.join(tmp_path, xgboost.MODEL_FILE)
+    xgb_booster.save_model(model_path)
+
+    #  Load the model
+    loaded_model = xgb_manager.load(
+        tmp_path,
+        {
+            "model": {
+                "model_type": {
+                    "type": "Booster",
+                },
+            }
+        },
+    )
+
+    # Expect the two to be the same
+    assert isinstance(loaded_model, type(xgb_booster))
+
+    # They should have the same predictions
+    y_loaded_pred = xgb_booster.predict(xgb.DMatrix(X_train))
+    assert np.allclose(y_pred, y_loaded_pred)

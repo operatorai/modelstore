@@ -76,10 +76,11 @@ class XGBoostManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 
-        if isinstance(kwargs.get("model"), xgb.Booster):
+        model = kwargs["model"]
+        if isinstance(model, xgb.Booster):
             logger.warning("Cannot retrieve xgb params for low-level xgboost xgb.Booster object")
             return {}
-        return kwargs["model"].get_xgb_params()
+        return model.get_xgb_params()
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         # pylint: disable=import-outside-toplevel
@@ -89,7 +90,7 @@ class XGBoostManager(ModelManager):
             "XGBRegressor": xgb.XGBRegressor,
             "XGBClassifier": xgb.XGBClassifier,
             "XGBModel": xgb.XGBModel,
-            "XGBBooster": xgb.Booster,
+            "Booster": xgb.Booster,
             # Future: other types
         }
         model_type = self._get_model_type(meta_data)
