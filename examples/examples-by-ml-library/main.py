@@ -21,6 +21,7 @@ from libraries import (
     skorch_example,
     tensorflow_example,
     transformers_example,
+    xgboost_booster_example,
     xgboost_example,
 )
 from modelstores import create_model_store
@@ -47,6 +48,7 @@ EXAMPLES = {
     "tensorflow": tensorflow_example,
     "transformers": transformers_example,
     "xgboost": xgboost_example,
+    "xgboost-booster": xgboost_booster_example,
 }
 
 
