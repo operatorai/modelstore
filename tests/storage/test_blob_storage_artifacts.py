@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 
 import pytest
-from modelstore.meta import metadata
+from modelstore.metadata import metadata
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
     get_archive_path,

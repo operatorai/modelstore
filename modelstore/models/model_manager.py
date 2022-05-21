@@ -19,8 +19,8 @@ import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
-from modelstore.meta import metadata
-from modelstore.meta.dependencies import save_dependencies, save_model_info
+from modelstore.metadata import metadata
+from modelstore.metadata.dependencies import save_dependencies, save_model_info
 from modelstore.storage.storage import CloudStorage
 
 

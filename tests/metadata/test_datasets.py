@@ -14,7 +14,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from modelstore.meta import datasets
+from modelstore.metadata import datasets
 
 # pylint: disable=redefined-outer-name
 

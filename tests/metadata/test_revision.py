@@ -16,7 +16,7 @@ import subprocess
 import pytest
 
 import git
-from modelstore.meta import revision
+from modelstore.metadata import revision
 
 # pylint: disable=protected-access,missing-function-docstring,bare-except
 

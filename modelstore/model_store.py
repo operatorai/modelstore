@@ -38,7 +38,7 @@ from modelstore.utils.exceptions import (
 @dataclass(frozen=True)
 class ModelStore:
 
-    """ ModelStore is the main object that encapsulates a 
+    """ ModelStore is the main object that encapsulates a
     model registry. To create a new model store, use one of the
     ModelStore.from_ functions """
 
@@ -135,7 +135,7 @@ class ModelStore:
         return self.storage.get_domain(domain)
 
     """
-    MODELS: multiple models can be added to a domain; 
+    MODELS: multiple models can be added to a domain;
     """
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
