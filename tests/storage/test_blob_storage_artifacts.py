@@ -25,6 +25,7 @@ from modelstore.utils.exceptions import (
 )
 
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture

@@ -16,8 +16,10 @@ import os
 
 import boto3
 import pytest
-from modelstore.storage.aws import AWSStorage
 from moto import mock_s3
+
+from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.storage.aws import AWSStorage
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
@@ -189,12 +191,12 @@ def test_storage_location():
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_path()
     # Asserts that the location meta data is correctly formatted
-    exp = {
-        "type": "aws:s3",
-        "bucket": _MOCK_BUCKET_NAME,
-        "prefix": prefix,
-    }
-    assert storage._storage_location(prefix) == exp
+    expected = StorageMetaData.from_container(
+        storage_type="aws:s3",
+        bucket=_MOCK_BUCKET_NAME,
+        prefix=prefix,
+    )
+    assert storage._storage_location(prefix) == expected
 
 
 @pytest.mark.parametrize(
