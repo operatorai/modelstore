@@ -16,6 +16,7 @@ import os
 import shutil
 import tarfile
 import tempfile
+from dataclasses import asdict
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
@@ -192,9 +193,6 @@ class ModelManager(ABC):
         self._validate_kwargs(**kwargs)
 
         # Create meta data about the model & code
-        code_meta_data = CodeMetaData.generate(
-            deps_list=self.get_dependencies()
-        )
         model_meta_data = ModelMetaData.generate(
             domain=domain,
             model_id=model_id,
@@ -209,17 +207,19 @@ class ModelManager(ABC):
 
         # Upload the model archive and any additional extras
         storage_meta_data = self.storage.upload(domain, archive_path)
-
-        # Generate the combined meta-data and add it to the store
-        # meta_data = metadata.generate(model_meta, storage_meta, code_meta)
-        # self.storage.set_meta_data(domain, model_id, meta_data)
-        os.remove(archive_path)
-
-        return MetaData.generate(
-            code_meta_data=code_meta_data,
+        meta_data = MetaData.generate(
+            code_meta_data=CodeMetaData.generate(
+                deps_list=self.get_dependencies()
+            ),
             model_meta_data=model_meta_data,
             storage_meta_data=storage_meta_data,
         )
+
+        # Save the combined meta-data to storage
+        self.storage.set_meta_data(domain, model_id, asdict(meta_data))
+        os.remove(archive_path)
+
+        return meta_data
 
 
 def _format_numpy(model_params: dict) -> dict:
