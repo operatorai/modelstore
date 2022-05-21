@@ -14,7 +14,7 @@
 from abc import ABC, ABCMeta, abstractmethod
 from typing import Optional
 
-from modelstore.metadata.dependencies import module_exists
+from modelstore.metadata.code.dependencies import module_exists
 
 
 class CloudStorage(ABC):

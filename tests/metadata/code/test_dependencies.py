@@ -16,7 +16,7 @@ import os
 import sys
 
 import pytest
-from modelstore.metadata import dependencies
+from modelstore.metadata.code import dependencies
 
 # pylint: disable=protected-access,missing-function-docstring
 
