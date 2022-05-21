@@ -15,7 +15,7 @@ import os
 import tarfile
 import tempfile
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Optional
 
 from modelstore.ids import model_ids
@@ -222,6 +222,12 @@ class ModelStore:
         # model state, below
         # pylint: disable=no-member
         managers = matching_managers(self._libraries, **kwargs)
+        if len(managers) == 1:
+            manager = managers[0]
+        else:
+            # There are cases where we can match on more than one
+            # manager (e.g., a model and an explainer)
+            manager = MultipleModelsManager(managers, self.storage)
 
         try:
             if self.model_exists(domain, model_id):
@@ -237,12 +243,9 @@ class ModelStore:
                 ReservedModelStates.DELETED.value,
                 modifying_reserved=True,
             )
-
-        if len(managers) == 1:
-            return managers[0].upload(domain, model_id=model_id, **kwargs)
-        # If we match on more than one manager (e.g., a model and an explainer)
-        manager = MultipleModelsManager(managers, self.storage)
-        return manager.upload(domain, model_id=model_id, **kwargs)
+        
+        meta_data = manager.upload(domain, model_id=model_id, **kwargs)
+        return asdict(meta_data)
 
     def load(self, domain: str, model_id: str):
         """Loads a model into memory"""
