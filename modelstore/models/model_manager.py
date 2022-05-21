@@ -19,9 +19,9 @@ import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
-from modelstore.metadata.code import code
-from modelstore.metadata.model import model
-from modelstore.metadata import metadata
+from modelstore.metadata.code.code import CodeMetaData
+from modelstore.metadata.model.model import ModelMetaData
+from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.code.dependencies import save_dependencies, save_model_info
 from modelstore.storage.storage import CloudStorage
 
@@ -51,6 +51,7 @@ class ModelManager(ABC):
         must be pip installed for this ModelManager to work"""
         raise NotImplementedError()
 
+    # pylint: disable=no-self-use
     def optional_dependencies(self) -> list:
         """Returns a list of dependencies that, if installed
         are useful to log info about"""
@@ -179,7 +180,7 @@ class ModelManager(ABC):
         domain: str,
         model_id: str,
         **kwargs,
-    ) -> metadata.MetaData:
+    ) -> MetaData:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model and uploads the archive to storage.
@@ -191,10 +192,10 @@ class ModelManager(ABC):
         self._validate_kwargs(**kwargs)
 
         # Create meta data about the model & code
-        code_meta_data = code.generate(
+        code_meta_data = CodeMetaData.generate(
             deps_list=self.get_dependencies()
         )
-        model_meta_data = model.generate(
+        model_meta_data = ModelMetaData.generate(
             domain=domain,
             model_id=model_id,
             model_type=self.model_info(**kwargs),
@@ -214,7 +215,7 @@ class ModelManager(ABC):
         # self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
 
-        return metadata.generate(
+        return MetaData.generate(
             code_meta_data=code_meta_data,
             model_meta_data=model_meta_data,
             storage_meta_data=storage_meta_data,
