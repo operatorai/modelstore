@@ -57,7 +57,7 @@ class AnnoyManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {
             "num_dimensions": kwargs["model"].f,
             "num_trees": kwargs["num_trees"],

@@ -70,7 +70,7 @@ def tr_manager():
 
 def test_model_info(tr_manager):
     exp = {"library": "transformers"}
-    res = tr_manager._model_info()
+    res = tr_manager.model_info()
     assert exp == res
 
 
@@ -87,7 +87,7 @@ def test_is_same_library(tr_manager, ml_library, should_match):
 
 def test_model_data(tr_manager, tr_model):
     exp = {}
-    res = tr_manager._model_data(model=tr_model)
+    res = tr_manager.model_data(model=tr_model)
     assert exp == res
 
 
@@ -118,7 +118,7 @@ def test_get_functions(tr_manager, tr_config, tr_model, tr_tokenizer):
 
 def test_get_params(tr_manager, tr_config):
     exp = tr_config.to_dict()
-    res = tr_manager._get_params(config=tr_config)
+    res = tr_manager.get_params(config=tr_config)
     assert exp == res
 
 

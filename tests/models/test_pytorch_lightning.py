@@ -28,6 +28,7 @@ from torch.utils.data import DataLoader, TensorDataset
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
 
 
 class ExampleLightningNet(pl.LightningModule):
@@ -95,7 +96,7 @@ def assert_models_equal(model_a: pl.LightningModule, module_b: pl.LightningModul
 
 def test_model_info(lightning_manager, lightning_model):
     exp = {"library": "pytorch_lightning", "type": "ExampleLightningNet"}
-    res = lightning_manager._model_info(model=lightning_model)
+    res = lightning_manager.model_info(model=lightning_model)
     assert exp == res
 
 
@@ -111,9 +112,8 @@ def test_is_same_library(lightning_manager, ml_library, should_match):
 
 
 def test_model_data(lightning_manager, lightning_model):
-    exp = {}
-    res = lightning_manager._model_data(model=lightning_model)
-    assert exp == res
+    res = lightning_manager.model_data(model=lightning_model)
+    assert {} == res
 
 
 def test_required_kwargs(lightning_manager):
@@ -141,7 +141,7 @@ def test_get_functions(lightning_manager, lightning_model, lightning_trainer):
 
 def test_get_params(lightning_manager):
     exp = {}
-    res = lightning_manager._get_params()
+    res = lightning_manager.get_params()
     assert exp == res
 
 

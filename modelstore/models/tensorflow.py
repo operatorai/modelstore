@@ -65,7 +65,7 @@ class TensorflowManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return kwargs["model"].optimizer.get_config()
 
     def _is_same_library(self, meta_data: dict) -> bool:

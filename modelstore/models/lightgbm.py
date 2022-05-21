@@ -57,7 +57,7 @@ class LightGbmManager(ModelManager):
             partial(dump_model, model=kwargs["model"]),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return kwargs["model"].params
 
     def load(self, model_path: str, meta_data: dict) -> Any:

@@ -58,7 +58,7 @@ class ProphetManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Reference:
         https://facebook.github.io/prophet/docs/additional_topics.html#updating-fitted-models

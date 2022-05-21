@@ -48,10 +48,10 @@ class MockModelManager(ModelManager):
     def name(cls) -> str:
         return "mock"
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> dict:
         return {}
 
-    def _model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> dict:
         return {}
 
     @classmethod
@@ -64,7 +64,7 @@ class MockModelManager(ModelManager):
             mock_save_config,
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {}
 
     def _required_kwargs(self) -> list:

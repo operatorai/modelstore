@@ -72,7 +72,7 @@ def assert_models_equal(
 
 def test_model_info(fai_manager):
     exp = {"library": "fastai"}
-    res = fai_manager._model_info()
+    res = fai_manager.model_info()
     assert exp == res
 
 
@@ -89,7 +89,7 @@ def test_is_same_library(fai_manager, ml_library, should_match):
 
 def test_model_data(fai_manager, fai_learner):
     exp = {}
-    res = fai_manager._model_data(learner=fai_learner)
+    res = fai_manager.model_data(learner=fai_learner)
     assert exp == res
 
 
@@ -109,7 +109,7 @@ def test_get_functions(fai_manager, fai_learner):
 
 def test_get_params(fai_manager, fai_learner):
     exp = {}
-    res = fai_manager._get_params(learner=fai_learner)
+    res = fai_manager.get_params(learner=fai_learner)
     assert exp == res
 
 

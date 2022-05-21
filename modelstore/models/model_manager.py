@@ -67,7 +67,7 @@ class ModelManager(ABC):
             raise TypeError(f"This model is not an {self.ml_library} model!")
         return []
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
         that are available
@@ -96,7 +96,7 @@ class ModelManager(ABC):
             if arg not in kwargs:
                 raise TypeError(f"Please specify {arg}=<value>")
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> dict:
         """Returns meta-data about the model's type"""
         model_info = {"library": self.ml_library}
         if "model" in kwargs:
@@ -110,7 +110,7 @@ class ModelManager(ABC):
         """Whether the meta-data of a model artifact matches a model manager"""
         return meta_data.get("library") == self.ml_library
 
-    def _model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> dict:
         """Returns meta-data about the data used to train the model"""
         # @ Future
         return {}
@@ -121,7 +121,7 @@ class ModelManager(ABC):
         """
         file_paths = [
             save_dependencies(tmp_dir, self._get_dependencies()),
-            save_model_info(tmp_dir, self._model_info(**kwargs)),
+            save_model_info(tmp_dir, self.model_info(**kwargs)),
         ]
         for func in self._get_functions(**kwargs):
             rsp = func(tmp_dir)
@@ -189,9 +189,9 @@ class ModelManager(ABC):
         model_meta = metadata.generate_for_model(
             domain=domain,
             model_id=model_id,
-            model_info=self._model_info(**kwargs),
-            model_params=_format_numpy(self._get_params(**kwargs)),
-            model_data=self._model_data(**kwargs),
+            model_info=self.model_info(**kwargs),
+            model_params=_format_numpy(self.get_params(**kwargs)),
+            model_data=self.model_data(**kwargs),
         )
 
         # Meta-data about the code

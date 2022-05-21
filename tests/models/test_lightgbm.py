@@ -60,7 +60,7 @@ def assert_models_equal(
 
 def test_model_info(lgb_manager, lgb_model):
     exp = {"library": "lightgbm", "type": "Booster"}
-    res = lgb_manager._model_info(model=lgb_model)
+    res = lgb_manager.model_info(model=lgb_model)
     assert exp == res
 
 
@@ -77,7 +77,7 @@ def test_is_same_library(lgb_manager, ml_library, should_match):
 
 def test_model_data(lgb_manager, lgb_model):
     exp = {}
-    res = lgb_manager._model_data(model=lgb_model)
+    res = lgb_manager.model_data(model=lgb_model)
     assert exp == res
 
 
@@ -103,7 +103,7 @@ def test_get_params(lgb_manager, lgb_model):
         "early_stopping_round": None,
         "num_threads": 1,
     }
-    res = lgb_manager._get_params(model=lgb_model)
+    res = lgb_manager.get_params(model=lgb_model)
     assert exp == res
 
 

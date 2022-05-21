@@ -83,7 +83,7 @@ def sklearn_manager():
     ],
 )
 def test_model_info(sklearn_manager, model_type, expected):
-    res = sklearn_manager._model_info(model=model_type())
+    res = sklearn_manager.model_info(model=model_type())
     assert expected == res
 
 
@@ -101,7 +101,7 @@ def test_is_same_library(sklearn_manager, ml_library, should_match):
 def test_model_data(sklearn_manager, sklearn_tree):
     labels = np.array([0, 1, 1, 0, 1])
     exp = {"labels": {"shape": [5], "values": {0: 2, 1: 3}}}
-    res = sklearn_manager._model_data(model=sklearn_tree, y_train=labels)
+    res = sklearn_manager.model_data(model=sklearn_tree, y_train=labels)
     assert exp == res
 
 
@@ -130,7 +130,7 @@ def test_get_functions(sklearn_manager, sklearn_tree):
 )
 def test_get_params(sklearn_manager, model_type):
     try:
-        result = sklearn_manager._get_params(model=model_type())
+        result = sklearn_manager.get_params(model=model_type())
         json.dumps(result)
     except Exception as e:
         pytest.fail(f"Exception when dumping params: {str(e)}")
@@ -151,7 +151,7 @@ def test_get_params_from_pipeline(sklearn_manager):
             ("classifier", RandomForestRegressor()),
         ]
     )
-    result = sklearn_manager._get_params(model=pipeline)
+    result = sklearn_manager.get_params(model=pipeline)
     assert result == {}
 
 

@@ -41,16 +41,16 @@ class MissingDepManager(ModelManager):
     def _get_functions(self, **kwargs) -> list:
         return []
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return None
 
     def _required_kwargs(self) -> list:
         return []
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> dict:
         return None
 
-    def _model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> dict:
         return None
 
     def upload(self, domain: str, model_id: str, **kwargs) -> str:

@@ -25,6 +25,7 @@ from prophet.serialize import model_from_json, model_to_json
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -66,7 +67,7 @@ def assert_same_model(model_a: Prophet, model_b: Prophet):
 
 def test_model_info(prophet_manager, prophet_model):
     exp = {"library": "prophet", "type": "Prophet"}
-    res = prophet_manager._model_info(model=prophet_model)
+    res = prophet_manager.model_info(model=prophet_model)
     assert exp == res
 
 
@@ -82,9 +83,8 @@ def test_is_same_library(prophet_manager, ml_library, should_match):
 
 
 def test_model_data(prophet_manager, prophet_model):
-    exp = {}
-    res = prophet_manager._model_data(model=prophet_model)
-    assert exp == res
+    res = prophet_manager.model_data(model=prophet_model)
+    assert {} == res
 
 
 def test_required_kwargs(prophet_manager):
@@ -103,7 +103,7 @@ def test_get_functions(prophet_manager, prophet_model):
 
 def test_get_params(prophet_manager, prophet_model):
     expected_keys = ["k", "m", "sigma_obs", "delta", "beta", "trend"]
-    res = prophet_manager._get_params(model=prophet_model)
+    res = prophet_manager.get_params(model=prophet_model)
     assert list(res.keys()) == expected_keys
     try:
         json.dumps(res)

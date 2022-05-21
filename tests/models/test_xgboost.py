@@ -46,13 +46,13 @@ def xgb_manager():
 
 def test_model_info(xgb_manager, xgb_model):
     model_info = {"library": "xgboost", "type": "XGBClassifier"}
-    result = xgb_manager._model_info(model=xgb_model)
+    result = xgb_manager.model_info(model=xgb_model)
     assert model_info == result
 
 
 def test_booster_model_info(xgb_manager, xgb_booster):
     model_info = {"library": "xgboost", "type": "Booster"}
-    result = xgb_manager._model_info(model=xgb_booster)
+    result = xgb_manager.model_info(model=xgb_booster)
     assert model_info == result
 
 
@@ -69,7 +69,7 @@ def test_is_same_library(xgb_manager, ml_library, should_match):
 
 def test_model_data(xgb_manager, xgb_model):
     # Note: currently unimplemented for xgboost
-    result = xgb_manager._model_data(model=xgb_model)
+    result = xgb_manager.model_data(model=xgb_model)
     assert result == {}
 
 
@@ -90,13 +90,13 @@ def test_get_functions(xgb_manager, xgb_model):
 
 def test_get_params(xgb_manager, xgb_model):
     exp = xgb_model.get_xgb_params()
-    result = xgb_manager._get_params(model=xgb_model)
+    result = xgb_manager.get_params(model=xgb_model)
     assert exp == result
 
 
 def test_get_booster_params(xgb_manager, xgb_booster):
     # Cannot retrieve xgb params for low-level xgboost xgb.Booster object
-    result = xgb_manager._get_params(model=xgb_booster)
+    result = xgb_manager.get_params(model=xgb_booster)
     assert result == {}
 
 

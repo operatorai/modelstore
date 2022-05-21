@@ -40,7 +40,7 @@ def catb_manager():
 
 def test_model_info(catb_manager, catb_model):
     exp = {"library": "catboost", "type": "CatBoostClassifier"}
-    res = catb_manager._model_info(model=catb_model)
+    res = catb_manager.model_info(model=catb_model)
     assert exp == res
 
 
@@ -56,9 +56,8 @@ def test_is_same_library(catb_manager, ml_library, should_match):
 
 
 def test_model_data(catb_manager, catb_model):
-    exp = {}
-    res = catb_manager._model_data(model=catb_model)
-    assert exp == res
+    res = catb_manager.model_data(model=catb_model)
+    assert {} == res
 
 
 def test_required_kwargs(catb_manager):
@@ -77,7 +76,7 @@ def test_get_functions(catb_manager, catb_model):
 
 def test_get_params(catb_manager, catb_model):
     exp = catb_model.get_params()
-    res = catb_manager._get_params(model=catb_model)
+    res = catb_manager.get_params(model=catb_model)
     assert exp == res
 
 

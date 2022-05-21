@@ -17,7 +17,9 @@ from tempfile import TemporaryDirectory
 import pytest
 from modelstore.models.model_file import ModelFileManager, copy_file
 
-# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
+# pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -35,7 +37,7 @@ def model_file_manager():
 
 def test_model_info(model_file_manager):
     exp = {"library": "model_file"}
-    assert model_file_manager._model_info() == exp
+    assert model_file_manager.model_info() == exp
 
 
 @pytest.mark.parametrize(
@@ -67,7 +69,7 @@ def test_get_functions(model_file_manager, model_file):
 
 
 def test_get_params(model_file_manager, model_file):
-    assert model_file_manager._get_params(model=model_file) == {}
+    assert model_file_manager.get_params(model=model_file) == {}
 
 
 def test_copy_file(model_file):

@@ -84,7 +84,7 @@ class CatBoostManager(ModelManager):
             partial(dump_attributes, model=kwargs["model"]),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         https://catboost.ai/docs/concepts/python-reference_catboost_get_params.html
         """

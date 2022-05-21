@@ -65,7 +65,7 @@ class MxnetManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {
             "epoch": kwargs["epoch"],
         }

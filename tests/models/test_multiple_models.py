@@ -66,7 +66,7 @@ def test_model_info_with_explainer(
             {"library": ShapManager.NAME, "type": "Tree"},
         ],
     }
-    res = multiple_model_manager._model_info(
+    res = multiple_model_manager.model_info(
         model=sklearn_tree,
         explainer=shap_explainer,
     )
@@ -98,15 +98,15 @@ def test_get_functions_incorrect_types(multiple_model_manager, sklearn_tree):
 
 def test_get_params(multiple_model_manager, sklearn_tree, shap_explainer):
     try:
-        result = multiple_model_manager._get_params(
+        result = multiple_model_manager.get_params(
             model=sklearn_tree,
             explainer=shap_explainer,
         )
         assert "sklearn" in result
         assert "shap" in result
         json.dumps(result)
-    except Exception as e:
-        pytest.fail(f"Exception when dumping params: {str(e)}")
+    except Exception as exc:
+        pytest.fail(f"Exception when dumping params: {str(exc)}")
 
 
 def test_load_model(tmp_path, multiple_model_manager, sklearn_tree, shap_explainer):

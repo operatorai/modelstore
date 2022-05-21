@@ -71,7 +71,7 @@ class ModelFileManager(ModelManager):
     def _required_kwargs(self) -> list:
         return ["model"]
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> dict:
         return {"library": self.ml_library}
 
     def load(self, model_path: str, meta_data: dict) -> Any:

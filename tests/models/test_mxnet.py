@@ -21,9 +21,9 @@ from mxnet.gluon import nn
 
 from modelstore.models import mxnet
 
-
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 def random_x():
@@ -49,7 +49,7 @@ def mxnet_manager():
 
 def test_model_info(mxnet_manager, mxnet_model):
     exp = {"library": "mxnet", "type": "HybridSequential"}
-    res = mxnet_manager._model_info(model=mxnet_model)
+    res = mxnet_manager.model_info(model=mxnet_model)
     assert exp == res
 
 
@@ -65,9 +65,8 @@ def test_is_same_library(mxnet_manager, ml_library, should_match):
 
 
 def test_model_data(mxnet_manager, mxnet_model):
-    exp = {}
-    res = mxnet_manager._model_data(model=mxnet_model)
-    assert exp == res
+    res = mxnet_manager.model_data(model=mxnet_model)
+    assert {} == res
 
 
 def test_required_kwargs(mxnet_manager):
@@ -85,7 +84,7 @@ def test_get_functions(mxnet_manager, mxnet_model):
 
 
 def test_get_params(mxnet_manager, mxnet_model):
-    res = mxnet_manager._get_params(model=mxnet_model, epoch=3)
+    res = mxnet_manager.get_params(model=mxnet_model, epoch=3)
     assert {"epoch": 3} == res
 
 

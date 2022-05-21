@@ -52,7 +52,7 @@ class SkorchManager(ModelManager):
 
         return isinstance(kwargs.get("model"), NeuralNet)
 
-    def _model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> dict:
         return {}
 
     def _get_functions(self, **kwargs) -> list:
@@ -64,7 +64,7 @@ class SkorchManager(ModelManager):
             partial(save_params, model=kwargs["model"]),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters that are available
         """

@@ -71,7 +71,7 @@ class TransformersManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing the config for the model
         https://huggingface.co/transformers/main_classes/configuration.html#transformers.PretrainedConfig

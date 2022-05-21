@@ -42,7 +42,7 @@ def gensim_manager():
     ],
 )
 def test_model_info(gensim_manager, model_type, expected):
-    res = gensim_manager._model_info(model=model_type())
+    res = gensim_manager.model_info(model=model_type())
     assert expected == res
 
 
@@ -58,7 +58,7 @@ def test_is_same_library(gensim_manager, ml_library, should_match):
 
 
 def test_model_data(gensim_manager, word2vec_model):
-    res = gensim_manager._model_data(model=word2vec_model)
+    res = gensim_manager.model_data(model=word2vec_model)
     assert {} == res
 
 
@@ -86,10 +86,10 @@ def test_get_functions(gensim_manager, word2vec_model):
 )
 def test_get_params(gensim_manager, model_type):
     try:
-        result = gensim_manager._get_params(model=model_type())
+        result = gensim_manager.get_params(model=model_type())
         json.dumps(result)
-    except Exception as e:
-        pytest.fail(f"Exception when dumping params: {str(e)}")
+    except Exception as exc:
+        pytest.fail(f"Exception when dumping params: {str(exc)}")
 
 
 def test_load_model(tmp_path, gensim_manager, word2vec_model):
@@ -110,7 +110,7 @@ def test_load_model(tmp_path, gensim_manager, word2vec_model):
     )
 
     # Expect the two to be the same
-    assert type(loaded_model) == type(word2vec_model)
-    assert gensim_manager._get_params(
+    assert isinstance(loaded_model, type(word2vec_model))
+    assert gensim_manager.get_params(
         model=word2vec_model
-    ) == gensim_manager._get_params(model=loaded_model)
+    ) == gensim_manager.get_params(model=loaded_model)

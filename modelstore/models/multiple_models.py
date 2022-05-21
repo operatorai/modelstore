@@ -61,18 +61,18 @@ class MultipleModelsManager(ModelManager):
             functions += manager._get_functions(**kwargs)
         return functions
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> dict:
         """Returns meta-data about the model's type"""
         return {
             "library": self.ml_library,
             # pylint: disable=protected-access
-            "models": [manager._model_info(**kwargs) for manager in self.managers],
+            "models": [manager.model_info(**kwargs) for manager in self.managers],
         }
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {
             # pylint: disable=protected-access
-            manager.ml_library: manager._get_params(**kwargs)
+            manager.ml_library: manager.get_params(**kwargs)
             for manager in self.managers
         }
 

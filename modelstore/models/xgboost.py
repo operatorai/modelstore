@@ -72,7 +72,7 @@ class XGBoostManager(ModelManager):
             partial(save_booster_config, booster=booster),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 

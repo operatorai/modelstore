@@ -99,7 +99,7 @@ class PyTorchManager(ModelManager):
             partial(_save_model, model=kwargs["model"]),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         if "optimizer" in kwargs:
             params = kwargs["optimizer"].state_dict()
             params = convert_numpy(params)

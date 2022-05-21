@@ -62,7 +62,7 @@ def get_predictions(sess: InferenceSession, classification_data: Tuple):
 
 def test_model_info(onnx_manager, onnx_model):
     exp = {"library": "onnx", "type": "ModelProto"}
-    res = onnx_manager._model_info(model=onnx_model)
+    res = onnx_manager.model_info(model=onnx_model)
     assert exp == res
 
 
@@ -78,9 +78,8 @@ def test_is_same_library(onnx_manager, ml_library, should_match):
 
 
 def test_model_data(onnx_manager, onnx_model):
-    exp = {}
-    res = onnx_manager._model_data(model=onnx_model)
-    assert exp == res
+    res = onnx_manager.model_data(model=onnx_model)
+    assert {} == res
 
 
 def test_required_kwargs(onnx_manager):
@@ -98,7 +97,7 @@ def test_get_functions(onnx_manager, onnx_model):
 
 
 def test_get_params(onnx_manager, onnx_model):
-    res = onnx_manager._get_params(model=onnx_model)
+    res = onnx_manager.get_params(model=onnx_model)
     assert {} == res
 
 

@@ -59,7 +59,7 @@ class GensimManager(ModelManager):
             funcs.append(partial(_save_vectors, model=kwargs["model"]))
         return funcs
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         params = kwargs["model"].__dict__
         # The instance attributes contain a lot of information, including
         # the model's keyed vectors; so we filter this down for now

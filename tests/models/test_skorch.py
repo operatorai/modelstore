@@ -79,7 +79,7 @@ def skorch_manager():
 
 def test_model_info(skorch_manager, skorch_model):
     exp = {"library": "skorch", "type": "NeuralNetClassifier"}
-    res = skorch_manager._model_info(model=skorch_model)
+    res = skorch_manager.model_info(model=skorch_model)
     assert exp == res
 
 
@@ -96,9 +96,8 @@ def test_is_same_library(skorch_manager, ml_library, should_match):
 
 
 def test_model_data(skorch_manager, skorch_model):
-    exp = {}
-    res = skorch_manager._model_data(model=skorch_model)
-    assert exp == res
+    res = skorch_manager.model_data(model=skorch_model)
+    assert {} == res
 
 
 def test_required_kwargs(skorch_manager):
@@ -119,7 +118,7 @@ def test_get_functions(skorch_manager, skorch_model):
 
 def test_get_params(skorch_manager, skorch_model):
     try:
-        result = skorch_manager._get_params(model=skorch_model)
+        result = skorch_manager.get_params(model=skorch_model)
         json.dumps(result)
     except Exception as e:
         pytest.fail(f"Exception when dumping params: {str(e)}")

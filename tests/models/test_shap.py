@@ -43,7 +43,7 @@ def shap_manager():
 
 def test_model_info(shap_manager, shap_explainer):
     exp = {"library": "shap", "type": "Tree"}
-    res = shap_manager._model_info(explainer=shap_explainer)
+    res = shap_manager.model_info(explainer=shap_explainer)
     assert exp == res
 
 
@@ -59,9 +59,8 @@ def test_is_same_library(shap_manager, ml_library, should_match):
 
 
 def test_model_data(shap_manager, shap_explainer):
-    exp = {}
-    res = shap_manager._model_data(explainer=shap_explainer)
-    assert exp == res
+    res = shap_manager.model_data(explainer=shap_explainer)
+    assert {} == res
 
 
 def test_required_kwargs(shap_manager):
@@ -80,7 +79,7 @@ def test_get_functions(shap_manager, shap_explainer):
 
 
 def test_get_params(shap_manager, shap_explainer):
-    res = shap_manager._get_params(explainer=shap_explainer)
+    res = shap_manager.get_params(explainer=shap_explainer)
     assert {} == res
 
 

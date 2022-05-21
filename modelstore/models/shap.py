@@ -38,7 +38,7 @@ class ShapManager(ModelManager):
     def _required_kwargs(self):
         return ["explainer"]
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> dict:
         """ Returns meta-data about the explainer type """
         return {
             "library": self.ml_library,

@@ -63,7 +63,7 @@ class SKLearnManager(ModelManager):
 
         return isinstance(kwargs.get("model"), BaseEstimator)
 
-    def _model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> dict:
         data = {}
         if "X_train" in kwargs:
             features = datasets.describe_dataset(kwargs["X_train"])
@@ -80,7 +80,7 @@ class SKLearnManager(ModelManager):
         # @Future idea: export/save in onnx format?
         return [partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB)]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
         that are available
