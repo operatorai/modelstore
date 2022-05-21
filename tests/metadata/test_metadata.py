@@ -50,8 +50,3 @@ def test_generate():
     assert all(k in res for k in ["model", "storage", "code", "modelstore"])
     assert res["modelstore"] == modelstore.__version__
 
-
-def test_remove_nones():
-    exp = {"a": "value-a"}
-    res = metadata._remove_nones({"a": "value-a", "b": None})
-    assert exp == res
