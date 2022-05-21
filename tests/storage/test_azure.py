@@ -248,7 +248,6 @@ def test_storage_location():
     prefix = "/path/to/file"
     expected = StorageMetaData.from_container(
         storage_type="azure:blob-storage",
-        bucket=None,
         container=_MOCK_CONTAINER_NAME,
         prefix=prefix,
     )

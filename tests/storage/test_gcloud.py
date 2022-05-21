@@ -293,7 +293,7 @@ def test_storage_location():
 
     # Asserts that the location meta data is correctly formatted
     prefix = remote_file_path()
-    expected = StorageMetaData.from_container(
+    expected = StorageMetaData.from_bucket(
         storage_type="google:cloud-storage",
         bucket=_MOCK_BUCKET_NAME,
         prefix=prefix,

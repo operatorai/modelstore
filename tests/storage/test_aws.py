@@ -191,7 +191,7 @@ def test_storage_location():
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_path()
     # Asserts that the location meta data is correctly formatted
-    expected = StorageMetaData.from_container(
+    expected = StorageMetaData.from_bucket(
         storage_type="aws:s3",
         bucket=_MOCK_BUCKET_NAME,
         prefix=prefix,

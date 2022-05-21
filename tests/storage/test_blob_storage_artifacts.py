@@ -12,10 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+from dataclasses import asdict
 from pathlib import Path
 
 import pytest
-from modelstore.metadata import metadata
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.model.model import ModelMetaData
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
     get_archive_path,
@@ -49,9 +51,9 @@ def test_upload(mock_blob_storage, mock_model_file):
             mock_model_file,
         ),
     )
-    rsp = mock_blob_storage.upload("test-domain", mock_model_file)
-    assert rsp["type"] == "file_system"
-    assert rsp["path"] == model_path
+    meta_data = mock_blob_storage.upload("test-domain", mock_model_file)
+    assert meta_data.type == "file_system"
+    assert meta_data.path == model_path
     assert os.path.exists(model_path)
 
 
@@ -71,17 +73,22 @@ def test_delete_model(mock_blob_storage, mock_model_file):
     model_id = "test-model-id"
     model_state = "test-state"
     storage_meta = mock_blob_storage.upload(domain, mock_model_file)
-    meta_data = metadata.generate(
-        model_meta={"model_id": "test-model-id"},
-        storage_meta=storage_meta,
-        code_meta={},
+    meta_data = MetaData.generate(
+        code_meta_data=None,
+        model_meta_data=ModelMetaData.generate(
+            domain=domain,
+            model_id=model_id,
+            model_type=None,
+        ),
+        storage_meta_data=storage_meta,
     )
-    mock_blob_storage.set_meta_data(domain, model_id, meta_data)
+    meta_data_dict = asdict(meta_data)
+    mock_blob_storage.set_meta_data(domain, model_id, meta_data_dict)
     mock_blob_storage.create_model_state(model_state)
     mock_blob_storage.set_model_state(domain, model_id, model_state)
 
     # Delete it
-    mock_blob_storage.delete_model(domain, model_id, meta_data, skip_prompt=True)
+    mock_blob_storage.delete_model(domain, model_id, meta_data_dict, skip_prompt=True)
 
     # Assert it is deleted
     model_path = os.path.join(
