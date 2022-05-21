@@ -206,7 +206,7 @@ class GoogleCloudStorage(BlobStorage):
 
     def _storage_location(self, prefix: str) -> StorageMetaData:
         """Returns a dict of the location the artifact was stored"""
-        return StorageMetaData.from_container(
+        return StorageMetaData.from_bucket(
             storage_type="google:cloud-storage",
             bucket=self.bucket_name,
             prefix=prefix,

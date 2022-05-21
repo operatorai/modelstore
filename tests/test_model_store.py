@@ -20,10 +20,10 @@ from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.utils.exceptions import (
     ModelExistsException,
     ModelNotFoundException,
-    ModelNotFoundException,
 )
 
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture

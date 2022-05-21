@@ -138,7 +138,6 @@ class AzureBlobStorage(BlobStorage):
         """Returns a dict of the location the artifact was stored"""
         return StorageMetaData.from_container(
             storage_type="azure:blob-storage",
-            bucket=None,
             container=self.container_name,
             prefix=prefix,
         )
