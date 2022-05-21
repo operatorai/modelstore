@@ -16,12 +16,13 @@ import subprocess
 import pytest
 
 import git
-from modelstore.metadata import revision
+from modelstore.metadata.code import revision
 
-# pylint: disable=protected-access,missing-function-docstring,bare-except
+# pylint: disable=missing-function-docstring
 
 
 def test_repo_name():
+    # pylint: disable=protected-access
     repo = git.Repo(search_parent_directories=True)
     repo_name = revision._repo_name(repo)
     if repo_name == "":
@@ -43,6 +44,7 @@ def test_git_meta():
     try:
         res = subprocess.check_output("git log . | head -n 1", shell=True)
         exp = res.decode("utf-8").strip().split(" ")[1]
+        # pylint: disable=bare-except
     except:
         # Repo is not a git repo
         return

@@ -14,7 +14,8 @@
 from datetime import datetime
 
 import modelstore
-from modelstore.metadata import dependencies, revision, runtime
+from modelstore.metadata import dependencies, runtime
+from modelstore.metadata.code import revision
 
 
 def generate_for_model(
