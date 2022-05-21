@@ -24,8 +24,8 @@ class ModelMetaData:
     domain: str
     model_id: str
     model_type: ModelTypeMetaData
-    parameters: dict # @TODO
-    data: dict # @TODO
+    parameters: dict
+    data: dict # @TODO this could be a dataclass
 
     @classmethod
     def generate(cls,
