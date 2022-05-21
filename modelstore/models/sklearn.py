@@ -16,7 +16,7 @@ import os
 from functools import partial
 from typing import Any
 
-from modelstore.metadata import datasets
+from modelstore.metadata.model import datasets
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
