@@ -20,6 +20,7 @@ import os
 import tempfile
 import click
 
+from modelstore.metadata.storage.storage import StorageMetaData
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
@@ -93,8 +94,8 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     @abstractmethod
-    def _storage_location(self, prefix: str) -> dict:
-        """Returns a dict of the location the artifact was stored"""
+    def _storage_location(self, prefix: str) -> StorageMetaData:
+        """Returns a dataclass of the location the artifact was stored"""
         raise NotImplementedError()
 
     @abstractmethod
@@ -119,7 +120,7 @@ class BlobStorage(CloudStorage):
             get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
         )
 
-    def upload(self, domain: str, local_path: str) -> dict:
+    def upload(self, domain: str, local_path: str) -> StorageMetaData:
         # Upload the archive into storage
         archive_remote_path = get_archive_path(self.root_prefix, domain, local_path)
         prefix = self._push(local_path, archive_remote_path)
