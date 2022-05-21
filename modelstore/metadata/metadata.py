@@ -12,10 +12,24 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from datetime import datetime
+from dataclasses import dataclass
 
 import modelstore
 from modelstore.metadata.code import revision, dependencies, runtime
 from modelstore.metadata.utils.dicts import remove_nones
+from modelstore.metadata.code import code
+from modelstore.metadata.model import model
+from modelstore.metadata.storage import storage
+
+@dataclass
+class MetaData:
+
+    """ MetaData holds all of the fields that are captured 
+    when a model is saved """
+
+    code: code.CodeMetaData
+    model: model.ModelMetaData
+    storage: storage.StorageMetaData
 
 
 def generate_for_model(
