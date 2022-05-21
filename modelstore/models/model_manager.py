@@ -19,6 +19,8 @@ import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
+from modelstore.metadata.code import code
+from modelstore.metadata.model import model
 from modelstore.metadata import metadata
 from modelstore.metadata.code.dependencies import save_dependencies, save_model_info
 from modelstore.storage.storage import CloudStorage
@@ -54,7 +56,8 @@ class ModelManager(ABC):
         are useful to log info about"""
         return ["pip", "setuptools", "numpy", "scipy", "pandas"]
 
-    def _get_dependencies(self) -> list:
+    def get_dependencies(self) -> list:
+        """ Returns the full list of dependencies """
         return self.required_dependencies() + self.optional_dependencies()
 
     @abstractmethod
@@ -110,6 +113,7 @@ class ModelManager(ABC):
         """Whether the meta-data of a model artifact matches a model manager"""
         return meta_data.get("library") == self.ml_library
 
+    # pylint: disable=unused-argument
     def model_data(self, **kwargs) -> dict:
         """Returns meta-data about the data used to train the model"""
         # @ Future
@@ -120,7 +124,7 @@ class ModelManager(ABC):
         part of the artifacts archive.
         """
         file_paths = [
-            save_dependencies(tmp_dir, self._get_dependencies()),
+            save_dependencies(tmp_dir, self.get_dependencies()),
             save_model_info(tmp_dir, self.model_info(**kwargs)),
         ]
         for func in self._get_functions(**kwargs):
@@ -175,7 +179,7 @@ class ModelManager(ABC):
         domain: str,
         model_id: str,
         **kwargs,
-    ) -> dict:
+    ) -> metadata.MetaData:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model and uploads the archive to storage.
@@ -186,30 +190,35 @@ class ModelManager(ABC):
         _validate_domain(domain)
         self._validate_kwargs(**kwargs)
 
-        model_meta = metadata.generate_for_model(
+        # Create meta data about the model & code
+        code_meta_data = code.generate(
+            deps_list=self.get_dependencies()
+        )
+        model_meta_data = model.generate(
             domain=domain,
             model_id=model_id,
-            model_info=self.model_info(**kwargs),
-            model_params=_format_numpy(self.get_params(**kwargs)),
-            model_data=self.model_data(**kwargs),
+            model_type=self.model_info(**kwargs),
+            parameters=_format_numpy(self.get_params(**kwargs)),
+            data=self.model_data(**kwargs),
         )
-
-        # Meta-data about the code
-        code_meta = metadata.generate_for_code(self._get_dependencies())
 
         # Create the model archive and return
         # meta-data about its location
         archive_path = self._create_archive(**kwargs)
 
         # Upload the model archive and any additional extras
-        storage_meta = self.storage.upload(domain, archive_path)
+        storage_meta_data = self.storage.upload(domain, archive_path)
 
         # Generate the combined meta-data and add it to the store
-        meta_data = metadata.generate(model_meta, storage_meta, code_meta)
-        self.storage.set_meta_data(domain, model_id, meta_data)
+        # meta_data = metadata.generate(model_meta, storage_meta, code_meta)
+        # self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
 
-        return meta_data
+        return metadata.generate(
+            code_meta_data=code_meta_data,
+            model_meta_data=model_meta_data,
+            storage_meta_data=storage_meta_data,
+        )
 
 
 def _format_numpy(model_params: dict) -> dict:
