@@ -18,7 +18,8 @@ import sys
 import pytest
 from modelstore.metadata.code import dependencies
 
-# pylint: disable=protected-access,missing-function-docstring
+# pylint: disable=protected-access
+# pylint: disable=missing-function-docstring
 
 
 def test_get_version():

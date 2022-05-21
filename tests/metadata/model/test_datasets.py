@@ -17,6 +17,7 @@ import pytest
 from modelstore.metadata.model import datasets
 
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
