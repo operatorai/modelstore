@@ -19,34 +19,34 @@ from modelstore.metadata import metadata
 # pylint: disable=protected-access,missing-function-docstring
 
 
-def test_generate_for_model():
-    exp = {
-        "domain": "test-model",
-        "model_id": "test-model-id",
-        "model_type": {"library": "model-library", "name": "model-class"},
-    }
-    res = metadata.generate_for_model(
-        domain="test-model",
-        model_id="test-model-id",
-        model_info={"library": "model-library", "name": "model-class"},
-    )
-    assert exp == res
+# def test_generate_for_model():
+#     exp = {
+#         "domain": "test-model",
+#         "model_id": "test-model-id",
+#         "model_type": {"library": "model-library", "name": "model-class"},
+#     }
+#     res = metadata.generate_for_model(
+#         domain="test-model",
+#         model_id="test-model-id",
+#         model_info={"library": "model-library", "name": "model-class"},
+#     )
+#     assert exp == res
 
 
-def test_generate_for_code():
-    deps_list = ["pytest"]
-    res = metadata.generate_for_code(deps_list)
-    assert res["runtime"].startswith("python")
-    # Warning: not testing for presence of "git" key, as this is flaky
-    # when run via Github actions
-    assert all([k in res for k in ["user", "created", "dependencies"]])
-    assert res["dependencies"]["pytest"] == pytest.__version__
-    if "git" in res:
-        assert res["git"]["repository"] == "modelstore"
+# def test_generate_for_code():
+#     deps_list = ["pytest"]
+#     res = metadata.generate_for_code(deps_list)
+#     assert res["runtime"].startswith("python")
+#     # Warning: not testing for presence of "git" key, as this is flaky
+#     # when run via Github actions
+#     assert all([k in res for k in ["user", "created", "dependencies"]])
+#     assert res["dependencies"]["pytest"] == pytest.__version__
+#     if "git" in res:
+#         assert res["git"]["repository"] == "modelstore"
 
 
-def test_generate():
-    res = metadata.generate(model_meta=None, storage_meta=None, code_meta=None)
-    assert all(k in res for k in ["model", "storage", "code", "modelstore"])
-    assert res["modelstore"] == modelstore.__version__
+# def test_generate():
+#     res = metadata.generate(model_meta=None, storage_meta=None, code_meta=None)
+#     assert all(k in res for k in ["model", "storage", "code", "modelstore"])
+#     assert res["modelstore"] == modelstore.__version__
 

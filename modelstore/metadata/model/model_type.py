@@ -20,13 +20,13 @@ class ModelTypeMetaData:
     the model type when it is saved """
 
     library: str
-    type: str 
+    type: str
 
-
-def generate(library: str, class_name: str) -> ModelTypeMetaData:
-    """ Generates the meta data for the type of model 
-    that is being saved """
-    return ModelTypeMetaData(
-        library=library,
-        type=class_name,
-    )
+    @classmethod
+    def generate(cls, library: str, class_name: str) -> "ModelTypeMetaData":
+        """ Generates the meta data for the type of model 
+        that is being saved """
+        return ModelTypeMetaData(
+            library=library,
+            type=class_name,
+        )

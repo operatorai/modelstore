@@ -19,14 +19,48 @@ class StorageMetaData:
     """ StorageMetaData contains fields that are captured about
     where the model type is saved """
 
+    type: str # Constant to describe the storage type
+
+    # Path-like storage
     path: str
-    type: str
+    
+    # Container-like storage
+    bucket: str
+    container: str # Retained for backwards compatibility
+    prefix: str
 
+    @classmethod
+    def from_path(cls, storage_type: str, path: str) -> "StorageMetaData":
+        """ Generates the meta data about where the model
+        is going to be saved """
+        return StorageMetaData(
+            type=storage_type,
+            path=path,
+            bucket=None,
+            container=None,
+            prefix=None,
+        )
 
-def generate(storage_type: str, path: str) -> StorageMetaData:
-    """ Generates the meta data about where the model
-    is going to be saved """
-    return StorageMetaData(
-        path=path,
-        type=storage_type,
-    )
+    @classmethod
+    def from_bucket(cls, storage_type: str, bucket: str, prefix: str) -> "StorageMetaData":
+        """ Generates the meta data about where the model
+        is going to be saved """
+        return StorageMetaData(
+            type=storage_type,
+            path=None,
+            bucket=bucket,
+            container=None,
+            prefix=prefix,
+        )
+
+    @classmethod
+    def from_container(cls, storage_type: str, container: str, prefix: str) -> "StorageMetaData":
+        """ Generates the meta data about where the model
+        is going to be saved """
+        return StorageMetaData(
+            type=storage_type,
+            path=None,
+            bucket=None,
+            container=container,
+            prefix=prefix,
+        )

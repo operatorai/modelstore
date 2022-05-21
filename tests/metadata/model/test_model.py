@@ -11,21 +11,21 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from modelstore.metadata.model import model
+from modelstore.metadata.model.model import ModelMetaData, ModelTypeMetaData
 
 # pylint: disable=missing-function-docstring
 
 def test_generate():
-    expected = model.ModelMetaData(
+    expected = ModelMetaData(
         domain="domain",
         model_id="model_id",
-        model_type=model.ModelTypeMetaData("library", "class-name"),
+        model_type=ModelTypeMetaData("library", "class-name"),
         parameters=None,
         data=None
     )
-    result = model.generate(
+    result = ModelMetaData.generate(
         "domain",
         "model_id",
-        model.ModelTypeMetaData("library", "class-name"),
+        ModelTypeMetaData("library", "class-name"),
     )
     assert expected == result

@@ -11,14 +11,41 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from modelstore.metadata.storage import storage
+from modelstore.metadata.storage.storage import StorageMetaData
 
 # pylint: disable=missing-function-docstring
 
-def test_generate():
-    expected = storage.StorageMetaData(
-        path="/path/to/files",
+def test_generate_from_path():
+    expected = StorageMetaData(
         type="file_system",
+        path="/path/to/files",
+        bucket=None,
+        container=None,
+        prefix=None,
     )
-    result = storage.generate("file_system", "/path/to/files")
+    result = StorageMetaData.from_path("file_system", "/path/to/files")
+    assert expected == result
+
+
+def test_generate_from_container():
+    expected = StorageMetaData(
+        type="container-system",
+        path=None,
+        bucket=None,
+        container="container-name",
+        prefix="/path/to/files",
+    )
+    result = StorageMetaData.from_container("container-system", "container-name", "/path/to/files")
+    assert expected == result
+
+
+def test_generate_from_bucket():
+    expected = StorageMetaData(
+        type="bucket-system",
+        path=None,
+        bucket="bucket-name",
+        container=None,
+        prefix="/path/to/files",
+    )
+    result = StorageMetaData.from_bucket("bucket-system", "bucket-name", "/path/to/files")
     assert expected == result

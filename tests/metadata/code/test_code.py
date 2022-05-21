@@ -14,7 +14,7 @@
 from unittest.mock import patch
 from datetime import datetime
 
-from modelstore.metadata.code import code
+from modelstore.metadata.code.code import CodeMetaData
 
 # pylint: disable=missing-function-docstring
 
@@ -25,12 +25,12 @@ def test_generate(mock_runtime, mock_revision):
     mock_runtime.get_user.return_value = "username"
     mock_runtime.get_python_version.return_value = "1.2.3"
     mock_revision.git_meta.return_value = {"repository": "test"}
-    expected = code.CodeMetaData(
+    expected = CodeMetaData(
         runtime="python:1.2.3",
         user="username",
         created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
         dependencies={},
         git={"repository": "test"},
     )
-    result = code.generate([])
+    result = CodeMetaData.generate([])
     assert expected == result

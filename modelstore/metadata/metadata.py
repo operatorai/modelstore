@@ -14,9 +14,9 @@
 from dataclasses import dataclass
 
 import modelstore
-from modelstore.metadata.code import code
-from modelstore.metadata.model import model
-from modelstore.metadata.storage import storage
+from modelstore.metadata.code.code import CodeMetaData
+from modelstore.metadata.model.model import ModelMetaData
+from modelstore.metadata.storage.storage import StorageMetaData
 
 @dataclass
 class MetaData:
@@ -24,25 +24,25 @@ class MetaData:
     """ MetaData holds all of the fields that are captured
     when a model is saved """
 
-    code: code.CodeMetaData
-    model: model.ModelMetaData
-    storage: storage.StorageMetaData
+    code: CodeMetaData
+    model: ModelMetaData
+    storage: StorageMetaData
     modelstore: str # Version of modelstore
 
-
-def generate(
-    code_meta_data: code.CodeMetaData,
-    model_meta_data: model.ModelMetaData,
-    storage_meta_data: storage.StorageMetaData
-) -> MetaData:
-    """ Generates all of the meta data for a model 
-    and adds the modelstore version """
-    return MetaData(
-        code=code_meta_data,
-        model=model_meta_data,
-        storage=storage_meta_data,
-        modelstore=modelstore.__version__,
-    )
+    @classmethod
+    def generate(cls,
+        code_meta_data: CodeMetaData,
+        model_meta_data: ModelMetaData,
+        storage_meta_data: StorageMetaData
+    ) -> "MetaData":
+        """ Generates all of the meta data for a model 
+        and adds the modelstore version """
+        return MetaData(
+            code=code_meta_data,
+            model=model_meta_data,
+            storage=storage_meta_data,
+            modelstore=modelstore.__version__,
+        )
 
 
 # def generate_for_model(

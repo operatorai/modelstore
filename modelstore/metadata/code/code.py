@@ -30,14 +30,14 @@ class CodeMetaData:
     dependencies: dict
     git: dict
 
-
-def generate(deps_list: list) -> CodeMetaData:
-    """ Generates the meta data for the code being run to create the model """
-    versioned_deps = dependencies.get_dependency_versions(deps_list)
-    return CodeMetaData(
-        runtime=f"python:{runtime.get_python_version()}",
-        user=runtime.get_user(),
-        created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
-        dependencies=remove_nones(versioned_deps),
-        git=revision.git_meta()
-    )
+    @classmethod
+    def generate(cls, deps_list: list) -> "CodeMetaData":
+        """ Generates the meta data for the code being run to create the model """
+        versioned_deps = dependencies.get_dependency_versions(deps_list)
+        return CodeMetaData(
+            runtime=f"python:{runtime.get_python_version()}",
+            user=runtime.get_user(),
+            created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+            dependencies=remove_nones(versioned_deps),
+            git=revision.git_meta()
+        )

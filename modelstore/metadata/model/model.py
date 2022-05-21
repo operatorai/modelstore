@@ -27,18 +27,18 @@ class ModelMetaData:
     parameters: dict # @TODO
     data: dict # @TODO
 
-
-def generate(
-    domain: str,
-    model_id: str,
-    model_type: ModelTypeMetaData,
-    parameters: dict = None,
-    data: dict = None) -> ModelMetaData:
-    """ Generates the meta data for the model that is being saved """
-    return ModelMetaData(
-        domain=domain,
-        model_id=model_id,
-        model_type=model_type,
-        parameters=parameters,
-        data=data
-    )
+    @classmethod
+    def generate(cls,
+        domain: str,
+        model_id: str,
+        model_type: ModelTypeMetaData,
+        parameters: dict = None,
+        data: dict = None) -> "ModelMetaData":
+        """ Generates the meta data for the model that is being saved """
+        return ModelMetaData(
+            domain=domain,
+            model_id=model_id,
+            model_type=model_type,
+            parameters=parameters,
+            data=data
+        )
