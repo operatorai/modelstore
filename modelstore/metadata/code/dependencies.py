@@ -68,11 +68,6 @@ def module_exists(modname: str) -> bool:
 
 def save_dependencies(tmp_dir: str, deps: list) -> str:
     """ Saves all of the current dependencies to file """
-    deps_info = get_dependency_versions(deps)
+    deps_info = get_dependency_versions(deps) 
     deps_info = {k: v for k, v in deps_info.items() if v is not None}
     return save_json(tmp_dir, _PYTHON_INFO_FILE, deps_info)
-
-
-# def save_model_info(tmp_dir, model_info: dict) -> str:
-#     """ Saves all of the meta-data about a model to file"""
-#     return save_json(tmp_dir, _MODEL_TYPE_FILE, model_info)
