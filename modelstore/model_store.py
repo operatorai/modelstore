@@ -157,6 +157,7 @@ class ModelStore:
     with models.
 
     @TODO: There is no function to get the meta-data for a state
+    @TODO: Model states are currently raw dictionaries
     """
 
     def list_model_states(self) -> list:
@@ -249,8 +250,8 @@ class ModelStore:
 
     def load(self, domain: str, model_id: str):
         """Loads a model into memory"""
-        meta_data = self.get_model_info(domain, model_id)
-        ml_library = meta_data["model"]["model_type"]["library"]
+        meta_data = self.storage.get_meta_data(domain, model_id)
+        ml_library = meta_data.model.model_type.library
         if ml_library == MultipleModelsManager.NAME:
             manager = MultipleModelsManager([], self.storage)
         else:
