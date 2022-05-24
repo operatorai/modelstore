@@ -28,6 +28,18 @@ def model_type_meta_data():
     )
 
 
+@pytest.fixture
+def nested_model_type_meta_data():
+    return ModelTypeMetaData(
+        library="multiple-models",
+        type=None,
+        models=[
+            ModelTypeMetaData.generate("sklearn", "RandomForestClassifier"),
+            ModelTypeMetaData.generate("shap", "TreeExplainer"),
+        ],
+    )
+
+
 def test_generate(model_type_meta_data):
     result = ModelTypeMetaData.generate(
         library="a-library",
@@ -41,3 +53,21 @@ def test_encode_and_decode(model_type_meta_data):
     json_result = model_type_meta_data.to_json()
     result = ModelTypeMetaData.from_json(json_result)
     assert result == model_type_meta_data
+
+
+def test_generate_multiple_models(nested_model_type_meta_data):
+    result = ModelTypeMetaData.generate(
+        "multiple-models",
+        models=[
+            ModelTypeMetaData.generate("sklearn", "RandomForestClassifier"),
+            ModelTypeMetaData.generate("shap", "TreeExplainer"),
+        ]
+    )
+    assert nested_model_type_meta_data == result
+
+
+def test_encode_and_decode_nested(nested_model_type_meta_data):
+    # pylint: disable=no-member
+    json_result = nested_model_type_meta_data.to_json()
+    result = ModelTypeMetaData.from_json(json_result)
+    assert result == nested_model_type_meta_data 

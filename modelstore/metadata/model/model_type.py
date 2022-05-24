@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import List, Dict
+from typing import List, Dict, Optional
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
@@ -25,7 +25,7 @@ class ModelTypeMetaData:
 
     library: str
     type: str
-    models: List[Dict] # Used by the multiple model manager
+    models: Optional[List['ModelTypeMetaData']] # Used by the multiple model manager
 
     @classmethod
     def generate(cls, library: str, class_name: str = None, models: List[Dict] = None) -> "ModelTypeMetaData":
