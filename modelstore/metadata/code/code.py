@@ -13,11 +13,13 @@
 #    limitations under the License.
 from datetime import datetime
 from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 
 from modelstore.metadata.code import runtime, dependencies, revision
 from modelstore.metadata.utils.dicts import remove_nones
 
 
+@dataclass_json
 @dataclass
 class CodeMetaData:
 

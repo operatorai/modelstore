@@ -14,23 +14,37 @@
 from unittest.mock import patch
 from datetime import datetime
 
+import pytest
+
 from modelstore.metadata.code.code import CodeMetaData
 
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
 
-
-@patch("modelstore.metadata.code.code.revision")
-@patch("modelstore.metadata.code.code.runtime")
-def test_generate(mock_runtime, mock_revision):
-    mock_runtime.get_user.return_value = "username"
-    mock_runtime.get_python_version.return_value = "1.2.3"
-    mock_revision.git_meta.return_value = {"repository": "test"}
-    expected = CodeMetaData(
+@pytest.fixture
+def code_meta_data():
+    return CodeMetaData(
         runtime="python:1.2.3",
         user="username",
         created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
         dependencies={},
         git={"repository": "test"},
     )
+
+
+@patch("modelstore.metadata.code.code.revision")
+@patch("modelstore.metadata.code.code.runtime")
+def test_generate(mock_runtime, mock_revision, code_meta_data):
+    mock_runtime.get_user.return_value = "username"
+    mock_runtime.get_python_version.return_value = "1.2.3"
+    mock_revision.git_meta.return_value = {"repository": "test"}
     result = CodeMetaData.generate([])
-    assert expected == result
+    assert code_meta_data == result
+
+
+def test_encode_and_decode(code_meta_data):
+    # pylint: disable=bare-except
+    # pylint: disable=no-member
+    json_result = code_meta_data.to_json()
+    result = CodeMetaData.from_json(json_result)
+    assert result == code_meta_data
