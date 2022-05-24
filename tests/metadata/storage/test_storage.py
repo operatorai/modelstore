@@ -11,9 +11,13 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import json 
 from modelstore.metadata.storage.storage import StorageMetaData
 
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
+# pylint: disable=no-member
+
 
 def test_generate_from_path():
     expected = StorageMetaData(
@@ -25,6 +29,13 @@ def test_generate_from_path():
     )
     result = StorageMetaData.from_path("file_system", "/path/to/files")
     assert expected == result
+
+    result_dict = json.loads(result.to_json())
+    assert result_dict["container"] is None
+    assert result_dict["type"] == "file_system"
+
+    loaded = StorageMetaData.from_json(result.to_json())
+    assert loaded == expected
 
 
 def test_generate_from_container():

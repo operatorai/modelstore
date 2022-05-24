@@ -12,7 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 
+@dataclass_json
 @dataclass
 class StorageMetaData:
 
@@ -26,7 +28,7 @@ class StorageMetaData:
     
     # Container-like storage
     bucket: str
-    container: str # Retained for backwards compatibility
+    container: str # Retained for backwards compatibility (Azure)
     prefix: str
 
     @classmethod

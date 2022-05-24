@@ -11,10 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json
 
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 
+@dataclass_json
 @dataclass
 class ModelMetaData:
 
@@ -24,8 +26,8 @@ class ModelMetaData:
     domain: str
     model_id: str
     model_type: ModelTypeMetaData
-    parameters: dict
-    data: dict # @TODO this could be a dataclass
+    parameters: dict = field(default_factory=lambda: {})
+    data: dict = field(default_factory=lambda: {}) # @TODO this could be a nested dataclass
 
     @classmethod
     def generate(cls,

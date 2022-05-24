@@ -43,7 +43,6 @@ def test_generate(mock_runtime, mock_revision, code_meta_data):
 
 
 def test_encode_and_decode(code_meta_data):
-    # pylint: disable=bare-except
     # pylint: disable=no-member
     json_result = code_meta_data.to_json()
     result = CodeMetaData.from_json(json_result)
