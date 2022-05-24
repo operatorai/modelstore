@@ -52,3 +52,12 @@ class MetaData:
         # pylint: disable=unspecified-encoding
         with open(target_file, "w") as out:
             out.write(self.to_json())
+
+    @classmethod
+    def loads(cls, source_file: str) -> "MetaData":
+        """ Loads the data class from a JSON source_file """
+        # pylint: disable=no-member
+        # pylint: disable=unspecified-encoding
+        with open(source_file, "r") as lines:
+            content = lines.read()
+        return MetaData.from_json(content)

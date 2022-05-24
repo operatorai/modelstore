@@ -12,7 +12,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import json
 from datetime import datetime
 import pytest
 
@@ -70,15 +69,13 @@ def test_generate(meta_data):
     assert decoded.storage == meta_data.storage
 
 
-def test_dumps(meta_data, tmp_path):
+def test_dump_and_load(meta_data, tmp_path):
     target_file = os.path.join(tmp_path, "meta.json")
     assert not os.path.exists(target_file)
     meta_data.dumps(target_file)
     assert os.path.exists(target_file)
     # pylint: disable=bare-except
     # pylint: disable=unspecified-encoding
-    try:
-        with open(target_file, "r") as lines:
-            json.loads(lines.read())
-    except:
-        pytest.fail("failed to load json meta data")
+
+    loaded = MetaData.loads(target_file)
+    assert loaded == meta_data
