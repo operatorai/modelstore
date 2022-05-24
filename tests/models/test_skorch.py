@@ -122,8 +122,8 @@ def test_get_params(skorch_manager, skorch_model):
     try:
         result = skorch_manager.get_params(model=skorch_model)
         json.dumps(result)
-    except Exception as e:
-        pytest.fail(f"Exception when dumping params: {str(e)}")
+    except Exception as exc:
+        pytest.fail(f"Exception when dumping params: {str(exc)}")
 
 
 def test_load_model(tmp_path, skorch_manager, skorch_model):
@@ -132,7 +132,7 @@ def test_load_model(tmp_path, skorch_manager, skorch_model):
     assert model_path == os.path.join(tmp_path, MODEL_JOBLIB)
 
     #  Load the model
-    loaded_model = skorch_manager.load(tmp_path, {})
+    loaded_model = skorch_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(loaded_model, skorch_model)

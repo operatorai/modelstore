@@ -15,6 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -71,7 +72,7 @@ class SkorchManager(ModelManager):
         # @TODO future
         return {}
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: MetaData) -> Any:
         # @Future: check if loading into same version of joblib
         # as was used for saving
         file_name = os.path.join(model_path, MODEL_JOBLIB)

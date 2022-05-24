@@ -114,9 +114,9 @@ def test_load_model(tmp_path, shap_manager, shap_explainer, classification_data)
     assert exp == res
 
     #  Load the model
-    loaded_expl = shap_manager.load(tmp_path, {})
+    loaded_expl = shap_manager.load(tmp_path, None)
     loaded_shap_values = loaded_expl.shap_values(X_train)[0]
 
     # Expect the two to be the same
-    assert type(shap_explainer) == type(loaded_expl)
+    assert isinstance(shap_explainer, type(loaded_expl))
     assert np.allclose(shap_values, loaded_shap_values)

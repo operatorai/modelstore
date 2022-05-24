@@ -18,6 +18,8 @@ import catboost as ctb
 import numpy as np
 import pytest
 
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models import catboost
 
@@ -123,13 +125,22 @@ def test_load_model(tmp_path, catb_manager, catb_model):
     #  Load the model
     loaded_model = catb_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "type": "CatBoostClassifier",
-                },
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=ModelTypeMetaData(
+                    library=None,
+                    type="CatBoostClassifier",
+                    models=None,
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

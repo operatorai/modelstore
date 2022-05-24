@@ -72,6 +72,7 @@ class ModelManager(ABC):
             raise TypeError(f"This model is not an {self.ml_library} model!")
         return []
 
+    # pylint: disable=unused-params
     def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
@@ -89,7 +90,7 @@ class ModelManager(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: MetaData) -> Any:
         """
         Loads a model, stored in model_path, back into memory
         """
@@ -109,8 +110,8 @@ class ModelManager(ABC):
             class_name=class_name,
         )
 
-    def _get_model_type(self, meta_data: dict) -> str:
-        return meta_data["model"]["model_type"]["type"]
+    def _get_model_type(self, meta_data: MetaData) -> str:
+        return meta_data.model.model_type.type
 
     def _is_same_library(self, meta_data: dict) -> bool:
         """Whether the meta-data of a model artifact matches a model manager"""

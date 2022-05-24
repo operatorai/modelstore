@@ -18,6 +18,8 @@ import pytest
 from gensim.models import word2vec
 from gensim.test.utils import common_texts
 
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.gensim import GENSIM_MODEL, GensimManager
 
@@ -90,6 +92,7 @@ def test_get_params(gensim_manager, model_type):
     try:
         result = gensim_manager.get_params(model=model_type())
         json.dumps(result)
+        # pylint: disable=broad-except
     except Exception as exc:
         pytest.fail(f"Exception when dumping params: {str(exc)}")
 
@@ -102,13 +105,22 @@ def test_load_model(tmp_path, gensim_manager, word2vec_model):
     #  Load the model
     loaded_model = gensim_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "type": "Word2Vec",
-                },
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=ModelTypeMetaData(
+                    library=None,
+                    type="Word2Vec",
+                    models=None,
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

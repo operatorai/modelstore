@@ -131,9 +131,9 @@ def test_load_model(
     assert model_path == os.path.join(tmp_path, onnx.MODEL_FILE)
 
     #  Load the model
-    loaded_model = onnx_manager.load(tmp_path, {})
+    loaded_model = onnx_manager.load(tmp_path, None)
     loaded_pred = get_predictions(loaded_model, classification_data)
 
     # Expect the two to be the same
-    assert type(loaded_model) == type(onnx_inference)
+    assert isinstance(loaded_model, type(onnx_inference))
     assert np.allclose(model_pred, loaded_pred)

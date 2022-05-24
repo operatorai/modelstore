@@ -18,7 +18,11 @@ import pytest
 import shap as shp
 from sklearn.ensemble import RandomForestRegressor
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import (
+    MetaData, 
+    ModelMetaData
+)
+from modelstore.metadata.model.model import ModelTypeMetaData
 from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.models.shap import ShapManager, EXPLAINER_FILE
@@ -124,16 +128,25 @@ def test_load_model(tmp_path, multiple_model_manager, sklearn_tree, shap_explain
     #  Load the model
     loaded_models = multiple_model_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "models": [
-                        {"library": ShapManager.NAME},
-                        {"library": SKLearnManager.NAME},
-                    ]
-                }
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=ModelTypeMetaData(
+                    library=None,
+                    type=None,
+                    models=[
+                        ModelTypeMetaData(ShapManager.NAME, None, None),
+                        ModelTypeMetaData(SKLearnManager.NAME, None, None),
+                    ],
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two models to have been loaded

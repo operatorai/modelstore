@@ -158,7 +158,7 @@ def test_load_model(tmp_path, pytorch_manager, pytorch_model):
     torch.save(pytorch_model, os.path.join(tmp_path, MODEL_PT))
 
     #  Load the model
-    loaded_model = pytorch_manager.load(tmp_path, {})
+    loaded_model = pytorch_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(pytorch_model, loaded_model)

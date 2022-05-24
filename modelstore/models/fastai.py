@@ -16,6 +16,7 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -76,7 +77,7 @@ class FastAIManager(ModelManager):
             partial(_export_model, learner=kwargs["learner"]),
         ]
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: MetaData) -> Any:
         # pylint: disable=import-outside-toplevel
         import fastai
 
@@ -85,7 +86,7 @@ class FastAIManager(ModelManager):
         else:
             from fastai.learner import load_learner
 
-        version = meta_data["code"].get("dependencies", {}).get("fastai", "?")
+        version = meta_data.code.dependencies.get(FastAIManager.NAME, "?")
         if version != fastai.__version__:
             logger.warn(
                 "Model was saved with fastai==%s, trying to load it with fastai==%s",

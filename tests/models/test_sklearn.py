@@ -182,7 +182,7 @@ def test_load_model(tmp_path, sklearn_manager, sklearn_tree):
     assert model_path == os.path.join(tmp_path, MODEL_JOBLIB)
 
     #  Load the model
-    loaded_model = sklearn_manager.load(tmp_path, {})
+    loaded_model = sklearn_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert type(loaded_model) == type(sklearn_tree)

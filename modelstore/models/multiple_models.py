@@ -13,6 +13,7 @@
 #    limitations under the License.
 from typing import Any, List
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.managers import get_manager
@@ -78,10 +79,10 @@ class MultipleModelsManager(ModelManager):
             for manager in self.managers
         }
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: MetaData) -> Any:
         models = {}
-        for model_type in meta_data["model"]["model_type"]["models"]:
-            ml_library = model_type["library"]
+        for model_type in meta_data.model.model_type.models:
+            ml_library = model_type.library
             manager = get_manager(ml_library, self.storage)
             models[ml_library] = manager.load(model_path, meta_data)
         return models

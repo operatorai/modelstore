@@ -131,7 +131,7 @@ def test_load_model(tmp_path, prophet_manager, prophet_model):
         out.write(json.dumps(model_to_json(prophet_model)))
 
     #  Load the model
-    loaded_model = prophet_manager.load(tmp_path, {})
+    loaded_model = prophet_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_same_model(prophet_model, loaded_model)

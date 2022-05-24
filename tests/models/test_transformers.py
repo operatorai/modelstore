@@ -157,7 +157,7 @@ def test_load_model(tmp_path, tr_manager, tr_model, tr_config, tr_tokenizer):
 
     #  Load the model
     loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(
-        tmp_path, {}
+        tmp_path, None
     )
 
     # Expect the two to be the same

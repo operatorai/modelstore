@@ -16,6 +16,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -60,7 +61,7 @@ class LightGbmManager(ModelManager):
     def get_params(self, **kwargs) -> dict:
         return kwargs["model"].params
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: MetaData) -> Any:
         # pylint: disable=import-outside-toplevel
         import lightgbm as lgb
 

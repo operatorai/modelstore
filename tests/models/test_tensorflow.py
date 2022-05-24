@@ -158,7 +158,7 @@ def test_load_model(tmp_path, tf_manager, tf_model):
     tf_model.save(model_path)
 
     #  Load the model
-    loaded_model = tf_manager.load(tmp_path, {})
+    loaded_model = tf_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(tf_model, loaded_model)

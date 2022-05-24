@@ -17,6 +17,8 @@ import random
 import pytest
 from annoy import AnnoyIndex
 
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.annoy import MODEL_FILE, AnnoyManager, save_model
 
@@ -111,11 +113,18 @@ def test_load_model(tmp_path, annoy_manager, annoy_model):
     #  Load the model
     loaded_model = annoy_manager.load(
         tmp_path,
-        {
-            "model": {
-                "parameters": {"num_dimensions": 40, "metric": "angular"},
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=None,
+                parameters={"num_dimensions": 40, "metric": "angular"},
+                data={},
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

@@ -85,4 +85,4 @@ def test_copy_file(model_file):
 
 def test_load_model(model_file_manager):
     with pytest.raises(ValueError):
-        model_file_manager.load("model-path", {})
+        model_file_manager.load("model-path", None)

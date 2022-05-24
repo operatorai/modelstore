@@ -19,6 +19,8 @@ import mxnet as mx
 import numpy as np
 from mxnet.gluon import nn
 
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models import mxnet
 
@@ -119,11 +121,18 @@ def test_load_model(tmp_path, mxnet_manager, mxnet_model):
     #  Load the model
     loaded_model = mxnet_manager.load(
         tmp_path,
-        {
-            "model": {
-                "parameters": {"epoch": 0},
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=None,
+                parameters={"epoch": 0},
+                data={},
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
     y_loaded_pred = loaded_model(x).asnumpy()
 

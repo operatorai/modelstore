@@ -17,6 +17,8 @@ import pytest
 import xgboost as xgb
 import numpy as np
 
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models import xgboost
 
@@ -142,13 +144,22 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
     #  Load the model
     loaded_model = xgb_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "type": "XGBClassifier",
-                },
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=ModelTypeMetaData(
+                    library=None,
+                    type="XGBClassifier",
+                    models=None,
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same
@@ -177,13 +188,22 @@ def test_load_booster(tmp_path, xgb_manager, xgb_booster, classification_data):
     #  Load the model
     loaded_model = xgb_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "type": "Booster",
-                },
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=ModelTypeMetaData(
+                    library=None,
+                    type="Booster",
+                    models=None,
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

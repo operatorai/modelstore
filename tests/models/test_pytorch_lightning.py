@@ -20,6 +20,8 @@ import torch.nn.functional as F
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.pytorch_lightning import (
     MODEL_CHECKPOINT,
@@ -31,6 +33,7 @@ from modelstore.models.pytorch_lightning import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
+# pylint: disable=arguments-differ
 
 
 class ExampleLightningNet(pl.LightningModule):
@@ -65,6 +68,7 @@ def lightning_model():
 
 @pytest.fixture
 def train_loader():
+    # pylint: disable=no-member
     x = torch.rand(20, 10)
     y = torch.rand(20).view(-1, 1)
     data_set = TensorDataset(x, y)
@@ -73,6 +77,7 @@ def train_loader():
 
 @pytest.fixture
 def val_loader():
+    # pylint: disable=no-member
     x = torch.rand(2, 10)
     y = torch.rand(2).view(-1, 1)
     data_set = TensorDataset(x, y)
@@ -164,13 +169,22 @@ def test_load_model(tmp_path, lightning_manager, lightning_trainer):
     #  Load the model
     loaded_model = lightning_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "type": "ExampleLightningNet",
-                }
-            }
-        },
+        MetaData(
+            model=ModelMetaData(
+                domain=None,
+                model_id=None,
+                model_type=ModelTypeMetaData(
+                    library=None,
+                    type="ExampleLightningNet",
+                    models=None,
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

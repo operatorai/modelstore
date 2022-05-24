@@ -15,6 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.models.common import save_json
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -73,7 +74,7 @@ class TensorflowManager(ModelManager):
         is_keras = meta_data.get("library") == "keras"
         return is_tf or is_keras
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: MetaData) -> Any:
         # pylint: disable=import-outside-toplevel
         from tensorflow import keras
 

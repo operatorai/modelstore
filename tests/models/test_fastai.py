@@ -21,6 +21,8 @@ from fastai.learner import load_learner
 from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import TabularLearner, tabular_learner
 
+from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.code.code import CodeMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.fastai import (
     LEARNER_FILE,
@@ -42,6 +44,7 @@ from tests.models.utils import (
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -144,7 +147,19 @@ def test_load_model(tmp_path, fai_manager, fai_learner, classification_row):
 
     #  Load the model
     loaded_learner = fai_manager.load(
-        tmp_path, {"code": {"dependencies": {"fastai": "2.2.7"}}}
+        tmp_path,
+        MetaData(
+            model=None,
+            code=CodeMetaData(
+                runtime=None,
+                user=None,
+                created=None,
+                dependencies={"fastai": "2.2.7"},
+                git=None,
+            ),
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

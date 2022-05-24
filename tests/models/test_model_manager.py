@@ -18,6 +18,7 @@ from typing import Any, Optional, Union
 
 import pytest
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
@@ -75,7 +76,7 @@ class MockModelManager(ModelManager):
     def matches_with(self, **kwargs) -> bool:
         return True
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: MetaData) -> Any:
         raise NotImplementedError()
 
 

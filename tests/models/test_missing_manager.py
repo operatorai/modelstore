@@ -33,4 +33,4 @@ def test_missing_manager_matches_with(missing_library_manager):
 
 def test_load_model(missing_library_manager):
     with pytest.raises(ModuleNotFoundError):
-        missing_library_manager.load("model-path", {})
+        missing_library_manager.load("model-path", None)

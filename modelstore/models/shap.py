@@ -14,6 +14,7 @@
 import os
 from functools import partial
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
@@ -60,7 +61,7 @@ class ShapManager(ModelManager):
             partial(save_joblib, model=kwargs["explainer"], file_name=EXPLAINER_FILE),
         ]
 
-    def load(self, model_path: str, meta_data: dict) -> "shap.Explainer":
+    def load(self, model_path: str, meta_data: MetaData) -> "shap.Explainer":
         explainer_path = _explainer_file_path(model_path)
         return load_joblib(explainer_path)
 

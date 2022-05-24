@@ -145,7 +145,7 @@ def test_load_model(tmp_path, lgb_manager, lgb_model, classification_data):
     assert os.path.exists(model_path)
 
     #  Load the model
-    loaded_model = lgb_manager.load(tmp_path, {})
+    loaded_model = lgb_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(lgb_model, loaded_model, classification_data)
