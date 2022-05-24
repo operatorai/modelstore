@@ -17,6 +17,7 @@ from functools import partial
 from pathlib import PosixPath
 from typing import Any
 
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -71,8 +72,10 @@ class ModelFileManager(ModelManager):
     def _required_kwargs(self) -> list:
         return ["model"]
 
-    def model_info(self, **kwargs) -> dict:
-        return {"library": self.ml_library}
+    def model_info(self, **kwargs) -> ModelTypeMetaData:
+        return ModelTypeMetaData.generate(
+            library=self.ml_library
+        )
 
     def load(self, model_path: str, meta_data: dict) -> Any:
         """
