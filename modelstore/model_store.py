@@ -271,5 +271,5 @@ class ModelStore:
 
     def delete_model(self, domain: str, model_id: str, skip_prompt: bool = False):
         """Deletes a model artifact from storage."""
-        meta_data = self.get_model_info(domain, model_id)
+        meta_data = self.storage.get_meta_data(domain, model_id)
         self.storage.delete_model(domain, model_id, meta_data, skip_prompt)

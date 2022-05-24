@@ -70,7 +70,7 @@ class CloudStorage(ABC):
 
     @abstractmethod
     def delete_model(
-        self, domain: str, model_id: str, meta_data: dict, skip_prompt: bool = False
+        self, domain: str, model_id: str, meta_data: MetaData, skip_prompt: bool = False
     ):
         """Deletes a model artifact from storage."""
         raise NotImplementedError()

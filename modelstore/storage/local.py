@@ -157,9 +157,9 @@ class FileSystemStorage(BlobStorage):
             path=os.path.abspath(self.relative_dir(prefix))
         )
 
-    def _get_storage_location(self, meta: dict) -> str:
+    def _get_storage_location(self, meta_data: StorageMetaData) -> str:
         """Extracts the storage location from a meta data dictionary"""
-        return meta["path"]
+        return meta_data.path
 
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)

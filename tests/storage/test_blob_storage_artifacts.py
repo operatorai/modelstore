@@ -12,7 +12,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-from dataclasses import asdict
 
 import pytest
 from modelstore.metadata.metadata import MetaData
@@ -79,7 +78,7 @@ def test_delete_model(mock_blob_storage, mock_model_file):
     mock_blob_storage.set_model_state(domain, model_id, model_state)
 
     # Delete it
-    mock_blob_storage.delete_model(domain, model_id, asdict(meta_data), skip_prompt=True)
+    mock_blob_storage.delete_model(domain, model_id, meta_data, skip_prompt=True)
 
     # Assert it is deleted
     model_path = os.path.join(

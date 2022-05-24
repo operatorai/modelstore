@@ -69,6 +69,7 @@ class AWSStorage(BlobStorage):
 
     @property
     def client(self):
+        """ Returns the boto s3 client """
         try:
             if self.__client is None:
                 self.__client = boto3.client("s3", region_name=self.region)
@@ -125,12 +126,11 @@ class AWSStorage(BlobStorage):
             prefix=prefix,
         )
 
-    def _get_storage_location(self, meta: dict) -> str:
+    def _get_storage_location(self, meta_data: StorageMetaData) -> str:
         """Extracts the storage location from a meta data dictionary"""
-        # @TODO use data class
-        if self.bucket_name != meta.get("bucket"):
+        if self.bucket_name != meta_data.bucket:
             raise ValueError("Meta-data has a different bucket name")
-        return meta["prefix"]
+        return meta_data.prefix
 
     def _read_json_objects(self, path: str) -> list:
         logger.debug("Listing files in: %s/%s", self.bucket_name, path)

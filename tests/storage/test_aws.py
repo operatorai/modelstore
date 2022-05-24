@@ -203,18 +203,24 @@ def test_storage_location():
     "meta_data,should_raise,result",
     [
         (
-            {
-                "bucket": _MOCK_BUCKET_NAME,
-                "prefix": "/path/to/file",
-            },
+            StorageMetaData(
+                type=None, 
+                path=None, 
+                bucket=_MOCK_BUCKET_NAME,
+                container=None,
+                prefix="/path/to/file"
+            ),
             False,
             "/path/to/file",
         ),
         (
-            {
-                "bucket": "a-different-bucket",
-                "prefix": "/path/to/file",
-            },
+            StorageMetaData(
+                type=None, 
+                path=None, 
+                bucket="a-different-bucket",
+                container=None,
+                prefix="/path/to/file"
+            ),
             True,
             None,
         ),

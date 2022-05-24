@@ -102,7 +102,7 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     @abstractmethod
-    def _get_storage_location(self, meta: dict) -> str:
+    def _get_storage_location(self, meta_data: StorageMetaData) -> str:
         """Extracts the storage location from a meta data dictionary"""
         raise NotImplementedError()
 
@@ -146,7 +146,7 @@ class BlobStorage(CloudStorage):
         return self._pull(storage_path, local_path)
 
     def delete_model(
-        self, domain: str, model_id: str, meta_data: dict, skip_prompt: bool = False
+        self, domain: str, model_id: str, meta_data: MetaData, skip_prompt: bool = False
     ):
         """Deletes a model artifact from storage. Other than the artifact itself
         being deleted:
@@ -160,7 +160,7 @@ class BlobStorage(CloudStorage):
                 return
 
         # Delete the artifact itself
-        storage_path = self._get_storage_location(meta_data["storage"])
+        storage_path = self._get_storage_location(meta_data.storage)
         self._remove(storage_path)
 
         # Set the model as deleted in the meta data by unsetting it from

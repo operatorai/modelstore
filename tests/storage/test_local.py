@@ -130,6 +130,7 @@ def test_read_json_objects_ignores_non_json(tmp_path, file_system_storage):
     prefix = remote_path()
     for file_type in ["txt", "json"]:
         source = os.path.join(tmp_path, f"test-file-source.{file_type}")
+        # pylint: disable=unspecified-encoding
         with open(source, "w") as out:
             out.write(json.dumps({"key": "value"}))
 
@@ -173,9 +174,13 @@ def test_storage_location(file_system_storage):
     "meta_data,should_raise,result",
     [
         (
-            {
-                "path": "/path/to/file",
-            },
+            StorageMetaData(
+                type=None,
+                path="/path/to/file",
+                bucket=None,
+                container=None,
+                prefix=None
+            ),
             False,
             "/path/to/file",
         ),
