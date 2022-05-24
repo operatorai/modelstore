@@ -16,6 +16,8 @@ from modelstore.metadata.metadata import MetaData
 
 # pylint: disable=protected-access
 # pylint: disable=missing-function-docstring
+# pylint: disable=no-member
+
 
 def test_generate():
     expected = MetaData(
@@ -30,3 +32,7 @@ def test_generate():
         storage_meta_data=None
     )
     assert result == expected
+
+    encoded = result.to_json()
+    decoded = MetaData.from_json(encoded)
+    assert decoded == expected

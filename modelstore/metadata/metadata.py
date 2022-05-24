@@ -12,12 +12,14 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 
 import modelstore
 from modelstore.metadata.code.code import CodeMetaData
 from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.storage.storage import StorageMetaData
 
+@dataclass_json
 @dataclass
 class MetaData:
 
