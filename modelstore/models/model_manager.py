@@ -216,7 +216,7 @@ class ModelManager(ABC):
         )
 
         # Save the combined meta-data to storage
-        self.storage.set_meta_data(domain, model_id, asdict(meta_data))
+        self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
 
         return meta_data
