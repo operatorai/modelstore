@@ -244,7 +244,6 @@ class ModelStore:
                 ReservedModelStates.DELETED.value,
                 modifying_reserved=True,
             )
-        
         meta_data = manager.upload(domain, model_id=model_id, **kwargs)
         return asdict(meta_data)
 

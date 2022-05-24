@@ -20,7 +20,6 @@ from modelstore.utils.log import logger
 
 # pylint: disable=broad-except
 _PYTHON_INFO_FILE = "python-info.json"
-# _MODEL_TYPE_FILE = "model-info.json"
 
 
 def _get_version(modname: str) -> str:
