@@ -16,6 +16,8 @@ import os
 import pytest
 import xgboost as xgb
 import numpy as np
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models import xgboost
 
 # pylint: disable=unused-import
@@ -45,15 +47,15 @@ def xgb_manager():
 
 
 def test_model_info(xgb_manager, xgb_model):
-    model_info = {"library": "xgboost", "type": "XGBClassifier"}
+    exp = ModelTypeMetaData("xgboost", "XGBClassifier", None)
     result = xgb_manager.model_info(model=xgb_model)
-    assert model_info == result
+    assert exp == result
 
 
 def test_booster_model_info(xgb_manager, xgb_booster):
-    model_info = {"library": "xgboost", "type": "Booster"}
+    exp = ModelTypeMetaData("xgboost", "Booster", None)
     result = xgb_manager.model_info(model=xgb_booster)
-    assert model_info == result
+    assert exp == result
 
 
 @pytest.mark.parametrize(

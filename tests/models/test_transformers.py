@@ -15,11 +15,6 @@ import json
 import os
 
 import pytest
-from modelstore.models.transformers import (
-    MODEL_DIRECTORY,
-    TransformersManager,
-    _save_transformers,
-)
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
@@ -30,6 +25,13 @@ from transformers import (
     PreTrainedTokenizerFast,
 )
 from transformers.file_utils import CONFIG_NAME
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.models.transformers import (
+    MODEL_DIRECTORY,
+    TransformersManager,
+    _save_transformers,
+)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -69,7 +71,7 @@ def tr_manager():
 
 
 def test_model_info(tr_manager):
-    exp = {"library": "transformers"}
+    exp = ModelTypeMetaData("transformers", None, None)
     res = tr_manager.model_info()
     assert exp == res
 

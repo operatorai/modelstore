@@ -16,12 +16,12 @@ import os
 import shutil
 import tarfile
 import tempfile
-from dataclasses import asdict
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
 from modelstore.metadata.code.code import CodeMetaData
 from modelstore.metadata.model.model import ModelMetaData
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.code.dependencies import save_dependencies, save_model_info
 from modelstore.storage.storage import CloudStorage
@@ -101,12 +101,13 @@ class ModelManager(ABC):
             if arg not in kwargs:
                 raise TypeError(f"Please specify {arg}=<value>")
 
-    def model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> ModelTypeMetaData:
         """Returns meta-data about the model's type"""
-        model_info = {"library": self.ml_library}
-        if "model" in kwargs:
-            model_info["type"] = type(kwargs["model"]).__name__
-        return model_info
+        class_name = type(kwargs["model"]).__name__ if "model" in kwargs else None
+        return ModelTypeMetaData.generate(
+            library=self.ml_library,
+            class_name=class_name,
+        )
 
     def _get_model_type(self, meta_data: dict) -> str:
         return meta_data["model"]["model_type"]["type"]

@@ -17,6 +17,8 @@ import os
 import pytest
 from gensim.models import word2vec
 from gensim.test.utils import common_texts
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.gensim import GENSIM_MODEL, GensimManager
 
 # pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
@@ -37,7 +39,7 @@ def gensim_manager():
     [
         (
             word2vec.Word2Vec,
-            {"library": "gensim", "type": "Word2Vec"},
+            ModelTypeMetaData("gensim", "Word2Vec", None),
         ),
     ],
 )

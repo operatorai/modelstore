@@ -17,11 +17,14 @@ from typing import Tuple
 import numpy as np
 import onnxruntime as rt
 import pytest
-from modelstore.models import onnx
+
 from onnxruntime.capi.onnxruntime_inference_collection import InferenceSession
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 from sklearn.ensemble import RandomForestClassifier
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.models import onnx
 
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
@@ -61,7 +64,7 @@ def get_predictions(sess: InferenceSession, classification_data: Tuple):
 
 
 def test_model_info(onnx_manager, onnx_model):
-    exp = {"library": "onnx", "type": "ModelProto"}
+    exp = ModelTypeMetaData("onnx", "ModelProto", None)
     res = onnx_manager.model_info(model=onnx_model)
     assert exp == res
 

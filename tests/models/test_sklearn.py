@@ -18,13 +18,15 @@ from functools import partial
 import numpy as np
 import pandas as pd
 import pytest
-from modelstore.models.common import save_joblib
-from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.models.common import save_joblib
+from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
 
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
@@ -70,15 +72,15 @@ def sklearn_manager():
     [
         (
             RandomForestRegressor,
-            {"library": "sklearn", "type": "RandomForestRegressor"},
+            ModelTypeMetaData("sklearn","RandomForestRegressor", None),
         ),
         (
             LogisticRegression,
-            {"library": "sklearn", "type": "LogisticRegression"},
+            ModelTypeMetaData("sklearn", "LogisticRegression", None),
         ),
         (
             partial(Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]),
-            {"library": "sklearn", "type": "Pipeline"},
+            ModelTypeMetaData("sklearn", "Pipeline", None),
         ),
     ],
 )
@@ -132,8 +134,9 @@ def test_get_params(sklearn_manager, model_type):
     try:
         result = sklearn_manager.get_params(model=model_type())
         json.dumps(result)
-    except Exception as e:
-        pytest.fail(f"Exception when dumping params: {str(e)}")
+        # pylint: disable=bare-except
+    except Exception as exc:
+        pytest.fail(f"Exception when dumping params: {str(exc)}")
 
 
 def test_get_params_from_pipeline(sklearn_manager):

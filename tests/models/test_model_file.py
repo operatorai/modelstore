@@ -15,6 +15,8 @@ import os
 from tempfile import TemporaryDirectory
 
 import pytest
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.model_file import ModelFileManager, copy_file
 
 # pylint: disable=protected-access
@@ -24,6 +26,7 @@ from modelstore.models.model_file import ModelFileManager, copy_file
 
 @pytest.fixture
 def model_file(tmpdir):
+    # pylint: disable=unspecified-encoding
     file_path = os.path.join(tmpdir, "model.txt")
     with open(file_path, "w") as out:
         out.write("example-model-content")
@@ -36,7 +39,7 @@ def model_file_manager():
 
 
 def test_model_info(model_file_manager):
-    exp = {"library": "model_file"}
+    exp = ModelTypeMetaData("model_file", None, None)
     assert model_file_manager.model_info() == exp
 
 

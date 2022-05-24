@@ -16,6 +16,8 @@ import random
 
 import pytest
 from annoy import AnnoyIndex
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.annoy import MODEL_FILE, AnnoyManager, save_model
 
 # pylint: disable=protected-access
@@ -45,9 +47,9 @@ def assert_same_model(model_a: AnnoyIndex, model_b: AnnoyIndex):
 
 
 def test_model_info(annoy_manager, annoy_model):
-    exp = {"library": "annoy", "type": "Annoy"}
-    res = annoy_manager.model_info(model=annoy_model)
-    assert exp == res
+    expected = ModelTypeMetaData("annoy", "Annoy", None)
+    result = annoy_manager.model_info(model=annoy_model)
+    assert expected == result
 
 
 @pytest.mark.parametrize(

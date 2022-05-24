@@ -19,9 +19,11 @@ from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 import pytest
-from modelstore.models.prophet import MODEL_FILE, ProphetManager, save_model
 from prophet import Prophet
 from prophet.serialize import model_from_json, model_to_json
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.models.prophet import MODEL_FILE, ProphetManager, save_model
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -66,7 +68,7 @@ def assert_same_model(model_a: Prophet, model_b: Prophet):
 
 
 def test_model_info(prophet_manager, prophet_model):
-    exp = {"library": "prophet", "type": "Prophet"}
+    exp = ModelTypeMetaData("prophet", "Prophet", None)
     res = prophet_manager.model_info(model=prophet_model)
     assert exp == res
 

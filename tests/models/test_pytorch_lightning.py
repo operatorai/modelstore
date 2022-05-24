@@ -17,13 +17,15 @@ import pytest
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
+from torch import nn
+from torch.utils.data import DataLoader, TensorDataset
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.pytorch_lightning import (
     MODEL_CHECKPOINT,
     PyTorchLightningManager,
     _save_lightning_model,
 )
-from torch import nn
-from torch.utils.data import DataLoader, TensorDataset
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -95,7 +97,7 @@ def assert_models_equal(model_a: pl.LightningModule, module_b: pl.LightningModul
 
 
 def test_model_info(lightning_manager, lightning_model):
-    exp = {"library": "pytorch_lightning", "type": "ExampleLightningNet"}
+    exp = ModelTypeMetaData("pytorch_lightning", "ExampleLightningNet", None)
     res = lightning_manager.model_info(model=lightning_model)
     assert exp == res
 

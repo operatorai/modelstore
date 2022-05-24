@@ -13,6 +13,7 @@
 #    limitations under the License.
 from typing import Any, List
 
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.managers import get_manager
 from modelstore.storage.storage import CloudStorage
@@ -61,13 +62,14 @@ class MultipleModelsManager(ModelManager):
             functions += manager._get_functions(**kwargs)
         return functions
 
-    def model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> ModelTypeMetaData:
         """Returns meta-data about the model's type"""
-        return {
-            "library": self.ml_library,
-            # pylint: disable=protected-access
-            "models": [manager.model_info(**kwargs) for manager in self.managers],
-        }
+        return ModelTypeMetaData.generate(
+            library=self.ml_library,
+            models=[
+                m.model_info(**kwargs) for m in self.managers
+            ]
+        )
 
     def get_params(self, **kwargs) -> dict:
         return {

@@ -18,6 +18,7 @@ import pytest
 import shap as shp
 from sklearn.ensemble import RandomForestRegressor
 
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.models.shap import ShapManager, EXPLAINER_FILE
@@ -59,18 +60,19 @@ def multiple_model_manager():
 def test_model_info_with_explainer(
     multiple_model_manager, sklearn_tree, shap_explainer
 ):
-    exp = {
-        "library": "multiple-models",
-        "models": [
-            {"library": SKLearnManager.NAME, "type": "RandomForestRegressor"},
-            {"library": ShapManager.NAME, "type": "Tree"},
-        ],
-    }
+    expected = ModelTypeMetaData(
+        library="multiple-models",
+        type=None,
+        models=[
+            ModelTypeMetaData(SKLearnManager.NAME, "RandomForestRegressor", models=None),
+            ModelTypeMetaData(ShapManager.NAME, "Tree", models=None),
+        ]
+    )
     res = multiple_model_manager.model_info(
         model=sklearn_tree,
         explainer=shap_explainer,
     )
-    assert res == exp
+    assert res == expected
 
 
 def test_matches_with(multiple_model_manager, sklearn_tree, shap_explainer):

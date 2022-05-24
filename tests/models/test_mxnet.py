@@ -11,14 +11,15 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import pytest
 import os
 import warnings
 
+import pytest
 import mxnet as mx
 import numpy as np
 from mxnet.gluon import nn
 
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models import mxnet
 
 # pylint: disable=protected-access
@@ -48,7 +49,7 @@ def mxnet_manager():
 
 
 def test_model_info(mxnet_manager, mxnet_model):
-    exp = {"library": "mxnet", "type": "HybridSequential"}
+    exp = ModelTypeMetaData("mxnet", "HybridSequential", None)
     res = mxnet_manager.model_info(model=mxnet_model)
     assert exp == res
 

@@ -17,6 +17,8 @@ import os
 import catboost as ctb
 import numpy as np
 import pytest
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models import catboost
 
 # pylint: disable=unused-import
@@ -39,9 +41,9 @@ def catb_manager():
 
 
 def test_model_info(catb_manager, catb_model):
-    exp = {"library": "catboost", "type": "CatBoostClassifier"}
+    expected = ModelTypeMetaData("catboost", "CatBoostClassifier", None)
     res = catb_manager.model_info(model=catb_model)
-    assert exp == res
+    assert expected == res
 
 
 @pytest.mark.parametrize(

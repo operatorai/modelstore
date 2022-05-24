@@ -20,6 +20,8 @@ import pytest
 from fastai.learner import load_learner
 from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import TabularLearner, tabular_learner
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.fastai import (
     LEARNER_FILE,
     FastAIManager,
@@ -71,9 +73,9 @@ def assert_models_equal(
 
 
 def test_model_info(fai_manager):
-    exp = {"library": "fastai"}
+    expected = ModelTypeMetaData("fastai", None, None)
     res = fai_manager.model_info()
-    assert exp == res
+    assert expected == res
 
 
 @pytest.mark.parametrize(
