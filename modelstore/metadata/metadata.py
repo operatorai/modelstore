@@ -13,6 +13,7 @@
 #    limitations under the License.
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
+import json
 
 import modelstore
 from modelstore.metadata.code.code import CodeMetaData
@@ -45,3 +46,10 @@ class MetaData:
             storage=storage_meta_data,
             modelstore=modelstore.__version__,
         )
+
+    def dumps(self, target_file: str):
+        """ Dumps the data class as JSON into target_file"""
+        # pylint: disable=no-member
+        # pylint: disable=unspecified-encoding
+        with open(target_file, "w") as out:
+            out.write(self.to_json())

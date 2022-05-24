@@ -14,6 +14,7 @@
 from abc import ABC, ABCMeta, abstractmethod
 from typing import Optional
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.storage.storage import StorageMetaData
 from modelstore.metadata.code.dependencies import module_exists
 
@@ -51,7 +52,7 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
+    def set_meta_data(self, domain: str, model_id: str, meta_data: MetaData):
         """Stores a model's meta data"""
         raise NotImplementedError()
 

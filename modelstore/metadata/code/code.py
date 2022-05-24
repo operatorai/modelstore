@@ -33,13 +33,17 @@ class CodeMetaData:
     git: dict
 
     @classmethod
-    def generate(cls, deps_list: list) -> "CodeMetaData":
+    def generate(cls, deps_list: list, created: datetime = None) -> "CodeMetaData":
         """ Generates the meta data for the code being run to create the model """
         versioned_deps = dependencies.get_dependency_versions(deps_list)
+        if created is None:
+            # created can be overridden in unit tests where we need to
+            # control time stamps of mock model objects
+            created = datetime.now()
         return CodeMetaData(
             runtime=f"python:{runtime.get_python_version()}",
             user=runtime.get_user(),
-            created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+            created=created.strftime("%Y/%m/%d/%H:%M:%S"),
             dependencies=remove_nones(versioned_deps),
             git=revision.git_meta()
         )

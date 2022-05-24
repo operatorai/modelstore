@@ -20,6 +20,7 @@ import os
 import tempfile
 import click
 
+from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.storage.storage import StorageMetaData
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util import environment
@@ -181,6 +182,7 @@ class BlobStorage(CloudStorage):
         """Returns a list of all the existing model domains"""
         domains = get_domains_path(self.root_prefix)
         domains = self._read_json_objects(domains)
+        
         return [d["model"]["domain"] for d in domains]
 
     def get_domain(self, domain: str) -> dict:
@@ -309,13 +311,13 @@ class BlobStorage(CloudStorage):
             get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
         )
 
-    def set_meta_data(self, domain: str, model_id: str, meta_data: dict):
+    def set_meta_data(self, domain: str, model_id: str, meta_data: MetaData):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = os.path.join(tmp_dir, f"{model_id}.json")
             remote_path = self._get_metadata_path(domain, model_id)
-            with open(local_path, "w") as out:
-                out.write(json.dumps(meta_data))
+
+            meta_data.dumps(local_path)
             self._push(local_path, remote_path)
 
             # @TODO this is setting the "latest" model implicitly

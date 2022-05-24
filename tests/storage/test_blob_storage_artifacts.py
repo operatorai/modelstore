@@ -13,12 +13,10 @@
 #    limitations under the License.
 import os
 from dataclasses import asdict
-from pathlib import Path
 
 import pytest
 from modelstore.metadata.metadata import MetaData
 from modelstore.metadata.model.model import ModelMetaData
-from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.util.paths import (
     get_archive_path,
 )
@@ -26,20 +24,14 @@ from modelstore.utils.exceptions import (
     ModelDeletedException,
 )
 
+# pylint: disable=unused-import
+from tests.storage.test_blob_storage import (
+    mock_blob_storage,
+    mock_model_file,
+)
+
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
-
-
-@pytest.fixture
-def mock_blob_storage(tmp_path):
-    return FileSystemStorage(str(tmp_path))
-
-
-@pytest.fixture
-def mock_model_file(tmp_path):
-    model_file = os.path.join(tmp_path, "test-file.txt")
-    Path(model_file).touch()
-    return model_file
 
 
 def test_upload(mock_blob_storage, mock_model_file):
@@ -82,13 +74,12 @@ def test_delete_model(mock_blob_storage, mock_model_file):
         ),
         storage_meta_data=storage_meta,
     )
-    meta_data_dict = asdict(meta_data)
-    mock_blob_storage.set_meta_data(domain, model_id, meta_data_dict)
+    mock_blob_storage.set_meta_data(domain, model_id, meta_data)
     mock_blob_storage.create_model_state(model_state)
     mock_blob_storage.set_model_state(domain, model_id, model_state)
 
     # Delete it
-    mock_blob_storage.delete_model(domain, model_id, meta_data_dict, skip_prompt=True)
+    mock_blob_storage.delete_model(domain, model_id, asdict(meta_data), skip_prompt=True)
 
     # Assert it is deleted
     model_path = os.path.join(
