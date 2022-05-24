@@ -11,7 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from datetime import datetime
 import modelstore
+
+from modelstore.metadata.code.code import CodeMetaData
+from modelstore.metadata.model.model import ModelMetaData, ModelTypeMetaData
+from modelstore.metadata.storage.storage import StorageMetaData
 from modelstore.metadata.metadata import MetaData
 
 # pylint: disable=protected-access
@@ -20,19 +25,41 @@ from modelstore.metadata.metadata import MetaData
 
 
 def test_generate():
+    code_meta_data = CodeMetaData(
+        runtime="python:1.2.3",
+        user="username",
+        created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+        dependencies={},
+        git={"repository": "test"},
+    )
+    model_meta_data = ModelMetaData.generate(
+        domain="domain",
+        model_id="model-id",
+        model_type=ModelTypeMetaData.generate(
+            "library",
+            "class-name",
+        ),
+    )
+    storage_meta_data = StorageMetaData.from_path(
+        "example-storage-type",
+        "path-to-files",
+    )
     expected = MetaData(
-        code=None,
-        model=None,
-        storage=None,
+        code=code_meta_data,
+        model=model_meta_data,
+        storage=storage_meta_data,
         modelstore=modelstore.__version__,
     )
     result = MetaData.generate(
-        code_meta_data=None,
-        model_meta_data=None,
-        storage_meta_data=None
+        code_meta_data=code_meta_data,
+        model_meta_data=model_meta_data,
+        storage_meta_data=storage_meta_data
     )
     assert result == expected
 
     encoded = result.to_json()
     decoded = MetaData.from_json(encoded)
     assert decoded == expected
+    assert decoded.code == code_meta_data
+    assert decoded.model == model_meta_data
+    assert decoded.storage == storage_meta_data
