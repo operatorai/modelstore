@@ -23,7 +23,7 @@ def model_meta_data():
     return ModelMetaData(
         domain="domain",
         model_id="model_id",
-        model_type=ModelTypeMetaData("library", "class-name"),
+        model_type=ModelTypeMetaData.generate("library", "class-name"),
         parameters=None,
         data=None
     )
@@ -33,7 +33,7 @@ def test_generate(model_meta_data):
     result = ModelMetaData.generate(
         "domain",
         "model_id",
-        ModelTypeMetaData("library", "class-name"),
+        ModelTypeMetaData.generate("library", "class-name"),
     )
     assert model_meta_data == result
 

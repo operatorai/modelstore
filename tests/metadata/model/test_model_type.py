@@ -11,14 +11,33 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import pytest
+
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
 
-def test_generate():
-    expected = ModelTypeMetaData(
+
+@pytest.fixture
+def model_type_meta_data():
+    return ModelTypeMetaData(
         library="a-library",
         type="a-class-name",
+        models=None,
     )
-    result = ModelTypeMetaData.generate("a-library", "a-class-name")
-    assert expected == result
+
+
+def test_generate(model_type_meta_data):
+    result = ModelTypeMetaData.generate(
+        library="a-library",
+        class_name="a-class-name",
+    )
+    assert model_type_meta_data == result
+
+
+def test_encode_and_decode(model_type_meta_data):
+    # pylint: disable=no-member
+    json_result = model_type_meta_data.to_json()
+    result = ModelTypeMetaData.from_json(json_result)
+    assert result == model_type_meta_data
