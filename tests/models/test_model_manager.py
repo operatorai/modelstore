@@ -17,6 +17,8 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 import pytest
+
+from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
 
@@ -31,6 +33,7 @@ class MockCloudStorage(FileSystemStorage):
         super().__init__(root_dir=str(tmpdir))
         self.called = False
 
+    # pylint: disable=unused-argument
     def upload(
         self,
         domain: str,
@@ -48,14 +51,13 @@ class MockModelManager(ModelManager):
     def name(cls) -> str:
         return "mock"
 
-    def model_info(self, **kwargs) -> dict:
-        return {}
+    def model_info(self, **kwargs) -> ModelTypeMetaData:
+        return ModelTypeMetaData("mock", None, None)
 
     def model_data(self, **kwargs) -> dict:
         return {}
 
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return []
 
     def _get_functions(self, **kwargs) -> list:

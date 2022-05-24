@@ -12,8 +12,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import List, Dict, Optional
+import os
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
+
+_MODEL_TYPE_FILE = "model-info.json"
 
 
 @dataclass_json
@@ -36,3 +39,13 @@ class ModelTypeMetaData:
             type=class_name,
             models=models,
         )
+
+    def dumps(self, tmp_dir: str) -> str:
+        """ Dumps the data class as JSON into a file
+        and returns the path to the file """
+        # pylint: disable=no-member
+        # pylint: disable=unspecified-encoding
+        target_file = os.path.join(tmp_dir, _MODEL_TYPE_FILE)
+        with open(target_file, "w") as out:
+            out.write(self.to_json())
+        return target_file

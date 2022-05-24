@@ -23,7 +23,7 @@ from modelstore.metadata.code.code import CodeMetaData
 from modelstore.metadata.model.model import ModelMetaData
 from modelstore.metadata.model.model_type import ModelTypeMetaData
 from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.code.dependencies import save_dependencies, save_model_info
+from modelstore.metadata.code.dependencies import save_dependencies
 from modelstore.storage.storage import CloudStorage
 
 
@@ -128,7 +128,7 @@ class ModelManager(ABC):
         """
         file_paths = [
             save_dependencies(tmp_dir, self.get_dependencies()),
-            save_model_info(tmp_dir, self.model_info(**kwargs)),
+            self.model_info(**kwargs).dumps(tmp_dir),
         ]
         for func in self._get_functions(**kwargs):
             rsp = func(tmp_dir)

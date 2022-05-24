@@ -13,7 +13,6 @@
 #    limitations under the License.
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
-import json
 
 import modelstore
 from modelstore.metadata.code.code import CodeMetaData
