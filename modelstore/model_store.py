@@ -190,7 +190,7 @@ class ModelStore:
 
     def get_model_info(self, domain: str, model_id: str) -> dict:
         """Returns the meta-data for a given model"""
-        return self.storage.get_meta_data(domain, model_id)
+        return asdict(self.storage.get_meta_data(domain, model_id))
 
     def model_exists(self, domain: str, model_id: str) -> bool:
         """ Returns True if a model with the given id exists in the domain """

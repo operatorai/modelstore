@@ -57,7 +57,7 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_meta_data(self, domain: str, model_id: str) -> dict:
+    def get_meta_data(self, domain: str, model_id: str) -> MetaData:
         """Returns a model's meta data"""
         raise NotImplementedError()
 

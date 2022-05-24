@@ -45,6 +45,8 @@ from modelstore.utils.exceptions import (
     FilePullFailedException,
 )
 
+# pylint: disable=unspecified-encoding
+
 
 class BlobStorage(CloudStorage):
 
@@ -118,7 +120,8 @@ class BlobStorage(CloudStorage):
             model.
         """
         return os.path.join(
-            get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
+            get_models_path(self.root_prefix, domain, state_name), 
+            f"{model_id}.json",
         )
 
     def upload(self, domain: str, local_path: str) -> StorageMetaData:
@@ -330,13 +333,15 @@ class BlobStorage(CloudStorage):
             with open(local_path, "r") as lines:
                 return json.loads(lines.read())
 
-    def get_meta_data(self, domain: str, model_id: str) -> dict:
+    def get_meta_data(self, domain: str, model_id: str) -> MetaData:
         if any(x in [None, ""] for x in [domain, model_id]):
             raise ValueError("domain and model_id must be set")
         logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
         remote_path = self._get_metadata_path(domain, model_id)
         try:
-            return self._pull_and_load(remote_path)
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                local_path = self._pull(remote_path, tmp_dir)
+                return MetaData.loads(local_path)
         except FilePullFailedException as exc:
             logger.debug("Failed to pull: %s", remote_path)
             # A meta-data file may not be downloaded if:
