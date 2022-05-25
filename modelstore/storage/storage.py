@@ -15,7 +15,6 @@ from abc import ABC, ABCMeta, abstractmethod
 from typing import Optional
 
 from modelstore.metadata import metadata
-from modelstore.metadata.storage.storage import Storage
 from modelstore.metadata.code.dependencies import module_exists
 
 
@@ -44,7 +43,7 @@ class CloudStorage(ABC):
         self,
         domain: str,
         local_path: str,
-    ) -> Storage:
+    ) -> metadata.Storage:
         """Uploads an archive to this type of storage
         :param extras can be a path to a file or list of files
         if these are specified, those files are upload

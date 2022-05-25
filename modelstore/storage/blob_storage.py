@@ -44,8 +44,6 @@ from modelstore.utils.exceptions import (
     FilePullFailedException,
 )
 
-# pylint: disable=unspecified-encoding
-
 
 class BlobStorage(CloudStorage):
 
@@ -236,6 +234,7 @@ class BlobStorage(CloudStorage):
         logger.debug("Creating model state: %s", state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
             state_data_path = os.path.join(tmp_dir, f"{state_name}.json")
+            # pylint: disable=unspecified-encoding
             with open(state_data_path, "w") as out:
                 state_data = {
                     "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
@@ -329,6 +328,7 @@ class BlobStorage(CloudStorage):
     def _pull_and_load(self, remote_path: str) -> dict:
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = self._pull(remote_path, tmp_dir)
+            # pylint: disable=unspecified-encoding
             with open(local_path, "r") as lines:
                 return json.loads(lines.read())
 
