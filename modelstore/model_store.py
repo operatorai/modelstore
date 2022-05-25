@@ -250,11 +250,11 @@ class ModelStore:
     def load(self, domain: str, model_id: str):
         """Loads a model into memory"""
         meta_data = self.storage.get_meta_data(domain, model_id)
-        ml_library = meta_data.model.model_type.library
-        if ml_library == MultipleModelsManager.NAME:
+        model_type = meta_data.model_type()
+        if model_type.library == MultipleModelsManager.NAME:
             manager = MultipleModelsManager([], self.storage)
         else:
-            manager = get_manager(ml_library, self.storage)
+            manager = get_manager(model_type.library, self.storage)
         with tempfile.TemporaryDirectory() as tmp_dir:
             model_files = self.download(tmp_dir, domain, model_id)
             return manager.load(model_files, meta_data)

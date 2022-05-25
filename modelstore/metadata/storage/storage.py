@@ -19,22 +19,25 @@ from dataclasses_json import dataclass_json
 class Storage:
 
     """ Storage contains fields that are captured about
-    where the model type is saved """
+    where the model is saved """
 
-    type: str # Constant to describe the storage type
+    # Constant to describe the storage type
+    type: str
 
-    # Path-like storage
+    # Path-like storage (e.g. local)
     path: str
     
     # Container-like storage
     bucket: str
-    container: str # Retained for backwards compatibility (Azure)
     prefix: str
+
+    # Retained for backwards compatibility (Azure)
+    container: str
 
     @classmethod
     def from_path(cls, storage_type: str, path: str) -> "Storage":
         """ Generates the meta data about where the model
-        is going to be saved """
+        is going to be saved when it is saved in path-like storage """
         return Storage(
             type=storage_type,
             path=path,
@@ -46,7 +49,7 @@ class Storage:
     @classmethod
     def from_bucket(cls, storage_type: str, bucket: str, prefix: str) -> "Storage":
         """ Generates the meta data about where the model
-        is going to be saved """
+        is going to be saved when it is saved in container storage """
         return Storage(
             type=storage_type,
             path=None,
@@ -58,7 +61,7 @@ class Storage:
     @classmethod
     def from_container(cls, storage_type: str, container: str, prefix: str) -> "Storage":
         """ Generates the meta data about where the model
-        is going to be saved """
+        is going to be saved when it is saved in an Azure container """
         return Storage(
             type=storage_type,
             path=None,

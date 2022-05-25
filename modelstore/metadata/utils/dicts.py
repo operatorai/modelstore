@@ -13,6 +13,6 @@
 #    limitations under the License.
 
 
-def remove_nones(values) -> dict:
+def remove_nones(values: dict) -> dict:
     """ Removes any entries in a dictionary that have None values """
     return {k: v for k, v in values.items() if v is not None}
