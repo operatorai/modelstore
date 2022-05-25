@@ -84,12 +84,11 @@ class PyTorchLightningManager(ModelManager):
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # The name of the class for the model
-        model_class_name = meta_data.model.model_type.type
         model_file = _model_file_path(model_path)
 
         # We assume that class has already been imported, so it exists
         # in the current module
-        model_class = self._find_class(model_class_name)
+        model_class = self._find_class(meta_data.model_type().type)
         return model_class.load_from_checkpoint(model_file)
 
 

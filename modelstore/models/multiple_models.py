@@ -80,8 +80,7 @@ class MultipleModelsManager(ModelManager):
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         models = {}
-        for model_type in meta_data.model.model_type.models:
-            ml_library = model_type.library
-            manager = get_manager(ml_library, self.storage)
-            models[ml_library] = manager.load(model_path, meta_data)
+        for model in meta_data.model_type().models:
+            manager = get_manager(model.library, self.storage)
+            models[model.library] = manager.load(model_path, meta_data)
         return models
