@@ -112,10 +112,9 @@ class ModelManager(ABC):
         return meta_data.get("library") == self.ml_library
 
     # pylint: disable=unused-argument
-    def model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> metadata.Dataset:
         """Returns meta-data about the data used to train the model"""
-        # @ Future
-        return {}
+        return metadata.Dataset(None, None)
 
     def _collect_files(self, tmp_dir: str, **kwargs) -> list:
         """Returns a list of files created in tmp_dir that will form

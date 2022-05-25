@@ -53,9 +53,6 @@ class SkorchManager(ModelManager):
 
         return isinstance(kwargs.get("model"), NeuralNet)
 
-    def model_data(self, **kwargs) -> dict:
-        return {}
-
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
             raise TypeError("This model is not a skorch NeuralNet!")
@@ -64,13 +61,6 @@ class SkorchManager(ModelManager):
             partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB),
             partial(save_params, model=kwargs["model"]),
         ]
-
-    def get_params(self, **kwargs) -> dict:
-        """
-        Returns a dictionary containing any model parameters that are available
-        """
-        # @TODO future
-        return {}
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # @Future: check if loading into same version of joblib

@@ -48,10 +48,10 @@ class MissingDepManager(ModelManager):
     def _required_kwargs(self) -> list:
         return []
 
-    def model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> metadata.ModelType:
         return None
 
-    def model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> metadata.Dataset:
         return None
 
     def upload(self, domain: str, model_id: str, **kwargs) -> str:

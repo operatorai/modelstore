@@ -64,8 +64,9 @@ class SKLearnManager(ModelManager):
 
         return isinstance(kwargs.get("model"), BaseEstimator)
 
-    def model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> metadata.Dataset:
         data = {}
+        # @TODO 
         if "X_train" in kwargs:
             features = datasets.describe_dataset(kwargs["X_train"])
             features.update(_feature_importances(kwargs["model"], kwargs["X_train"]))
