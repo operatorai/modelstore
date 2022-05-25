@@ -15,13 +15,18 @@ import os
 from tempfile import TemporaryDirectory
 
 import pytest
+
+from modelstore.metadata import metadata
 from modelstore.models.model_file import ModelFileManager, copy_file
 
-# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
+# pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
 def model_file(tmpdir):
+    # pylint: disable=unspecified-encoding
     file_path = os.path.join(tmpdir, "model.txt")
     with open(file_path, "w") as out:
         out.write("example-model-content")
@@ -34,8 +39,8 @@ def model_file_manager():
 
 
 def test_model_info(model_file_manager):
-    exp = {"library": "model_file"}
-    assert model_file_manager._model_info() == exp
+    exp = metadata.ModelType("model_file", None, None)
+    assert model_file_manager.model_info() == exp
 
 
 @pytest.mark.parametrize(
@@ -67,7 +72,7 @@ def test_get_functions(model_file_manager, model_file):
 
 
 def test_get_params(model_file_manager, model_file):
-    assert model_file_manager._get_params(model=model_file) == {}
+    assert model_file_manager.get_params(model=model_file) == {}
 
 
 def test_copy_file(model_file):
@@ -80,4 +85,4 @@ def test_copy_file(model_file):
 
 def test_load_model(model_file_manager):
     with pytest.raises(ValueError):
-        model_file_manager.load("model-path", {})
+        model_file_manager.load("model-path", None)

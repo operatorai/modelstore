@@ -15,6 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -59,18 +60,18 @@ class GensimManager(ModelManager):
             funcs.append(partial(_save_vectors, model=kwargs["model"]))
         return funcs
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         params = kwargs["model"].__dict__
         # The instance attributes contain a lot of information, including
         # the model's keyed vectors; so we filter this down for now
         params = {k: v for k, v in params.items() if type(v) in [int, str, float]}
         return params
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         from gensim.models import Word2Vec
 
-        model_type = self._get_model_type(meta_data)
+        model_type = meta_data.model_type().type
         if model_type != "Word2Vec":
             raise ValueError(f"modelstore cannot load gensim '{model_type}' models")
 

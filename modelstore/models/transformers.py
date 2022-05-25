@@ -15,6 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -71,14 +72,14 @@ class TransformersManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing the config for the model
         https://huggingface.co/transformers/main_classes/configuration.html#transformers.PretrainedConfig
         """
         return kwargs["config"].to_dict()
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         """
         Loads a model, stored in model_path,
         back into memory

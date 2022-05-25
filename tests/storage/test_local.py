@@ -17,6 +17,7 @@ import shutil
 
 import pytest
 
+from modelstore.metadata import metadata
 from modelstore.storage.local import FileSystemStorage
 from modelstore.utils.exceptions import DomainNotFoundException
 
@@ -45,7 +46,8 @@ def test_create_model_store_with_at_location(tmp_path):
     assert os.path.exists(file_system_storage.root_prefix)
     shutil.rmtree(file_system_storage.root_prefix)
 
-def test_create_model_store_with_at_location(tmp_path):
+
+def test_create_model_store_with_missing_location(tmp_path):
     file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST_FALSE'), create_directory=False)
     with pytest.raises(Exception):
         _ = file_system_storage.validate()
@@ -57,6 +59,7 @@ def test_create_from_environment_variables(monkeypatch):
     monkeypatch.setenv("MODEL_STORE_ROOT_PREFIX", "~")
     try:
         _ = FileSystemStorage()
+        # pylint: disable=bare-except
     except:
         pytest.fail("Failed to initialise storage from env variables")
 
@@ -116,6 +119,7 @@ def test_remove(file_exists, should_call_delete, tmp_path, file_system_storage):
         assert file_system_storage._remove(prefix) == should_call_delete
         # The file no longer exists
         assert not os.path.exists(os.path.join(file_system_storage.root_prefix, prefix))
+        # pylint: disable=bare-except
     except:
         # Should fail gracefully here
         pytest.fail("Remove raised an exception")
@@ -126,6 +130,7 @@ def test_read_json_objects_ignores_non_json(tmp_path, file_system_storage):
     prefix = remote_path()
     for file_type in ["txt", "json"]:
         source = os.path.join(tmp_path, f"test-file-source.{file_type}")
+        # pylint: disable=unspecified-encoding
         with open(source, "w") as out:
             out.write(json.dumps({"key": "value"}))
 
@@ -157,21 +162,25 @@ def test_list_models_missing_domain(file_system_storage):
 def test_storage_location(file_system_storage):
     # Asserts that the location meta data is correctly formatted
     prefix = remote_file_path()
-    exp = {
-        "type": "file_system",
-        "path": os.path.join(file_system_storage.root_prefix, prefix),
-    }
+    expected = metadata.Storage.from_path(
+        storage_type="file_system",
+        path=os.path.join(file_system_storage.root_prefix, prefix)
+    )
     result = file_system_storage._storage_location(prefix)
-    assert result == exp
+    assert result == expected
 
 
 @pytest.mark.parametrize(
     "meta_data,should_raise,result",
     [
         (
-            {
-                "path": "/path/to/file",
-            },
+            metadata.Storage(
+                type=None,
+                path="/path/to/file",
+                bucket=None,
+                container=None,
+                prefix=None
+            ),
             False,
             "/path/to/file",
         ),

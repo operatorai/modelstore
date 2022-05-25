@@ -15,11 +15,6 @@ import json
 import os
 
 import pytest
-from modelstore.models.transformers import (
-    MODEL_DIRECTORY,
-    TransformersManager,
-    _save_transformers,
-)
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
@@ -30,6 +25,13 @@ from transformers import (
     PreTrainedTokenizerFast,
 )
 from transformers.file_utils import CONFIG_NAME
+
+from modelstore.metadata import metadata
+from modelstore.models.transformers import (
+    MODEL_DIRECTORY,
+    TransformersManager,
+    _save_transformers,
+)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
@@ -69,8 +71,8 @@ def tr_manager():
 
 
 def test_model_info(tr_manager):
-    exp = {"library": "transformers"}
-    res = tr_manager._model_info()
+    exp = metadata.ModelType("transformers", None, None)
+    res = tr_manager.model_info()
     assert exp == res
 
 
@@ -87,7 +89,7 @@ def test_is_same_library(tr_manager, ml_library, should_match):
 
 def test_model_data(tr_manager, tr_model):
     exp = {}
-    res = tr_manager._model_data(model=tr_model)
+    res = tr_manager.model_data(model=tr_model)
     assert exp == res
 
 
@@ -118,7 +120,7 @@ def test_get_functions(tr_manager, tr_config, tr_model, tr_tokenizer):
 
 def test_get_params(tr_manager, tr_config):
     exp = tr_config.to_dict()
-    res = tr_manager._get_params(config=tr_config)
+    res = tr_manager.get_params(config=tr_config)
     assert exp == res
 
 
@@ -155,7 +157,7 @@ def test_load_model(tmp_path, tr_manager, tr_model, tr_config, tr_tokenizer):
 
     #  Load the model
     loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(
-        tmp_path, {}
+        tmp_path, None
     )
 
     # Expect the two to be the same

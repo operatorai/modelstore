@@ -23,6 +23,8 @@ from azure.storage.blob import (
     ContainerClient,
     StorageStreamDownloader,
 )
+
+from modelstore.metadata import metadata
 from modelstore.storage.azure import AzureBlobStorage
 
 # pylint: disable=unused-import
@@ -200,6 +202,7 @@ def test_remove(file_exists, should_call_delete):
             assert not file_removed
             # Asserts that we don't call delete on a file that doesn't exist
             blob_client.delete_blob.assert_not_called()
+        # pylint: disable=bare-except
     except:
         # Should fail gracefully here
         pytest.fail("Remove raised an exception")
@@ -243,30 +246,36 @@ def test_storage_location():
     storage = azure_storage(blob_service_client)
     # Asserts that the location meta data is correctly formatted
     prefix = "/path/to/file"
-    exp = {
-        "type": "azure:blob-storage",
-        "container": _MOCK_CONTAINER_NAME,
-        "prefix": prefix,
-    }
-    assert storage._storage_location(prefix) == exp
+    expected = metadata.Storage.from_container(
+        storage_type="azure:blob-storage",
+        container=_MOCK_CONTAINER_NAME,
+        prefix=prefix,
+    )
+    assert storage._storage_location(prefix) == expected
 
 
 @pytest.mark.parametrize(
     "meta_data,should_raise,result",
     [
         (
-            {
-                "container": _MOCK_CONTAINER_NAME,
-                "prefix": "/path/to/file",
-            },
+            metadata.Storage(
+                type=None, 
+                path=None, 
+                bucket=None,
+                container=_MOCK_CONTAINER_NAME,
+                prefix="/path/to/file"
+            ),
             False,
             "/path/to/file",
         ),
         (
-            {
-                "container": "a-different-bucket",
-                "prefix": "/path/to/file",
-            },
+            metadata.Storage(
+                type=None, 
+                path=None, 
+                bucket=None,
+                container="a-different-bucket",
+                prefix="/path/to/file"
+            ),
             True,
             None,
         ),

@@ -15,6 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -65,16 +66,16 @@ class MxnetManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {
             "epoch": kwargs["epoch"],
         }
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         from mxnet.gluon import SymbolBlock
 
-        epoch = int(meta_data["model"]["parameters"]["epoch"])
+        epoch = int(meta_data.model.parameters["epoch"])
         return SymbolBlock.imports(
             model_file_path(model_path),
             ["data"],

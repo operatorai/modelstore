@@ -16,6 +16,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -58,7 +59,7 @@ class ProphetManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Reference:
         https://facebook.github.io/prophet/docs/additional_topics.html#updating-fitted-models
@@ -71,7 +72,7 @@ class ProphetManager(ModelManager):
             params[pname] = model.params[pname][0].tolist()
         return params
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         from prophet.serialize import model_from_json
 

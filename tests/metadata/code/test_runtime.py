@@ -14,7 +14,7 @@
 import sys
 from unittest.mock import patch
 
-from modelstore.meta import runtime
+from modelstore.metadata.code import runtime
 
 # pylint: disable=missing-function-docstring
 
@@ -25,7 +25,7 @@ def test_get_python_version():
     assert runtime.get_python_version() == expected
 
 
-@patch("modelstore.meta.runtime.getpass")
+@patch("modelstore.metadata.code.runtime.getpass")
 def test_get_user(mock_getpass):
     mock_getpass.getuser.return_value = "username"
     assert runtime.get_user() == "username"

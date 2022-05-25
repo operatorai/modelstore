@@ -15,18 +15,21 @@ import os
 
 import pytest
 import torch
+from torch import nn, optim
+from torch.nn import functional as F
+
+from modelstore.metadata import metadata
 from modelstore.models.pytorch import (
     MODEL_PT,
     PyTorchManager,
     _save_model,
     _save_state_dict,
 )
-from torch import nn, optim
-from torch.nn import functional as F
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
 
 
 class ExampleNet(nn.Module):
@@ -71,8 +74,8 @@ def pytorch_manager():
 
 
 def test_model_info(pytorch_manager, pytorch_model):
-    exp = {"library": "pytorch", "type": "ExampleNet"}
-    res = pytorch_manager._model_info(model=pytorch_model)
+    exp = metadata.ModelType("pytorch", "ExampleNet", None)
+    res = pytorch_manager.model_info(model=pytorch_model)
     assert exp == res
 
 
@@ -88,9 +91,8 @@ def test_is_same_library(pytorch_manager, ml_library, should_match):
 
 
 def test_model_data(pytorch_manager, pytorch_model):
-    exp = {}
-    res = pytorch_manager._model_data(model=pytorch_model)
-    assert exp == res
+    res = pytorch_manager.model_data(model=pytorch_model)
+    assert {} == res
 
 
 def test_required_kwargs(pytorch_manager):
@@ -114,7 +116,7 @@ def test_get_functions(pytorch_manager, pytorch_model, pytorch_optim):
 
 def test_get_params(pytorch_manager, pytorch_model, pytorch_optim):
     exp = pytorch_optim.state_dict()
-    res = pytorch_manager._get_params(model=pytorch_model, optimizer=pytorch_optim)
+    res = pytorch_manager.get_params(model=pytorch_model, optimizer=pytorch_optim)
     assert exp == res
 
 
@@ -156,7 +158,7 @@ def test_load_model(tmp_path, pytorch_manager, pytorch_model):
     torch.save(pytorch_model, os.path.join(tmp_path, MODEL_PT))
 
     #  Load the model
-    loaded_model = pytorch_manager.load(tmp_path, {})
+    loaded_model = pytorch_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(pytorch_model, loaded_model)

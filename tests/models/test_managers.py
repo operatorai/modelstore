@@ -55,9 +55,10 @@ def test_get_keras_manager():
 
 
 def test_get_manager():
-    for name, managerType in managers._LIBRARIES.items():
+    # pylint: disable=protected-access
+    for name, manager_type in managers._LIBRARIES.items():
         manager = managers.get_manager(name)
-        assert isinstance(manager, managerType)
+        assert isinstance(manager, manager_type)
 
 
 def test_get_unknown_manager():

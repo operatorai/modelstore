@@ -15,15 +15,16 @@ from pathlib import PosixPath, Path
 import os
 
 import pytest
+
 from modelstore.model_store import ModelStore
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.utils.exceptions import (
     ModelExistsException,
     ModelNotFoundException,
-    ModelNotFoundException,
 )
 
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture

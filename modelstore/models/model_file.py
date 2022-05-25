@@ -17,6 +17,8 @@ from functools import partial
 from pathlib import PosixPath
 from typing import Any
 
+from modelstore.metadata import metadata
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -71,10 +73,12 @@ class ModelFileManager(ModelManager):
     def _required_kwargs(self) -> list:
         return ["model"]
 
-    def _model_info(self, **kwargs) -> dict:
-        return {"library": self.ml_library}
+    def model_info(self, **kwargs) -> ModelType:
+        return ModelType.generate(
+            library=self.ml_library
+        )
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         """
         If a model was saved to disk and uploaded with this manager,
         then we can't load it back into memory because we don't know

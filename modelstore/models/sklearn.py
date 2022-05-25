@@ -16,7 +16,8 @@ import os
 from functools import partial
 from typing import Any
 
-from modelstore.meta import datasets
+from modelstore.metadata import metadata
+from modelstore.metadata.model import datasets
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -63,7 +64,7 @@ class SKLearnManager(ModelManager):
 
         return isinstance(kwargs.get("model"), BaseEstimator)
 
-    def _model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> dict:
         data = {}
         if "X_train" in kwargs:
             features = datasets.describe_dataset(kwargs["X_train"])
@@ -80,7 +81,7 @@ class SKLearnManager(ModelManager):
         # @Future idea: export/save in onnx format?
         return [partial(save_joblib, model=kwargs["model"], file_name=MODEL_JOBLIB)]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
         that are available
@@ -101,7 +102,7 @@ class SKLearnManager(ModelManager):
         except TypeError:
             return {}
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # @Future: check if loading into same version of joblib
         # as was used for saving
         file_name = os.path.join(model_path, MODEL_JOBLIB)

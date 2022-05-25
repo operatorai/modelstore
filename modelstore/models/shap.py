@@ -14,6 +14,8 @@
 import os
 from functools import partial
 
+from modelstore.metadata import metadata
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -38,12 +40,12 @@ class ShapManager(ModelManager):
     def _required_kwargs(self):
         return ["explainer"]
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> ModelType:
         """ Returns meta-data about the explainer type """
-        return {
-            "library": self.ml_library,
-            "type": type(kwargs["explainer"]).__name__,
-        }
+        return ModelType.generate(
+            library=self.ml_library,
+            class_name=type(kwargs["explainer"]).__name__,
+        )
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
@@ -59,7 +61,7 @@ class ShapManager(ModelManager):
             partial(save_joblib, model=kwargs["explainer"], file_name=EXPLAINER_FILE),
         ]
 
-    def load(self, model_path: str, meta_data: dict) -> "shap.Explainer":
+    def load(self, model_path: str, meta_data: metadata.Summary) -> "shap.Explainer":
         explainer_path = _explainer_file_path(model_path)
         return load_joblib(explainer_path)
 

@@ -19,8 +19,8 @@ import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
-from modelstore.meta import metadata
-from modelstore.meta.dependencies import save_dependencies, save_model_info
+from modelstore.metadata import metadata
+from modelstore.metadata.code.dependencies import save_dependencies
 from modelstore.storage.storage import CloudStorage
 
 
@@ -49,12 +49,14 @@ class ModelManager(ABC):
         must be pip installed for this ModelManager to work"""
         raise NotImplementedError()
 
+    # pylint: disable=no-self-use
     def optional_dependencies(self) -> list:
         """Returns a list of dependencies that, if installed
         are useful to log info about"""
         return ["pip", "setuptools", "numpy", "scipy", "pandas"]
 
-    def _get_dependencies(self) -> list:
+    def get_dependencies(self) -> list:
+        """ Returns the full list of dependencies """
         return self.required_dependencies() + self.optional_dependencies()
 
     @abstractmethod
@@ -67,7 +69,8 @@ class ModelManager(ABC):
             raise TypeError(f"This model is not an {self.ml_library} model!")
         return []
 
-    def _get_params(self, **kwargs) -> dict:
+    # pylint: disable=unused-argument
+    def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
         that are available
@@ -84,7 +87,7 @@ class ModelManager(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         """
         Loads a model, stored in model_path, back into memory
         """
@@ -96,21 +99,20 @@ class ModelManager(ABC):
             if arg not in kwargs:
                 raise TypeError(f"Please specify {arg}=<value>")
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> metadata.ModelType:
         """Returns meta-data about the model's type"""
-        model_info = {"library": self.ml_library}
-        if "model" in kwargs:
-            model_info["type"] = type(kwargs["model"]).__name__
-        return model_info
-
-    def _get_model_type(self, meta_data: dict) -> str:
-        return meta_data["model"]["model_type"]["type"]
+        class_name = type(kwargs["model"]).__name__ if "model" in kwargs else None
+        return metadata.ModelType.generate(
+            library=self.ml_library,
+            class_name=class_name,
+        )
 
     def _is_same_library(self, meta_data: dict) -> bool:
         """Whether the meta-data of a model artifact matches a model manager"""
         return meta_data.get("library") == self.ml_library
 
-    def _model_data(self, **kwargs) -> dict:
+    # pylint: disable=unused-argument
+    def model_data(self, **kwargs) -> dict:
         """Returns meta-data about the data used to train the model"""
         # @ Future
         return {}
@@ -120,8 +122,8 @@ class ModelManager(ABC):
         part of the artifacts archive.
         """
         file_paths = [
-            save_dependencies(tmp_dir, self._get_dependencies()),
-            save_model_info(tmp_dir, self._model_info(**kwargs)),
+            save_dependencies(tmp_dir, self.get_dependencies()),
+            self.model_info(**kwargs).dumps(tmp_dir),
         ]
         for func in self._get_functions(**kwargs):
             rsp = func(tmp_dir)
@@ -133,12 +135,12 @@ class ModelManager(ABC):
                 file_paths.append(rsp)
         return file_paths
 
-    def _collect_extras(self, **kwargs):
+    def _collect_extras(self, **kwargs) -> set:
         extras = kwargs.get("extras")
         if extras is None:
             return []
         extra_paths = extras if isinstance(extras, list) else [extras]
-        return set([f for f in extra_paths if os.path.isfile(f)])
+        return set(f for f in extra_paths if os.path.isfile(f))
 
     def _create_archive(self, **kwargs) -> str:
         """
@@ -175,7 +177,7 @@ class ModelManager(ABC):
         domain: str,
         model_id: str,
         **kwargs,
-    ) -> dict:
+    ) -> metadata.Summary:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model and uploads the archive to storage.
@@ -186,26 +188,30 @@ class ModelManager(ABC):
         _validate_domain(domain)
         self._validate_kwargs(**kwargs)
 
-        model_meta = metadata.generate_for_model(
+        # Create meta data about the model & code
+        model_meta_data = metadata.Model.generate(
             domain=domain,
             model_id=model_id,
-            model_info=self._model_info(**kwargs),
-            model_params=_format_numpy(self._get_params(**kwargs)),
-            model_data=self._model_data(**kwargs),
+            model_type=self.model_info(**kwargs),
+            parameters=_format_numpy(self.get_params(**kwargs)),
+            data=self.model_data(**kwargs),
         )
-
-        # Meta-data about the code
-        code_meta = metadata.generate_for_code(self._get_dependencies())
 
         # Create the model archive and return
         # meta-data about its location
         archive_path = self._create_archive(**kwargs)
 
         # Upload the model archive and any additional extras
-        storage_meta = self.storage.upload(domain, archive_path)
+        storage_meta_data = self.storage.upload(domain, archive_path)
+        meta_data = metadata.Summary.generate(
+            code_meta_data=metadata.Code.generate(
+                deps_list=self.get_dependencies()
+            ),
+            model_meta_data=model_meta_data,
+            storage_meta_data=storage_meta_data,
+        )
 
-        # Generate the combined meta-data and add it to the store
-        meta_data = metadata.generate(model_meta, storage_meta, code_meta)
+        # Save the combined meta-data to storage
         self.storage.set_meta_data(domain, model_id, meta_data)
         os.remove(archive_path)
 

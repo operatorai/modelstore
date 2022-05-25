@@ -17,6 +17,8 @@ import os
 import catboost as ctb
 import numpy as np
 import pytest
+
+from modelstore.metadata import metadata
 from modelstore.models import catboost
 
 # pylint: disable=unused-import
@@ -39,9 +41,9 @@ def catb_manager():
 
 
 def test_model_info(catb_manager, catb_model):
-    exp = {"library": "catboost", "type": "CatBoostClassifier"}
-    res = catb_manager._model_info(model=catb_model)
-    assert exp == res
+    expected = metadata.ModelType("catboost", "CatBoostClassifier", None)
+    res = catb_manager.model_info(model=catb_model)
+    assert expected == res
 
 
 @pytest.mark.parametrize(
@@ -56,9 +58,8 @@ def test_is_same_library(catb_manager, ml_library, should_match):
 
 
 def test_model_data(catb_manager, catb_model):
-    exp = {}
-    res = catb_manager._model_data(model=catb_model)
-    assert exp == res
+    res = catb_manager.model_data(model=catb_model)
+    assert {} == res
 
 
 def test_required_kwargs(catb_manager):
@@ -77,7 +78,7 @@ def test_get_functions(catb_manager, catb_model):
 
 def test_get_params(catb_manager, catb_model):
     exp = catb_model.get_params()
-    res = catb_manager._get_params(model=catb_model)
+    res = catb_manager.get_params(model=catb_model)
     assert exp == res
 
 
@@ -109,6 +110,7 @@ def test_dump_attributes(catb_model, tmp_path):
         "evals_result",
         "best_score",
     ]
+    # pylint: disable=unspecified-encoding
     with open(res, "r") as lines:
         data = json.loads(lines.read())
     assert all(x in data for x in config_keys)
@@ -122,13 +124,22 @@ def test_load_model(tmp_path, catb_manager, catb_model):
     #  Load the model
     loaded_model = catb_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "type": "CatBoostClassifier",
-                },
-            }
-        },
+        metadata.Summary(
+            model=metadata.Model(
+                domain=None,
+                model_id=None,
+                model_type=metadata.ModelType(
+                    library=None,
+                    type="CatBoostClassifier",
+                    models=None,
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

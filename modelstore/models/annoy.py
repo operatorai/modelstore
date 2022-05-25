@@ -15,6 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -57,20 +58,21 @@ class AnnoyManager(ModelManager):
             ),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {
             "num_dimensions": kwargs["model"].f,
             "num_trees": kwargs["num_trees"],
             "metric": kwargs["metric"],
         }
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         from annoy import AnnoyIndex
 
-        # Extract these from the meta_data
-        num_dimensions = int(meta_data["model"]["parameters"]["num_dimensions"])
-        metric = meta_data["model"]["parameters"]["metric"]
+        # Extract index size & metric from the meta_data
+        params = meta_data.model.parameters
+        num_dimensions = int(params["num_dimensions"])
+        metric = params["metric"]
 
         model = AnnoyIndex(num_dimensions, metric)
         model.load(_model_file_path(model_path))

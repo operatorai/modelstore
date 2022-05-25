@@ -17,6 +17,8 @@ import json
 import numpy as np
 import pytest
 import tensorflow as tf
+
+from modelstore.metadata import metadata
 from modelstore.models.tensorflow import (
     MODEL_DIRECTORY,
     TensorflowManager,
@@ -72,8 +74,8 @@ def assert_models_equal(
 
 
 def test_model_info(tf_manager):
-    exp = {"library": "tensorflow"}
-    res = tf_manager._model_info()
+    exp = metadata.ModelType("tensorflow", None, None)
+    res = tf_manager.model_info()
     assert exp == res
 
 
@@ -90,9 +92,8 @@ def test_is_same_library(tf_manager, ml_library, should_match):
 
 
 def test_model_data(tf_manager, tf_model):
-    exp = {}
-    res = tf_manager._model_data(model=tf_model)
-    assert exp == res
+    res = tf_manager.model_data(model=tf_model)
+    assert {} == res
 
 
 def test_required_kwargs(tf_manager):
@@ -111,7 +112,7 @@ def test_get_functions(tf_manager, tf_model):
 
 def test_get_params(tf_manager, tf_model):
     exp = tf_model.optimizer.get_config()
-    res = tf_manager._get_params(model=tf_model)
+    res = tf_manager.get_params(model=tf_model)
     assert exp == res
 
 
@@ -157,7 +158,7 @@ def test_load_model(tmp_path, tf_manager, tf_model):
     tf_model.save(model_path)
 
     #  Load the model
-    loaded_model = tf_manager.load(tmp_path, {})
+    loaded_model = tf_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(tf_model, loaded_model)

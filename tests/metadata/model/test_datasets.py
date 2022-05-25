@@ -14,9 +14,10 @@
 import numpy as np
 import pandas as pd
 import pytest
-from modelstore.meta import datasets
+from modelstore.metadata.model import datasets
 
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture

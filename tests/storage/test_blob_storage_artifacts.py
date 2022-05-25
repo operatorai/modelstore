@@ -12,11 +12,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-from pathlib import Path
 
 import pytest
-from modelstore.meta import metadata
-from modelstore.storage.local import FileSystemStorage
+
+from modelstore.metadata import metadata
 from modelstore.storage.util.paths import (
     get_archive_path,
 )
@@ -24,19 +23,14 @@ from modelstore.utils.exceptions import (
     ModelDeletedException,
 )
 
+# pylint: disable=unused-import
+from tests.storage.test_blob_storage import (
+    mock_blob_storage,
+    mock_model_file,
+)
+
 # pylint: disable=missing-function-docstring
-
-
-@pytest.fixture
-def mock_blob_storage(tmp_path):
-    return FileSystemStorage(str(tmp_path))
-
-
-@pytest.fixture
-def mock_model_file(tmp_path):
-    model_file = os.path.join(tmp_path, "test-file.txt")
-    Path(model_file).touch()
-    return model_file
+# pylint: disable=redefined-outer-name
 
 
 def test_upload(mock_blob_storage, mock_model_file):
@@ -48,9 +42,9 @@ def test_upload(mock_blob_storage, mock_model_file):
             mock_model_file,
         ),
     )
-    rsp = mock_blob_storage.upload("test-domain", mock_model_file)
-    assert rsp["type"] == "file_system"
-    assert rsp["path"] == model_path
+    meta_data = mock_blob_storage.upload("test-domain", mock_model_file)
+    assert meta_data.type == "file_system"
+    assert meta_data.path == model_path
     assert os.path.exists(model_path)
 
 
@@ -70,10 +64,14 @@ def test_delete_model(mock_blob_storage, mock_model_file):
     model_id = "test-model-id"
     model_state = "test-state"
     storage_meta = mock_blob_storage.upload(domain, mock_model_file)
-    meta_data = metadata.generate(
-        model_meta={"model_id": "test-model-id"},
-        storage_meta=storage_meta,
-        code_meta={},
+    meta_data = metadata.Summary.generate(
+        code_meta_data=None,
+        model_meta_data=metadata.Model.generate(
+            domain=domain,
+            model_id=model_id,
+            model_type=None,
+        ),
+        storage_meta_data=storage_meta,
     )
     mock_blob_storage.set_meta_data(domain, model_id, meta_data)
     mock_blob_storage.create_model_state(model_state)

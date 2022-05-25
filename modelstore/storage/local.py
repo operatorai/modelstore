@@ -18,6 +18,7 @@ import warnings
 from pathlib import Path
 from typing import Optional
 
+from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
@@ -149,16 +150,16 @@ class FileSystemStorage(BlobStorage):
             os.makedirs(parent_dir)
         return os.path.join(parent_dir, paths[1])
 
-    def _storage_location(self, prefix: str) -> dict:
+    def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
-        return {
-            "type": "file_system",
-            "path": os.path.abspath(self.relative_dir(prefix)),
-        }
+        return metadata.Storage.from_path(
+            storage_type="file_system",
+            path=os.path.abspath(self.relative_dir(prefix))
+        )
 
-    def _get_storage_location(self, meta: dict) -> str:
+    def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
-        return meta["path"]
+        return meta_data.path
 
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)

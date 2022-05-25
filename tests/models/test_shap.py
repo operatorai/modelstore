@@ -17,8 +17,10 @@ import joblib
 import numpy as np
 import pytest
 import shap as shp
-from modelstore.models import shap
 from sklearn.ensemble import RandomForestClassifier
+
+from modelstore.metadata import metadata
+from modelstore.models import shap
 
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
@@ -42,8 +44,8 @@ def shap_manager():
 
 
 def test_model_info(shap_manager, shap_explainer):
-    exp = {"library": "shap", "type": "Tree"}
-    res = shap_manager._model_info(explainer=shap_explainer)
+    exp = metadata.ModelType("shap", "Tree", None)
+    res = shap_manager.model_info(explainer=shap_explainer)
     assert exp == res
 
 
@@ -59,9 +61,8 @@ def test_is_same_library(shap_manager, ml_library, should_match):
 
 
 def test_model_data(shap_manager, shap_explainer):
-    exp = {}
-    res = shap_manager._model_data(explainer=shap_explainer)
-    assert exp == res
+    res = shap_manager.model_data(explainer=shap_explainer)
+    assert {} == res
 
 
 def test_required_kwargs(shap_manager):
@@ -80,7 +81,7 @@ def test_get_functions(shap_manager, shap_explainer):
 
 
 def test_get_params(shap_manager, shap_explainer):
-    res = shap_manager._get_params(explainer=shap_explainer)
+    res = shap_manager.get_params(explainer=shap_explainer)
     assert {} == res
 
 
@@ -113,9 +114,9 @@ def test_load_model(tmp_path, shap_manager, shap_explainer, classification_data)
     assert exp == res
 
     #  Load the model
-    loaded_expl = shap_manager.load(tmp_path, {})
+    loaded_expl = shap_manager.load(tmp_path, None)
     loaded_shap_values = loaded_expl.shap_values(X_train)[0]
 
     # Expect the two to be the same
-    assert type(shap_explainer) == type(loaded_expl)
+    assert isinstance(shap_explainer, type(loaded_expl))
     assert np.allclose(shap_values, loaded_shap_values)

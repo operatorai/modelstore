@@ -17,7 +17,8 @@ import pytest
 
 from modelstore.ids import model_ids
 
-# pylint: disable=protected-access,missing-function-docstring
+# pylint: disable=protected-access
+# pylint: disable=missing-function-docstring
 
 
 def test_new() -> str:

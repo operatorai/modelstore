@@ -11,19 +11,20 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import pytest
 import os
 import warnings
 
+import pytest
 import mxnet as mx
 import numpy as np
 from mxnet.gluon import nn
 
+from modelstore.metadata import metadata
 from modelstore.models import mxnet
-
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 def random_x():
@@ -48,8 +49,8 @@ def mxnet_manager():
 
 
 def test_model_info(mxnet_manager, mxnet_model):
-    exp = {"library": "mxnet", "type": "HybridSequential"}
-    res = mxnet_manager._model_info(model=mxnet_model)
+    exp = metadata.ModelType("mxnet", "HybridSequential", None)
+    res = mxnet_manager.model_info(model=mxnet_model)
     assert exp == res
 
 
@@ -65,9 +66,8 @@ def test_is_same_library(mxnet_manager, ml_library, should_match):
 
 
 def test_model_data(mxnet_manager, mxnet_model):
-    exp = {}
-    res = mxnet_manager._model_data(model=mxnet_model)
-    assert exp == res
+    res = mxnet_manager.model_data(model=mxnet_model)
+    assert {} == res
 
 
 def test_required_kwargs(mxnet_manager):
@@ -85,7 +85,7 @@ def test_get_functions(mxnet_manager, mxnet_model):
 
 
 def test_get_params(mxnet_manager, mxnet_model):
-    res = mxnet_manager._get_params(model=mxnet_model, epoch=3)
+    res = mxnet_manager.get_params(model=mxnet_model, epoch=3)
     assert {"epoch": 3} == res
 
 
@@ -119,11 +119,18 @@ def test_load_model(tmp_path, mxnet_manager, mxnet_model):
     #  Load the model
     loaded_model = mxnet_manager.load(
         tmp_path,
-        {
-            "model": {
-                "parameters": {"epoch": 0},
-            }
-        },
+        metadata.Summary(
+            model=metadata.Model(
+                domain=None,
+                model_id=None,
+                model_type=None,
+                parameters={"epoch": 0},
+                data={},
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
     y_loaded_pred = loaded_model(x).asnumpy()
 

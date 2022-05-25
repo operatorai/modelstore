@@ -13,6 +13,7 @@
 #    limitations under the License.
 from typing import Any, List
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.managers import get_manager
 from modelstore.storage.storage import CloudStorage
@@ -61,25 +62,25 @@ class MultipleModelsManager(ModelManager):
             functions += manager._get_functions(**kwargs)
         return functions
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> metadata.ModelType:
         """Returns meta-data about the model's type"""
-        return {
-            "library": self.ml_library,
-            # pylint: disable=protected-access
-            "models": [manager._model_info(**kwargs) for manager in self.managers],
-        }
+        return metadata.ModelType.generate(
+            library=self.ml_library,
+            models=[
+                m.model_info(**kwargs) for m in self.managers
+            ]
+        )
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {
             # pylint: disable=protected-access
-            manager.ml_library: manager._get_params(**kwargs)
+            manager.ml_library: manager.get_params(**kwargs)
             for manager in self.managers
         }
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         models = {}
-        for model_type in meta_data["model"]["model_type"]["models"]:
-            ml_library = model_type["library"]
-            manager = get_manager(ml_library, self.storage)
-            models[ml_library] = manager.load(model_path, meta_data)
+        for model in meta_data.model_type().models:
+            manager = get_manager(model.library, self.storage)
+            models[model.library] = manager.load(model_path, meta_data)
         return models

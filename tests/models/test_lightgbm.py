@@ -18,6 +18,8 @@ import os
 import lightgbm as lgb
 import numpy as np
 import pytest
+
+from modelstore.metadata import metadata
 from modelstore.models.lightgbm import (
     MODEL_FILE,
     MODEL_JSON,
@@ -30,7 +32,9 @@ from modelstore.models.lightgbm import (
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 
-# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
+# pylint: disable=protected-access,
+# pylint: disable=redefined-outer-name,
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -50,7 +54,7 @@ def assert_models_equal(
     model_a: lgb.Booster, model_b: lgb.Booster, classification_data
 ):
     # Same type
-    assert type(model_a) == type(model_b)
+    assert isinstance(model_a, type(model_b))
     assert model_a.model_to_string() == model_b.model_to_string()
 
     # Same predictions
@@ -59,9 +63,9 @@ def assert_models_equal(
 
 
 def test_model_info(lgb_manager, lgb_model):
-    exp = {"library": "lightgbm", "type": "Booster"}
-    res = lgb_manager._model_info(model=lgb_model)
-    assert exp == res
+    expected = metadata.ModelType("lightgbm", "Booster", None)
+    res = lgb_manager.model_info(model=lgb_model)
+    assert expected == res
 
 
 @pytest.mark.parametrize(
@@ -77,7 +81,7 @@ def test_is_same_library(lgb_manager, ml_library, should_match):
 
 def test_model_data(lgb_manager, lgb_model):
     exp = {}
-    res = lgb_manager._model_data(model=lgb_model)
+    res = lgb_manager.model_data(model=lgb_model)
     assert exp == res
 
 
@@ -103,7 +107,7 @@ def test_get_params(lgb_manager, lgb_model):
         "early_stopping_round": None,
         "num_threads": 1,
     }
-    res = lgb_manager._get_params(model=lgb_model)
+    res = lgb_manager.get_params(model=lgb_model)
     assert exp == res
 
 
@@ -126,6 +130,7 @@ def test_dump_model(tmp_path, lgb_model):
     # Models can't be loaded back from JSON
     # https://stackoverflow.com/questions/52170236/lightgbm-loading-from-json
     # pylint: disable=bare-except
+    # pylint: disable=unspecified-encoding
     try:
         with open(res, "r") as lines:
             json.loads(lines.read())
@@ -141,7 +146,7 @@ def test_load_model(tmp_path, lgb_manager, lgb_model, classification_data):
     assert os.path.exists(model_path)
 
     #  Load the model
-    loaded_model = lgb_manager.load(tmp_path, {})
+    loaded_model = lgb_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(lgb_model, loaded_model, classification_data)

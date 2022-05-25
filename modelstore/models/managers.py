@@ -13,7 +13,7 @@
 #    limitations under the License.
 from typing import Iterator, List
 
-from modelstore.meta.dependencies import module_exists
+from modelstore.metadata.code.dependencies import module_exists
 from modelstore.models.annoy import AnnoyManager
 from modelstore.models.catboost import CatBoostManager
 from modelstore.models.fastai import FastAIManager

@@ -13,6 +13,7 @@
 #    limitations under the License.
 from typing import Any
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -41,16 +42,16 @@ class MissingDepManager(ModelManager):
     def _get_functions(self, **kwargs) -> list:
         return []
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return None
 
     def _required_kwargs(self) -> list:
         return []
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> dict:
         return None
 
-    def _model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> dict:
         return None
 
     def upload(self, domain: str, model_id: str, **kwargs) -> str:
@@ -58,7 +59,7 @@ class MissingDepManager(ModelManager):
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")

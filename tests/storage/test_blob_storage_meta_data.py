@@ -11,53 +11,27 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import json
 import os
-from datetime import datetime, timedelta
-from pathlib import Path
 import pytest
 
-import modelstore
-from modelstore.storage.local import FileSystemStorage
+from modelstore.metadata import metadata
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
     get_domain_path,
     get_models_path,
 )
 
+# pylint: disable=unused-import
+from tests.storage.test_blob_storage import (
+    mock_meta_data,
+    mock_model_file,
+    mock_blob_storage,
+    assert_file_contents_equals,
+)
+
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
-
-
-def mock_meta_data(domain: str, model_id: str, inc_time: int):
-    upload_time = datetime.now() + timedelta(hours=inc_time)
-    return {
-        "model": {
-            "domain": domain,
-            "model_id": model_id,
-        },
-        "code": {"created": upload_time.strftime("%Y/%m/%d/%H:%M:%S")},
-        "modelstore": modelstore.__version__,
-    }
-
-
-@pytest.fixture
-def mock_model_file(tmp_path):
-    model_file = os.path.join(tmp_path, "test-file.txt")
-    Path(model_file).touch()
-    return model_file
-
-
-@pytest.fixture
-def mock_blob_storage(tmp_path):
-    return FileSystemStorage(str(tmp_path))
-
-
-def assert_file_contents_equals(file_path: str, expected: dict):
-    with open(file_path, "r") as lines:
-        actual = lines.read()
-    assert json.dumps(expected) == actual
 
 
 def test_list_domains(mock_blob_storage):
@@ -116,8 +90,11 @@ def test_set_meta_data(mock_blob_storage):
 
     # (2) The meta data for a specific model
     model_meta_data_path = os.path.join(
-        get_models_path(mock_blob_storage.root_prefix, "domain-1"),
-        f"model-1.json",
+        get_models_path(
+            mock_blob_storage.root_prefix,
+            "domain-1"
+        ),
+        "model-1.json",
     )
     assert_file_contents_equals(model_meta_data_path, meta_data)
 
@@ -128,7 +105,10 @@ def test_get_meta_data(mock_blob_storage):
     mock_blob_storage.set_meta_data("domain-1", "model-1", meta_data)
 
     # Retrieve it back
-    assert mock_blob_storage.get_meta_data("domain-1", "model-1") == meta_data
+    # pylint: disable=no-member
+    get_result = mock_blob_storage.get_meta_data("domain-1", "model-1")
+    result = metadata.Summary.from_dict(get_result)
+    assert result == meta_data
 
 
 @pytest.mark.parametrize(

@@ -15,7 +15,7 @@ import os
 import tarfile
 import tempfile
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Optional
 
 from modelstore.ids import model_ids
@@ -38,7 +38,7 @@ from modelstore.utils.exceptions import (
 @dataclass(frozen=True)
 class ModelStore:
 
-    """ ModelStore is the main object that encapsulates a 
+    """ ModelStore is the main object that encapsulates a
     model registry. To create a new model store, use one of the
     ModelStore.from_ functions """
 
@@ -135,7 +135,7 @@ class ModelStore:
         return self.storage.get_domain(domain)
 
     """
-    MODELS: multiple models can be added to a domain; 
+    MODELS: multiple models can be added to a domain;
     """
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
@@ -157,6 +157,7 @@ class ModelStore:
     with models.
 
     @TODO: There is no function to get the meta-data for a state
+    @TODO: Model states are currently raw dictionaries
     """
 
     def list_model_states(self) -> list:
@@ -190,7 +191,7 @@ class ModelStore:
 
     def get_model_info(self, domain: str, model_id: str) -> dict:
         """Returns the meta-data for a given model"""
-        return self.storage.get_meta_data(domain, model_id)
+        return asdict(self.storage.get_meta_data(domain, model_id))
 
     def model_exists(self, domain: str, model_id: str) -> bool:
         """ Returns True if a model with the given id exists in the domain """
@@ -222,6 +223,12 @@ class ModelStore:
         # model state, below
         # pylint: disable=no-member
         managers = matching_managers(self._libraries, **kwargs)
+        if len(managers) == 1:
+            manager = managers[0]
+        else:
+            # There are cases where we can match on more than one
+            # manager (e.g., a model and an explainer)
+            manager = MultipleModelsManager(managers, self.storage)
 
         try:
             if self.model_exists(domain, model_id):
@@ -237,21 +244,17 @@ class ModelStore:
                 ReservedModelStates.DELETED.value,
                 modifying_reserved=True,
             )
-
-        if len(managers) == 1:
-            return managers[0].upload(domain, model_id=model_id, **kwargs)
-        # If we match on more than one manager (e.g., a model and an explainer)
-        manager = MultipleModelsManager(managers, self.storage)
-        return manager.upload(domain, model_id=model_id, **kwargs)
+        meta_data = manager.upload(domain, model_id=model_id, **kwargs)
+        return asdict(meta_data)
 
     def load(self, domain: str, model_id: str):
         """Loads a model into memory"""
-        meta_data = self.get_model_info(domain, model_id)
-        ml_library = meta_data["model"]["model_type"]["library"]
-        if ml_library == MultipleModelsManager.NAME:
+        meta_data = self.storage.get_meta_data(domain, model_id)
+        model_type = meta_data.model_type()
+        if model_type.library == MultipleModelsManager.NAME:
             manager = MultipleModelsManager([], self.storage)
         else:
-            manager = get_manager(ml_library, self.storage)
+            manager = get_manager(model_type.library, self.storage)
         with tempfile.TemporaryDirectory() as tmp_dir:
             model_files = self.download(tmp_dir, domain, model_id)
             return manager.load(model_files, meta_data)
@@ -267,5 +270,5 @@ class ModelStore:
 
     def delete_model(self, domain: str, model_id: str, skip_prompt: bool = False):
         """Deletes a model artifact from storage."""
-        meta_data = self.get_model_info(domain, model_id)
+        meta_data = self.storage.get_meta_data(domain, model_id)
         self.storage.delete_model(domain, model_id, meta_data, skip_prompt)

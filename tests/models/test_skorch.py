@@ -16,10 +16,12 @@ import os
 
 import numpy as np
 import pytest
-from modelstore.models.common import save_joblib
-from modelstore.models.skorch import MODEL_JOBLIB, SkorchManager
 from skorch import NeuralNetClassifier
 from torch import nn
+
+from modelstore.metadata import metadata
+from modelstore.models.common import save_joblib
+from modelstore.models.skorch import MODEL_JOBLIB, SkorchManager
 
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
@@ -49,7 +51,7 @@ class ExampleModule(nn.Module):
 
 
 def assert_models_equal(model_a: nn.Module, model_b: nn.Module):
-    assert type(model_a) == type(model_b)
+    assert isinstance(model_a, type(model_b))
     for a_params, lb_params in zip(
         model_a.module_.parameters(), model_b.module_.parameters()
     ):
@@ -78,8 +80,8 @@ def skorch_manager():
 
 
 def test_model_info(skorch_manager, skorch_model):
-    exp = {"library": "skorch", "type": "NeuralNetClassifier"}
-    res = skorch_manager._model_info(model=skorch_model)
+    exp = metadata.ModelType("skorch", "NeuralNetClassifier", None)
+    res = skorch_manager.model_info(model=skorch_model)
     assert exp == res
 
 
@@ -96,9 +98,8 @@ def test_is_same_library(skorch_manager, ml_library, should_match):
 
 
 def test_model_data(skorch_manager, skorch_model):
-    exp = {}
-    res = skorch_manager._model_data(model=skorch_model)
-    assert exp == res
+    res = skorch_manager.model_data(model=skorch_model)
+    assert {} == res
 
 
 def test_required_kwargs(skorch_manager):
@@ -119,10 +120,10 @@ def test_get_functions(skorch_manager, skorch_model):
 
 def test_get_params(skorch_manager, skorch_model):
     try:
-        result = skorch_manager._get_params(model=skorch_model)
+        result = skorch_manager.get_params(model=skorch_model)
         json.dumps(result)
-    except Exception as e:
-        pytest.fail(f"Exception when dumping params: {str(e)}")
+    except Exception as exc:
+        pytest.fail(f"Exception when dumping params: {str(exc)}")
 
 
 def test_load_model(tmp_path, skorch_manager, skorch_model):
@@ -131,7 +132,7 @@ def test_load_model(tmp_path, skorch_manager, skorch_model):
     assert model_path == os.path.join(tmp_path, MODEL_JOBLIB)
 
     #  Load the model
-    loaded_model = skorch_manager.load(tmp_path, {})
+    loaded_model = skorch_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert_models_equal(loaded_model, skorch_model)

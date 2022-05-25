@@ -30,19 +30,22 @@ except ImportError:
     PANDAS_EXISTS = False
 
 
-def is_numpy_array(values):
+def is_numpy_array(values) -> bool:
+    """ Whether values is a numpy array """
     if NUMPY_EXISTS:
         return isinstance(values, np.ndarray)
     return False
 
 
-def is_pandas_dataframe(values):
+def is_pandas_dataframe(values) -> bool:
+    """ Whether values is a pandas data frame"""
     if PANDAS_EXISTS:
         return isinstance(values, pd.DataFrame)
     return False
 
 
-def is_pandas_series(values):
+def is_pandas_series(values) -> bool:
+    """ Whether values is a pandas series """
     if PANDAS_EXISTS:
         return isinstance(values, pd.Series)
     return False

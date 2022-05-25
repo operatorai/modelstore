@@ -16,9 +16,10 @@ import os
 import sys
 
 import pytest
-from modelstore.meta import dependencies
+from modelstore.metadata.code import dependencies
 
-# pylint: disable=protected-access,missing-function-docstring
+# pylint: disable=protected-access
+# pylint: disable=missing-function-docstring
 
 
 def test_get_version():
@@ -78,6 +79,7 @@ def test_save_dependencies(tmp_path):
     }
     tmp_file = dependencies.save_dependencies(tmp_path, test_deps)
     assert os.path.split(tmp_file)[1] == "python-info.json"
+    # pylint: disable=unspecified-encoding
     with open(tmp_file, "r") as lines:
         result = json.loads(lines.read())
     assert result == expected

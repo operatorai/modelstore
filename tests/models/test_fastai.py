@@ -20,6 +20,8 @@ import pytest
 from fastai.learner import load_learner
 from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import TabularLearner, tabular_learner
+
+from modelstore.metadata import metadata
 from modelstore.models.fastai import (
     LEARNER_FILE,
     FastAIManager,
@@ -40,6 +42,7 @@ from tests.models.utils import (
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -71,9 +74,9 @@ def assert_models_equal(
 
 
 def test_model_info(fai_manager):
-    exp = {"library": "fastai"}
-    res = fai_manager._model_info()
-    assert exp == res
+    expected = metadata.ModelType("fastai", None, None)
+    res = fai_manager.model_info()
+    assert expected == res
 
 
 @pytest.mark.parametrize(
@@ -89,7 +92,7 @@ def test_is_same_library(fai_manager, ml_library, should_match):
 
 def test_model_data(fai_manager, fai_learner):
     exp = {}
-    res = fai_manager._model_data(learner=fai_learner)
+    res = fai_manager.model_data(learner=fai_learner)
     assert exp == res
 
 
@@ -109,7 +112,7 @@ def test_get_functions(fai_manager, fai_learner):
 
 def test_get_params(fai_manager, fai_learner):
     exp = {}
-    res = fai_manager._get_params(learner=fai_learner)
+    res = fai_manager.get_params(learner=fai_learner)
     assert exp == res
 
 
@@ -142,7 +145,19 @@ def test_load_model(tmp_path, fai_manager, fai_learner, classification_row):
 
     #  Load the model
     loaded_learner = fai_manager.load(
-        tmp_path, {"code": {"dependencies": {"fastai": "2.2.7"}}}
+        tmp_path,
+        metadata.Summary(
+            model=None,
+            code=metadata.Code(
+                runtime=None,
+                user=None,
+                created=None,
+                dependencies={"fastai": "2.2.7"},
+                git=None,
+            ),
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

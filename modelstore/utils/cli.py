@@ -14,13 +14,14 @@
 import os
 import sys
 from enum import Enum
-
 import click
+
 from modelstore import ModelStore
 from modelstore.storage.aws import AWSStorage
 from modelstore.storage.azure import AzureBlobStorage
 from modelstore.storage.gcloud import GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
+
 
 STORAGE_TYPES = {
     AWSStorage.NAME: AWSStorage,

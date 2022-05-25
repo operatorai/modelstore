@@ -18,13 +18,15 @@ from functools import partial
 import numpy as np
 import pandas as pd
 import pytest
-from modelstore.models.common import save_joblib
-from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+from modelstore.metadata import metadata
+from modelstore.models.common import save_joblib
+from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
 
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
@@ -70,20 +72,20 @@ def sklearn_manager():
     [
         (
             RandomForestRegressor,
-            {"library": "sklearn", "type": "RandomForestRegressor"},
+            metadata.ModelType("sklearn","RandomForestRegressor", None),
         ),
         (
             LogisticRegression,
-            {"library": "sklearn", "type": "LogisticRegression"},
+            metadata.ModelType("sklearn", "LogisticRegression", None),
         ),
         (
             partial(Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]),
-            {"library": "sklearn", "type": "Pipeline"},
+            metadata.ModelType("sklearn", "Pipeline", None),
         ),
     ],
 )
 def test_model_info(sklearn_manager, model_type, expected):
-    res = sklearn_manager._model_info(model=model_type())
+    res = sklearn_manager.model_info(model=model_type())
     assert expected == res
 
 
@@ -101,7 +103,7 @@ def test_is_same_library(sklearn_manager, ml_library, should_match):
 def test_model_data(sklearn_manager, sklearn_tree):
     labels = np.array([0, 1, 1, 0, 1])
     exp = {"labels": {"shape": [5], "values": {0: 2, 1: 3}}}
-    res = sklearn_manager._model_data(model=sklearn_tree, y_train=labels)
+    res = sklearn_manager.model_data(model=sklearn_tree, y_train=labels)
     assert exp == res
 
 
@@ -130,10 +132,11 @@ def test_get_functions(sklearn_manager, sklearn_tree):
 )
 def test_get_params(sklearn_manager, model_type):
     try:
-        result = sklearn_manager._get_params(model=model_type())
+        result = sklearn_manager.get_params(model=model_type())
         json.dumps(result)
-    except Exception as e:
-        pytest.fail(f"Exception when dumping params: {str(e)}")
+        # pylint: disable=bare-except
+    except Exception as exc:
+        pytest.fail(f"Exception when dumping params: {str(exc)}")
 
 
 def test_get_params_from_pipeline(sklearn_manager):
@@ -151,7 +154,7 @@ def test_get_params_from_pipeline(sklearn_manager):
             ("classifier", RandomForestRegressor()),
         ]
     )
-    result = sklearn_manager._get_params(model=pipeline)
+    result = sklearn_manager.get_params(model=pipeline)
     assert result == {}
 
 
@@ -179,7 +182,7 @@ def test_load_model(tmp_path, sklearn_manager, sklearn_tree):
     assert model_path == os.path.join(tmp_path, MODEL_JOBLIB)
 
     #  Load the model
-    loaded_model = sklearn_manager.load(tmp_path, {})
+    loaded_model = sklearn_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert type(loaded_model) == type(sklearn_tree)

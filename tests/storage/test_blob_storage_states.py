@@ -13,38 +13,26 @@
 #    limitations under the License.
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
-import modelstore
-from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.util.paths import (
     get_model_state_path,
+)
+
+# pylint: disable=unused-import
+from tests.storage.test_blob_storage import (
+    mock_blob_storage,
+    mock_meta_data,
 )
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring
 
 
-@pytest.fixture
-def mock_blob_storage(tmp_path):
-    return FileSystemStorage(str(tmp_path))
-
-
-def mock_meta_data(domain: str, model_id: str, inc_time: int):
-    upload_time = datetime.now() + timedelta(hours=inc_time)
-    return {
-        "model": {
-            "domain": domain,
-            "model_id": model_id,
-        },
-        "code": {"created": upload_time.strftime("%Y/%m/%d/%H:%M:%S")},
-        "modelstore": modelstore.__version__,
-    }
-
-
 def assert_file_contents_equals(file_path: str, expected: dict):
+    # pylint: disable=unspecified-encoding
     with open(file_path, "r") as lines:
         actual = lines.read()
     assert json.dumps(expected) == actual

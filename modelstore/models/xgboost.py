@@ -15,6 +15,7 @@ import os
 from functools import partial
 from typing import Any, Union
 
+from modelstore.metadata import metadata
 from modelstore.models.common import save_json
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -72,7 +73,7 @@ class XGBoostManager(ModelManager):
             partial(save_booster_config, booster=booster),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 
@@ -82,7 +83,7 @@ class XGBoostManager(ModelManager):
             return {}
         return model.get_xgb_params()
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 
@@ -93,7 +94,7 @@ class XGBoostManager(ModelManager):
             "Booster": xgb.Booster,
             # Future: other types
         }
-        model_type = self._get_model_type(meta_data)
+        model_type = meta_data.model_type().type
         if model_type not in model_types:
             raise ValueError(f"Cannot load xgboost model type: {model_type}")
 

@@ -16,6 +16,7 @@ import os
 from typing import Optional
 import warnings
 
+from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
@@ -203,19 +204,19 @@ class GoogleCloudStorage(BlobStorage):
         blob.delete()
         return True
 
-    def _storage_location(self, prefix: str) -> dict:
+    def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
-        return {
-            "type": "google:cloud-storage",
-            "bucket": self.bucket_name,
-            "prefix": prefix,
-        }
+        return metadata.Storage.from_bucket(
+            storage_type="google:cloud-storage",
+            bucket=self.bucket_name,
+            prefix=prefix,
+        )
 
-    def _get_storage_location(self, meta: dict) -> str:
+    def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
-        if self.bucket_name != meta.get("bucket"):
+        if self.bucket_name != meta_data.bucket:
             raise ValueError("Meta-data has a different bucket name")
-        return meta["prefix"]
+        return meta_data.prefix
 
     def _read_json_objects(self, path: str) -> list:
         logger.debug("Listing files in: %s/%s", self.bucket_name, path)

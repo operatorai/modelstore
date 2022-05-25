@@ -15,6 +15,7 @@ import json
 import os
 from typing import Optional
 
+from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
@@ -68,6 +69,7 @@ class AWSStorage(BlobStorage):
 
     @property
     def client(self):
+        """ Returns the boto s3 client """
         try:
             if self.__client is None:
                 self.__client = boto3.client("s3", region_name=self.region)
@@ -116,19 +118,19 @@ class AWSStorage(BlobStorage):
                 return False
             raise
 
-    def _storage_location(self, prefix: str) -> dict:
+    def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
-        return {
-            "type": "aws:s3",
-            "bucket": self.bucket_name,
-            "prefix": prefix,
-        }
+        return metadata.Storage.from_bucket(
+            storage_type="aws:s3",
+            bucket=self.bucket_name,
+            prefix=prefix,
+        )
 
-    def _get_storage_location(self, meta: dict) -> str:
+    def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
-        if self.bucket_name != meta.get("bucket"):
+        if self.bucket_name != meta_data.bucket:
             raise ValueError("Meta-data has a different bucket name")
-        return meta["prefix"]
+        return meta_data.prefix
 
     def _read_json_objects(self, path: str) -> list:
         logger.debug("Listing files in: %s/%s", self.bucket_name, path)

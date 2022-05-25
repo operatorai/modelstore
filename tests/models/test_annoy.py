@@ -16,9 +16,13 @@ import random
 
 import pytest
 from annoy import AnnoyIndex
+
+from modelstore.metadata import metadata
 from modelstore.models.annoy import MODEL_FILE, AnnoyManager, save_model
 
-# pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
+# pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -43,9 +47,9 @@ def assert_same_model(model_a: AnnoyIndex, model_b: AnnoyIndex):
 
 
 def test_model_info(annoy_manager, annoy_model):
-    exp = {"library": "annoy", "type": "Annoy"}
-    res = annoy_manager._model_info(model=annoy_model)
-    assert exp == res
+    expected = metadata.ModelType("annoy", "Annoy", None)
+    result = annoy_manager.model_info(model=annoy_model)
+    assert expected == result
 
 
 @pytest.mark.parametrize(
@@ -60,9 +64,8 @@ def test_is_same_library(annoy_manager, ml_library, should_match):
 
 
 def test_model_data(annoy_manager, annoy_model):
-    exp = {}
-    res = annoy_manager._model_data(model=annoy_model)
-    assert exp == res
+    res = annoy_manager.model_data(model=annoy_model)
+    assert {} == res
 
 
 def test_required_kwargs(annoy_manager):
@@ -85,7 +88,7 @@ def test_get_params(annoy_manager, annoy_model):
         "num_trees": 10,
         "metric": "angular",
     }
-    res = annoy_manager._get_params(model=annoy_model, num_trees=10, metric="angular")
+    res = annoy_manager.get_params(model=annoy_model, num_trees=10, metric="angular")
     assert exp == res
 
 
@@ -108,11 +111,18 @@ def test_load_model(tmp_path, annoy_manager, annoy_model):
     #  Load the model
     loaded_model = annoy_manager.load(
         tmp_path,
-        {
-            "model": {
-                "parameters": {"num_dimensions": 40, "metric": "angular"},
-            }
-        },
+        metadata.Summary(
+            model=metadata.Model(
+                domain=None,
+                model_id=None,
+                model_type=None,
+                parameters={"num_dimensions": 40, "metric": "angular"},
+                data={},
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

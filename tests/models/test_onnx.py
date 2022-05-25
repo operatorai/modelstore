@@ -17,11 +17,14 @@ from typing import Tuple
 import numpy as np
 import onnxruntime as rt
 import pytest
-from modelstore.models import onnx
+
 from onnxruntime.capi.onnxruntime_inference_collection import InferenceSession
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 from sklearn.ensemble import RandomForestClassifier
+
+from modelstore.metadata import metadata
+from modelstore.models import onnx
 
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
@@ -61,8 +64,8 @@ def get_predictions(sess: InferenceSession, classification_data: Tuple):
 
 
 def test_model_info(onnx_manager, onnx_model):
-    exp = {"library": "onnx", "type": "ModelProto"}
-    res = onnx_manager._model_info(model=onnx_model)
+    exp = metadata.ModelType("onnx", "ModelProto", None)
+    res = onnx_manager.model_info(model=onnx_model)
     assert exp == res
 
 
@@ -78,9 +81,8 @@ def test_is_same_library(onnx_manager, ml_library, should_match):
 
 
 def test_model_data(onnx_manager, onnx_model):
-    exp = {}
-    res = onnx_manager._model_data(model=onnx_model)
-    assert exp == res
+    res = onnx_manager.model_data(model=onnx_model)
+    assert {} == res
 
 
 def test_required_kwargs(onnx_manager):
@@ -98,7 +100,7 @@ def test_get_functions(onnx_manager, onnx_model):
 
 
 def test_get_params(onnx_manager, onnx_model):
-    res = onnx_manager._get_params(model=onnx_model)
+    res = onnx_manager.get_params(model=onnx_model)
     assert {} == res
 
 
@@ -129,9 +131,9 @@ def test_load_model(
     assert model_path == os.path.join(tmp_path, onnx.MODEL_FILE)
 
     #  Load the model
-    loaded_model = onnx_manager.load(tmp_path, {})
+    loaded_model = onnx_manager.load(tmp_path, None)
     loaded_pred = get_predictions(loaded_model, classification_data)
 
     # Expect the two to be the same
-    assert type(loaded_model) == type(onnx_inference)
+    assert isinstance(loaded_model, type(onnx_inference))
     assert np.allclose(model_pred, loaded_pred)

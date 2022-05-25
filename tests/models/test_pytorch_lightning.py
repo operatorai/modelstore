@@ -17,17 +17,21 @@ import pytest
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
+from torch import nn
+from torch.utils.data import DataLoader, TensorDataset
+
+from modelstore.metadata import metadata
 from modelstore.models.pytorch_lightning import (
     MODEL_CHECKPOINT,
     PyTorchLightningManager,
     _save_lightning_model,
 )
-from torch import nn
-from torch.utils.data import DataLoader, TensorDataset
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+# pylint: disable=arguments-differ
 
 
 class ExampleLightningNet(pl.LightningModule):
@@ -62,6 +66,7 @@ def lightning_model():
 
 @pytest.fixture
 def train_loader():
+    # pylint: disable=no-member
     x = torch.rand(20, 10)
     y = torch.rand(20).view(-1, 1)
     data_set = TensorDataset(x, y)
@@ -70,6 +75,7 @@ def train_loader():
 
 @pytest.fixture
 def val_loader():
+    # pylint: disable=no-member
     x = torch.rand(2, 10)
     y = torch.rand(2).view(-1, 1)
     data_set = TensorDataset(x, y)
@@ -94,8 +100,8 @@ def assert_models_equal(model_a: pl.LightningModule, module_b: pl.LightningModul
 
 
 def test_model_info(lightning_manager, lightning_model):
-    exp = {"library": "pytorch_lightning", "type": "ExampleLightningNet"}
-    res = lightning_manager._model_info(model=lightning_model)
+    exp = metadata.ModelType("pytorch_lightning", "ExampleLightningNet", None)
+    res = lightning_manager.model_info(model=lightning_model)
     assert exp == res
 
 
@@ -111,9 +117,8 @@ def test_is_same_library(lightning_manager, ml_library, should_match):
 
 
 def test_model_data(lightning_manager, lightning_model):
-    exp = {}
-    res = lightning_manager._model_data(model=lightning_model)
-    assert exp == res
+    res = lightning_manager.model_data(model=lightning_model)
+    assert {} == res
 
 
 def test_required_kwargs(lightning_manager):
@@ -141,7 +146,7 @@ def test_get_functions(lightning_manager, lightning_model, lightning_trainer):
 
 def test_get_params(lightning_manager):
     exp = {}
-    res = lightning_manager._get_params()
+    res = lightning_manager.get_params()
     assert exp == res
 
 
@@ -162,13 +167,22 @@ def test_load_model(tmp_path, lightning_manager, lightning_trainer):
     #  Load the model
     loaded_model = lightning_manager.load(
         tmp_path,
-        {
-            "model": {
-                "model_type": {
-                    "type": "ExampleLightningNet",
-                }
-            }
-        },
+        metadata.Summary(
+            model=metadata.Model(
+                domain=None,
+                model_id=None,
+                model_type=metadata.ModelType(
+                    library=None,
+                    type="ExampleLightningNet",
+                    models=None,
+                ),
+                parameters=None,
+                data=None,
+            ),
+            code=None,
+            storage=None,
+            modelstore=None,
+        ),
     )
 
     # Expect the two to be the same

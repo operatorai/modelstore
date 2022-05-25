@@ -16,6 +16,7 @@ import os
 from functools import partial
 from typing import Any
 
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -57,10 +58,10 @@ class LightGbmManager(ModelManager):
             partial(dump_model, model=kwargs["model"]),
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return kwargs["model"].params
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         import lightgbm as lgb
 
@@ -84,6 +85,7 @@ def dump_model(tmp_dir: str, model: "lgb.Booster") -> str:
     """From the docs: dump model into JSON file"""
     logger.debug("Dumping lightgbm model as JSON")
     model_file = os.path.join(tmp_dir, MODEL_JSON)
+    # pylint: disable=unspecified-encoding
     with open(model_file, "w") as out:
         model_json = model.dump_model()
         out.write(json.dumps(model_json))

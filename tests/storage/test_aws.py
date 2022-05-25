@@ -16,8 +16,10 @@ import os
 
 import boto3
 import pytest
-from modelstore.storage.aws import AWSStorage
 from moto import mock_s3
+
+from modelstore.metadata import metadata
+from modelstore.storage.aws import AWSStorage
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
@@ -174,6 +176,7 @@ def test_read_json_object_fails_gracefully(tmp_path):
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_file_path()
     text_file = os.path.join(tmp_path, "test.txt")
+    # pylint: disable=unspecified-encoding
     with open(text_file, "w") as out:
         out.write("some text in a file")
     remote_path = storage._push(text_file, prefix)
@@ -189,30 +192,36 @@ def test_storage_location():
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_path()
     # Asserts that the location meta data is correctly formatted
-    exp = {
-        "type": "aws:s3",
-        "bucket": _MOCK_BUCKET_NAME,
-        "prefix": prefix,
-    }
-    assert storage._storage_location(prefix) == exp
+    expected = metadata.Storage.from_bucket(
+        storage_type="aws:s3",
+        bucket=_MOCK_BUCKET_NAME,
+        prefix=prefix,
+    )
+    assert storage._storage_location(prefix) == expected
 
 
 @pytest.mark.parametrize(
     "meta_data,should_raise,result",
     [
         (
-            {
-                "bucket": _MOCK_BUCKET_NAME,
-                "prefix": "/path/to/file",
-            },
+            metadata.Storage(
+                type=None, 
+                path=None, 
+                bucket=_MOCK_BUCKET_NAME,
+                container=None,
+                prefix="/path/to/file"
+            ),
             False,
             "/path/to/file",
         ),
         (
-            {
-                "bucket": "a-different-bucket",
-                "prefix": "/path/to/file",
-            },
+            metadata.Storage(
+                type=None, 
+                path=None, 
+                bucket="a-different-bucket",
+                container=None,
+                prefix="/path/to/file"
+            ),
             True,
             None,
         ),

@@ -17,6 +17,8 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 import pytest
+
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
 
@@ -31,6 +33,7 @@ class MockCloudStorage(FileSystemStorage):
         super().__init__(root_dir=str(tmpdir))
         self.called = False
 
+    # pylint: disable=unused-argument
     def upload(
         self,
         domain: str,
@@ -48,14 +51,13 @@ class MockModelManager(ModelManager):
     def name(cls) -> str:
         return "mock"
 
-    def _model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> metadata.ModelType:
+        return metadata.ModelType("mock", None, None)
+
+    def model_data(self, **kwargs) -> dict:
         return {}
 
-    def _model_data(self, **kwargs) -> dict:
-        return {}
-
-    @classmethod
-    def required_dependencies(cls) -> list:
+    def required_dependencies(self) -> list:
         return []
 
     def _get_functions(self, **kwargs) -> list:
@@ -64,7 +66,7 @@ class MockModelManager(ModelManager):
             mock_save_config,
         ]
 
-    def _get_params(self, **kwargs) -> dict:
+    def get_params(self, **kwargs) -> dict:
         return {}
 
     def _required_kwargs(self) -> list:
@@ -73,7 +75,7 @@ class MockModelManager(ModelManager):
     def matches_with(self, **kwargs) -> bool:
         return True
 
-    def load(self, model_path: str, meta_data: dict) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         raise NotImplementedError()
 
 
