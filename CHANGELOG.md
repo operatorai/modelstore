@@ -8,6 +8,8 @@ Fixed a bug when creating a GCP model store instance that reads from a public bu
 
 Added support for storing xgboost Booster models ([#170](https://github.com/operatorai/modelstore/pull/170), [#177](https://github.com/operatorai/modelstore/pull/177)).
 
+Refactored the library to use data classes for all model meta data ([#178](https://github.com/operatorai/modelstore/pull/178))
+
 ## modelstore 0.0.74 ([April 2022](https://github.com/operatorai/modelstore/pull/155))
 
 **🆕  New functionality**
