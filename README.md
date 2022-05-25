@@ -6,7 +6,7 @@
 
 For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
-## Features
+## modelstore is an open source model registry library
 
 No tracking server required
 * Store models on a local file system or in a bucket
