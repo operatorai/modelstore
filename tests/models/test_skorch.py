@@ -19,7 +19,7 @@ import pytest
 from skorch import NeuralNetClassifier
 from torch import nn
 
-from modelstore.metadata.model.model_type import ModelType
+from modelstore.metadata import metadata
 from modelstore.models.common import save_joblib
 from modelstore.models.skorch import MODEL_JOBLIB, SkorchManager
 
@@ -51,7 +51,7 @@ class ExampleModule(nn.Module):
 
 
 def assert_models_equal(model_a: nn.Module, model_b: nn.Module):
-    assert type(model_a) == type(model_b)
+    assert isinstance(model_a, type(model_b))
     for a_params, lb_params in zip(
         model_a.module_.parameters(), model_b.module_.parameters()
     ):
@@ -80,7 +80,7 @@ def skorch_manager():
 
 
 def test_model_info(skorch_manager, skorch_model):
-    exp = ModelType("skorch", "NeuralNetClassifier", None)
+    exp = metadata.ModelType("skorch", "NeuralNetClassifier", None)
     res = skorch_manager.model_info(model=skorch_model)
     assert exp == res
 

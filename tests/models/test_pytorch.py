@@ -18,7 +18,7 @@ import torch
 from torch import nn, optim
 from torch.nn import functional as F
 
-from modelstore.metadata.model.model_type import ModelType
+from modelstore.metadata import metadata
 from modelstore.models.pytorch import (
     MODEL_PT,
     PyTorchManager,
@@ -74,7 +74,7 @@ def pytorch_manager():
 
 
 def test_model_info(pytorch_manager, pytorch_model):
-    exp = ModelType("pytorch", "ExampleNet", None)
+    exp = metadata.ModelType("pytorch", "ExampleNet", None)
     res = pytorch_manager.model_info(model=pytorch_model)
     assert exp == res
 

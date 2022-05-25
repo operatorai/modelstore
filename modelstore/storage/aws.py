@@ -15,7 +15,7 @@ import json
 import os
 from typing import Optional
 
-from modelstore.metadata.storage.storage import Storage
+from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
@@ -118,15 +118,15 @@ class AWSStorage(BlobStorage):
                 return False
             raise
 
-    def _storage_location(self, prefix: str) -> Storage:
+    def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
-        return Storage.from_bucket(
+        return metadata.Storage.from_bucket(
             storage_type="aws:s3",
             bucket=self.bucket_name,
             prefix=prefix,
         )
 
-    def _get_storage_location(self, meta_data: Storage) -> str:
+    def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
         if self.bucket_name != meta_data.bucket:
             raise ValueError("Meta-data has a different bucket name")

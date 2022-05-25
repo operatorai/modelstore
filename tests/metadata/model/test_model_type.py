@@ -13,7 +13,7 @@
 #    limitations under the License.
 import pytest
 
-from modelstore.metadata.model.model_type import ModelType
+from modelstore.metadata import metadata
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
@@ -21,7 +21,7 @@ from modelstore.metadata.model.model_type import ModelType
 
 @pytest.fixture
 def model_type_meta_data():
-    return ModelType(
+    return metadata.ModelType(
         library="a-library",
         type="a-class-name",
         models=None,
@@ -30,18 +30,18 @@ def model_type_meta_data():
 
 @pytest.fixture
 def nested_model_type_meta_data():
-    return ModelType(
+    return metadata.ModelType(
         library="multiple-models",
         type=None,
         models=[
-            ModelType.generate("sklearn", "RandomForestClassifier"),
-            ModelType.generate("shap", "TreeExplainer"),
+            metadata.ModelType.generate("sklearn", "RandomForestClassifier"),
+            metadata.ModelType.generate("shap", "TreeExplainer"),
         ],
     )
 
 
 def test_generate(model_type_meta_data):
-    result = ModelType.generate(
+    result = metadata.ModelType.generate(
         library="a-library",
         class_name="a-class-name",
     )
@@ -51,16 +51,16 @@ def test_generate(model_type_meta_data):
 def test_encode_and_decode(model_type_meta_data):
     # pylint: disable=no-member
     json_result = model_type_meta_data.to_json()
-    result = ModelType.from_json(json_result)
+    result = metadata.ModelType.from_json(json_result)
     assert result == model_type_meta_data
 
 
 def test_generate_multiple_models(nested_model_type_meta_data):
-    result = ModelType.generate(
+    result = metadata.ModelType.generate(
         "multiple-models",
         models=[
-            ModelType.generate("sklearn", "RandomForestClassifier"),
-            ModelType.generate("shap", "TreeExplainer"),
+            metadata.ModelType.generate("sklearn", "RandomForestClassifier"),
+            metadata.ModelType.generate("shap", "TreeExplainer"),
         ]
     )
     assert nested_model_type_meta_data == result
@@ -69,5 +69,5 @@ def test_generate_multiple_models(nested_model_type_meta_data):
 def test_encode_and_decode_nested(nested_model_type_meta_data):
     # pylint: disable=no-member
     json_result = nested_model_type_meta_data.to_json()
-    result = ModelType.from_json(json_result)
+    result = metadata.ModelType.from_json(json_result)
     assert result == nested_model_type_meta_data 

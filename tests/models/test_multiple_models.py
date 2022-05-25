@@ -18,11 +18,7 @@ import pytest
 import shap as shp
 from sklearn.ensemble import RandomForestRegressor
 
-from modelstore.metadata.metadata import (
-    Summary, 
-    Model
-)
-from modelstore.metadata.model.model import ModelType
+from modelstore.metadata import metadata
 from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.models.shap import ShapManager, EXPLAINER_FILE
@@ -64,12 +60,12 @@ def multiple_model_manager():
 def test_model_info_with_explainer(
     multiple_model_manager, sklearn_tree, shap_explainer
 ):
-    expected = ModelType(
+    expected = metadata.ModelType(
         library="multiple-models",
         type=None,
         models=[
-            ModelType(SKLearnManager.NAME, "RandomForestRegressor", models=None),
-            ModelType(ShapManager.NAME, "Tree", models=None),
+            metadata.ModelType(SKLearnManager.NAME, "RandomForestRegressor", models=None),
+            metadata.ModelType(ShapManager.NAME, "Tree", models=None),
         ]
     )
     res = multiple_model_manager.model_info(
@@ -111,6 +107,7 @@ def test_get_params(multiple_model_manager, sklearn_tree, shap_explainer):
         assert "sklearn" in result
         assert "shap" in result
         json.dumps(result)
+        # pylint: disable=broad-except
     except Exception as exc:
         pytest.fail(f"Exception when dumping params: {str(exc)}")
 
@@ -128,16 +125,16 @@ def test_load_model(tmp_path, multiple_model_manager, sklearn_tree, shap_explain
     #  Load the model
     loaded_models = multiple_model_manager.load(
         tmp_path,
-        Summary(
-            model=Model(
+        metadata.Summary(
+            model=metadata.Model(
                 domain=None,
                 model_id=None,
-                model_type=ModelType(
+                model_type=metadata.ModelType(
                     library=None,
                     type=None,
                     models=[
-                        ModelType(ShapManager.NAME, None, None),
-                        ModelType(SKLearnManager.NAME, None, None),
+                        metadata.ModelType(ShapManager.NAME, None, None),
+                        metadata.ModelType(SKLearnManager.NAME, None, None),
                     ],
                 ),
                 parameters=None,

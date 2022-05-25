@@ -19,7 +19,7 @@ import lightgbm as lgb
 import numpy as np
 import pytest
 
-from modelstore.metadata.model.model_type import ModelType
+from modelstore.metadata import metadata
 from modelstore.models.lightgbm import (
     MODEL_FILE,
     MODEL_JSON,
@@ -63,7 +63,7 @@ def assert_models_equal(
 
 
 def test_model_info(lgb_manager, lgb_model):
-    expected = ModelType("lightgbm", "Booster", None)
+    expected = metadata.ModelType("lightgbm", "Booster", None)
     res = lgb_manager.model_info(model=lgb_model)
     assert expected == res
 
@@ -130,6 +130,7 @@ def test_dump_model(tmp_path, lgb_model):
     # Models can't be loaded back from JSON
     # https://stackoverflow.com/questions/52170236/lightgbm-loading-from-json
     # pylint: disable=bare-except
+    # pylint: disable=unspecified-encoding
     try:
         with open(res, "r") as lines:
             json.loads(lines.read())

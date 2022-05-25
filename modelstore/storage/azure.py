@@ -15,7 +15,7 @@ import json
 import os
 from typing import Optional
 
-from modelstore.metadata.storage.storage import Storage
+from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
@@ -57,7 +57,7 @@ class AzureBlobStorage(BlobStorage):
         self,
         container_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
-        client: "azure.storage.blobage.BlobClient" = None,
+        client: "BlobServiceClient" = None,
         environ_key: str = "AZURE_STORAGE_CONNECTION_STRING",
     ):
         super().__init__(
@@ -71,7 +71,7 @@ class AzureBlobStorage(BlobStorage):
         self.__client = client
 
     @property
-    def client(self) -> "azure.storage.blobage.BlobClient":
+    def client(self) -> "BlobServiceClient":
         """ Returns the azure client """
         if not AZURE_EXISTS:
             raise ImportError("Please install azure-storage-blob")
@@ -134,15 +134,15 @@ class AzureBlobStorage(BlobStorage):
         blob_client.delete_blob()
         return True
 
-    def _storage_location(self, prefix: str) -> Storage:
+    def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
-        return Storage.from_container(
+        return metadata.Storage.from_container(
             storage_type="azure:blob-storage",
             container=self.container_name,
             prefix=prefix,
         )
 
-    def _get_storage_location(self, meta_data: Storage) -> str:
+    def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
         if self.container_name != meta_data.container:
             raise ValueError("Meta-data has a different container name")

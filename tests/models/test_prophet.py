@@ -22,7 +22,7 @@ import pytest
 from prophet import Prophet
 from prophet.serialize import model_from_json, model_to_json
 
-from modelstore.metadata.model.model_type import ModelType
+from modelstore.metadata import metadata
 from modelstore.models.prophet import MODEL_FILE, ProphetManager, save_model
 
 # pylint: disable=protected-access
@@ -68,7 +68,7 @@ def assert_same_model(model_a: Prophet, model_b: Prophet):
 
 
 def test_model_info(prophet_manager, prophet_model):
-    exp = ModelType("prophet", "Prophet", None)
+    exp = metadata.ModelType("prophet", "Prophet", None)
     res = prophet_manager.model_info(model=prophet_model)
     assert exp == res
 

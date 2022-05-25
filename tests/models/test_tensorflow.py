@@ -18,7 +18,7 @@ import numpy as np
 import pytest
 import tensorflow as tf
 
-from modelstore.metadata.model.model_type import ModelType
+from modelstore.metadata import metadata
 from modelstore.models.tensorflow import (
     MODEL_DIRECTORY,
     TensorflowManager,
@@ -74,7 +74,7 @@ def assert_models_equal(
 
 
 def test_model_info(tf_manager):
-    exp = ModelType("tensorflow", None, None)
+    exp = metadata.ModelType("tensorflow", None, None)
     res = tf_manager.model_info()
     assert exp == res
 
