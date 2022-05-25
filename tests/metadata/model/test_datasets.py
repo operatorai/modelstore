@@ -14,6 +14,8 @@
 import numpy as np
 import pandas as pd
 import pytest
+
+from modelstore.metadata import metadata
 from modelstore.metadata.model import datasets
 
 # pylint: disable=redefined-outer-name
@@ -62,24 +64,24 @@ def test_is_pandas_series(np_array, pd_dataframe, pd_series):
 
 
 def test_describe_np_training(np_array):
-    exp = {"shape": [10, 50]}
-    res = datasets.describe_dataset(np_array)
+    exp = metadata.Dataset(shape=[10, 50], values=None)
+    res = metadata.Dataset.generate(np_array)
     assert exp == res
 
 
 def test_describe_np_labels(np_labels):
-    exp = {"shape": [5], "values": {1: 3, 2: 2}}
-    res = datasets.describe_dataset(np_labels)
+    exp = metadata.Dataset(shape=[5], values={1: 3, 2: 2})
+    res = metadata.Dataset.generate(np_labels)
     assert exp == res
 
 
 def test_describe_df_training(pd_dataframe):
-    exp = {"shape": [20, 50]}
-    res = datasets.describe_dataset(pd_dataframe)
+    exp = metadata.Dataset(shape=[20, 50], values=None)
+    res = metadata.Dataset.generate(pd_dataframe)
     assert exp == res
 
 
 def test_describe_df_labels(pd_series):
-    exp = {"shape": [5], "values": {1: 3, 2: 2}}
-    res = datasets.describe_dataset(pd_series)
+    exp = metadata.Dataset(shape=[5], values={1: 3, 2: 2})
+    res = metadata.Dataset.generate(pd_series)
     assert exp == res
