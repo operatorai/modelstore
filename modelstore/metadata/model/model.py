@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
 from modelstore.metadata.model.model_type import ModelType
+from modelstore.metadata.model.datasets import Dataset
+
 
 @dataclass_json
 @dataclass
@@ -27,7 +29,7 @@ class Model:
     model_id: str
     model_type: ModelType
     parameters: dict = field(default_factory=lambda: {})
-    data: dict = field(default_factory=lambda: {}) # @TODO this could be a nested dataclass
+    data: Dataset = None
 
     @classmethod
     def generate(cls,
@@ -35,7 +37,7 @@ class Model:
         model_id: str,
         model_type: ModelType,
         parameters: dict = None,
-        data: dict = None) -> "Model":
+        data: Dataset = None) -> "Model":
         """ Generates the meta data for the model that is being saved """
         return Model(
             domain=domain,

@@ -16,7 +16,7 @@ from dataclasses_json import dataclass_json
 
 import modelstore
 from modelstore.metadata.code.code import Code
-from modelstore.metadata.model.model import Model, ModelType
+from modelstore.metadata.model.model import Model, ModelType, Dataset
 from modelstore.metadata.storage.storage import Storage
 
 @dataclass_json
@@ -65,3 +65,7 @@ class Summary:
     def model_type(self) -> ModelType:
         """ Returns the model type """
         return self.model.model_type
+
+    def dataset(self) -> Dataset:
+        """ Returns meta data about the training data """
+        return self.model.data
