@@ -67,7 +67,7 @@ def test_is_same_library(mxnet_manager, ml_library, should_match):
 
 def test_model_data(mxnet_manager, mxnet_model):
     res = mxnet_manager.model_data(model=mxnet_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(mxnet_manager):

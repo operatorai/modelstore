@@ -91,9 +91,8 @@ def test_is_same_library(fai_manager, ml_library, should_match):
 
 
 def test_model_data(fai_manager, fai_learner):
-    exp = {}
     res = fai_manager.model_data(learner=fai_learner)
-    assert exp == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(fai_manager):

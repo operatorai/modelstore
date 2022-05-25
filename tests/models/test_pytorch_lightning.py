@@ -118,7 +118,7 @@ def test_is_same_library(lightning_manager, ml_library, should_match):
 
 def test_model_data(lightning_manager, lightning_model):
     res = lightning_manager.model_data(model=lightning_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(lightning_manager):

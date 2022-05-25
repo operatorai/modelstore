@@ -99,7 +99,7 @@ def test_is_same_library(skorch_manager, ml_library, should_match):
 
 def test_model_data(skorch_manager, skorch_model):
     res = skorch_manager.model_data(model=skorch_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(skorch_manager):

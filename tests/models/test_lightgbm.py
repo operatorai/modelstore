@@ -80,9 +80,8 @@ def test_is_same_library(lgb_manager, ml_library, should_match):
 
 
 def test_model_data(lgb_manager, lgb_model):
-    exp = {}
     res = lgb_manager.model_data(model=lgb_model)
-    assert exp == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(lgb_manager):

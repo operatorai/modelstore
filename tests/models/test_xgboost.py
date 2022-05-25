@@ -70,9 +70,8 @@ def test_is_same_library(xgb_manager, ml_library, should_match):
 
 
 def test_model_data(xgb_manager, xgb_model):
-    # Note: currently unimplemented for xgboost
-    result = xgb_manager.model_data(model=xgb_model)
-    assert result == {}
+    res = xgb_manager.model_data(model=xgb_model)
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(xgb_manager):

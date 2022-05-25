@@ -54,8 +54,8 @@ class MockModelManager(ModelManager):
     def model_info(self, **kwargs) -> metadata.ModelType:
         return metadata.ModelType("mock", None, None)
 
-    def model_data(self, **kwargs) -> dict:
-        return {}
+    def model_data(self, **kwargs) -> metadata.Dataset:
+        return metadata.Dataset(None, None)
 
     def required_dependencies(self) -> list:
         return []

@@ -65,7 +65,7 @@ def test_is_same_library(annoy_manager, ml_library, should_match):
 
 def test_model_data(annoy_manager, annoy_model):
     res = annoy_manager.model_data(model=annoy_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(annoy_manager):

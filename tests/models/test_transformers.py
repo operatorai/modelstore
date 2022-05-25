@@ -88,9 +88,8 @@ def test_is_same_library(tr_manager, ml_library, should_match):
 
 
 def test_model_data(tr_manager, tr_model):
-    exp = {}
     res = tr_manager.model_data(model=tr_model)
-    assert exp == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(tr_manager):

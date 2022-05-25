@@ -61,7 +61,7 @@ def test_is_same_library(gensim_manager, ml_library, should_match):
 
 def test_model_data(gensim_manager, word2vec_model):
     res = gensim_manager.model_data(model=word2vec_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(gensim_manager):

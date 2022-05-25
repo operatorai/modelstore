@@ -62,7 +62,7 @@ def test_is_same_library(shap_manager, ml_library, should_match):
 
 def test_model_data(shap_manager, shap_explainer):
     res = shap_manager.model_data(explainer=shap_explainer)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(shap_manager):

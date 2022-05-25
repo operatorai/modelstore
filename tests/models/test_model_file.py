@@ -43,6 +43,11 @@ def test_model_info(model_file_manager):
     assert model_file_manager.model_info() == exp
 
 
+def test_model_data(model_file_manager):
+    res = model_file_manager.model_data()
+    assert metadata.Dataset(None, None) == res
+
+
 @pytest.mark.parametrize(
     "ml_library,should_match",
     [

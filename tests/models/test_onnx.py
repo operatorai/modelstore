@@ -82,7 +82,7 @@ def test_is_same_library(onnx_manager, ml_library, should_match):
 
 def test_model_data(onnx_manager, onnx_model):
     res = onnx_manager.model_data(model=onnx_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(onnx_manager):

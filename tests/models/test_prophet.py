@@ -86,7 +86,7 @@ def test_is_same_library(prophet_manager, ml_library, should_match):
 
 def test_model_data(prophet_manager, prophet_model):
     res = prophet_manager.model_data(model=prophet_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(prophet_manager):

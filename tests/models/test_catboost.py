@@ -59,7 +59,7 @@ def test_is_same_library(catb_manager, ml_library, should_match):
 
 def test_model_data(catb_manager, catb_model):
     res = catb_manager.model_data(model=catb_model)
-    assert {} == res
+    assert metadata.Dataset(None, None) == res
 
 
 def test_required_kwargs(catb_manager):
