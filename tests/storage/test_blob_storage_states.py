@@ -13,11 +13,9 @@
 #    limitations under the License.
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
-import modelstore
-from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.util.paths import (
     get_model_state_path,
@@ -34,6 +32,7 @@ from tests.storage.test_blob_storage import (
 
 
 def assert_file_contents_equals(file_path: str, expected: dict):
+    # pylint: disable=unspecified-encoding
     with open(file_path, "r") as lines:
         actual = lines.read()
     assert json.dumps(expected) == actual

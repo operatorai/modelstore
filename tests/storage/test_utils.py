@@ -22,6 +22,7 @@ TEST_FILE_LIST = [f"test-file-{i}.json" for i in range(3)]
 
 
 def temp_file(tmp_path, contents=TEST_FILE_CONTENTS):
+    # pylint: disable=unspecified-encoding
     source = os.path.join(tmp_path, TEST_FILE_NAME)
     with open(source, "w") as out:
         out.write(contents)
@@ -29,6 +30,7 @@ def temp_file(tmp_path, contents=TEST_FILE_CONTENTS):
 
 
 def file_contains_expected_contents(file_path):
+    # pylint: disable=unspecified-encoding
     with open(file_path, "r") as lines:
         contents = lines.read()
     return contents == TEST_FILE_CONTENTS

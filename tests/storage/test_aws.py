@@ -18,7 +18,7 @@ import boto3
 import pytest
 from moto import mock_s3
 
-from modelstore.metadata.storage.storage import Storage
+from modelstore.metadata import metadata
 from modelstore.storage.aws import AWSStorage
 
 # pylint: disable=unused-import
@@ -176,6 +176,7 @@ def test_read_json_object_fails_gracefully(tmp_path):
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_file_path()
     text_file = os.path.join(tmp_path, "test.txt")
+    # pylint: disable=unspecified-encoding
     with open(text_file, "w") as out:
         out.write("some text in a file")
     remote_path = storage._push(text_file, prefix)
@@ -191,7 +192,7 @@ def test_storage_location():
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_path()
     # Asserts that the location meta data is correctly formatted
-    expected = Storage.from_bucket(
+    expected = metadata.Storage.from_bucket(
         storage_type="aws:s3",
         bucket=_MOCK_BUCKET_NAME,
         prefix=prefix,
@@ -203,7 +204,7 @@ def test_storage_location():
     "meta_data,should_raise,result",
     [
         (
-            Storage(
+            metadata.Storage(
                 type=None, 
                 path=None, 
                 bucket=_MOCK_BUCKET_NAME,
@@ -214,7 +215,7 @@ def test_storage_location():
             "/path/to/file",
         ),
         (
-            Storage(
+            metadata.Storage(
                 type=None, 
                 path=None, 
                 bucket="a-different-bucket",
