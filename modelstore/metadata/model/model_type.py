@@ -21,20 +21,20 @@ _MODEL_TYPE_FILE = "model-info.json"
 
 @dataclass_json
 @dataclass
-class ModelTypeMetaData:
+class ModelType:
 
     """ ModelTypeMetaData contains fields that are captured about
     the model type when it is saved """
 
     library: str
     type: str
-    models: Optional[List['ModelTypeMetaData']] # Used by the multiple model manager
+    models: Optional[List['ModelType']] # Used by the multiple model manager
 
     @classmethod
-    def generate(cls, library: str, class_name: str = None, models: List[Dict] = None) -> "ModelTypeMetaData":
+    def generate(cls, library: str, class_name: str = None, models: List[Dict] = None) -> "ModelType":
         """ Generates the meta data for the type of model
         that is being saved """
-        return ModelTypeMetaData(
+        return ModelType(
             library=library,
             type=class_name,
             models=models,

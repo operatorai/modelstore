@@ -24,7 +24,7 @@ from azure.storage.blob import (
     StorageStreamDownloader,
 )
 
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.storage.storage import Storage
 from modelstore.storage.azure import AzureBlobStorage
 
 # pylint: disable=unused-import
@@ -246,7 +246,7 @@ def test_storage_location():
     storage = azure_storage(blob_service_client)
     # Asserts that the location meta data is correctly formatted
     prefix = "/path/to/file"
-    expected = StorageMetaData.from_container(
+    expected = Storage.from_container(
         storage_type="azure:blob-storage",
         container=_MOCK_CONTAINER_NAME,
         prefix=prefix,
@@ -258,7 +258,7 @@ def test_storage_location():
     "meta_data,should_raise,result",
     [
         (
-            StorageMetaData(
+            Storage(
                 type=None, 
                 path=None, 
                 bucket=None,
@@ -269,7 +269,7 @@ def test_storage_location():
             "/path/to/file",
         ),
         (
-            StorageMetaData(
+            Storage(
                 type=None, 
                 path=None, 
                 bucket=None,

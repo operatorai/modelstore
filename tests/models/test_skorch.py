@@ -19,7 +19,7 @@ import pytest
 from skorch import NeuralNetClassifier
 from torch import nn
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.common import save_joblib
 from modelstore.models.skorch import MODEL_JOBLIB, SkorchManager
 
@@ -80,7 +80,7 @@ def skorch_manager():
 
 
 def test_model_info(skorch_manager, skorch_model):
-    exp = ModelTypeMetaData("skorch", "NeuralNetClassifier", None)
+    exp = ModelType("skorch", "NeuralNetClassifier", None)
     res = skorch_manager.model_info(model=skorch_model)
     assert exp == res
 

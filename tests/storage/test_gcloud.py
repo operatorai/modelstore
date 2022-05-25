@@ -18,7 +18,7 @@ import pytest
 from google.cloud import storage
 from google.cloud.storage.blob import Blob
 
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.storage.storage import Storage
 from modelstore.storage.gcloud import GoogleCloudStorage
 
 # pylint: disable=unused-import
@@ -293,7 +293,7 @@ def test_storage_location():
 
     # Asserts that the location meta data is correctly formatted
     prefix = remote_file_path()
-    expected = StorageMetaData.from_bucket(
+    expected = Storage.from_bucket(
         storage_type="google:cloud-storage",
         bucket=_MOCK_BUCKET_NAME,
         prefix=prefix,
@@ -305,7 +305,7 @@ def test_storage_location():
     "meta_data,should_raise,result",
     [
         (
-            StorageMetaData(
+            Storage(
                 type=None,
                 path=None,
                 bucket=_MOCK_BUCKET_NAME,
@@ -316,7 +316,7 @@ def test_storage_location():
             "/path/to/file",
         ),
         (
-            StorageMetaData(
+            Storage(
                 type=None,
                 path=None,
                 bucket="a-different-bucket",

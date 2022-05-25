@@ -15,7 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -67,7 +67,7 @@ class GensimManager(ModelManager):
         params = {k: v for k, v in params.items() if type(v) in [int, str, float]}
         return params
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         from gensim.models import Word2Vec
 

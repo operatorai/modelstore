@@ -18,9 +18,9 @@ import catboost as ctb
 import numpy as np
 import pytest
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model import Model
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models import catboost
 
 # pylint: disable=unused-import
@@ -43,7 +43,7 @@ def catb_manager():
 
 
 def test_model_info(catb_manager, catb_model):
-    expected = ModelTypeMetaData("catboost", "CatBoostClassifier", None)
+    expected = ModelType("catboost", "CatBoostClassifier", None)
     res = catb_manager.model_info(model=catb_model)
     assert expected == res
 
@@ -125,11 +125,11 @@ def test_load_model(tmp_path, catb_manager, catb_model):
     #  Load the model
     loaded_model = catb_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
-                model_type=ModelTypeMetaData(
+                model_type=ModelType(
                     library=None,
                     type="CatBoostClassifier",
                     models=None,

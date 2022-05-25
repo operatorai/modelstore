@@ -15,7 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.common import save_json
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -91,7 +91,7 @@ class CatBoostManager(ModelManager):
         """
         return kwargs["model"].get_params()
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         import catboost
 
@@ -126,6 +126,7 @@ def save_model(
 
 
 def dump_attributes(tmp_dir: str, model: "catboost.CatBoost") -> str:
+    """ Dumps the model attributes into a JSON file """
     logger.debug("Dumping model config")
     config = {
         "tree_count": model.tree_count_,

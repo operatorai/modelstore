@@ -13,27 +13,27 @@
 #    limitations under the License.
 import pytest
 
-from modelstore.metadata.model.model import ModelMetaData, ModelTypeMetaData
+from modelstore.metadata.model.model import Model, ModelType
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 
 @pytest.fixture
 def model_meta_data():
-    return ModelMetaData(
+    return Model(
         domain="domain",
         model_id="model_id",
-        model_type=ModelTypeMetaData.generate("library", "class-name"),
+        model_type=ModelType.generate("library", "class-name"),
         parameters=None,
         data=None
     )
 
 
 def test_generate(model_meta_data):
-    result = ModelMetaData.generate(
+    result = Model.generate(
         "domain",
         "model_id",
-        ModelTypeMetaData.generate("library", "class-name"),
+        ModelType.generate("library", "class-name"),
     )
     assert model_meta_data == result
 
@@ -41,5 +41,5 @@ def test_generate(model_meta_data):
 def test_encode_and_decode(model_meta_data):
     # pylint: disable=no-member
     json_result = model_meta_data.to_json()
-    result = ModelMetaData.from_json(json_result)
+    result = Model.from_json(json_result)
     assert result == model_meta_data

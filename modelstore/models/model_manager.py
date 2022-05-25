@@ -19,10 +19,7 @@ import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
-from modelstore.metadata.code.code import CodeMetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.metadata.code.dependencies import save_dependencies
 from modelstore.storage.storage import CloudStorage
 
@@ -90,7 +87,7 @@ class ModelManager(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         """
         Loads a model, stored in model_path, back into memory
         """
@@ -102,15 +99,15 @@ class ModelManager(ABC):
             if arg not in kwargs:
                 raise TypeError(f"Please specify {arg}=<value>")
 
-    def model_info(self, **kwargs) -> ModelTypeMetaData:
+    def model_info(self, **kwargs) -> metadata.ModelType:
         """Returns meta-data about the model's type"""
         class_name = type(kwargs["model"]).__name__ if "model" in kwargs else None
-        return ModelTypeMetaData.generate(
+        return metadata.ModelType.generate(
             library=self.ml_library,
             class_name=class_name,
         )
 
-    def _get_model_type(self, meta_data: MetaData) -> str:
+    def _get_model_type(self, meta_data: metadata.Summary) -> str:
         return meta_data.model.model_type.type
 
     def _is_same_library(self, meta_data: dict) -> bool:
@@ -183,7 +180,7 @@ class ModelManager(ABC):
         domain: str,
         model_id: str,
         **kwargs,
-    ) -> MetaData:
+    ) -> metadata.Summary:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model and uploads the archive to storage.
@@ -195,7 +192,7 @@ class ModelManager(ABC):
         self._validate_kwargs(**kwargs)
 
         # Create meta data about the model & code
-        model_meta_data = ModelMetaData.generate(
+        model_meta_data = metadata.Model.generate(
             domain=domain,
             model_id=model_id,
             model_type=self.model_info(**kwargs),
@@ -209,8 +206,8 @@ class ModelManager(ABC):
 
         # Upload the model archive and any additional extras
         storage_meta_data = self.storage.upload(domain, archive_path)
-        meta_data = MetaData.generate(
-            code_meta_data=CodeMetaData.generate(
+        meta_data = metadata.Summary.generate(
+            code_meta_data=metadata.Code.generate(
                 deps_list=self.get_dependencies()
             ),
             model_meta_data=model_meta_data,

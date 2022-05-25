@@ -16,7 +16,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.model_file import ModelFileManager, copy_file
 
 # pylint: disable=protected-access
@@ -39,7 +39,7 @@ def model_file_manager():
 
 
 def test_model_info(model_file_manager):
-    exp = ModelTypeMetaData("model_file", None, None)
+    exp = ModelType("model_file", None, None)
     assert model_file_manager.model_info() == exp
 
 

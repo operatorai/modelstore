@@ -17,9 +17,9 @@ import pytest
 import xgboost as xgb
 import numpy as np
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model import Model
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models import xgboost
 
 # pylint: disable=unused-import
@@ -49,13 +49,13 @@ def xgb_manager():
 
 
 def test_model_info(xgb_manager, xgb_model):
-    exp = ModelTypeMetaData("xgboost", "XGBClassifier", None)
+    exp = ModelType("xgboost", "XGBClassifier", None)
     result = xgb_manager.model_info(model=xgb_model)
     assert exp == result
 
 
 def test_booster_model_info(xgb_manager, xgb_booster):
-    exp = ModelTypeMetaData("xgboost", "Booster", None)
+    exp = ModelType("xgboost", "Booster", None)
     result = xgb_manager.model_info(model=xgb_booster)
     assert exp == result
 
@@ -144,11 +144,11 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
     #  Load the model
     loaded_model = xgb_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
-                model_type=ModelTypeMetaData(
+                model_type=ModelType(
                     library=None,
                     type="XGBClassifier",
                     models=None,
@@ -188,11 +188,11 @@ def test_load_booster(tmp_path, xgb_manager, xgb_booster, classification_data):
     #  Load the model
     loaded_model = xgb_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
-                model_type=ModelTypeMetaData(
+                model_type=ModelType(
                     library=None,
                     type="Booster",
                     models=None,

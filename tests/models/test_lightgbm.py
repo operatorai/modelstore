@@ -19,7 +19,7 @@ import lightgbm as lgb
 import numpy as np
 import pytest
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.lightgbm import (
     MODEL_FILE,
     MODEL_JSON,
@@ -63,7 +63,7 @@ def assert_models_equal(
 
 
 def test_model_info(lgb_manager, lgb_model):
-    expected = ModelTypeMetaData("lightgbm", "Booster", None)
+    expected = ModelType("lightgbm", "Booster", None)
     res = lgb_manager.model_info(model=lgb_model)
     assert expected == res
 

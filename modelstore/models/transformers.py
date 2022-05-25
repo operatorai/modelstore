@@ -15,7 +15,7 @@ import os
 from functools import partial
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -79,7 +79,7 @@ class TransformersManager(ModelManager):
         """
         return kwargs["config"].to_dict()
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         """
         Loads a model, stored in model_path,
         back into memory

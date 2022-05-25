@@ -16,7 +16,7 @@ import os
 from functools import partial
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.metadata.model import datasets
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
@@ -102,7 +102,7 @@ class SKLearnManager(ModelManager):
         except TypeError:
             return {}
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # @Future: check if loading into same version of joblib
         # as was used for saving
         file_name = os.path.join(model_path, MODEL_JOBLIB)

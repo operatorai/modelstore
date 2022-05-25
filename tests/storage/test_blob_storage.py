@@ -16,22 +16,22 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import pytest
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.code.code import CodeMetaData
-from modelstore.metadata.model.model import ModelMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.code.code import Code
+from modelstore.metadata.model.model import Model
 from modelstore.storage.local import FileSystemStorage
 
 # pylint: disable=missing-function-docstring
 
 
-def mock_meta_data(domain: str, model_id: str, inc_time: int) -> MetaData:
-    return MetaData.generate(
-        model_meta_data=ModelMetaData.generate(
+def mock_meta_data(domain: str, model_id: str, inc_time: int) -> Summary:
+    return Summary.generate(
+        model_meta_data=Model.generate(
             domain=domain,
             model_id=model_id,
             model_type=None,
         ),
-        code_meta_data=CodeMetaData.generate(
+        code_meta_data=Code.generate(
             deps_list=[],
             created= datetime.now() + timedelta(hours=inc_time),
         ),
@@ -51,9 +51,9 @@ def mock_blob_storage(tmp_path):
     return FileSystemStorage(str(tmp_path))
 
 
-def assert_file_contents_equals(file_path: str, expected: MetaData):
+def assert_file_contents_equals(file_path: str, expected: Summary):
     # pylint: disable=unspecified-encoding
     # pylint: disable=no-member
     with open(file_path, "r") as lines:
-        actual = MetaData.from_json(lines.read())
+        actual = Summary.from_json(lines.read())
     assert expected == actual

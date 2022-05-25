@@ -15,7 +15,7 @@ import os
 from functools import partial
 from typing import Any, Optional
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.models.util import convert_numpy, convert_tensors
 from modelstore.storage.storage import CloudStorage
@@ -107,7 +107,7 @@ class PyTorchManager(ModelManager):
             return convert_tensors(params)
         return {}
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         import torch
 

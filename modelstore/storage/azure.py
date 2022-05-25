@@ -15,7 +15,7 @@ import json
 import os
 from typing import Optional
 
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.storage.storage import Storage
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
@@ -134,15 +134,15 @@ class AzureBlobStorage(BlobStorage):
         blob_client.delete_blob()
         return True
 
-    def _storage_location(self, prefix: str) -> StorageMetaData:
+    def _storage_location(self, prefix: str) -> Storage:
         """Returns a dict of the location the artifact was stored"""
-        return StorageMetaData.from_container(
+        return Storage.from_container(
             storage_type="azure:blob-storage",
             container=self.container_name,
             prefix=prefix,
         )
 
-    def _get_storage_location(self, meta_data: StorageMetaData) -> str:
+    def _get_storage_location(self, meta_data: Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
         if self.container_name != meta_data.container:
             raise ValueError("Meta-data has a different container name")

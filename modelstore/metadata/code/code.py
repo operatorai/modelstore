@@ -21,10 +21,10 @@ from modelstore.metadata.utils.dicts import remove_nones
 
 @dataclass_json
 @dataclass
-class CodeMetaData:
+class Code:
 
-    """ CodeMetaData contains fields that are captured about
-    the code/runtime when it is saved """
+    """ Code contains fields that are captured about
+    the code/runtime when a model is saved """
 
     runtime: str
     user: str
@@ -33,14 +33,14 @@ class CodeMetaData:
     git: dict
 
     @classmethod
-    def generate(cls, deps_list: list, created: datetime = None) -> "CodeMetaData":
+    def generate(cls, deps_list: list, created: datetime = None) -> "Code":
         """ Generates the meta data for the code being run to create the model """
         versioned_deps = dependencies.get_dependency_versions(deps_list)
         if created is None:
             # created can be overridden in unit tests where we need to
             # control time stamps of mock model objects
             created = datetime.now()
-        return CodeMetaData(
+        return Code(
             runtime=f"python:{runtime.get_python_version()}",
             user=runtime.get_user(),
             created=created.strftime("%Y/%m/%d/%H:%M:%S"),

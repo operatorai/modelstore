@@ -14,8 +14,8 @@
 import os
 
 import pytest
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model import ModelMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model import Model
 from modelstore.storage.util.paths import (
     get_archive_path,
 )
@@ -64,9 +64,9 @@ def test_delete_model(mock_blob_storage, mock_model_file):
     model_id = "test-model-id"
     model_state = "test-state"
     storage_meta = mock_blob_storage.upload(domain, mock_model_file)
-    meta_data = MetaData.generate(
+    meta_data = Summary.generate(
         code_meta_data=None,
-        model_meta_data=ModelMetaData.generate(
+        model_meta_data=Model.generate(
             domain=domain,
             model_id=model_id,
             model_type=None,

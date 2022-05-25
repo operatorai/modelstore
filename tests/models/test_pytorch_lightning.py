@@ -20,9 +20,9 @@ import torch.nn.functional as F
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model import Model
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.pytorch_lightning import (
     MODEL_CHECKPOINT,
     PyTorchLightningManager,
@@ -102,7 +102,7 @@ def assert_models_equal(model_a: pl.LightningModule, module_b: pl.LightningModul
 
 
 def test_model_info(lightning_manager, lightning_model):
-    exp = ModelTypeMetaData("pytorch_lightning", "ExampleLightningNet", None)
+    exp = ModelType("pytorch_lightning", "ExampleLightningNet", None)
     res = lightning_manager.model_info(model=lightning_model)
     assert exp == res
 
@@ -169,11 +169,11 @@ def test_load_model(tmp_path, lightning_manager, lightning_trainer):
     #  Load the model
     loaded_model = lightning_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
-                model_type=ModelTypeMetaData(
+                model_type=ModelType(
                     library=None,
                     type="ExampleLightningNet",
                     models=None,

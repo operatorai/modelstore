@@ -15,31 +15,31 @@ from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
 import modelstore
-from modelstore.metadata.code.code import CodeMetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.code.code import Code
+from modelstore.metadata.model.model import Model, ModelType
+from modelstore.metadata.storage.storage import Storage
 
 @dataclass_json
 @dataclass
-class MetaData:
+class Summary:
 
-    """ MetaData holds all of the fields that are captured
+    """ Summary holds all of the fields that are captured
     when a model is saved """
 
-    code: CodeMetaData
-    model: ModelMetaData
-    storage: StorageMetaData
+    code: Code
+    model: Model
+    storage: Storage
     modelstore: str # Version of modelstore
 
     @classmethod
     def generate(cls,
-        code_meta_data: CodeMetaData,
-        model_meta_data: ModelMetaData,
-        storage_meta_data: StorageMetaData
-    ) -> "MetaData":
+        code_meta_data: Code,
+        model_meta_data: Model,
+        storage_meta_data: Storage
+    ) -> "Summary":
         """ Generates all of the meta data for a model 
         and adds the modelstore version """
-        return MetaData(
+        return Summary(
             code=code_meta_data,
             model=model_meta_data,
             storage=storage_meta_data,
@@ -54,10 +54,14 @@ class MetaData:
             out.write(self.to_json())
 
     @classmethod
-    def loads(cls, source_file: str) -> "MetaData":
+    def loads(cls, source_file: str) -> "Summary":
         """ Loads the data class from a JSON source_file """
         # pylint: disable=no-member
         # pylint: disable=unspecified-encoding
         with open(source_file, "r") as lines:
             content = lines.read()
-        return MetaData.from_json(content)
+        return Summary.from_json(content)
+
+    def model_type(self) -> ModelType:
+        """ Returns the model type """
+        return self.model.model_type

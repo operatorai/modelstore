@@ -14,18 +14,18 @@
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.model.model_type import ModelType
 
 @dataclass_json
 @dataclass
-class ModelMetaData:
+class Model:
 
-    """ ModelMetaData contains fields that are captured about
+    """ Model contains fields that are captured about
     the model when it is saved """
 
     domain: str
     model_id: str
-    model_type: ModelTypeMetaData
+    model_type: ModelType
     parameters: dict = field(default_factory=lambda: {})
     data: dict = field(default_factory=lambda: {}) # @TODO this could be a nested dataclass
 
@@ -33,11 +33,11 @@ class ModelMetaData:
     def generate(cls,
         domain: str,
         model_id: str,
-        model_type: ModelTypeMetaData,
+        model_type: ModelType,
         parameters: dict = None,
-        data: dict = None) -> "ModelMetaData":
+        data: dict = None) -> "Model":
         """ Generates the meta data for the model that is being saved """
-        return ModelMetaData(
+        return Model(
             domain=domain,
             model_id=model_id,
             model_type=model_type,

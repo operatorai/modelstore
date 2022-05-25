@@ -18,8 +18,8 @@ from typing import Any, Optional, Union
 
 import pytest
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.local import FileSystemStorage
 
@@ -52,8 +52,8 @@ class MockModelManager(ModelManager):
     def name(cls) -> str:
         return "mock"
 
-    def model_info(self, **kwargs) -> ModelTypeMetaData:
-        return ModelTypeMetaData("mock", None, None)
+    def model_info(self, **kwargs) -> ModelType:
+        return ModelType("mock", None, None)
 
     def model_data(self, **kwargs) -> dict:
         return {}
@@ -76,7 +76,7 @@ class MockModelManager(ModelManager):
     def matches_with(self, **kwargs) -> bool:
         return True
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: Summary) -> Any:
         raise NotImplementedError()
 
 

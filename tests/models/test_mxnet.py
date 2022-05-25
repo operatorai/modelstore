@@ -19,9 +19,9 @@ import mxnet as mx
 import numpy as np
 from mxnet.gluon import nn
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model import Model
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models import mxnet
 
 # pylint: disable=protected-access
@@ -51,7 +51,7 @@ def mxnet_manager():
 
 
 def test_model_info(mxnet_manager, mxnet_model):
-    exp = ModelTypeMetaData("mxnet", "HybridSequential", None)
+    exp = ModelType("mxnet", "HybridSequential", None)
     res = mxnet_manager.model_info(model=mxnet_model)
     assert exp == res
 
@@ -121,8 +121,8 @@ def test_load_model(tmp_path, mxnet_manager, mxnet_model):
     #  Load the model
     loaded_model = mxnet_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
                 model_type=None,

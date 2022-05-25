@@ -13,7 +13,7 @@
 #    limitations under the License.
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -59,7 +59,7 @@ class MissingDepManager(ModelManager):
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         logger.error("Error: %s is not installed", self.library)
         logger.error("Please install it and try again")
         raise ModuleNotFoundError(f"{self.library} is not installed")

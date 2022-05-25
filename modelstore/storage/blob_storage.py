@@ -20,8 +20,8 @@ import os
 import tempfile
 import click
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.storage.storage import Storage
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
@@ -97,12 +97,12 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     @abstractmethod
-    def _storage_location(self, prefix: str) -> StorageMetaData:
+    def _storage_location(self, prefix: str) -> Storage:
         """Returns a dataclass of the location the artifact was stored"""
         raise NotImplementedError()
 
     @abstractmethod
-    def _get_storage_location(self, meta_data: StorageMetaData) -> str:
+    def _get_storage_location(self, meta_data: Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
         raise NotImplementedError()
 
@@ -124,7 +124,7 @@ class BlobStorage(CloudStorage):
             f"{model_id}.json",
         )
 
-    def upload(self, domain: str, local_path: str) -> StorageMetaData:
+    def upload(self, domain: str, local_path: str) -> Storage:
         # Upload the archive into storage
         archive_remote_path = get_archive_path(self.root_prefix, domain, local_path)
         prefix = self._push(local_path, archive_remote_path)
@@ -146,7 +146,7 @@ class BlobStorage(CloudStorage):
         return self._pull(storage_path, local_path)
 
     def delete_model(
-        self, domain: str, model_id: str, meta_data: MetaData, skip_prompt: bool = False
+        self, domain: str, model_id: str, meta_data: Summary, skip_prompt: bool = False
     ):
         """Deletes a model artifact from storage. Other than the artifact itself
         being deleted:
@@ -314,7 +314,7 @@ class BlobStorage(CloudStorage):
             get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
         )
 
-    def set_meta_data(self, domain: str, model_id: str, meta_data: MetaData):
+    def set_meta_data(self, domain: str, model_id: str, meta_data: Summary):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = os.path.join(tmp_dir, f"{model_id}.json")
@@ -333,7 +333,7 @@ class BlobStorage(CloudStorage):
             with open(local_path, "r") as lines:
                 return json.loads(lines.read())
 
-    def get_meta_data(self, domain: str, model_id: str) -> MetaData:
+    def get_meta_data(self, domain: str, model_id: str) -> Summary:
         if any(x in [None, ""] for x in [domain, model_id]):
             raise ValueError("domain and model_id must be set")
         logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
@@ -341,7 +341,7 @@ class BlobStorage(CloudStorage):
         try:
             with tempfile.TemporaryDirectory() as tmp_dir:
                 local_path = self._pull(remote_path, tmp_dir)
-                return MetaData.loads(local_path)
+                return Summary.loads(local_path)
         except FilePullFailedException as exc:
             logger.debug("Failed to pull: %s", remote_path)
             # A meta-data file may not be downloaded if:

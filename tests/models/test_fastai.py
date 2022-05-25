@@ -21,9 +21,9 @@ from fastai.learner import load_learner
 from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import TabularLearner, tabular_learner
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.code.code import CodeMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.code.code import Code
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.fastai import (
     LEARNER_FILE,
     FastAIManager,
@@ -76,7 +76,7 @@ def assert_models_equal(
 
 
 def test_model_info(fai_manager):
-    expected = ModelTypeMetaData("fastai", None, None)
+    expected = ModelType("fastai", None, None)
     res = fai_manager.model_info()
     assert expected == res
 
@@ -148,9 +148,9 @@ def test_load_model(tmp_path, fai_manager, fai_learner, classification_row):
     #  Load the model
     loaded_learner = fai_manager.load(
         tmp_path,
-        MetaData(
+        Summary(
             model=None,
-            code=CodeMetaData(
+            code=Code(
                 runtime=None,
                 user=None,
                 created=None,

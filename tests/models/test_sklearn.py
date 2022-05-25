@@ -24,7 +24,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.common import save_joblib
 from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
 
@@ -72,15 +72,15 @@ def sklearn_manager():
     [
         (
             RandomForestRegressor,
-            ModelTypeMetaData("sklearn","RandomForestRegressor", None),
+            ModelType("sklearn","RandomForestRegressor", None),
         ),
         (
             LogisticRegression,
-            ModelTypeMetaData("sklearn", "LogisticRegression", None),
+            ModelType("sklearn", "LogisticRegression", None),
         ),
         (
             partial(Pipeline, steps=[("regressor", RandomForestRegressor(n_jobs=1))]),
-            ModelTypeMetaData("sklearn", "Pipeline", None),
+            ModelType("sklearn", "Pipeline", None),
         ),
     ],
 )

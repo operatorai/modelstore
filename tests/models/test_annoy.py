@@ -17,9 +17,9 @@ import random
 import pytest
 from annoy import AnnoyIndex
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model import Model
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.annoy import MODEL_FILE, AnnoyManager, save_model
 
 # pylint: disable=protected-access
@@ -49,7 +49,7 @@ def assert_same_model(model_a: AnnoyIndex, model_b: AnnoyIndex):
 
 
 def test_model_info(annoy_manager, annoy_model):
-    expected = ModelTypeMetaData("annoy", "Annoy", None)
+    expected = ModelType("annoy", "Annoy", None)
     result = annoy_manager.model_info(model=annoy_model)
     assert expected == result
 
@@ -113,8 +113,8 @@ def test_load_model(tmp_path, annoy_manager, annoy_model):
     #  Load the model
     loaded_model = annoy_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
                 model_type=None,

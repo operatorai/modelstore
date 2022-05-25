@@ -14,8 +14,8 @@
 from abc import ABC, ABCMeta, abstractmethod
 from typing import Optional
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.storage.storage import Storage
 from modelstore.metadata.code.dependencies import module_exists
 
 
@@ -44,7 +44,7 @@ class CloudStorage(ABC):
         self,
         domain: str,
         local_path: str,
-    ) -> StorageMetaData:
+    ) -> Storage:
         """Uploads an archive to this type of storage
         :param extras can be a path to a file or list of files
         if these are specified, those files are upload
@@ -52,12 +52,12 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def set_meta_data(self, domain: str, model_id: str, meta_data: MetaData):
+    def set_meta_data(self, domain: str, model_id: str, meta_data: Summary):
         """Stores a model's meta data"""
         raise NotImplementedError()
 
     @abstractmethod
-    def get_meta_data(self, domain: str, model_id: str) -> MetaData:
+    def get_meta_data(self, domain: str, model_id: str) -> Summary:
         """Returns a model's meta data"""
         raise NotImplementedError()
 
@@ -70,7 +70,7 @@ class CloudStorage(ABC):
 
     @abstractmethod
     def delete_model(
-        self, domain: str, model_id: str, meta_data: MetaData, skip_prompt: bool = False
+        self, domain: str, model_id: str, meta_data: Summary, skip_prompt: bool = False
     ):
         """Deletes a model artifact from storage."""
         raise NotImplementedError()

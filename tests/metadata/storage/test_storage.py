@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import json 
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.storage.storage import Storage
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
@@ -20,43 +20,43 @@ from modelstore.metadata.storage.storage import StorageMetaData
 
 
 def test_generate_from_path():
-    expected = StorageMetaData(
+    expected = Storage(
         type="file_system",
         path="/path/to/files",
         bucket=None,
         container=None,
         prefix=None,
     )
-    result = StorageMetaData.from_path("file_system", "/path/to/files")
+    result = Storage.from_path("file_system", "/path/to/files")
     assert expected == result
 
     result_dict = json.loads(result.to_json())
     assert result_dict["container"] is None
     assert result_dict["type"] == "file_system"
 
-    loaded = StorageMetaData.from_json(result.to_json())
+    loaded = Storage.from_json(result.to_json())
     assert loaded == expected
 
 
 def test_generate_from_container():
-    expected = StorageMetaData(
+    expected = Storage(
         type="container-system",
         path=None,
         bucket=None,
         container="container-name",
         prefix="/path/to/files",
     )
-    result = StorageMetaData.from_container("container-system", "container-name", "/path/to/files")
+    result = Storage.from_container("container-system", "container-name", "/path/to/files")
     assert expected == result
 
 
 def test_generate_from_bucket():
-    expected = StorageMetaData(
+    expected = Storage(
         type="bucket-system",
         path=None,
         bucket="bucket-name",
         container=None,
         prefix="/path/to/files",
     )
-    result = StorageMetaData.from_bucket("bucket-system", "bucket-name", "/path/to/files")
+    result = Storage.from_bucket("bucket-system", "bucket-name", "/path/to/files")
     assert expected == result

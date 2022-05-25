@@ -19,10 +19,10 @@ import shap as shp
 from sklearn.ensemble import RandomForestRegressor
 
 from modelstore.metadata.metadata import (
-    MetaData, 
-    ModelMetaData
+    Summary, 
+    Model
 )
-from modelstore.metadata.model.model import ModelTypeMetaData
+from modelstore.metadata.model.model import ModelType
 from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.models.shap import ShapManager, EXPLAINER_FILE
@@ -64,12 +64,12 @@ def multiple_model_manager():
 def test_model_info_with_explainer(
     multiple_model_manager, sklearn_tree, shap_explainer
 ):
-    expected = ModelTypeMetaData(
+    expected = ModelType(
         library="multiple-models",
         type=None,
         models=[
-            ModelTypeMetaData(SKLearnManager.NAME, "RandomForestRegressor", models=None),
-            ModelTypeMetaData(ShapManager.NAME, "Tree", models=None),
+            ModelType(SKLearnManager.NAME, "RandomForestRegressor", models=None),
+            ModelType(ShapManager.NAME, "Tree", models=None),
         ]
     )
     res = multiple_model_manager.model_info(
@@ -128,16 +128,16 @@ def test_load_model(tmp_path, multiple_model_manager, sklearn_tree, shap_explain
     #  Load the model
     loaded_models = multiple_model_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
-                model_type=ModelTypeMetaData(
+                model_type=ModelType(
                     library=None,
                     type=None,
                     models=[
-                        ModelTypeMetaData(ShapManager.NAME, None, None),
-                        ModelTypeMetaData(SKLearnManager.NAME, None, None),
+                        ModelType(ShapManager.NAME, None, None),
+                        ModelType(SKLearnManager.NAME, None, None),
                     ],
                 ),
                 parameters=None,

@@ -17,7 +17,7 @@ import shutil
 
 import pytest
 
-from modelstore.metadata.storage.storage import StorageMetaData
+from modelstore.metadata.storage.storage import Storage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.utils.exceptions import DomainNotFoundException
 
@@ -162,7 +162,7 @@ def test_list_models_missing_domain(file_system_storage):
 def test_storage_location(file_system_storage):
     # Asserts that the location meta data is correctly formatted
     prefix = remote_file_path()
-    expected = StorageMetaData.from_path(
+    expected = Storage.from_path(
         storage_type="file_system",
         path=os.path.join(file_system_storage.root_prefix, prefix)
     )
@@ -174,7 +174,7 @@ def test_storage_location(file_system_storage):
     "meta_data,should_raise,result",
     [
         (
-            StorageMetaData(
+            Storage(
                 type=None,
                 path="/path/to/file",
                 bucket=None,

@@ -16,7 +16,7 @@ import os
 from functools import partial
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -72,7 +72,7 @@ class ProphetManager(ModelManager):
             params[pname] = model.params[pname][0].tolist()
         return params
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         from prophet.serialize import model_from_json
 

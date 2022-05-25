@@ -17,10 +17,10 @@ import pytest
 
 import modelstore
 
-from modelstore.metadata.code.code import CodeMetaData
-from modelstore.metadata.model.model import ModelMetaData, ModelTypeMetaData
-from modelstore.metadata.storage.storage import StorageMetaData
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.code.code import Code
+from modelstore.metadata.model.model import Model, ModelType
+from modelstore.metadata.storage.storage import Storage
+from modelstore.metadata.metadata import Summary
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
@@ -29,23 +29,23 @@ from modelstore.metadata.metadata import MetaData
 
 @pytest.fixture
 def meta_data():
-    return MetaData(
-        code=CodeMetaData(
+    return Summary(
+        code=Code(
             runtime="python:1.2.3",
             user="username",
             created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
             dependencies={},
             git={"repository": "test"},
         ),
-        model=ModelMetaData.generate(
+        model=Model.generate(
             domain="domain",
             model_id="model-id",
-            model_type=ModelTypeMetaData.generate(
+            model_type=ModelType.generate(
                 "library",
                 "class-name",
             ),
         ),
-        storage=StorageMetaData.from_path(
+        storage=Storage.from_path(
             "example-storage-type",
             "path-to-files",
         ),
@@ -54,7 +54,7 @@ def meta_data():
 
 
 def test_generate(meta_data):
-    result = MetaData.generate(
+    result = Summary.generate(
         code_meta_data=meta_data.code,
         model_meta_data=meta_data.model,
         storage_meta_data=meta_data.storage
@@ -62,7 +62,7 @@ def test_generate(meta_data):
     assert result == meta_data
 
     encoded = result.to_json()
-    decoded = MetaData.from_json(encoded)
+    decoded = Summary.from_json(encoded)
     assert decoded == meta_data
     assert decoded.code == meta_data.code
     assert decoded.model == meta_data.model
@@ -77,5 +77,5 @@ def test_dump_and_load(meta_data, tmp_path):
     # pylint: disable=bare-except
     # pylint: disable=unspecified-encoding
 
-    loaded = MetaData.loads(target_file)
+    loaded = Summary.loads(target_file)
     assert loaded == meta_data

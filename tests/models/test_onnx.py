@@ -23,7 +23,7 @@ from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 from sklearn.ensemble import RandomForestClassifier
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models import onnx
 
 # pylint: disable=unused-import
@@ -64,7 +64,7 @@ def get_predictions(sess: InferenceSession, classification_data: Tuple):
 
 
 def test_model_info(onnx_manager, onnx_model):
-    exp = ModelTypeMetaData("onnx", "ModelProto", None)
+    exp = ModelType("onnx", "ModelProto", None)
     res = onnx_manager.model_info(model=onnx_model)
     assert exp == res
 

@@ -16,7 +16,7 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
@@ -77,7 +77,7 @@ class FastAIManager(ModelManager):
             partial(_export_model, learner=kwargs["learner"]),
         ]
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         import fastai
 

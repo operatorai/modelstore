@@ -17,7 +17,7 @@ import sys
 from functools import partial
 from typing import Any
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
@@ -82,7 +82,7 @@ class PyTorchLightningManager(ModelManager):
                 continue
         raise ValueError(f"Please import {class_name} before calling load()")
 
-    def load(self, model_path: str, meta_data: MetaData) -> Any:
+    def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # The name of the class for the model
         model_class_name = meta_data.model.model_type.type
         model_file = _model_file_path(model_path)

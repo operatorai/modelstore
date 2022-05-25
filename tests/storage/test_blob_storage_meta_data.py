@@ -14,7 +14,7 @@
 import os
 import pytest
 
-from modelstore.metadata.metadata import MetaData
+from modelstore.metadata.metadata import Summary
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
     get_domain_path,
@@ -107,7 +107,7 @@ def test_get_meta_data(mock_blob_storage):
     # Retrieve it back
     # pylint: disable=no-member
     get_result = mock_blob_storage.get_meta_data("domain-1", "model-1")
-    result = MetaData.from_dict(get_result)
+    result = Summary.from_dict(get_result)
     assert result == meta_data
 
 

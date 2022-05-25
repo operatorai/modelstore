@@ -18,9 +18,9 @@ import pytest
 from gensim.models import word2vec
 from gensim.test.utils import common_texts
 
-from modelstore.metadata.metadata import MetaData
-from modelstore.metadata.model.model import ModelMetaData
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.metadata import Summary
+from modelstore.metadata.model.model import Model
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.gensim import GENSIM_MODEL, GensimManager
 
 # pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
@@ -41,7 +41,7 @@ def gensim_manager():
     [
         (
             word2vec.Word2Vec,
-            ModelTypeMetaData("gensim", "Word2Vec", None),
+            ModelType("gensim", "Word2Vec", None),
         ),
     ],
 )
@@ -105,11 +105,11 @@ def test_load_model(tmp_path, gensim_manager, word2vec_model):
     #  Load the model
     loaded_model = gensim_manager.load(
         tmp_path,
-        MetaData(
-            model=ModelMetaData(
+        Summary(
+            model=Model(
                 domain=None,
                 model_id=None,
-                model_type=ModelTypeMetaData(
+                model_type=ModelType(
                     library=None,
                     type="Word2Vec",
                     models=None,

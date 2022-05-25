@@ -26,7 +26,7 @@ from transformers import (
 )
 from transformers.file_utils import CONFIG_NAME
 
-from modelstore.metadata.model.model_type import ModelTypeMetaData
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.models.transformers import (
     MODEL_DIRECTORY,
     TransformersManager,
@@ -71,7 +71,7 @@ def tr_manager():
 
 
 def test_model_info(tr_manager):
-    exp = ModelTypeMetaData("transformers", None, None)
+    exp = ModelType("transformers", None, None)
     res = tr_manager.model_info()
     assert exp == res
 
