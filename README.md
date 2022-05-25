@@ -2,16 +2,18 @@
 
 `modelstore` is a Python library that allows you to version, export, save and download machine learning models in your choice of storage.
 
+[![Downloads](https://pepy.tech/badge/modelstore)](https://pepy.tech/project/modelstore) [![Downloads](https://pepy.tech/badge/modelstore/month)](https://pepy.tech/project/modelstore)
+
 For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
 
 ## Features
 
 No tracking server required
-* Pip install and get going!
+* Store models on a local file system or in a bucket
 * Support for multiple clouds (AWS, GCP, Azure)
 
-Upload: version all your models
-* Model versioning on each upload
+Upload and version all your models
+* Models are versioned on each upload
 * Replaces all the boiler plate code you need to save models
 
 Manage models by domains and states
@@ -19,7 +21,7 @@ Manage models by domains and states
 * Create model states and manage which state a model is in
 
 Download and load
-* Download model archives by id
+* Download models by id
 * Load models straight from your storage back into memory
 
 Use as a command line tool
@@ -30,8 +32,6 @@ Use as a command line tool
 ```python
 pip install modelstore
 ```
-
-[![Downloads](https://pepy.tech/badge/modelstore)](https://pepy.tech/project/modelstore)
 
 ## Supported storage types
 
