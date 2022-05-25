@@ -108,7 +108,6 @@ def test_collect_files(mock_manager):
     exp = sorted(
         [
             os.path.join(tmp_path, "model-info.json"),
-            os.path.join(tmp_path, "python-info.json"),
             os.path.join(tmp_path, "model.joblib"),
             os.path.join(tmp_path, "config.json"),
         ]
@@ -171,7 +170,6 @@ def test_create_archive(mock_manager, mock_file):
     exp = sorted(
         [
             "model-info.json",
-            "python-info.json",
             "model.joblib",
             "config.json",
             os.path.join("extras", "extra-file.csv"),

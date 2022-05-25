@@ -20,7 +20,6 @@ from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
 from modelstore.metadata import metadata
-from modelstore.metadata.code.dependencies import save_dependencies
 from modelstore.storage.storage import CloudStorage
 
 
@@ -122,7 +121,6 @@ class ModelManager(ABC):
         part of the artifacts archive.
         """
         file_paths = [
-            save_dependencies(tmp_dir, self.get_dependencies()),
             self.model_info(**kwargs).dumps(tmp_dir),
         ]
         for func in self._get_functions(**kwargs):

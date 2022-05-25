@@ -11,8 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import json
-import os
 import sys
 
 import pytest
@@ -59,27 +57,3 @@ def test_get_dependency_versions():
 def test_module_exists():
     assert dependencies.module_exists("pytest") is True
     assert dependencies.module_exists("a-missing-mod") is False
-
-
-def test_save_dependencies(tmp_path):
-    test_deps = [
-        "pytest",
-        "pylint",
-        "black",
-        "flake8",
-        "isort",
-        "a-missing-dependency",
-    ]
-    expected = {
-        "black": "22.3.0",
-        "flake8": "4.0.1",
-        "isort": "5.10.1",
-        "pytest": pytest.__version__,
-        "pylint": "2.13.5",
-    }
-    tmp_file = dependencies.save_dependencies(tmp_path, test_deps)
-    assert os.path.split(tmp_file)[1] == "python-info.json"
-    # pylint: disable=unspecified-encoding
-    with open(tmp_file, "r") as lines:
-        result = json.loads(lines.read())
-    assert result == expected
