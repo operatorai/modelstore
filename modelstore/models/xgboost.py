@@ -94,7 +94,7 @@ class XGBoostManager(ModelManager):
             "Booster": xgb.Booster,
             # Future: other types
         }
-        model_type = self._get_model_type(meta_data)
+        model_type = meta_data.model_type().type
         if model_type not in model_types:
             raise ValueError(f"Cannot load xgboost model type: {model_type}")
 

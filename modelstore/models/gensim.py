@@ -71,7 +71,7 @@ class GensimManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         from gensim.models import Word2Vec
 
-        model_type = self._get_model_type(meta_data)
+        model_type = meta_data.model_type().type
         if model_type != "Word2Vec":
             raise ValueError(f"modelstore cannot load gensim '{model_type}' models")
 

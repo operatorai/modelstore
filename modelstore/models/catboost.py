@@ -99,7 +99,7 @@ class CatBoostManager(ModelManager):
             "CatBoostRegressor": catboost.CatBoostRegressor,
             "CatBoostClassifier": catboost.CatBoostClassifier,
         }
-        model_type = self._get_model_type(meta_data)
+        model_type = meta_data.model_type().type
         if model_type not in model_types:
             raise ValueError(f"Cannot load catboost model type: {model_type}")
 

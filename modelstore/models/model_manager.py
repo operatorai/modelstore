@@ -69,7 +69,7 @@ class ModelManager(ABC):
             raise TypeError(f"This model is not an {self.ml_library} model!")
         return []
 
-    # pylint: disable=unused-params
+    # pylint: disable=unused-argument
     def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing any model parameters
@@ -107,9 +107,6 @@ class ModelManager(ABC):
             class_name=class_name,
         )
 
-    def _get_model_type(self, meta_data: metadata.Summary) -> str:
-        return meta_data.model.model_type.type
-
     def _is_same_library(self, meta_data: dict) -> bool:
         """Whether the meta-data of a model artifact matches a model manager"""
         return meta_data.get("library") == self.ml_library
@@ -138,12 +135,12 @@ class ModelManager(ABC):
                 file_paths.append(rsp)
         return file_paths
 
-    def _collect_extras(self, **kwargs):
+    def _collect_extras(self, **kwargs) -> set:
         extras = kwargs.get("extras")
         if extras is None:
             return []
         extra_paths = extras if isinstance(extras, list) else [extras]
-        return set([f for f in extra_paths if os.path.isfile(f)])
+        return set(f for f in extra_paths if os.path.isfile(f))
 
     def _create_archive(self, **kwargs) -> str:
         """
