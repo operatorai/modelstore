@@ -15,11 +15,9 @@ import importlib
 import sys
 
 import pkg_resources
-from modelstore.models.common import save_json
 from modelstore.utils.log import logger
 
 # pylint: disable=broad-except
-_PYTHON_INFO_FILE = "python-info.json"
 
 
 def _get_version(modname: str) -> str:
@@ -63,11 +61,3 @@ def get_dependency_versions(modnames: list) -> dict:
 def module_exists(modname: str) -> bool:
     """ Returns True if a module has been installed """
     return _get_version(modname) is not None
-
-
-def save_dependencies(tmp_dir: str, deps: list) -> str:
-    """ Saves all of the current dependencies to file """
-    # @TODO move
-    deps_info = get_dependency_versions(deps) 
-    deps_info = {k: v for k, v in deps_info.items() if v is not None}
-    return save_json(tmp_dir, _PYTHON_INFO_FILE, deps_info)
