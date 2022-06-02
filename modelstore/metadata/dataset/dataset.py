@@ -65,7 +65,12 @@ class Dataset:
     values: dict
 
     @classmethod
-    def generate(cls, dataset) -> "Dataset":
+    def generate(cls, x, y) -> "Dataset":
+        """ Returns summary stats about a dataset """
+        pass
+
+    @classmethod
+    def describe(cls, dataset) -> "Dataset":
         """Returns summary stats about a dataset"""
         if is_numpy_array(dataset):
             if dataset.ndim == 1:

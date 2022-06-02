@@ -16,7 +16,7 @@ import pandas as pd
 import pytest
 
 from modelstore.metadata import metadata
-from modelstore.metadata.model import datasets
+from modelstore.metadata.dataset import dataset
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring
@@ -46,21 +46,21 @@ def pd_series():
 
 
 def test_is_numpy_array(np_array, pd_dataframe, pd_series):
-    assert datasets.is_numpy_array(np_array)
-    assert not datasets.is_numpy_array(pd_dataframe)
-    assert not datasets.is_numpy_array(pd_series)
+    assert dataset.is_numpy_array(np_array)
+    assert not dataset.is_numpy_array(pd_dataframe)
+    assert not dataset.is_numpy_array(pd_series)
 
 
 def is_pandas_dataframe(np_array, pd_dataframe, pd_series):
-    assert not datasets.is_pandas_dataframe(np_array)
-    assert datasets.is_pandas_dataframe(pd_dataframe)
-    assert not datasets.is_pandas_dataframe(pd_series)
+    assert not dataset.is_pandas_dataframe(np_array)
+    assert dataset.is_pandas_dataframe(pd_dataframe)
+    assert not dataset.is_pandas_dataframe(pd_series)
 
 
 def test_is_pandas_series(np_array, pd_dataframe, pd_series):
-    assert not datasets.is_pandas_series(np_array)
-    assert not datasets.is_pandas_series(pd_dataframe)
-    assert datasets.is_pandas_series(pd_series)
+    assert not dataset.is_pandas_series(np_array)
+    assert not dataset.is_pandas_series(pd_dataframe)
+    assert dataset.is_pandas_series(pd_series)
 
 
 def test_describe_np_training(np_array):

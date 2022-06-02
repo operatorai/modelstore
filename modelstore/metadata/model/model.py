@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
 from modelstore.metadata.model.model_type import ModelType
-from modelstore.metadata.model.datasets import Dataset
+from modelstore.metadata.dataset.dataset import Dataset
 
 
 @dataclass_json

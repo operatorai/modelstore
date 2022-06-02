@@ -111,10 +111,12 @@ class ModelManager(ABC):
         """Whether the meta-data of a model artifact matches a model manager"""
         return meta_data.get("library") == self.ml_library
 
-    # pylint: disable=unused-argument
     def model_data(self, **kwargs) -> metadata.Dataset:
-        """Returns meta-data about the data used to train the model"""
-        return metadata.Dataset(None, None)
+        """ Returns meta data about the training data """
+        return metadata.Dataset.generate(
+            x=kwargs.get("X_train"),
+            y=kwargs.get("y_train")
+        )
 
     def _collect_files(self, tmp_dir: str, **kwargs) -> list:
         """Returns a list of files created in tmp_dir that will form
