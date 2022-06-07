@@ -137,7 +137,7 @@ def test_get_params(sklearn_manager, model_type):
     try:
         result = sklearn_manager.get_params(model=model_type())
         json.dumps(result)
-        # pylint: disable=bare-except
+        # pylint: disable=broad-except
     except Exception as exc:
         pytest.fail(f"Exception when dumping params: {str(exc)}")
 
