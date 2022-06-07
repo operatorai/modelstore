@@ -18,6 +18,7 @@ import xgboost as xgb
 import numpy as np
 
 from modelstore.metadata import metadata
+from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models import xgboost
 
 # pylint: disable=unused-import
@@ -70,8 +71,12 @@ def test_is_same_library(xgb_manager, ml_library, should_match):
 
 
 def test_model_data(xgb_manager, xgb_model):
+    exp = metadata.Dataset(
+        features=Features(shape=None),
+        labels=Labels(shape=None, values=None),
+    )
     res = xgb_manager.model_data(model=xgb_model)
-    assert metadata.Dataset(None, None) == res
+    assert exp == res
 
 
 def test_required_kwargs(xgb_manager):

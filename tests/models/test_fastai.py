@@ -22,6 +22,7 @@ from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import TabularLearner, tabular_learner
 
 from modelstore.metadata import metadata
+from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.fastai import (
     LEARNER_FILE,
     FastAIManager,
@@ -91,8 +92,12 @@ def test_is_same_library(fai_manager, ml_library, should_match):
 
 
 def test_model_data(fai_manager, fai_learner):
+    exp = metadata.Dataset(
+        features=Features(shape=None),
+        labels=Labels(shape=None, values=None),
+    )
     res = fai_manager.model_data(learner=fai_learner)
-    assert metadata.Dataset(None, None) == res
+    assert exp == res
 
 
 def test_required_kwargs(fai_manager):

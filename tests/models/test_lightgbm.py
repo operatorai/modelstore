@@ -20,6 +20,7 @@ import numpy as np
 import pytest
 
 from modelstore.metadata import metadata
+from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.lightgbm import (
     MODEL_FILE,
     MODEL_JSON,
@@ -80,8 +81,12 @@ def test_is_same_library(lgb_manager, ml_library, should_match):
 
 
 def test_model_data(lgb_manager, lgb_model):
+    exp = metadata.Dataset(
+        features=Features(shape=None),
+        labels=Labels(shape=None, values=None),
+    )
     res = lgb_manager.model_data(model=lgb_model)
-    assert metadata.Dataset(None, None) == res
+    assert exp == res
 
 
 def test_required_kwargs(lgb_manager):

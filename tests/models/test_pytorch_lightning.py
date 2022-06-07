@@ -21,6 +21,7 @@ from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
 from modelstore.metadata import metadata
+from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.pytorch_lightning import (
     MODEL_CHECKPOINT,
     PyTorchLightningManager,
@@ -117,8 +118,12 @@ def test_is_same_library(lightning_manager, ml_library, should_match):
 
 
 def test_model_data(lightning_manager, lightning_model):
+    exp = metadata.Dataset(
+        features=Features(shape=None),
+        labels=Labels(shape=None, values=None),
+    )
     res = lightning_manager.model_data(model=lightning_model)
-    assert metadata.Dataset(None, None) == res
+    assert exp == res
 
 
 def test_required_kwargs(lightning_manager):

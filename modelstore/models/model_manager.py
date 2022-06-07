@@ -114,8 +114,8 @@ class ModelManager(ABC):
     def model_data(self, **kwargs) -> metadata.Dataset:
         """ Returns meta data about the training data """
         return metadata.Dataset.generate(
-            x=kwargs.get("X_train"),
-            y=kwargs.get("y_train")
+            kwargs.get("X_train"),
+            kwargs.get("y_train"),
         )
 
     def _collect_files(self, tmp_dir: str, **kwargs) -> list:

@@ -25,6 +25,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from modelstore.metadata import metadata
+from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.common import save_joblib
 from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
 
@@ -101,10 +102,11 @@ def test_is_same_library(sklearn_manager, ml_library, should_match):
 
 
 def test_model_data(sklearn_manager, sklearn_tree):
-    # @TODO
-    labels = np.array([0, 1, 1, 0, 1])
-    exp = {"labels": {"shape": [5], "values": {0: 2, 1: 3}}}
-    res = sklearn_manager.model_data(model=sklearn_tree, y_train=labels)
+    exp = metadata.Dataset(
+        features=Features(shape=None),
+        labels=Labels(shape=None, values=None),
+    )
+    res = sklearn_manager.model_data(model=sklearn_tree)
     assert exp == res
 
 
