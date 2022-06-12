@@ -11,8 +11,15 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import Any
 
 
 def remove_nones(values: dict) -> dict:
     """ Removes any entries in a dictionary that have None values """
     return {k: v for k, v in values.items() if v is not None}
+
+
+def exclude_field(value: Any) -> bool:
+    """ Whether to exclude a field from being included in the JSON
+    meta data """
+    return value is None

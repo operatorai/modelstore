@@ -11,8 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
+from dataclasses_json.cfg import config
 
 import modelstore
 from modelstore.metadata.code.code import Code
@@ -26,7 +27,7 @@ class Summary:
     """ Summary holds all of the fields that are captured
     when a model is saved """
 
-    code: Code
+    code: Code = field(default=None, metadata=config(exclude=lambda x: x is None))
     model: Model
     storage: Storage
     modelstore: str # Version of modelstore

@@ -13,9 +13,11 @@
 #    limitations under the License.
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
+from dataclasses_json.cfg import config
 
 from modelstore.metadata.model.model_type import ModelType
 from modelstore.metadata.dataset.dataset import Dataset
+from modelstore.metadata.utils.dicts import exclude_field
 
 
 @dataclass_json
@@ -28,8 +30,8 @@ class Model:
     domain: str
     model_id: str
     model_type: ModelType
-    parameters: dict = field(default_factory=lambda: {})
-    data: Dataset = None
+    parameters: dict = field(default_factory=lambda: {}, metadata=config(exclude=exclude_field))
+    data: Dataset = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls,

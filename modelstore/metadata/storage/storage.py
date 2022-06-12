@@ -28,7 +28,7 @@ class Storage:
     path: str
     
     # Container-like storage
-    bucket: str
+    bucket: str # @TODO exclude these if they are None
     prefix: str
 
     # Retained for backwards compatibility (Azure)

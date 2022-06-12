@@ -13,13 +13,15 @@
 #    limitations under the License.
 from typing import List
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
+from dataclasses_json.cfg import config
 
 from modelstore.metadata.dataset.types import (
     is_numpy_array,
     is_pandas_dataframe
 )
+from modelstore.metadata.utils.dicts import exclude_field
 from modelstore.utils.log import logger
 
 
@@ -30,7 +32,7 @@ class Features:
     """ Features contains fields that are captured about
     the training dataset's features when the model is saved """
 
-    shape: List[int] = None
+    shape: List[int] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, values) -> "Features":

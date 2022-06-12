@@ -12,9 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import List
-from dataclasses import dataclass
-
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
+from dataclasses_json.cfg import config
 import numpy as np
 
 from modelstore.metadata.dataset.types import (
@@ -22,6 +22,7 @@ from modelstore.metadata.dataset.types import (
     is_pandas_dataframe,
     is_pandas_series
 )
+from modelstore.metadata.utils.dicts import exclude_field
 from modelstore.utils.log import logger
 
 
@@ -32,8 +33,8 @@ class Labels:
     """ Labels contains fields that are captured about
     the training dataset's labels when the model is saved """
 
-    shape: List[int] = None
-    values: dict = None
+    shape: List[int] = field(default=None, metadata=config(exclude=exclude_field))
+    values: dict = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, values) -> "Labels":
