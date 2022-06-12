@@ -33,7 +33,11 @@ class Dataset:
     @classmethod
     def generate(cls, features, labels) -> "Dataset":
         """ Returns summary stats about a dataset """
+        features = Features.generate(features)
+        labels = Labels.generate(labels)
+        if features is None and labels is None:
+            return None
         return Dataset(
-            features=Features.generate(features),
-            labels=Labels.generate(labels)
+            features=features,
+            labels=labels
         )

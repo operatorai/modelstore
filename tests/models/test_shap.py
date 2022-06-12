@@ -63,8 +63,8 @@ def test_is_same_library(shap_manager, ml_library, should_match):
 
 def test_model_data(shap_manager, shap_explainer):
     exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
+        features=None,
+        labels=None,
     )
     res = shap_manager.model_data(explainer=shap_explainer)
     assert exp == res

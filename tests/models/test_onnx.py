@@ -24,7 +24,6 @@ from skl2onnx.common.data_types import FloatTensorType
 from sklearn.ensemble import RandomForestClassifier
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models import onnx
 
 # pylint: disable=unused-import
@@ -82,12 +81,8 @@ def test_is_same_library(onnx_manager, ml_library, should_match):
 
 
 def test_model_data(onnx_manager, onnx_model):
-    exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
-    )
     res = onnx_manager.model_data(model=onnx_model)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(onnx_manager):

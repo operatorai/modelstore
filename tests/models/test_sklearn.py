@@ -103,8 +103,8 @@ def test_is_same_library(sklearn_manager, ml_library, should_match):
 
 def test_model_data(sklearn_manager, sklearn_tree):
     exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
+        features=None,
+        labels=None,
     )
     res = sklearn_manager.model_data(model=sklearn_tree)
     assert exp == res

@@ -17,7 +17,6 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.model_file import ModelFileManager, copy_file
 
 # pylint: disable=protected-access
@@ -45,12 +44,8 @@ def test_model_info(model_file_manager):
 
 
 def test_model_data(model_file_manager):
-    exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
-    )
     res = model_file_manager.model_data()
-    assert exp == res
+    assert res is None
 
 
 @pytest.mark.parametrize(

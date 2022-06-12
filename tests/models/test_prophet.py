@@ -23,7 +23,6 @@ from prophet import Prophet
 from prophet.serialize import model_from_json, model_to_json
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.prophet import MODEL_FILE, ProphetManager, save_model
 
 # pylint: disable=protected-access
@@ -86,12 +85,8 @@ def test_is_same_library(prophet_manager, ml_library, should_match):
 
 
 def test_model_data(prophet_manager, prophet_model):
-    exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
-    )
     res = prophet_manager.model_data(model=prophet_model)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(prophet_manager):

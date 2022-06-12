@@ -19,7 +19,6 @@ from gensim.models import word2vec
 from gensim.test.utils import common_texts
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.gensim import GENSIM_MODEL, GensimManager
 
 # pylint: disable=protected-access,redefined-outer-name,missing-function-docstring
@@ -61,12 +60,8 @@ def test_is_same_library(gensim_manager, ml_library, should_match):
 
 
 def test_model_data(gensim_manager, word2vec_model):
-    exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
-    )
     res = gensim_manager.model_data(model=word2vec_model)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(gensim_manager):

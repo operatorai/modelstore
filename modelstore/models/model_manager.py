@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any
+from typing import Any, Optional
 import os
 import shutil
 import tarfile
@@ -111,7 +111,7 @@ class ModelManager(ABC):
         """Whether the meta-data of a model artifact matches a model manager"""
         return meta_data.get("library") == self.ml_library
 
-    def model_data(self, **kwargs) -> metadata.Dataset:
+    def model_data(self, **kwargs) -> Optional[metadata.Dataset]:
         """ Returns meta data about the training data """
         return metadata.Dataset.generate(
             kwargs.get("X_train"),

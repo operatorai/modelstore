@@ -93,12 +93,8 @@ def test_is_same_library(tf_manager, ml_library, should_match):
 
 
 def test_model_data(tf_manager, tf_model):
-    exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
-    )
     res = tf_manager.model_data(model=tf_model)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(tf_manager):

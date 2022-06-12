@@ -118,12 +118,8 @@ def test_is_same_library(lightning_manager, ml_library, should_match):
 
 
 def test_model_data(lightning_manager, lightning_model):
-    exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
-    )
     res = lightning_manager.model_data(model=lightning_model)
-    assert exp == res
+    assert None == res
 
 
 def test_required_kwargs(lightning_manager):

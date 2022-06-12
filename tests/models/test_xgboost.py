@@ -71,12 +71,8 @@ def test_is_same_library(xgb_manager, ml_library, should_match):
 
 
 def test_model_data(xgb_manager, xgb_model):
-    exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
-    )
     res = xgb_manager.model_data(model=xgb_model)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(xgb_manager):

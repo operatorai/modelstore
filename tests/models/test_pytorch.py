@@ -93,8 +93,8 @@ def test_is_same_library(pytorch_manager, ml_library, should_match):
 
 def test_model_data(pytorch_manager, pytorch_model):
     exp = metadata.Dataset(
-        features=Features(shape=None),
-        labels=Labels(shape=None, values=None),
+        features=None,
+        labels=None,
     )
     res = pytorch_manager.model_data(model=pytorch_model)
     assert exp == res
