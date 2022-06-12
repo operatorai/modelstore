@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import List
+from typing import List, Any 
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
@@ -37,7 +37,7 @@ class Labels:
     values: dict = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
-    def generate(cls, values) -> "Labels":
+    def generate(cls, values: Any = None) -> "Labels":
         """Returns summary stats about a set of labels """
         if values is None:
             return None

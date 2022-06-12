@@ -25,6 +25,10 @@ from tests.metadata.dataset.fixtures import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring
 
+def test_describe_nothing():
+    res = Features.generate()
+    assert res is None
+
 
 def test_describe_numpy_2d(np_2d_array):
     exp = Features(shape=[10, 50])

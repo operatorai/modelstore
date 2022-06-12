@@ -27,6 +27,11 @@ from tests.metadata.dataset.fixtures import (
 # pylint: disable=missing-function-docstring
 
 
+def test_describe_nothing():
+    res = Labels.generate()
+    assert res is None
+
+
 def test_describe_numpy_2d(np_2d_array):
     exp = Labels(shape=[10, 50], values=None)
     res = Labels.generate(np_2d_array)

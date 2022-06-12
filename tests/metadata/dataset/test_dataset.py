@@ -28,6 +28,10 @@ from tests.metadata.dataset.fixtures import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring
 
+def test_describe_nothing():
+    res = Dataset.generate()
+    assert res is None
+
 
 def test_describe_numpy(np_2d_array, np_1d_array):
     exp = Dataset(
