@@ -17,7 +17,7 @@ from dataclasses_json.cfg import config
 
 from modelstore.metadata.model.model_type import ModelType
 from modelstore.metadata.dataset.dataset import Dataset
-from modelstore.metadata.utils.dicts import exclude_field
+from modelstore.metadata.utils.utils import exclude_field
 
 
 @dataclass_json

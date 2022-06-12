@@ -22,7 +22,7 @@ from modelstore.metadata.dataset.types import (
     is_pandas_dataframe,
     is_pandas_series
 )
-from modelstore.metadata.utils.dicts import exclude_field
+from modelstore.metadata.utils.utils import exclude_field
 from modelstore.utils.log import logger
 
 

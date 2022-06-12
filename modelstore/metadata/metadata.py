@@ -19,7 +19,7 @@ import modelstore
 from modelstore.metadata.code.code import Code
 from modelstore.metadata.model.model import Model, ModelType, Dataset
 from modelstore.metadata.storage.storage import Storage
-from modelstore.metadata.utils.dicts import exclude_field
+from modelstore.metadata.utils.utils import exclude_field
 
 @dataclass_json
 @dataclass

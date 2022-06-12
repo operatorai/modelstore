@@ -17,7 +17,7 @@ from dataclasses_json.cfg import config
 from dataclasses_json import dataclass_json
 
 from modelstore.metadata.code import runtime, dependencies, revision
-from modelstore.metadata.utils.dicts import remove_nones, exclude_field
+from modelstore.metadata.utils.utils import remove_nones, exclude_field
 
 
 @dataclass_json
