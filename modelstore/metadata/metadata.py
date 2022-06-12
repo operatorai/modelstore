@@ -19,6 +19,7 @@ import modelstore
 from modelstore.metadata.code.code import Code
 from modelstore.metadata.model.model import Model, ModelType, Dataset
 from modelstore.metadata.storage.storage import Storage
+from modelstore.metadata.utils.dicts import exclude_field
 
 @dataclass_json
 @dataclass
@@ -27,10 +28,10 @@ class Summary:
     """ Summary holds all of the fields that are captured
     when a model is saved """
 
-    code: Code = field(default=None, metadata=config(exclude=lambda x: x is None))
     model: Model
     storage: Storage
     modelstore: str # Version of modelstore
+    code: Code = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls,

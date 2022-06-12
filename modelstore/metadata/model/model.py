@@ -30,7 +30,7 @@ class Model:
     domain: str
     model_id: str
     model_type: ModelType
-    parameters: dict = field(default_factory=lambda: {}, metadata=config(exclude=exclude_field))
+    parameters: dict = field(default=None, metadata=config(exclude=exclude_field))
     data: Dataset = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
