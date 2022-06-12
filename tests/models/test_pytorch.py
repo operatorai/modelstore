@@ -19,7 +19,6 @@ from torch import nn, optim
 from torch.nn import functional as F
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.pytorch import (
     MODEL_PT,
     PyTorchManager,
@@ -92,12 +91,8 @@ def test_is_same_library(pytorch_manager, ml_library, should_match):
 
 
 def test_model_data(pytorch_manager, pytorch_model):
-    exp = metadata.Dataset(
-        features=None,
-        labels=None,
-    )
     res = pytorch_manager.model_data(model=pytorch_model)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(pytorch_manager):

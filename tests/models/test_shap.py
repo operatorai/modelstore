@@ -20,7 +20,6 @@ import shap as shp
 from sklearn.ensemble import RandomForestClassifier
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models import shap
 
 # pylint: disable=unused-import
@@ -62,12 +61,8 @@ def test_is_same_library(shap_manager, ml_library, should_match):
 
 
 def test_model_data(shap_manager, shap_explainer):
-    exp = metadata.Dataset(
-        features=None,
-        labels=None,
-    )
     res = shap_manager.model_data(explainer=shap_explainer)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(shap_manager):
