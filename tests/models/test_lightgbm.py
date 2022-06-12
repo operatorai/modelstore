@@ -68,17 +68,6 @@ def test_model_info(lgb_manager, lgb_model):
     assert expected == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("lightgbm", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(lgb_manager, ml_library, should_match):
-    assert lgb_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(lgb_manager, lgb_model):
     res = lgb_manager.model_data(model=lgb_model)
     assert res is None

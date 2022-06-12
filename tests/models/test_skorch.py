@@ -85,18 +85,6 @@ def test_model_info(skorch_manager, skorch_model):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("skorch", True),
-        ("sklearn", False),
-        ("xgboost", False),
-    ],
-)
-def test_is_same_library(skorch_manager, ml_library, should_match):
-    assert skorch_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(skorch_manager, skorch_model):
     res = skorch_manager.model_data(model=skorch_model)
     assert res is None

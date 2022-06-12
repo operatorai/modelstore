@@ -46,17 +46,6 @@ def test_model_info(catb_manager, catb_model):
     assert expected == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("catboost", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(catb_manager, ml_library, should_match):
-    assert catb_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(catb_manager, catb_model):
     res = catb_manager.model_data(model=catb_model)
     assert res is None

@@ -54,17 +54,6 @@ def test_model_info(mxnet_manager, mxnet_model):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("mxnet", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(mxnet_manager, ml_library, should_match):
-    assert mxnet_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(mxnet_manager, mxnet_model):
     res = mxnet_manager.model_data(model=mxnet_model)
     assert res is None

@@ -77,17 +77,6 @@ def test_model_info(tr_manager):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("transformers", True),
-        ("xgboost", False),
-    ],
-)
-def test_is_same_library(tr_manager, ml_library, should_match):
-    assert tr_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(tr_manager, tr_model):
     res = tr_manager.model_data(model=tr_model)
     assert res is None

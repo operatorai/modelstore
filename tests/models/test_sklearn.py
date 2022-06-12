@@ -88,17 +88,6 @@ def test_model_info(sklearn_manager, model_type, expected):
     assert expected == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("sklearn", True),
-        ("xgboost", False),
-    ],
-)
-def test_is_same_library(sklearn_manager, ml_library, should_match):
-    assert sklearn_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(sklearn_manager, sklearn_tree):
     res = sklearn_manager.model_data(model=sklearn_tree)
     assert res is None

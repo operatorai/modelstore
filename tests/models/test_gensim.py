@@ -48,17 +48,6 @@ def test_model_info(gensim_manager, model_type, expected):
     assert expected == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("gensim", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(gensim_manager, ml_library, should_match):
-    assert gensim_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(gensim_manager, word2vec_model):
     res = gensim_manager.model_data(model=word2vec_model)
     assert res is None

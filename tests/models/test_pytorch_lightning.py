@@ -106,17 +106,6 @@ def test_model_info(lightning_manager, lightning_model):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("pytorch_lightning", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(lightning_manager, ml_library, should_match):
-    assert lightning_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(lightning_manager, lightning_model):
     res = lightning_manager.model_data(model=lightning_model)
     assert None == res

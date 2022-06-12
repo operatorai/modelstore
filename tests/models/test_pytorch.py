@@ -79,17 +79,6 @@ def test_model_info(pytorch_manager, pytorch_model):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("pytorch", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(pytorch_manager, ml_library, should_match):
-    assert pytorch_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(pytorch_manager, pytorch_model):
     res = pytorch_manager.model_data(model=pytorch_model)
     assert res is None

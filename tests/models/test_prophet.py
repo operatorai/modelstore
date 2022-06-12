@@ -73,17 +73,6 @@ def test_model_info(prophet_manager, prophet_model):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("prophet", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(prophet_manager, ml_library, should_match):
-    assert prophet_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(prophet_manager, prophet_model):
     res = prophet_manager.model_data(model=prophet_model)
     assert res is None
