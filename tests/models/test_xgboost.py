@@ -18,6 +18,7 @@ import xgboost as xgb
 import numpy as np
 
 from modelstore.metadata import metadata
+from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models import xgboost
 
 # pylint: disable=unused-import
@@ -58,21 +59,9 @@ def test_booster_model_info(xgb_manager, xgb_booster):
     assert exp == result
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("xgboost", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(xgb_manager, ml_library, should_match):
-    assert xgb_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(xgb_manager, xgb_model):
-    # Note: currently unimplemented for xgboost
-    result = xgb_manager.model_data(model=xgb_model)
-    assert result == {}
+    res = xgb_manager.model_data(model=xgb_model)
+    assert res is None
 
 
 def test_required_kwargs(xgb_manager):

@@ -11,8 +11,24 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import pytest 
 
+from modelstore.metadata.utils.utils import remove_nones, exclude_field
 
-def remove_nones(values: dict) -> dict:
-    """ Removes any entries in a dictionary that have None values """
-    return {k: v for k, v in values.items() if v is not None}
+# pylint: disable=missing-function-docstring
+
+def test_remove_nones():
+    exp = {"a": "value-a"}
+    res = remove_nones({"a": "value-a", "b": None})
+    assert exp == res
+
+@pytest.mark.parametrize(
+    "value,should_exclude",
+    [
+        (None, True),
+        ("", False),
+        (1, False),
+    ],
+)
+def test_exclude_field(value, should_exclude):
+    assert exclude_field(value) == should_exclude

@@ -77,23 +77,11 @@ def test_model_info(fai_manager):
     expected = metadata.ModelType("fastai", None, None)
     res = fai_manager.model_info()
     assert expected == res
-
-
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("fastai", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(fai_manager, ml_library, should_match):
-    assert fai_manager._is_same_library({"library": ml_library}) == should_match
-
+    
 
 def test_model_data(fai_manager, fai_learner):
-    exp = {}
     res = fai_manager.model_data(learner=fai_learner)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(fai_manager):

@@ -17,7 +17,7 @@ from functools import partial
 from typing import Any
 
 from modelstore.metadata import metadata
-from modelstore.metadata.model import datasets
+from modelstore.metadata.dataset.types import is_pandas_dataframe
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -64,15 +64,12 @@ class SKLearnManager(ModelManager):
 
         return isinstance(kwargs.get("model"), BaseEstimator)
 
-    def model_data(self, **kwargs) -> dict:
-        data = {}
-        if "X_train" in kwargs:
-            features = datasets.describe_dataset(kwargs["X_train"])
-            features.update(_feature_importances(kwargs["model"], kwargs["X_train"]))
-            data["features"] = features
-        if "y_train" in kwargs:
-            data["labels"] = datasets.describe_dataset(kwargs["y_train"])
-        return data
+    def model_data(self, **kwargs) -> metadata.Dataset:
+        # @TODO add _feature_importances()
+        return metadata.Dataset.generate(
+            kwargs.get("X_train"),
+            kwargs.get("y_train"),
+        )
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
@@ -111,7 +108,7 @@ class SKLearnManager(ModelManager):
 
 def _feature_importances(model: "BaseEstimator", x_train: "pandas.DataFrame") -> dict:
     result = {}
-    if datasets.is_pandas_dataframe(x_train):
+    if is_pandas_dataframe(x_train):
         weights = _get_weights(model)
         if weights is not None:
             return dict(zip(x_train, weights))

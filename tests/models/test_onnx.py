@@ -69,20 +69,9 @@ def test_model_info(onnx_manager, onnx_model):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("onnx", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(onnx_manager, ml_library, should_match):
-    assert onnx_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(onnx_manager, onnx_model):
     res = onnx_manager.model_data(model=onnx_model)
-    assert {} == res
+    assert res is None
 
 
 def test_required_kwargs(onnx_manager):

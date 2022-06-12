@@ -11,13 +11,15 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
+from dataclasses_json.cfg import config
 
 import modelstore
 from modelstore.metadata.code.code import Code
-from modelstore.metadata.model.model import Model, ModelType
+from modelstore.metadata.model.model import Model, ModelType, Dataset
 from modelstore.metadata.storage.storage import Storage
+from modelstore.metadata.utils.utils import exclude_field
 
 @dataclass_json
 @dataclass
@@ -26,10 +28,10 @@ class Summary:
     """ Summary holds all of the fields that are captured
     when a model is saved """
 
-    code: Code
     model: Model
     storage: Storage
     modelstore: str # Version of modelstore
+    code: Code = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls,
@@ -65,3 +67,7 @@ class Summary:
     def model_type(self) -> ModelType:
         """ Returns the model type """
         return self.model.model_type
+
+    def dataset(self) -> Dataset:
+        """ Returns meta data about the training data """
+        return self.model.data

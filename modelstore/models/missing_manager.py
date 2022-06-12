@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any
+from typing import Any, Optional
 
 from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
@@ -48,10 +48,10 @@ class MissingDepManager(ModelManager):
     def _required_kwargs(self) -> list:
         return []
 
-    def model_info(self, **kwargs) -> dict:
+    def model_info(self, **kwargs) -> Optional[metadata.ModelType]:
         return None
 
-    def model_data(self, **kwargs) -> dict:
+    def model_data(self, **kwargs) -> Optional[metadata.Dataset]:
         return None
 
     def upload(self, domain: str, model_id: str, **kwargs) -> str:

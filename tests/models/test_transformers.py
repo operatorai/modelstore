@@ -27,6 +27,7 @@ from transformers import (
 from transformers.file_utils import CONFIG_NAME
 
 from modelstore.metadata import metadata
+from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.transformers import (
     MODEL_DIRECTORY,
     TransformersManager,
@@ -76,21 +77,9 @@ def test_model_info(tr_manager):
     assert exp == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("transformers", True),
-        ("xgboost", False),
-    ],
-)
-def test_is_same_library(tr_manager, ml_library, should_match):
-    assert tr_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(tr_manager, tr_model):
-    exp = {}
     res = tr_manager.model_data(model=tr_model)
-    assert exp == res
+    assert res is None
 
 
 def test_required_kwargs(tr_manager):

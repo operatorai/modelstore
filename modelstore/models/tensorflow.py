@@ -69,11 +69,6 @@ class TensorflowManager(ModelManager):
     def get_params(self, **kwargs) -> dict:
         return kwargs["model"].optimizer.get_config()
 
-    def _is_same_library(self, meta_data: dict) -> bool:
-        is_tf = super()._is_same_library(meta_data)
-        is_keras = meta_data.get("library") == "keras"
-        return is_tf or is_keras
-
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         # pylint: disable=import-outside-toplevel
         from tensorflow import keras

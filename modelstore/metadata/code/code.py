@@ -12,11 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from datetime import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from dataclasses_json.cfg import config
 from dataclasses_json import dataclass_json
 
 from modelstore.metadata.code import runtime, dependencies, revision
-from modelstore.metadata.utils.dicts import remove_nones
+from modelstore.metadata.utils.utils import remove_nones, exclude_field
 
 
 @dataclass_json
@@ -30,7 +31,7 @@ class Code:
     user: str
     created: str
     dependencies: dict
-    git: dict
+    git: dict = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, deps_list: list, created: datetime = None) -> "Code":

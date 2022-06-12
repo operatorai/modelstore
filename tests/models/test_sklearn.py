@@ -15,7 +15,6 @@ import json
 import os
 from functools import partial
 
-import numpy as np
 import pandas as pd
 import pytest
 from sklearn.compose import ColumnTransformer
@@ -89,22 +88,9 @@ def test_model_info(sklearn_manager, model_type, expected):
     assert expected == res
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("sklearn", True),
-        ("xgboost", False),
-    ],
-)
-def test_is_same_library(sklearn_manager, ml_library, should_match):
-    assert sklearn_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(sklearn_manager, sklearn_tree):
-    labels = np.array([0, 1, 1, 0, 1])
-    exp = {"labels": {"shape": [5], "values": {0: 2, 1: 3}}}
-    res = sklearn_manager.model_data(model=sklearn_tree, y_train=labels)
-    assert exp == res
+    res = sklearn_manager.model_data(model=sklearn_tree)
+    assert res is None
 
 
 def test_required_kwargs(sklearn_manager):
@@ -134,7 +120,7 @@ def test_get_params(sklearn_manager, model_type):
     try:
         result = sklearn_manager.get_params(model=model_type())
         json.dumps(result)
-        # pylint: disable=bare-except
+        # pylint: disable=broad-except
     except Exception as exc:
         pytest.fail(f"Exception when dumping params: {str(exc)}")
 

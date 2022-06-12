@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any
+from typing import Any, Optional
 import os
 import shutil
 import tarfile
@@ -106,15 +106,12 @@ class ModelManager(ABC):
             class_name=class_name,
         )
 
-    def _is_same_library(self, meta_data: dict) -> bool:
-        """Whether the meta-data of a model artifact matches a model manager"""
-        return meta_data.get("library") == self.ml_library
-
-    # pylint: disable=unused-argument
-    def model_data(self, **kwargs) -> dict:
-        """Returns meta-data about the data used to train the model"""
-        # @ Future
-        return {}
+    def model_data(self, **kwargs) -> Optional[metadata.Dataset]:
+        """ Returns meta data about the training data """
+        return metadata.Dataset.generate(
+            kwargs.get("X_train"),
+            kwargs.get("y_train"),
+        )
 
     def _collect_files(self, tmp_dir: str, **kwargs) -> list:
         """Returns a list of files created in tmp_dir that will form

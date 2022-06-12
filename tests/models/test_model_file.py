@@ -43,16 +43,9 @@ def test_model_info(model_file_manager):
     assert model_file_manager.model_info() == exp
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("sklearn", False),
-        ("xgboost", False),
-        ("model_file", True),
-    ],
-)
-def test_is_same_library(model_file_manager, ml_library, should_match):
-    assert model_file_manager._is_same_library({"library": ml_library}) == should_match
+def test_model_data(model_file_manager):
+    res = model_file_manager.model_data()
+    assert res is None
 
 
 def test_required_kwargs(model_file_manager):

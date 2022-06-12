@@ -52,20 +52,9 @@ def test_model_info(annoy_manager, annoy_model):
     assert expected == result
 
 
-@pytest.mark.parametrize(
-    "ml_library,should_match",
-    [
-        ("annoy", True),
-        ("sklearn", False),
-    ],
-)
-def test_is_same_library(annoy_manager, ml_library, should_match):
-    assert annoy_manager._is_same_library({"library": ml_library}) == should_match
-
-
 def test_model_data(annoy_manager, annoy_model):
     res = annoy_manager.model_data(model=annoy_model)
-    assert {} == res
+    assert res is None
 
 
 def test_required_kwargs(annoy_manager):

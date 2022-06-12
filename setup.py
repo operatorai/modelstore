@@ -1,7 +1,10 @@
+# pylint: disable=missing-module-docstring
 from setuptools import find_packages, setup
 
+# pylint: disable=unspecified-encoding
 with open("requirements.txt", "r") as lines:
     requirements = lines.read().splitlines()
+
 
 setup(
     name="modelstore",
@@ -16,7 +19,6 @@ setup(
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: Apache Software License",
