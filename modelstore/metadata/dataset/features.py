@@ -38,7 +38,7 @@ class Features:
     def generate(cls, values) -> "Features":
         """Returns summary stats about a set of features """
         if values is None:
-            return Features()
+            return None
         if is_numpy_array(values):
             return Features(
                 shape=list(values.shape),

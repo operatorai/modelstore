@@ -40,7 +40,7 @@ class Labels:
     def generate(cls, values) -> "Labels":
         """Returns summary stats about a set of labels """
         if values is None:
-            return Labels()
+            return None
         if is_numpy_array(values):
             if values.ndim == 1:
                 # Array has one dimension (e.g., labels); return its

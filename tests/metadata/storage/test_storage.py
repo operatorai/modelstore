@@ -32,7 +32,7 @@ def test_generate_from_path():
     assert expected == result
 
     result_dict = json.loads(result.to_json())
-    assert result_dict["container"] is None
+    assert "container" not in result_dict
     assert result_dict["type"] == "file_system"
 
     loaded = metadata.Storage.from_json(result.to_json())

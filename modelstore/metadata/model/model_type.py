@@ -14,8 +14,11 @@
 import os
 from typing import List, Dict, Optional
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
+from dataclasses_json.cfg import config
+
+from modelstore.metadata.utils.dicts import exclude_field
 
 _MODEL_TYPE_FILE = "model-info.json"
 
@@ -28,11 +31,14 @@ class ModelType:
     the model type when it is saved """
 
     library: str
-    type: str
+    type: str = field(default=None, metadata=config(exclude=exclude_field))
 
     # When saving multiple models together, the models'
     # types are specified in this list
-    models: Optional[List['ModelType']]
+    models: Optional[List['ModelType']] = field(
+        default=None,
+        metadata=config(exclude=exclude_field)
+    )
 
     @classmethod
     def generate(cls, library: str, class_name: str = None, models: List[Dict] = None) -> "ModelType":
