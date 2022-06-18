@@ -1,0 +1,9 @@
+REPO_ROOT=$(shell cd ../../ && pwd)
+
+.PHONY: setup
+
+setup:
+	echo "\n 🔵  Refreshing installation of modelstore"
+	pip install --upgrade pip setuptools wheel	
+	pip install -r requirements.txt
+	pip install --no-cache-dir -e $(REPO_ROOT)
