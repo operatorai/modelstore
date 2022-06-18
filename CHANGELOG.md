@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+**🆕  New functionality**
+
+You can now add any extra metadata to your model when uploading it, using `upload(domain, model, extra_metadata={ ... })` ([]())
+
 **🐛  Bug fixes & general updates**
 
 Fixed a bug when creating a GCP model store instance that reads from a public bucket ([#176](https://github.com/operatorai/modelstore/pull/176)).
