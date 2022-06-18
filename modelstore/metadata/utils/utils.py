@@ -28,6 +28,9 @@ def exclude_field(value: Any) -> bool:
 
 def validate_json_serializable(name: str, value: dict):
     """ Validates that `value` is a JSON serializable dictionary """
+    if value is None:
+        # None fields will not be dumped from dataclasses
+        return
     if not isinstance(value, dict):
         raise TypeError(f"{name} is not a dictionary")
     try:

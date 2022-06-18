@@ -48,16 +48,45 @@ def test_model_exists(model_store: ModelStore, model_file: str):
     domain = "test-domain"
     model_id = "test-model-id-1"
 
-    # No models = domain not found = model doesn't exist
+    # No models => domain not found => model doesn't exist
     assert not model_store.model_exists(domain, model_id)
 
-    # Domain exists, but the model does not
-    model_store.upload(domain, "test-model-id-2", model=model_file)
+    # Upload model 2 => domain exists => model 1 still doesn't exist
+    model_store.upload(
+        domain=domain,
+        model_id="test-model-id-2",
+        model=model_file
+    )
     assert not model_store.model_exists(domain, model_id)
 
-    # Model exists
-    model_store.upload(domain, model_id, model=model_file)
+    # Upload model 1 => model exists
+    model_store.upload(
+        domain=domain,
+        model_id=model_id,
+        model=model_file
+    )
     assert model_store.model_exists(domain, model_id)
+
+
+def test_extra_metadata(model_store: ModelStore, model_file: str):
+    extra_metadata = {"required_columns": ["col1", "col2"]}
+    # Domain exists, but the model does not
+    meta_data = model_store.upload(
+        domain="test-domain",
+        model_id="test-model-id-1",
+        model=model_file,
+        extra_metadata=extra_metadata
+    )
+
+    # Extras are appended to the returned meta data
+    assert meta_data["extra"] == extra_metadata
+
+    # Extras are returned when querying for a model
+    meta_data = model_store.get_model_info(
+        domain="test-domain",
+        model_id="test-model-id-1",
+    )
+    assert meta_data["extra"] == extra_metadata
 
 
 def test_model_upload_doesnt_overwrite_existing_model(
