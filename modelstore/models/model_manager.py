@@ -204,6 +204,7 @@ class ModelManager(ABC):
             ),
             model_meta_data=model_meta_data,
             storage_meta_data=storage_meta_data,
+            extra_metadata=kwargs.get("extra_metadata"),
         )
 
         # Save the combined meta-data to storage

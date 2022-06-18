@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import Any
+import json
 
 
 def remove_nones(values: dict) -> dict:
@@ -23,3 +24,18 @@ def exclude_field(value: Any) -> bool:
     """ Whether to exclude a field from being included in the JSON
     meta data """
     return value is None
+
+
+def validate_json_serializable(name: str, value: dict):
+    """ Validates that `value` is a JSON serializable dictionary """
+    if value is None:
+        # None fields will not be dumped from dataclasses
+        return
+    if not isinstance(value, dict):
+        raise TypeError(f"{name} is not a dictionary")
+    try:
+        # @Future: check if `value` has fields that can be auto-converted
+        # to make it JSON serializable (e.g., np.array to list)
+        json.dumps(value)
+    except Exception as exc:
+        raise TypeError(f"{name} must be json serializable") from exc
