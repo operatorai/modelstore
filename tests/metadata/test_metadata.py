@@ -25,7 +25,15 @@ from modelstore.metadata import metadata
 # pylint: disable=no-member
 
 @pytest.fixture
-def meta_data():
+def extra_meta_data() -> dict:
+    return {
+        "field-1": "value",
+        "field-2": ["list", "of", "values"],
+    }
+
+
+@pytest.fixture
+def meta_data(extra_meta_data):
     return metadata.Summary(
         code=metadata.Code(
             runtime="python:1.2.3",
@@ -47,14 +55,16 @@ def meta_data():
             "path-to-files",
         ),
         modelstore=modelstore.__version__,
+        extra=extra_meta_data,
     )
 
 
-def test_generate(meta_data):
+def test_generate(meta_data, extra_meta_data):
     result = metadata.Summary.generate(
         code_meta_data=meta_data.code,
         model_meta_data=meta_data.model,
-        storage_meta_data=meta_data.storage
+        storage_meta_data=meta_data.storage,
+        extra_metadata=extra_meta_data,
     )
     assert result == meta_data
 

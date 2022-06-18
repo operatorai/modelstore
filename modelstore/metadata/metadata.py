@@ -19,7 +19,11 @@ import modelstore
 from modelstore.metadata.code.code import Code
 from modelstore.metadata.model.model import Model, ModelType, Dataset
 from modelstore.metadata.storage.storage import Storage
-from modelstore.metadata.utils.utils import exclude_field
+from modelstore.metadata.utils.utils import (
+    exclude_field,
+    validate_json_serializable
+)
+
 
 @dataclass_json
 @dataclass
@@ -32,20 +36,24 @@ class Summary:
     storage: Storage
     modelstore: str # Version of modelstore
     code: Code = field(default=None, metadata=config(exclude=exclude_field))
+    extra: dict = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls,
         code_meta_data: Code,
         model_meta_data: Model,
-        storage_meta_data: Storage
+        storage_meta_data: Storage,
+        extra_metadata: dict = None,
     ) -> "Summary":
-        """ Generates all of the meta data for a model 
+        """ Generates all of the meta data for a model
         and adds the modelstore version """
+        validate_json_serializable("extra_metadata", extra_metadata)
         return Summary(
-            code=code_meta_data,
             model=model_meta_data,
             storage=storage_meta_data,
             modelstore=modelstore.__version__,
+            code=code_meta_data,
+            extra=extra_metadata,
         )
 
     def dumps(self, target_file: str):
