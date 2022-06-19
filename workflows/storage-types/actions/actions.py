@@ -23,7 +23,7 @@ def run(model_store: ModelStore, model: Any, extra_metadata: dict, extra_files: 
         domain=MODEL_DOMAIN,
         model=model,
         extra_metadata=extra_metadata,
-        extra_files=extra_files,
+        extras=extra_files,
     )
     model_id = meta_data["model"]["model_id"]
     print(f"✅  Finished uploading the model: {model_id}")
@@ -31,19 +31,6 @@ def run(model_store: ModelStore, model: Any, extra_metadata: dict, extra_files: 
        # This demo downloads models; we'll store them into a temporary
     # directory
     #tmp_dir = tempfile.mkdtemp()
-
-    
-
-    # #  We're going to write the results to a file
-    # results_file = os.path.join(tmp_dir, "results.json")
-    # with open(results_file, "w") as out:
-    #     out.write(json.dumps(result))
-
-    # print(f"⤴️  Uploading to the {model_domain} domain.")
-    # meta_data = modelstore.upload(model_domain, model=model, extras=results_file)
-
-    # # The upload returns meta-data about the model that was uploaded
-    # # This meta-data has also been sync'ed into the s3 bucket
 
     # # Let's demo all the different things you can do!
 

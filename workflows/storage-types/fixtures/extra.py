@@ -23,12 +23,12 @@ def metadata() -> dict:
     }
 
 
-def files(parent_dir: str, num_files: int = 2) -> List[str]:
+def files(num_files: int = 2) -> List[str]:
     """ Returns the paths files that contains
     extra data to upload alongside the model """
     results = []
     for i in range(num_files):
-        result = os.path.join(parent_dir, f"result-{i}.json")
+        result = f"result-{i}.json"
         results.append(result)
         # pylint: disable=unspecified-encoding
         with open(result, "w") as out:

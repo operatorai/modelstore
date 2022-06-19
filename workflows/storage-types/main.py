@@ -14,6 +14,7 @@
 import click
 
 from actions import actions
+from fixtures import extra
 from fixtures.models import iter_models
 from fixtures.modelstores import create_model_store
 
@@ -21,7 +22,7 @@ from fixtures.modelstores import create_model_store
 @click.command()
 @click.option(
     "--modelstore-in",
-    type=click.Choice(["aws", "azure", "gcloud", "filesystem"], case_sensitive=False),
+    type=click.Choice(["aws", "azure", "gcloud", "filesystem"]),
 )
 def main(modelstore_in: str):
     """ Executes all of the integration tests in a given storage type """
@@ -29,7 +30,12 @@ def main(modelstore_in: str):
 
     model_store = create_model_store(modelstore_in)
     for model in iter_models():
-        actions.run(model_store, model)
+        actions.run(
+            model_store,
+            model,
+            extra_metadata=extra.metadata(),
+            extra_files=extra.files(),
+        )
 
 
 if __name__ == "__main__":
