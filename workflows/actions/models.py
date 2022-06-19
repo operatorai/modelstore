@@ -42,6 +42,14 @@ def assert_list_models(model_store: ModelStore, model_domain: str, meta_data: di
     print(f"✅  list_models() contains model={model_id}")
 
 
+def assert_get_model(model_store: ModelStore, model_domain: str, meta_data: dict):
+    """ Can retrieve an uploaded model's meta data"""
+    model_id = meta_data["model"]["model_id"]
+    stored_meta_data = model_store.get_model_info(model_domain, model_id)
+    assert meta_data == stored_meta_data
+    print("✅  Retrieved the model's meta data")
+
+
 def assert_load_model(model_store: ModelStore, model_domain: str, meta_data: dict):
     """ Model store can load a model back into memory"""
     model_id = meta_data["model"]["model_id"]
@@ -96,6 +104,7 @@ def get_actions() -> List[Callable]:
         assert_list_domains,
         assert_get_domain,
         assert_list_models,
+        assert_get_model,
         assert_load_model,
         assert_download_model,
         assert_update_model_state,
