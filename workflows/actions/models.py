@@ -12,6 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import List, Callable
+import tempfile
+import os
+
 from modelstore import ModelStore
 from modelstore.utils import exceptions
 
@@ -46,6 +49,16 @@ def assert_load_model(model_store: ModelStore, model_domain: str, meta_data: dic
     print(f"✅  Loaded model={model_id} into memory with type={type(model)}")
 
 
+def assert_download_model(model_store: ModelStore, model_domain: str, meta_data: dict):
+    """ A model archive can be downloaded """
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        model_id = meta_data["model"]["model_id"]
+        model_path = model_store.download(tmp_dir, model_domain, model_id)
+        assert os.path.exists(model_path)
+        # @TODO assert on extra_files
+    print(f"✅  Downloaded model={model_id}")
+
+
 def assert_delete_model(model_store: ModelStore, model_domain: str, meta_data: dict):
     """ Deleting a model removes it from the store """
     model_id = meta_data["model"]["model_id"]
@@ -66,5 +79,6 @@ def get_actions() -> List[Callable]:
         assert_get_domain,
         assert_list_models,
         assert_load_model,
+        assert_download_model,
         assert_delete_model, # Note: this action must be last
     ]
