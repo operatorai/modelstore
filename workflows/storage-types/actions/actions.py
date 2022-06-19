@@ -11,17 +11,19 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any
+from typing import Any, List
 from modelstore import ModelStore
 
 MODEL_DOMAIN = "diabetes-boosting-demo"
 
 
-def run(model_store: ModelStore, model: Any):
+def run(model_store: ModelStore, model: Any, extra_metadata: dict, extra_files: List[str]):
     """ Runs a series of actions on `model_store` using `model` """
     meta_data = model_store.upload(
         domain=MODEL_DOMAIN,
         model=model,
+        extra_metadata=extra_metadata,
+        extra_files=extra_files,
     )
     model_id = meta_data["model"]["model_id"]
     print(f"✅  Finished uploading the model: {model_id}")
@@ -30,10 +32,7 @@ def run(model_store: ModelStore, model: Any):
     # directory
     #tmp_dir = tempfile.mkdtemp()
 
-    # In this demo, we train a models, so that we can demonstrate
-    # how modelstore keeps track of uploaded models for us
-    # print(f"🤖  Training a {model_type} model...")
-    # model, result = train(model_type)
+    
 
     # #  We're going to write the results to a file
     # results_file = os.path.join(tmp_dir, "results.json")
