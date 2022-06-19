@@ -4,7 +4,7 @@
 
 **🆕  New functionality**
 
-You can now add any extra metadata to your model when uploading it, using `upload(domain, model, extra_metadata={ ... })` ([#185](https://github.com/operatorai/modelstore/pull/185))
+You can now add any extra metadata to your model when uploading it, using `upload(domain, model, extra_metadata={ ... })` ([#185](https://github.com/operatorai/modelstore/pull/185)); if you want to upload extra _files_ with your model, then you should now use `extra_files=` instead of `extras=` ([#187](https://github.com/operatorai/modelstore/pull/187)).
 
 **🐛  Bug fixes & general updates**
 

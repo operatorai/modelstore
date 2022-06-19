@@ -117,24 +117,44 @@ def test_collect_files(mock_manager):
 
 
 def test_collect_extras_single_file(mock_manager, mock_file):
+    res = mock_manager._collect_extras(extra_files=mock_file)
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+    # Deprecated approach
     res = mock_manager._collect_extras(extras=mock_file)
     assert isinstance(res, set)
     assert len(res) == 1
 
 
 def test_collect_extras_removes_duplicates(mock_manager, mock_file):
+    res = mock_manager._collect_extras(extra_files=[mock_file, mock_file])
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+    # Deprecated approach
     res = mock_manager._collect_extras(extras=[mock_file, mock_file])
     assert isinstance(res, set)
     assert len(res) == 1
 
 
 def test_collect_extras_removes_missing_files(mock_manager, mock_file):
+    res = mock_manager._collect_extras(extra_files=[mock_file, "missing-file.txt"])
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+    # Deprecated approach
     res = mock_manager._collect_extras(extras=[mock_file, "missing-file.txt"])
     assert isinstance(res, set)
     assert len(res) == 1
 
 
 def test_collect_extras_removes_missing_directories(mock_manager, mock_file, tmpdir):
+    res = mock_manager._collect_extras(extra_files=[mock_file, tmpdir])
+    assert isinstance(res, set)
+    assert len(res) == 1
+
+    # Deprecated approach
     res = mock_manager._collect_extras(extras=[mock_file, tmpdir])
     assert isinstance(res, set)
     assert len(res) == 1
@@ -165,7 +185,7 @@ def test_create_archive(mock_manager, mock_file):
     mock_manager._create_archive(
         model="model",
         config="config",
-        extras=mock_file,
+        extra_files=mock_file,
     )
     exp = sorted(
         [
