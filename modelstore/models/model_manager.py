@@ -16,6 +16,7 @@ import os
 import shutil
 import tarfile
 import tempfile
+import warnings
 from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
@@ -131,7 +132,12 @@ class ModelManager(ABC):
         return file_paths
 
     def _collect_extras(self, **kwargs) -> set:
-        extras = kwargs.get("extras")
+        if "extras" in kwargs:
+            warnings.warn(
+                "extras= is deprecated; use extra_files=",
+                category=DeprecationWarning,
+            )
+        extras = kwargs.get("extra_files", kwargs.get("extras"))
         if extras is None:
             return []
         extra_paths = extras if isinstance(extras, list) else [extras]
