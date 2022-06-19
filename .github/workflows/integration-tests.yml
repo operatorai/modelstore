@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        storage-type: ["filesystem", "aws", "gcp", "azure"]
+        storage-type: ["filesystem"]
+        #, "aws", "gcp", "azure"]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
@@ -20,9 +21,9 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        cd workflows/example
+        cd workflows/storage-types
         make setup
     - name: Run integration script
       run: |
-        cd workflows/example
-        python main.py ${{ matrix.storage-type }}
+        cd workflows/storage-types
+        python main.py --modelstore-in ${{ matrix.storage-type }}

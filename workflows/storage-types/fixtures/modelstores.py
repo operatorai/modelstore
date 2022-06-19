@@ -4,6 +4,7 @@ from modelstore import ModelStore
 
 
 def create_model_store(backend) -> ModelStore:
+    """ Returns a modelstore instance with the required storage type """
     modelstores = {
         "aws": create_aws_model_store,
         "azure": create_azure_model_store,
@@ -14,9 +15,7 @@ def create_model_store(backend) -> ModelStore:
 
 
 def create_aws_model_store() -> ModelStore:
-    # A model store in an AWS S3 bucket
-    # The modelstore library assumes you have already created
-    # an s3 bucket and will raise an exception if it doesn't exist
+    """ A model store that uses an s3 bucket """
     return ModelStore.from_aws_s3(
         os.environ["MODEL_STORE_AWS_BUCKET"],
         root_prefix="example-by-ml-library",
@@ -24,6 +23,7 @@ def create_aws_model_store() -> ModelStore:
 
 
 def create_azure_model_store() -> ModelStore:
+    """ A model store that uses an azure container """
     # A model store in an Azure Container
     # The modelstore library assumes that:
     # 1. You have already created an Azure container
@@ -34,7 +34,7 @@ def create_azure_model_store() -> ModelStore:
 
 
 def create_gcloud_model_store() -> ModelStore:
-    # A model store in a Google Cloud Bucket
+    """ A model store in a Google Cloud bucket """
     # The modelstore library assumes you have already created
     # a Cloud Storage bucket and will raise an exception if it doesn't exist
     return ModelStore.from_gcloud(
@@ -44,7 +44,7 @@ def create_gcloud_model_store() -> ModelStore:
 
 
 def create_file_system_model_store() -> ModelStore:
-    # A model store in a local file system
+    """ A model store in a local file system """
     # Here, we create a new local model store in our home directory
     home_dir = os.path.expanduser("~")
     print(f"🏦  Creating store in: {home_dir}")
