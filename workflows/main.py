@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import click
+import os
 
 from actions import actions
 from fixtures import extra
@@ -31,13 +32,19 @@ def main(modelstore_in: str):
     model_store = create_model_store(modelstore_in)
     actions.run_on_storage(model_store)
 
+    extra_files = extra.files()
     for model in iter_models():
         actions.run_with_model(
             model_store,
             model,
             extra_metadata=extra.metadata(),
-            extra_files=extra.files(),
+            extra_files=extra_files,
         )
+
+    # Clean up
+    for extra_file in extra_files:
+        os.remove(extra_file)
+
 
 
 if __name__ == "__main__":
