@@ -23,6 +23,14 @@ def assert_list_domains(model_store: ModelStore, domain: str, _: dict):
     print(f"✅  list_domains() contains domain={domain}")
 
 
+def assert_get_domain(model_store: ModelStore, domain: str, _: dict):
+    """ The result of listing all domains contains the `domain` value """
+    meta_data = model_store.get_domain(domain)
+    assert isinstance(meta_data, dict)
+    # @TODO better assertions
+    print("✅  get_domain() returns a domain's information")
+
+
 def assert_list_models(model_store: ModelStore, model_domain: str, meta_data: dict):
     """ The result of listing models contains the recently uploaded model """
     model_id = meta_data["model"]["model_id"]
@@ -55,6 +63,7 @@ def get_actions() -> List[Callable]:
     after a model has been uploaded """
     return [
         assert_list_domains,
+        assert_get_domain,
         assert_list_models,
         assert_load_model,
         assert_delete_model, # Note: this action must be last

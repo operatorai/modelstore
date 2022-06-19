@@ -48,16 +48,6 @@ def run_with_model(model_store: ModelStore, model: Any,
     # directory
     #tmp_dir = tempfile.mkdtemp()
 
-    # # List all of the domains
-    # demos.list_domains(modelstore)
-
-    # # Get the information about a specific domain
-    # meta_data = modelstore.get_domain(model_domain)
-    # print(f"✅  Meta data about domain={model_domain}: {meta_data}")
-
-    # # List the models in the diabest-boosting-demo domain
-    # demos.list_models_in_domain(modelstore, model_domain)
-
     # # Download the models back
     # demos.download_model(modelstore, model_domain, model_id)
 
