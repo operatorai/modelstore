@@ -27,6 +27,7 @@ def run_on_storage(model_store: ModelStore):
     """ Runs a series of actions on `model_store` that don't require a model """
     for func in storage.get_actions():
         func(model_store, MODEL_DOMAIN)
+    print("✅  Storage assertions passed")
 
 
 def run_with_model(model_store: ModelStore, model: Any,
@@ -43,65 +44,4 @@ def run_with_model(model_store: ModelStore, model: Any,
 
     for func in models.get_actions():
         func(model_store, MODEL_DOMAIN, meta_data)
-
-       # This demo downloads models; we'll store them into a temporary
-    # directory
-    #tmp_dir = tempfile.mkdtemp()
-
-    # # Download the models back
-    # demos.download_model(modelstore, model_domain, model_id)
-
-    # # Download the latest model
-    # demos.download_latest_model(modelstore, model_domain)
-
-    # # Load models back into memory
-    # demos.load_model(modelstore, model_domain, model_id)
-
-    # # Create a couple of new model states
-    # state_names = ["staging", "production"]
-    # for state_name in state_names:
-    #     print(f"✅  Creating model state={state_name}:")
-    #     modelstore.create_model_state(state_name)
-
-    # # List them back
-    # demos.list_model_states(modelstore, state_names)
-
-    # # Set the model to the production state
-    # demos.set_model_state(modelstore, model_domain, model_id, "production")
-
-    # # List the models that are in production - the new model is there
-    # demos.list_models_in_domain_with_state(
-    #     modelstore, model_domain, "production", model_id
-    # )
-
-    # # Remove a state from a model
-    # demos.remove_model_state(modelstore, model_domain, model_id, "production")
-
-    # # Set the model to a different state
-    # demos.set_model_state(modelstore, model_domain, model_id, "staging")
-    # demos.list_models_in_domain_with_state(
-    #     modelstore, model_domain, "staging", model_id
-    # )
-
-    # # Delete the model!
-    # demos.delete_model(modelstore, model_domain, model_id)
-    # for state_name in state_names:
-    #     # The model no longer appears in the listing by state
-    #     model_ids = demos.list_models_in_domain_with_state(
-    #         modelstore, model_domain, state_name
-    #     )
-    #     assert model_id not in model_ids
-
-    # # The model no longer appears when listing all of them
-    # model_ids = demos.list_models_in_domain(modelstore, model_domain)
-    # assert model_id not in model_ids
-
-    # # You get an informative exception message
-    # try:
-    #     meta_data = modelstore.get_model_info(model_domain, model_id)
-    # except ModelDeletedException:
-    #     print(
-    #         "✅  Modelstore raises a ModelDeletedException if a model has been deleted"
-    #     )
-
-    # print("✅  Demo finished!")
+    print("✅  Model assertions passed")

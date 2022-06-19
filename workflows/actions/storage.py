@@ -36,9 +36,21 @@ def assert_get_missing_model_raises(model_store: ModelStore, domain: str):
     raise AssertionError("failed to raise ModelNotFoundException")
 
 
+def assert_create_model_states(model_store: ModelStore, _: str):
+    """ Creating, listing and getting model states """
+    state_names = ["staging", "production"]
+    for state_name in state_names:
+        model_store.create_model_state(state_name)
+    model_state_names = model_store.list_model_states()
+    for state_name in state_names:
+        assert state_name in model_state_names
+    print(f"✅  Created {len(state_names)} model states.")
+
+
 def get_actions() -> List[Callable]:
     """ Returns the set of actions that can be run on a model_store """
     return [
         assert_get_missing_domain_raises,
         assert_get_missing_model_raises,
+        assert_create_model_states,
     ]

@@ -59,14 +59,32 @@ def assert_download_model(model_store: ModelStore, model_domain: str, meta_data:
     print(f"✅  Downloaded model={model_id}")
 
 
+def assert_update_model_state(model_store: ModelStore, model_domain: str, meta_data: dict):
+    """ A model's state can be set and unset """
+    model_id = meta_data["model"]["model_id"]
+    state_name = "production"
+    model_store.set_model_state(model_domain, model_id, state_name)
+    model_ids = model_store.list_models(model_domain, state_name=state_name)
+    assert model_id in model_ids
+
+    model_store.remove_model_state(model_domain, model_id, state_name)
+    model_ids = model_store.list_models(model_domain, state_name=state_name)
+    assert model_id not in model_ids
+
+
 def assert_delete_model(model_store: ModelStore, model_domain: str, meta_data: dict):
     """ Deleting a model removes it from the store """
     model_id = meta_data["model"]["model_id"]
+    state_name = "production"
+    model_store.set_model_state(model_domain, model_id, state_name)
     model_store.delete_model(model_domain, model_id, skip_prompt=True)
     try:
         _ = model_store.get_model_info(model_domain, model_id)
     except exceptions.ModelDeletedException:
         print("✅  Raises a ModelDeletedException after deleting a model")
+        model_ids = model_store.list_models(model_domain, state_name=state_name)
+        assert model_id not in model_ids
+        print("✅  Deleted models are removed from states")
         return
     raise AssertionError("ModelDeletedException not raised after delete_model()")
 
@@ -80,5 +98,6 @@ def get_actions() -> List[Callable]:
         assert_list_models,
         assert_load_model,
         assert_download_model,
+        assert_update_model_state,
         assert_delete_model, # Note: this action must be last
     ]
