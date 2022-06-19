@@ -29,8 +29,10 @@ def main(modelstore_in: str):
     print(f"🆕  Running modelstore example with {modelstore_in} backend.")
 
     model_store = create_model_store(modelstore_in)
+    actions.run_on_storage(model_store)
+    
     for model in iter_models():
-        actions.run(
+        actions.run_with_model(
             model_store,
             model,
             extra_metadata=extra.metadata(),

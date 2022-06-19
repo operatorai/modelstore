@@ -14,10 +14,23 @@
 from typing import Any, List
 from modelstore import ModelStore
 
+# pylint: disable=import-error
+from workflows.actions import (
+    storage,
+    models
+)
+
 MODEL_DOMAIN = "diabetes-boosting-demo"
 
 
-def run(model_store: ModelStore, model: Any, extra_metadata: dict, extra_files: List[str]):
+def run_on_storage(model_store: ModelStore):
+    """ Runs a series of actions on `model_store` that don't require a model """
+    for func in storage.get_actions():
+        func(model_store, MODEL_DOMAIN)
+
+
+def run_with_model(model_store: ModelStore, model: Any,
+    extra_metadata: dict, extra_files: List[str]):
     """ Runs a series of actions on `model_store` using `model` """
     meta_data = model_store.upload(
         domain=MODEL_DOMAIN,
@@ -26,28 +39,14 @@ def run(model_store: ModelStore, model: Any, extra_metadata: dict, extra_files: 
         extras=extra_files,
     )
     model_id = meta_data["model"]["model_id"]
-    print(f"✅  Finished uploading the model: {model_id}")
+    print(f"✅  Finished uploading the model={model_id}")
+
+    for func in models.get_actions():
+        func(model_store, MODEL_DOMAIN, meta_data)
 
        # This demo downloads models; we'll store them into a temporary
     # directory
     #tmp_dir = tempfile.mkdtemp()
-
-    # # Let's demo all the different things you can do!
-
-    # # Trying to get the meta-data about a missing domain raises an exception
-    # try:
-    #     meta_data = modelstore.get_domain("missing-domain")
-    # except DomainNotFoundException:
-    #     print(
-    #         f"✅  Modelstore raises a DomainNotFoundException if it can't find a domain"
-    #     )
-
-    # # Trying to get the meta-data about a missing model in an existing domain
-    # # also raises an exception
-    # try:
-    #     meta_data = modelstore.get_model_info(model_domain, "missing-model")
-    # except ModelNotFoundException:
-    #     print(f"✅  Modelstore raises a ModelNotFoundException if it can't find a model")
 
     # # List all of the domains
     # demos.list_domains(modelstore)

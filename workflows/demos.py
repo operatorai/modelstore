@@ -3,21 +3,6 @@ import tempfile
 from modelstore.model_store import ModelStore
 
 
-def list_domains(modelstore: ModelStore):
-    print(f"✅  Listing existing domains:")
-    domains = modelstore.list_domains()
-    for domain in domains:
-        print(f"\t  Domain: {domain}")
-
-
-def list_models_in_domain(modelstore: ModelStore, model_domain: str) -> list:
-    print(f"✅  Listing models for {model_domain}:")
-    model_ids = modelstore.list_models(domain=model_domain)
-    for model_id in model_ids:
-        print(f"\t  Domain: {model_domain} has model with id={model_id}")
-    return model_ids
-
-
 def list_models_in_domain_with_state(
     modelstore: ModelStore,
     model_domain: str,
@@ -31,12 +16,6 @@ def list_models_in_domain_with_state(
     if expected_model_id is not None:
         assert expected_model_id in model_ids
     return model_ids
-
-
-def load_model(modelstore: ModelStore, model_domain: str, model_id: str):
-    print(f"✅  Loading models into memory")
-    model = modelstore.load(model_domain, model_id)
-    print(f"\t  Loaded a {type(model)} model={model_id}")
 
 
 def download_model(modelstore: ModelStore, model_domain: str, model_id: str):
@@ -75,8 +54,3 @@ def remove_model_state(
 ):
     print(f"✅  Unsetting model_id={model_id} from state={state_name}:")
     modelstore.remove_model_state(model_domain, model_id, state_name)
-
-
-def delete_model(modelstore: ModelStore, model_domain: str, model_id: str):
-    print(f"✅  Deleting model_id={model_id} from the model store.")
-    modelstore.delete_model(model_domain, model_id, skip_prompt=True)

@@ -1,5 +1,5 @@
 VIRTUALENV_NAME=modelstore.$(shell pwd | rev | cut -d '/' -f 1 | rev)
-REPO_ROOT=$(shell cd ../../ && pwd)
+REPO_ROOT=$(shell cd ../ && pwd)
 
 .PHONY: setup pyenv pyenv-uninstall refresh
 
