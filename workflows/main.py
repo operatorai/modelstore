@@ -46,6 +46,5 @@ def main(modelstore_in: str):
         os.remove(extra_file)
 
 
-
 if __name__ == "__main__":
     main()
