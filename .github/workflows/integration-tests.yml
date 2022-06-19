@@ -21,9 +21,9 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        cd workflows/storage-types
+        cd workflows/
         make setup
     - name: Run integration script
       run: |
-        cd workflows/storage-types
+        cd workflows/
         python main.py --modelstore-in ${{ matrix.storage-type }}
