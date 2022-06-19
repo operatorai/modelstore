@@ -139,7 +139,7 @@ class BlobStorage(CloudStorage):
             logger.info("Latest model is: %s", model_id)
 
         model_meta = self.get_meta_data(domain, model_id)
-        storage_path = self._get_storage_location(model_meta["storage"])
+        storage_path = self._get_storage_location(model_meta.storage)
         return self._pull(storage_path, local_path)
 
     def delete_model(
