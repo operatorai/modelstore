@@ -3,10 +3,9 @@ REPO_ROOT=$(shell cd ../ && pwd)
 
 .PHONY: setup pyenv pyenv-uninstall refresh
 
-pyenv:
+pyenv: pyenv-uninstall
 	@$(REPO_ROOT)/bin/_setup_pyenv $(VIRTUALENV_NAME)
 	find requirements/ -name "*.txt" -type f -exec pip install -r '{}' ';'
-	pip install -e $(REPO_ROOT)
 
 refresh:
 	echo "\n 🔵  Refreshing installation of modelstore"
