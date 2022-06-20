@@ -6,13 +6,18 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  MODEL_STORE_AWS_BUCKET: ${{ secrets.MODEL_STORE_AWS_BUCKET }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        storage-type: ["filesystem"]
-        #, "aws", "gcp", "azure"]
+        storage-type: ["filesystem", "aws"]
+        #,  "gcp", "azure"]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
