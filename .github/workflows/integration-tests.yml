@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        storage-type: ["filesystem", "aws", "gcp", "azure"]
+        storage-type: ["filesystem", "aws", "gcloud", "azure"]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
