@@ -5,6 +5,7 @@ REPO_ROOT=$(shell cd ../ && pwd)
 
 pyenv:
 	@$(REPO_ROOT)/bin/_setup_pyenv $(VIRTUALENV_NAME)
+	find requirements/ -name "*.txt" -type f -exec pip install -r '{}' ';'
 	pip install -e $(REPO_ROOT)
 
 refresh:
