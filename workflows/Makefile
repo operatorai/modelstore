@@ -17,7 +17,7 @@ pyenv-uninstall:
 	@$(REPO_ROOT)/bin/_remove_pyenv
 
 setup:
-	echo $GOOGLE_APPLICATION_CREDENTIALS_JSON > $GOOGLE_APPLICATION_CREDENTIALS
+	echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} > ${GOOGLE_APPLICATION_CREDENTIALS}
 	pip install --upgrade pip setuptools wheel	
 	pip install -r requirements.txt
 	pip install --no-cache-dir -e $(REPO_ROOT)
