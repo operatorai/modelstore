@@ -24,13 +24,13 @@ jobs:
       matrix:
         storage-type: ["gcloud"] #"filesystem", "aws", "gcloud", "azure"]
     steps:
-    - id: 'auth'
-    name: 'Authenticate to Google Cloud'
-    uses: 'google-github-actions/auth@v0.4.0'
-    with:
-      workload_identity_provider: '${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}'
-      service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
-    - uses: actions/checkout@v2
+    - name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0.4.0'
+      with:
+        workload_identity_provider: '${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}'
+        service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+    - name: 'Check out repo'
+      uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
