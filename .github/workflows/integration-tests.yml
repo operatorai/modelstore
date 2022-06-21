@@ -12,8 +12,6 @@ env:
   MODEL_STORE_AWS_BUCKET: ${{ secrets.MODEL_STORE_AWS_BUCKET }}
   MODEL_STORE_GCP_PROJECT: ${{ secrets.MODEL_STORE_GCP_PROJECT }}
   MODEL_STORE_GCP_BUCKET: ${{ secrets.MODEL_STORE_GCP_BUCKET }}
-  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-  GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
   MODEL_STORE_AZURE_CONTAINER: ${{ secrets.MODEL_STORE_AZURE_CONTAINER }}
   AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
   AZURE_ACCESS_KEY: ${{ secrets.AZURE_ACCESS_KEY }}
@@ -24,8 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        storage-type: ["filesystem", "aws", "gcloud", "azure"]
+        storage-type: ["gcloud"] #"filesystem", "aws", "gcloud", "azure"]
     steps:
+    - id: 'auth'
+    name: 'Authenticate to Google Cloud'
+    uses: 'google-github-actions/auth@v0.4.0'
+    with:
+      workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+      service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
