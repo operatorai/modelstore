@@ -1,3 +1,6 @@
+# Protos (https://github.com/protocolbuffers/protobuf/issues/10051)
+protobuf==3.19.4
+
 # Storage
 azure-core==1.23.1
 azure-storage-blob==12.11.0

@@ -1,0 +1,2 @@
+azure-core>=1.13.0
+azure-storage-blob>=12.8.0
