@@ -40,18 +40,8 @@ def test_get_dependency_versions():
         "a-missing-dependency",
         "pickle",
     ]
-    expected = {
-        "annoy": "1.17.0",
-        "black": "22.3.0",
-        "pytest": pytest.__version__,
-        "pylint": "2.13.5",
-        "flake8": "4.0.1",
-        "isort": "5.10.1",
-        "a-missing-dependency": None,
-        "pickle": "4.0",
-    }
     result = dependencies.get_dependency_versions(test_deps)
-    assert result == expected
+    assert list(result.keys()) == test_deps
 
 
 def test_module_exists():

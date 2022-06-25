@@ -2,6 +2,7 @@
 click==8.1.2
 
 # Storage requirements
+protobuf==3.20.1 # https://github.com/protocolbuffers/protobuf/issues/10051
 google-cloud-storage==2.2.1
 boto3==1.21.32
 azure-core==1.23.1

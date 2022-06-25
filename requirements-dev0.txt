@@ -1,17 +1,20 @@
 # Code & testing
-black==22.3.0
-flake8==4.0.1
-isort==5.10.1
-moto==3.0.3
-pylint==2.13.5
-pytest==7.1.1
-rope==1.0.0
-twine==4.0.0
+black>=22.3.0
+flake8>=4.0.1
+isort>=5.10.1
+moto>=3.0.3
+pylint>=2.13.5
+pytest>=7.1.1
+rope>=1.0.0
+twine>=4.0.0
 
 # Data / dependencies for ML libraries
-numba==0.55.1
-numpy==1.21.6
-Cython==0.29.28
+numpy>=1.21.6 # numpy==1.21.6 is currently the max version on Python 3.7.13
+numba>=0.55.1
+Cython>=0.29.28
 python-Levenshtein==0.12.2
 pandas==1.3.5; python_version < '3.8'
 pandas==1.4.1; python_version > '3.7'
+
+# Dependencies for storage libraries
+protobuf==3.20.1 # https://github.com/protocolbuffers/protobuf/issues/10051
