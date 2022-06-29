@@ -68,6 +68,8 @@ class GensimManager(ModelManager):
         return params
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
+        super().load(model_path, meta_data)
+
         # pylint: disable=import-outside-toplevel
         from gensim.models import Word2Vec
 

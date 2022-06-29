@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 import pytest
+from mock import patch
 
 from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
@@ -76,7 +77,8 @@ class MockModelManager(ModelManager):
         return True
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
-        raise NotImplementedError()
+        super().load(model_path, meta_data)
+        return True
 
 
 def mock_save_model(tmp_dir: str) -> str:
@@ -175,6 +177,18 @@ def test_upload(mock_manager):
         config="config",
     )
     assert mock_manager.storage.called
+
+
+@patch("modelstore.models.model_manager.get_python_version")
+def test_load_from_different_python(mock_python_version, mock_manager):
+    mock_python_version.return_value = f"python:2.7.13"
+    meta_data = metadata.Summary.generate(
+        code_meta_data=metadata.Code.generate(deps_list=[]),
+        model_meta_data=None,
+        storage_meta_data=None,
+    )
+    with pytest.warns(RuntimeWarning):
+        mock_manager.load("/path/to/file", meta_data)
 
 
 def test_create_archive(mock_manager, mock_file):

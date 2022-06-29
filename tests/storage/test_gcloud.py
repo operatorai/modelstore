@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-from unittest import mock
+import mock
 
 import pytest
 from google.cloud import storage

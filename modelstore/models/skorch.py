@@ -63,6 +63,8 @@ class SkorchManager(ModelManager):
         ]
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
+        super().load(model_path, meta_data)
+
         # @Future: check if loading into same version of joblib
         # as was used for saving
         file_name = os.path.join(model_path, MODEL_JOBLIB)

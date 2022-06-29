@@ -62,6 +62,8 @@ class ShapManager(ModelManager):
         ]
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> "shap.Explainer":
+        super().load(model_path, meta_data)
+
         explainer_path = _explainer_file_path(model_path)
         return load_joblib(explainer_path)
 
