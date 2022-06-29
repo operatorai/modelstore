@@ -36,7 +36,7 @@ def code_meta_data():
 @patch("modelstore.metadata.code.code.runtime")
 def test_generate(mock_runtime, mock_revision, code_meta_data):
     mock_runtime.get_user.return_value = "username"
-    mock_runtime.get_python_version.return_value = "1.2.3"
+    mock_runtime.get_python_version.return_value = "python:1.2.3"
     mock_revision.git_meta.return_value = {"repository": "test"}
     result = metadata.Code.generate([])
     assert code_meta_data == result
