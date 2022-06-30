@@ -22,11 +22,15 @@ from modelstore.metadata import metadata
 # pylint: disable=redefined-outer-name
 
 @pytest.fixture
-def code_meta_data():
+def now():
+    return datetime.now()
+
+@pytest.fixture
+def code_meta_data(now):
     return metadata.Code(
         runtime="python:1.2.3",
         user="username",
-        created=datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
+        created=now.strftime("%Y/%m/%d/%H:%M:%S"),
         dependencies={},
         git={"repository": "test"},
     )
@@ -34,11 +38,11 @@ def code_meta_data():
 
 @patch("modelstore.metadata.code.code.revision")
 @patch("modelstore.metadata.code.code.runtime")
-def test_generate(mock_runtime, mock_revision, code_meta_data):
+def test_generate(mock_runtime, mock_revision, code_meta_data, now):
     mock_runtime.get_user.return_value = "username"
     mock_runtime.get_python_version.return_value = "python:1.2.3"
     mock_revision.git_meta.return_value = {"repository": "test"}
-    result = metadata.Code.generate([])
+    result = metadata.Code.generate([], created=now)
     assert code_meta_data == result
 
 
