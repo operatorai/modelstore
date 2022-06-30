@@ -66,6 +66,8 @@ class AnnoyManager(ModelManager):
         }
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
+        super().load(model_path, meta_data)
+
         # pylint: disable=import-outside-toplevel
         from annoy import AnnoyIndex
 

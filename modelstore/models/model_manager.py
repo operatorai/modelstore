@@ -21,6 +21,7 @@ from abc import ABC, ABCMeta, abstractmethod
 
 import numpy as np
 from modelstore.metadata import metadata
+from modelstore.metadata.code.runtime import get_python_version
 from modelstore.storage.storage import CloudStorage
 
 
@@ -88,10 +89,16 @@ class ModelManager(ABC):
 
     @abstractmethod
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
-        """
-        Loads a model, stored in model_path, back into memory
-        """
-        raise NotImplementedError()
+        """ Loads a model, stored in model_path, back into memory """
+        version = get_python_version()
+        if meta_data is not None and meta_data.code is not None:
+            if version != meta_data.code.runtime:
+                train = f"model was trained with {meta_data.code.runtime}"
+                load = f"but is being loaded with {version}"
+                warnings.warn(
+                    f"{train}, {load}",
+                    category=RuntimeWarning,
+                )
 
     def _validate_kwargs(self, **kwargs):
         """Ensures that the required kwargs are set"""

@@ -42,7 +42,7 @@ class Code:
             # control time stamps of mock model objects
             created = datetime.now()
         return Code(
-            runtime=f"python:{runtime.get_python_version()}",
+            runtime=runtime.get_python_version(),
             user=runtime.get_user(),
             created=created.strftime("%Y/%m/%d/%H:%M:%S"),
             dependencies=remove_nones(versioned_deps),

@@ -13,7 +13,7 @@
 #    limitations under the License.
 import json
 import os
-from unittest import mock
+import mock
 
 import pytest
 from azure.storage.blob import (

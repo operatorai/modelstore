@@ -1,5 +1,5 @@
-export PYTHON_VERSION=3.7.13
-#export PYTHON_VERSION=3.8.12
+#export PYTHON_VERSION=3.7.13
+export PYTHON_VERSION=3.8.12
 #export PYTHON_VERSION=3.9.9
 
 export VIRTUALENV_NAME=$(pyenv local) || ""

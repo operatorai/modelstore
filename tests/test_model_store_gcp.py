@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from unittest.mock import patch
+from mock import patch
 
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES

@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import sys
-from unittest.mock import patch
+from mock import patch
 
 from modelstore.metadata.code import runtime
 
@@ -22,7 +22,7 @@ from modelstore.metadata.code import runtime
 def test_get_python_version():
     vers = sys.version_info
     expected = ".".join(str(x) for x in [vers.major, vers.minor, vers.micro])
-    assert runtime.get_python_version() == expected
+    assert runtime.get_python_version() == f"python:{expected}"
 
 
 @patch("modelstore.metadata.code.runtime.getpass")

@@ -80,10 +80,8 @@ class TransformersManager(ModelManager):
         return kwargs["config"].to_dict()
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
-        """
-        Loads a model, stored in model_path,
-        back into memory
-        """
+        super().load(model_path, meta_data)
+
         # pylint: disable=import-outside-toplevel
         from transformers import AutoConfig, AutoModel, AutoTokenizer
 

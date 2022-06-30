@@ -5,6 +5,7 @@ isort>=5.10.1
 moto>=3.0.3
 pylint>=2.13.5
 pytest>=7.1.1
+mock>=4.0.3
 rope>=1.0.0
 twine>=4.0.0
 
