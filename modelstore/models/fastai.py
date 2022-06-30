@@ -91,11 +91,8 @@ class FastAIManager(ModelManager):
 
         version = meta_data.code.dependencies.get(FastAIManager.NAME, "?")
         if version != fastai.__version__:
-            warnings.warn(
-                "Model was saved with fastai==%s, trying to load it with fastai==%s",
-                version,
-                fastai.__version__,
-            )
+            msg = f"Model was saved with fastai=={version}, loading it with fastai=={fastai.__version__}"
+            warnings.warn(msg, RuntimeWarning)
 
         model_file = _model_file_path(model_path)
         return load_learner(model_file)
