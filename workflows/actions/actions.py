@@ -16,8 +16,9 @@ from modelstore import ModelStore
 
 # pylint: disable=import-error
 from workflows.actions import (
+    cli,
+    models,
     storage,
-    models
 )
 
 MODEL_DOMAIN = "diabetes-boosting-demo"
@@ -45,3 +46,9 @@ def run_with_model(model_store: ModelStore, model: Any,
     for func in models.get_actions():
         func(model_store, MODEL_DOMAIN, meta_data)
     print("✅  Model assertions passed")
+
+
+def run_cli_commands(model_path: str):
+    """ Runs a series of CLI commands """
+    model_id = cli.assert_upload_runs(MODEL_DOMAIN, model_path)
+    cli.assert_download_runs(MODEL_DOMAIN, model_id)

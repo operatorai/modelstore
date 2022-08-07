@@ -11,6 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import os
+import joblib
+
 from sklearn.datasets import load_diabetes
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
@@ -56,3 +59,11 @@ def iter_models():
     models = [_train_sklearn, _train_xgboost]
     for model in models:
         yield model(X_train, y_train)
+
+
+def iter_model_files(tmp_dir: str):
+    """ Generator for test model files """
+    for model in iter_models():
+        model_path = os.path.join(tmp_dir, "model.joblib")
+        joblib.dump(model, model_path)
+        yield model_path
