@@ -19,7 +19,7 @@ def get_logger():
     """Builds the modelstore logger"""
     log = logging.getLogger(name="modelstore")
     formatter = logging.Formatter("%(asctime)s - %(message)s")
-    handler = logging.StreamHandler(sys.stdout)
+    handler = logging.StreamHandler(sys.stderr)
     handler.setFormatter(formatter)
     log.setLevel(logging.INFO)
     log.addHandler(handler)
