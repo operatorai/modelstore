@@ -18,20 +18,25 @@ import subprocess
 
 def _run_cli_command(args: list) -> str:
     """ Runs a modelstore CLI command """
+    command = ["python", "-m", "modelstore"] + args
+    print(f"⏱  Running: {command}")
     return subprocess.run(
-        ["python", "-m", "modelstore"] + args,
+        command,
         stdout=subprocess.PIPE,
         check=True,
-    ).stdout.decode("utf-8")
+    ).stdout.decode("utf-8").replace("\n", "")
 
 
 def assert_upload_runs(domain: str, model_path: str) -> str:
     """ Runs the 'python -m modelstore upload' command """
+    assert os.path.exists(model_path)
     model_id = _run_cli_command([
         "upload",
         domain,
         model_path,
     ])
+    assert model_id is not None
+    assert model_id != ""
     print(f"✅  CLI command uploaded model={model_id}")
     return model_id
 

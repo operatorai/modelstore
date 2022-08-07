@@ -12,6 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import tempfile
+import os
+
 import click
 
 from actions import actions
@@ -50,8 +52,9 @@ def main(modelstore_in: str):
                 extra_files=extra_files,
             )
 
-    # Run CLI actions
-    print("⏱  Running CLI actions")
+    # Run CLI actions - the storage type is read from an
+    # environment variable
+    print(f"⏱  Running CLI actions for: {os.environ['MODEL_STORE_STORAGE']}")
     with tempfile.TemporaryDirectory() as tmp_dir:
         for model_path in iter_model_files(tmp_dir):
             actions.run_cli_commands(model_path)
