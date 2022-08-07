@@ -15,6 +15,7 @@ from typing import List
 import os
 import json
 
+
 def metadata() -> dict:
     """ Returns a dictionary that contains extra metadata
     to upload alongside the model """
@@ -23,17 +24,17 @@ def metadata() -> dict:
     }
 
 
-def files(num_files: int = 2) -> List[str]:
-    """ Returns the paths files that contains
+def files(tmp_dir, num_files: int = 2) -> List[str]:
+    """ Returns the paths to files that contain
     extra data to upload alongside the model """
     results = []
     for i in range(num_files):
-        result = f"result-{i}.json"
-        results.append(result)
+        result = os.path.join(tmp_dir, f"result-{i}.json")
         # pylint: disable=unspecified-encoding
         with open(result, "w") as out:
             out.write(json.dumps({
                 "field-1": "value-1",
                 "field-2": "value-2",
             }))
+        results.append(result)
     return results

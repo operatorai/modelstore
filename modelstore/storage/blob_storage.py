@@ -212,7 +212,7 @@ class BlobStorage(CloudStorage):
             # pylint: disable=broad-except,invalid-name
         except Exception as e:
             # @TODO - check the error type
-            logger.error("Error checking state: %s", str(e))
+            logger.debug("Error checking state: %s", str(e))
             return False
 
     def list_model_states(self) -> list:

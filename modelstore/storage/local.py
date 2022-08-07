@@ -43,7 +43,11 @@ class FileSystemStorage(BlobStorage):
     }
 
     def __init__(self, root_dir: Optional[str] = None, create_directory: bool = False):
-        super().__init__([], root_dir, "MODEL_STORE_ROOT_PREFIX")
+        super().__init__(
+            required_deps=[],
+            root_prefix=root_dir,
+            root_prefix_env_key="MODEL_STORE_ROOT_PREFIX"
+        )
         if self.root_prefix == "":
             raise Exception(
                 "Error: cannot create a file system model store without a root directory"
