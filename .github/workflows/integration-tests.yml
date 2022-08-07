@@ -48,7 +48,7 @@ jobs:
         cd workflows/
         make setup
         pip install -r requirements/${{ matrix.storage-type }}.txt
-        pip install -e .
+        pip install -e ..
     - name: Run integration script
       run: |
         cd workflows/
