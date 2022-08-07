@@ -25,9 +25,12 @@ jobs:
       contents: read
     strategy:
       matrix:
-        storage-type: ["filesystem", "aws", "gcloud", "azure"]
+        storage-type: ["filesystem", "aws-s3", "google-cloud-storage", "azure-container"]
+    env:
+      MODEL_STORE_STORAGE: ${{ matrix.storage-type }}
     steps:
     - name: 'Authenticate to Google Cloud'
+      if: ${{ matrix.storage-type }} == "google-cloud-storage"
       uses: 'google-github-actions/auth@v0.4.0'
       with:
         create_credentials_file: true
