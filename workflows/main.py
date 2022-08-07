@@ -54,10 +54,6 @@ def main(modelstore_in: str):
         for model_path in iter_model_files(tmp_dir):
             actions.run_cli_commands(model_path)
 
-    # Clean ups
-    for extra_file in extra_files:
-        os.remove(extra_file)
-
 
 if __name__ == "__main__":
     main()
