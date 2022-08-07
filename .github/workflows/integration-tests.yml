@@ -16,6 +16,7 @@ env:
   AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
   AZURE_ACCESS_KEY: ${{ secrets.AZURE_ACCESS_KEY }}
   AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+  MODEL_STORE_ROOT_PREFIX: "/home/runner"
 
 jobs:
   build:
@@ -47,6 +48,7 @@ jobs:
         cd workflows/
         make setup
         pip install -r requirements/${{ matrix.storage-type }}.txt
+        pip install -e .
     - name: Run integration script
       run: |
         cd workflows/
