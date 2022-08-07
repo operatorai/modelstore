@@ -14,15 +14,19 @@
 import os
 
 from modelstore import ModelStore
+from modelstore.storage.aws import AWSStorage
+from modelstore.storage.azure import AzureBlobStorage
+from modelstore.storage.gcloud import GoogleCloudStorage
+from modelstore.storage.local import FileSystemStorage
 
 
 def create_model_store(backend) -> ModelStore:
     """ Returns a modelstore instance with the required storage type """
     modelstores = {
-        "aws": create_aws_model_store,
-        "azure": create_azure_model_store,
-        "gcloud": create_gcloud_model_store,
-        "filesystem": create_file_system_model_store,
+        AWSStorage.NAME: create_aws_model_store,
+        AzureBlobStorage.NAME: create_azure_model_store,
+        GoogleCloudStorage.NAME: create_gcloud_model_store,
+        FileSystemStorage.NAME: create_file_system_model_store,
     }
     return modelstores[backend]()
 
