@@ -32,25 +32,25 @@ def main(modelstore_in: str):
     print(f"🆕  Running modelstore example with {modelstore_in} backend.")
 
     # Create a modelstore instance
-    # model_store = create_model_store(modelstore_in)
+    model_store = create_model_store(modelstore_in)
 
     # Run actions on the modelstore instance that are
     # not dependent on a trained model (e.g. model states)
-    # print("⏱  Running storage actions")
-    # actions.run_on_storage(model_store)
+    print("⏱  Running storage actions")
+    actions.run_on_storage(model_store)
 
     # Run actions on the modelstore instance that
     # are dependent on a trained model (e.g. upload, download)
-    # print("⏱  Running storage + model actions")
-    # with tempfile.TemporaryDirectory() as tmp_dir:
-        # extra_files = extra.files(tmp_dir, num_files=2)
-        # for model in iter_models():
-            # actions.run_with_model(
-                # model_store,
-                # model,
-                # extra_metadata=extra.metadata(),
-                # extra_files=extra_files,
-            # )
+    print("⏱  Running storage + model actions")
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        extra_files = extra.files(tmp_dir, num_files=2)
+        for model in iter_models():
+            actions.run_with_model(
+                model_store,
+                model,
+                extra_metadata=extra.metadata(),
+                extra_files=extra_files,
+            )
 
     # Run CLI actions - the storage type is read from an
     # environment variable
