@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import Optional
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
@@ -35,8 +36,8 @@ class Summary:
     model: Model
     storage: Storage
     modelstore: str # Version of modelstore
-    code: Code = field(default=None, metadata=config(exclude=exclude_field))
-    extra: dict = field(default=None, metadata=config(exclude=exclude_field))
+    code: Optional[Code] = field(default=None, metadata=config(exclude=exclude_field))
+    extra: Optional[dict] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls,
