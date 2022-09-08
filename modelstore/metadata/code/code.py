@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import Optional
 from datetime import datetime
 from dataclasses import dataclass, field
 from dataclasses_json.cfg import config
@@ -31,7 +32,7 @@ class Code:
     user: str
     created: str
     dependencies: dict
-    git: dict = field(default=None, metadata=config(exclude=exclude_field))
+    git: Optional[dict] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, deps_list: list, created: datetime = None) -> "Code":

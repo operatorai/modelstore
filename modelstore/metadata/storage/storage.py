@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import Optional
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
@@ -29,14 +30,14 @@ class Storage:
     type: str
 
     # Path-like storage (e.g. local)
-    path: str = field(default=None, metadata=config(exclude=exclude_field))
+    path: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
     
     # Container-like storage
-    bucket: str = field(default=None, metadata=config(exclude=exclude_field))
-    prefix: str = field(default=None, metadata=config(exclude=exclude_field))
+    bucket: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
+    prefix: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
 
     # Retained for backwards compatibility (Azure)
-    container: str = field(default=None, metadata=config(exclude=exclude_field))
+    container: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def from_path(cls, storage_type: str, path: str) -> "Storage":
