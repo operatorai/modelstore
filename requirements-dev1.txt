@@ -1,5 +1,5 @@
 # Protos (https://github.com/protocolbuffers/protobuf/issues/10051)
-protobuf==3.19.4
+protobuf==3.19.5
 
 # Storage
 azure-core>=1.23.1
