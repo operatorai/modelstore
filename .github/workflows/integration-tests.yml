@@ -30,13 +30,6 @@ jobs:
     env:
       MODEL_STORE_STORAGE: ${{ matrix.storage-type }}
     steps:
-    - name: 'Authenticate to Google Cloud'
-      if: ${{ matrix.storage-type }} == "google-cloud-storage"
-      uses: 'google-github-actions/auth@v0.4.0'
-      with:
-        create_credentials_file: true
-        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}
-        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
     - name: 'Check out repo'
       uses: actions/checkout@v2
     - name: Set up Python 3.8
@@ -49,6 +42,13 @@ jobs:
         make setup
         pip install -r requirements/${{ matrix.storage-type }}.txt
         pip install -e ..
+    - name: 'Authenticate to Google Cloud'
+      if: ${{ env.MODEL_STORE_STORAGE == 'google-cloud-storage' }}
+      uses: 'google-github-actions/auth@v0.8.1'
+      with:
+        create_credentials_file: true
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
     - name: Run integration script
       run: |
         cd workflows/
