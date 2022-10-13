@@ -31,8 +31,8 @@ jobs:
       MODEL_STORE_STORAGE: ${{ matrix.storage-type }}
     steps:
     - name: 'Authenticate to Google Cloud'
-      if: ${{ matrix.storage-type }} == "google-cloud-storage"
-      uses: 'google-github-actions/auth@v0.4.0'
+      if: ${{ env.MODEL_STORE_STORAGE-type }} == "google-cloud-storage"
+      uses: 'google-github-actions/auth@v0.8.1'
       with:
         create_credentials_file: true
         workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}
