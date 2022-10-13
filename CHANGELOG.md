@@ -1,5 +1,13 @@
 # Change log
 
+## Unreleased
+
+**🐛  Bug fixes & general updates**
+
+A workaround for a security issue in the Python `tarfile` library was added ([#203](https://github.com/operatorai/modelstore/pull/203), thanks [@TrellixVulnTeam](https://github.com/TrellixVulnTeam)).
+
+A security upgrade to the `protobuf` was merged ([#202](https://github.com/operatorai/modelstore/pull/202), thanks dependabot) - this impacts developers of this library only.
+
 ## modelstore 0.0.75 ([September 2022](https://github.com/operatorai/modelstore/pull/201))
 
 **🆕  New functionality**
