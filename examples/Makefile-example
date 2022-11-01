@@ -6,24 +6,24 @@ REPO_ROOT=$(shell cd ../../ && pwd)
 name:
 	echo $(VIRTUALENV_NAME)
 
-pyenv:
+pyenv-uninstall:
+	@$(REPO_ROOT)/bin/_remove_pyenv
+
+pyenv: pyenv-uninstall
 	#@$(REPO_ROOT)/bin/_setup_brew
 	@$(REPO_ROOT)/bin/_setup_pyenv $(VIRTUALENV_NAME)
 
-pyenv-local: pyenv-uninstall pyenv
+pyenv-local: pyenv
 	pip uninstall -y modelstore
 	pip install -e $(REPO_ROOT)
 
-pyenv-test: pyenv-uninstall pyenv
+pyenv-test: pyenv
 	pip uninstall -y modelstore
 	pip install --no-cache-dir -i https://test.pypi.org/simple/ modelstore
 
-pyenv-prod: pyenv-uninstall pyenv
+pyenv-prod: pyenv
 	pip uninstall -y modelstore
 	pip install --no-cache-dir --upgrade modelstore
-
-pyenv-uninstall:
-	@$(REPO_ROOT)/bin/_remove_pyenv
 
 refresh:
 	echo "\n 🔵  Refreshing installation of modelstore"
