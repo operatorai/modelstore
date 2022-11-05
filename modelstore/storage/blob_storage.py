@@ -72,27 +72,31 @@ class BlobStorage(CloudStorage):
         logger.debug("Root prefix is: %s", self.root_prefix)
 
     @abstractmethod
-    def _push(self, source: str, destination: str) -> str:
-        """Pushes a file from a source to a destination"""
+    def _push(self, file_path: str, prefix: str) -> str:
+        """ Uploads a file from file_path to a
+        prefix and returns the full prefix that would be
+        required to pull() the file back """
         raise NotImplementedError()
 
     @abstractmethod
-    def _pull(self, source: str, destination: str) -> str:
-        """Pulls a model from a source to a destination"""
+    def _pull(self, prefix: str, dir_path: str) -> str:
+        """ Downloads a file from a prefix that includes
+        the file name, to the directory in dir_path and
+        returns the path to the downloaded file """
         raise NotImplementedError()
 
     @abstractmethod
-    def _remove(self, destination: str) -> bool:
+    def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
         raise NotImplementedError()
 
     @abstractmethod
-    def _read_json_objects(self, path: str) -> list:
+    def _read_json_objects(self, prefix: str) -> list:
         """Returns a list of all the JSON in a path"""
         raise NotImplementedError()
 
     @abstractmethod
-    def _read_json_object(self, path: str) -> dict:
+    def _read_json_object(self, prefix: str) -> dict:
         """Returns a dictionary of the JSON stored in a given path"""
         raise NotImplementedError()
 
@@ -230,16 +234,16 @@ class BlobStorage(CloudStorage):
             return  # Exception is not raised; create_model_state() is idempotent
         logger.debug("Creating model state: %s", state_name)
         with tempfile.TemporaryDirectory() as tmp_dir:
-            state_data_path = os.path.join(tmp_dir, f"{state_name}.json")
+            file_path = os.path.join(tmp_dir, f"{state_name}.json")
             # pylint: disable=unspecified-encoding
-            with open(state_data_path, "w") as out:
+            with open(file_path, "w") as out:
                 state_data = {
                     "created": datetime.now().strftime("%Y/%m/%d/%H:%M:%S"),
                     "state_name": state_name,
                 }
                 out.write(json.dumps(state_data))
-            state_path = get_model_states_path(self.root_prefix)
-            self._push(state_data_path, state_path)
+            state_path = get_model_state_path(self.root_prefix, state_name)
+            self._push(file_path, state_path)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """Adds the given model ID to the set that are in the state_name path"""
@@ -307,13 +311,6 @@ class BlobStorage(CloudStorage):
                 model_id,
                 state_name
             )
-        else:
-            logger.debug(
-                "Model  %s=%s was not set to state=%s",
-                domain,
-                model_id,
-                state_name
-            )
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: metadata.Summary):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
@@ -332,11 +329,11 @@ class BlobStorage(CloudStorage):
             remote_path = get_domain_path(self.root_prefix, domain)
             self._push(local_path, remote_path)
 
-    def _pull_and_load(self, remote_path: str) -> dict:
+    def _pull_and_load(self, prefix: str) -> dict:
         """ Downloads a file from the registry to a temporary directory
         and tries to load it as a JSON dictionary """
         with tempfile.TemporaryDirectory() as tmp_dir:
-            local_path = self._pull(remote_path, tmp_dir)
+            local_path = self._pull(prefix, tmp_dir)
             # pylint: disable=unspecified-encoding
             with open(local_path, "r") as lines:
                 return json.loads(lines.read())

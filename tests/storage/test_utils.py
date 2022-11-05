@@ -21,7 +21,7 @@ TEST_FILE_CONTENTS = json.dumps({"k": "v"})
 TEST_FILE_LIST = [f"test-file-{i}.json" for i in range(3)]
 
 
-def create_file(tmp_path, contents):
+def create_file(tmp_path, contents = None):
     # pylint: disable=unspecified-encoding
     if contents is None:
         contents = TEST_FILE_CONTENTS

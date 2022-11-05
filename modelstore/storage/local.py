@@ -61,7 +61,7 @@ class FileSystemStorage(BlobStorage):
         self._create_directory = create_directory
 
     def validate(self) -> bool:
-        """This validates that the directory exists and can be written to"""
+        """ Validates that the directory exists and can be written to """
         # pylint: disable=broad-except
         # Check that the directory exists & we can write to it
         parent_dir = os.path.split(self.root_prefix)[0]
@@ -88,66 +88,39 @@ class FileSystemStorage(BlobStorage):
             logger.error(ex)
             return False
 
-    def _storage_path(self, prefix: str, create_parent: bool = False) -> str:
-        storage_path = os.path.join(
-            self.root_prefix,
-            prefix,
-        )
-        if create_parent:
-            # Create the parent directories if they are missing
-            parent_dir = os.path.split(storage_path)[0]
-            if not os.path.exists(parent_dir):
-                logger.debug("Creating: %s", parent_dir)
-                os.makedirs(parent_dir)
-        return storage_path
-
     def _get_storage_location(self, meta_data: metadata.Storage) -> str:
-        """Extracts the storage location from a meta data dictionary"""
-        return self._storage_path(meta_data.path, create_parent=False)
+        return os.path.join(self.root_prefix, meta_data.path)
 
-    def _push(self, source: str, destination: str) -> str:
-        """ Copies a file with path at source to <root>/<destination> """
-        destination_prefix = os.path.join(
-            destination,
-            os.path.split(source)[1],
-        )
-        destination_path = self._storage_path(
-            destination_prefix,
-            create_parent=True,
-        )
-        shutil.copy(source, destination_path)
-        return destination_prefix
+    def _push(self, file_path: str, prefix: str) -> str:
+        parent_dir = os.path.split(prefix)[0]
+        if not os.path.exists(parent_dir):
+            logger.debug("Creating: %s", parent_dir)
+            os.makedirs(parent_dir)
+        created_path = shutil.copy(file_path, prefix)
+        return created_path.replace(self.root_prefix + "/", "")
 
-    def _pull(self, source: str, destination: str) -> str:
+    def _pull(self, prefix: str, dir_path: str) -> str:
         """ Copies a file from destination to source """
-        source_path = self._storage_path(
-            source,
-            create_parent=False,
-        )
         destination_path = os.path.join(
-            destination,
-            os.path.split(source_path)[1],
+            dir_path,
+            os.path.split(prefix)[1],
         )
         try:
-            shutil.copy(source_path, destination_path)
+            shutil.copy(prefix, destination_path)
             return destination_path
         except FileNotFoundError as exc:
             logger.error(exc)
             raise FilePullFailedException(exc) from exc
 
-    def _remove(self, destination: str) -> bool:
+    def _remove(self, prefix: str) -> bool:
         """ Removes a file from the destination path
         and any empty directories up the tree """
-        destination_path = self._storage_path(
-            destination,
-            create_parent=False,
-        )
-        if not os.path.exists(destination_path):
-            logger.debug("Remote file does not exist: %s", destination)
+        if not os.path.exists(prefix):
+            logger.debug("Remote file does not exist: %s", prefix)
             return False
-        os.remove(destination_path)
+        os.remove(prefix)
 
-        parent_dir = os.path.split(destination_path)[0]
+        parent_dir = os.path.split(prefix)[0]
         while len(os.listdir(parent_dir)) == 0:
             try:
                 logger.debug("Removing directory: %s", parent_dir)
@@ -159,18 +132,14 @@ class FileSystemStorage(BlobStorage):
                 break
         return True
 
-    def _read_json_objects(self, path: str) -> list:
-        source_path = self._storage_path(
-            path,
-            create_parent=False,
-        )
-        if not os.path.exists(source_path):
+    def _read_json_objects(self, prefix: str) -> list:
+        if not os.path.exists(prefix):
             return []
         results = []
-        for entry in os.listdir(source_path):
+        for entry in os.listdir(prefix):
             if not entry.endswith(".json"):
                 continue
-            version_path = os.path.join(source_path, entry)
+            version_path = os.path.join(prefix, entry)
             body = self._read_json_object(version_path)
             if body is not None:
                 results.append(body)
@@ -184,13 +153,9 @@ class FileSystemStorage(BlobStorage):
             path=prefix,
         )
 
-    def _read_json_object(self, path: str) -> dict:
-        source_path = self._storage_path(
-            path,
-            create_parent=False,
-        )
+    def _read_json_object(self, prefix: str) -> dict:
         try:
-            with open(source_path, "r") as lines:
+            with open(prefix, "r") as lines:
                 return json.loads(lines.read())
         except json.JSONDecodeError:
             return None

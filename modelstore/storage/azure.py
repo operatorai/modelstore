@@ -105,31 +105,31 @@ class AzureBlobStorage(BlobStorage):
         logger.debug("Querying for containers with name=%s...", self.container_name)
         return self._container_client().exists()
 
-    def _push(self, source: str, destination: str) -> str:
-        logger.info("Uploading to: %s...", destination)
-        blob_client = self._blob_client(destination)
+    def _push(self, file_path: str, prefix: str) -> str:
+        logger.info("Uploading to: %s...", prefix)
+        blob_client = self._blob_client(prefix)
 
-        with open(source, "rb") as data:
+        with open(file_path, "rb") as data:
             blob_client.upload_blob(data, overwrite=True)
-        return destination
+        return prefix
 
-    def _pull(self, source: str, destination: str) -> str:
+    def _pull(self, prefix: str, dir_path: str) -> str:
         """Pulls a model to a destination"""
         try:
-            logger.debug("Downloading from: %s...", source)
-            blob_client = self._blob_client(source)
-            target = os.path.join(destination, os.path.split(source)[1])
+            logger.debug("Downloading from: %s...", prefix)
+            blob_client = self._blob_client(prefix)
+            target = os.path.join(dir_path, os.path.split(prefix)[1])
             with open(target, "wb") as download_file:
                 download_file.write(blob_client.download_blob().readall())
             return target
         except ResourceNotFoundError as exc:
             raise FilePullFailedException(exc) from exc
 
-    def _remove(self, destination: str) -> bool:
+    def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
-        blob_client = self._blob_client(destination)
+        blob_client = self._blob_client(prefix)
         if not blob_client.exists():
-            logger.debug("Remote file does not exist: %s", destination)
+            logger.debug("Remote file does not exist: %s", prefix)
             return False
         blob_client.delete_blob()
         return True
@@ -148,15 +148,15 @@ class AzureBlobStorage(BlobStorage):
             raise ValueError("Meta-data has a different container name")
         return meta_data.prefix
 
-    def _read_json_objects(self, path: str) -> list:
-        logger.debug("Listing files in: %s/%s", self.container_name, path)
+    def _read_json_objects(self, prefix: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.container_name, prefix)
         results = []
-        blobs = self._container_client().list_blobs(name_starts_with=path + "/")
+        blobs = self._container_client().list_blobs(name_starts_with=prefix + "/")
         for blob in blobs:
             if not blob.name.endswith(".json"):
                 logger.debug("Skipping non-json file: %s", blob.name)
                 continue
-            if os.path.split(blob.name)[0] != path:
+            if os.path.split(blob.name)[0] != prefix:
                 # We don't want to read files in a sub-prefix
                 logger.debug("Skipping file in sub-prefix: %s", blob.name)
                 continue
@@ -166,9 +166,9 @@ class AzureBlobStorage(BlobStorage):
                 results.append(json.loads(obj))
         return sorted_by_created(results)
 
-    def _read_json_object(self, path: str) -> dict:
+    def _read_json_object(self, prefix: str) -> dict:
         """Returns a dictionary of the JSON stored in a given path"""
-        blob_client = self._blob_client(path)
+        blob_client = self._blob_client(prefix)
         body = blob_client.download_blob().readall()
         try:
             return json.loads(body)

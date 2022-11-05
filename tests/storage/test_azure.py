@@ -34,7 +34,7 @@ from tests.storage.test_utils import (
     file_contains_expected_contents,
     remote_file_path,
     remote_path,
-    temp_file,
+    create_file,
 )
 
 # pylint: disable=redefined-outer-name

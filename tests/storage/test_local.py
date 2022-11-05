@@ -40,7 +40,10 @@ def push_temp_file(file_system_storage, contents = None) -> str:
     with TemporaryDirectory() as tmp_dir:
         result = file_system_storage._push(
             create_file(tmp_dir, contents),
-            remote_path(),
+            os.path.join(
+                file_system_storage.root_prefix,
+                remote_file_path(),
+            )
         )
     return result
 
@@ -106,12 +109,15 @@ def test_push(file_system_storage):
 
 def test_pull(file_system_storage):
     # Push a file to storage
-    _ = push_temp_file(file_system_storage)
+    prefix = push_temp_file(file_system_storage)
 
     # Pull the file back from storage
     with TemporaryDirectory() as tmp_dir:
         result = file_system_storage._pull(
-            remote_file_path(),
+            os.path.join(
+                file_system_storage.root_prefix,
+                prefix,
+            ),
             tmp_dir,
         )
         exp_file = os.path.join(tmp_dir, TEST_FILE_NAME)
@@ -137,28 +143,43 @@ def test_remove(file_exists, should_call_delete, file_system_storage):
     if file_exists:
         # Push a file to storage
         _ = push_temp_file(file_system_storage)
-    prefix = remote_file_path()
-    assert file_system_storage._remove(prefix) == should_call_delete
-    assert not os.path.exists(
-        os.path.join(file_system_storage.root_prefix, prefix)
+    prefix = os.path.join(
+        file_system_storage.root_prefix,
+        remote_file_path()
     )
+    assert file_system_storage._remove(prefix) == should_call_delete
+    assert not os.path.exists(prefix)
 
 
-def test_read_json_objects_ignores_non_json(tmp_path, file_system_storage):
+def test_read_json_objects_ignores_non_json(file_system_storage):
     # Create files with different suffixes
     prefix = remote_path()
-    for file_type in ["txt", "json"]:
-        source = os.path.join(tmp_path, f"test-file-source.{file_type}")
-        # pylint: disable=unspecified-encoding
-        with open(source, "w") as out:
-            out.write(json.dumps({"key": "value"}))
+    with TemporaryDirectory() as tmp_dir:
+        for file_type in ["txt", "json"]:
+            file_name = f"test-file-source.{file_type}"
+            file_path = os.path.join(tmp_dir, file_name)
+            # pylint: disable=unspecified-encoding
+            with open(file_path, "w") as out:
+                out.write(json.dumps({"key": "value"}))
 
-        # Push the file to storage
-        result = file_system_storage._push(source, prefix)
-        assert result == os.path.join(prefix, os.path.split(source)[1])
+            # Push the file to storage
+            result = file_system_storage._push(
+                file_path,
+                os.path.join(
+                    file_system_storage.root_prefix,
+                    prefix,
+                    file_name,
+                )
+            )
+            assert result == os.path.join(prefix, file_name)
 
     # Read the json files at the prefix
-    items = file_system_storage._read_json_objects(prefix)
+    items = file_system_storage._read_json_objects(
+        os.path.join(
+            file_system_storage.root_prefix,
+            prefix,
+        )
+    )
     assert len(items) == 1
 
 
@@ -167,7 +188,12 @@ def test_read_json_object_fails_gracefully(file_system_storage):
     remote_path = push_temp_file(file_system_storage, contents="not json")
 
     # Read the json files at the prefix
-    item = file_system_storage._read_json_object(remote_path)
+    item = file_system_storage._read_json_object(
+        os.path.join(
+            file_system_storage.root_prefix,
+            remote_path
+        )
+    )
     assert item is None
 
 

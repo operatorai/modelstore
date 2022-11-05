@@ -88,33 +88,37 @@ class AWSStorage(BlobStorage):
             logger.error("Unable to access bucket: %s", self.bucket_name)
             return False
 
-    def _push(self, source: str, destination: str) -> str:
-        logger.info("Uploading to: %s...", destination)
-        self.client.upload_file(source, self.bucket_name, destination)
-        return destination
+    def _push(self, file_path: str, prefix: str) -> str:
+        logger.info("Uploading to: %s...", prefix)
+        self.client.upload_file(file_path, self.bucket_name, prefix)
+        return os.path.join(
+            prefix,
+            os.path.split(file_path)[1],
+        )
 
-    def _pull(self, source: str, destination: str) -> str:
+    def _pull(self, prefix: str, dir_path: str) -> str:
         try:
-            logger.debug("Downloading from: %s...", source)
-            file_name = os.path.split(source)[1]
-            destination = os.path.join(destination, file_name)
-            self.client.download_file(self.bucket_name, source, destination)
+            logger.debug("Downloading from: %s...", prefix)
+            file_name = os.path.split(prefix)[1]
+
+            destination = os.path.join(dir_path, file_name)
+            self.client.download_file(self.bucket_name, prefix, destination)
             return destination
         except ClientError as exc:
             if int(exc.response["Error"]["Code"]) == 404:
                 raise FilePullFailedException(exc) from exc
             raise exc
 
-    def _remove(self, destination: str) -> bool:
+    def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
         try:
-            self.client.head_object(Bucket=self.bucket_name, Key=destination)
-            logger.debug("Deleting: %s...", destination)
-            self.client.delete_object(Bucket=self.bucket_name, Key=destination)
+            self.client.head_object(Bucket=self.bucket_name, Key=prefix)
+            logger.debug("Deleting: %s...", prefix)
+            self.client.delete_object(Bucket=self.bucket_name, Key=prefix)
             return True
         except ClientError as exc:
             if int(exc.response["Error"]["Code"]) == 404:
-                logger.debug("Remote file does not exist: %s", destination)
+                logger.debug("Remote file does not exist: %s", prefix)
                 return False
             raise
 
@@ -132,16 +136,16 @@ class AWSStorage(BlobStorage):
             raise ValueError("Meta-data has a different bucket name")
         return meta_data.prefix
 
-    def _read_json_objects(self, path: str) -> list:
-        logger.debug("Listing files in: %s/%s", self.bucket_name, path)
+    def _read_json_objects(self, prefix: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.bucket_name, prefix)
         results = []
-        objects = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=path)
+        objects = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
         for version in objects.get("Contents", []):
             object_path = version["Key"]
             if not object_path.endswith(".json"):
                 logger.debug("Skipping non-json file: %s", object_path)
                 continue
-            if os.path.split(object_path)[0] != path:
+            if os.path.split(object_path)[0] != prefix:
                 # We don't want to read files in a sub-prefix
                 logger.debug("Skipping file in sub-prefix: %s", object_path)
                 continue
@@ -151,9 +155,9 @@ class AWSStorage(BlobStorage):
                 results.append(obj)
         return sorted_by_created(results)
 
-    def _read_json_object(self, path: str) -> dict:
-        logger.debug("Reading: %s/%s", self.bucket_name, path)
-        obj = self.client.get_object(Bucket=self.bucket_name, Key=path)
+    def _read_json_object(self, prefix: str) -> dict:
+        logger.debug("Reading: %s/%s", self.bucket_name, prefix)
+        obj = self.client.get_object(Bucket=self.bucket_name, Key=prefix)
         body = obj["Body"].read()
         try:
             return json.loads(body)
