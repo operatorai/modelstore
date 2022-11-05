@@ -39,10 +39,11 @@ def test_upload(mock_blob_storage, mock_model_file):
         get_archive_path(
             mock_blob_storage.root_prefix,
             "test-domain",
+            "model-id",
             mock_model_file,
         ),
     )
-    meta_data = mock_blob_storage.upload("test-domain", mock_model_file)
+    meta_data = mock_blob_storage.upload("test-domain", "model-id", mock_model_file)
     assert meta_data.type == "file_system"
     assert meta_data.path == model_path
     assert os.path.exists(model_path)
@@ -63,7 +64,7 @@ def test_delete_model(mock_blob_storage, mock_model_file):
     domain = "test-domain"
     model_id = "test-model-id"
     model_state = "test-state"
-    storage_meta = mock_blob_storage.upload(domain, mock_model_file)
+    storage_meta = mock_blob_storage.upload(domain, model_id, mock_model_file)
     meta_data = metadata.Summary.generate(
         code_meta_data=None,
         model_meta_data=metadata.Model.generate(
@@ -86,6 +87,7 @@ def test_delete_model(mock_blob_storage, mock_model_file):
         get_archive_path(
             mock_blob_storage.root_prefix,
             domain,
+            model_id,
             mock_model_file,
         ),
     )

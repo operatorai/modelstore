@@ -40,9 +40,7 @@ class CloudStorage(ABC):
 
     @abstractmethod
     def upload(
-        self,
-        domain: str,
-        local_path: str,
+        self, domain: str, model_id: str, local_path: str
     ) -> metadata.Storage:
         """Uploads an archive to this type of storage
         :param extras can be a path to a file or list of files
