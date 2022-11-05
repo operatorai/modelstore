@@ -88,31 +88,11 @@ class FileSystemStorage(BlobStorage):
             logger.error(ex)
             return False
 
-    def _get_metadata_path(
-        self, domain: str, model_id: str, state_name: Optional[str] = None
-    ) -> str:
-        """Creates a path where a meta-data file about a model is stored.
-        I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
-
-        Args:
-            domain (str): A group of models that are trained for the
-            same end-use are given the same domain.
-
-            model_id (str): A UUID4 string that identifies this specific
-            model.
-        """
-        meta_data_path = super()._get_metadata_path(domain, model_id, state_name)
-        return self.relative_dir(meta_data_path)
-
     def _push(self, source: str, destination: str) -> str:
-        destination = self.relative_dir(destination)
         shutil.copy(source, destination)
         return destination
 
     def _pull(self, source: str, destination: str) -> str:
-        if not os.path.exists(source):
-            raise FilePullFailedException(f"File {source} does not exist.")
-
         try:
             file_name = os.path.split(source)[1]
             shutil.copy(source, destination)
@@ -122,17 +102,16 @@ class FileSystemStorage(BlobStorage):
 
     def _remove(self, destination: str) -> bool:
         """Removes a file from the destination path"""
-        # @TODO: Empty directories are left behind after the destination file
-        # has been deleted
-        destination = self.relative_dir(destination)
+        parent_dir = os.path.split(destination)[0]
         if not os.path.exists(destination):
             logger.debug("Remote file does not exist: %s", destination)
             return False
         os.remove(destination)
+        if len(os.listdir(parent_dir)) == 0:
+            os.rmdir(parent_dir)
         return True
 
     def _read_json_objects(self, path: str) -> list:
-        path = self.relative_dir(path)
         if not os.path.exists(path):
             return []
         results = []
@@ -140,26 +119,17 @@ class FileSystemStorage(BlobStorage):
             if not entry.endswith(".json"):
                 continue
             version_path = os.path.join(path, entry)
-            body = _read_json_file(version_path)
+            body = self._read_json_object(version_path)
             if body is not None:
                 results.append(body)
         return sorted_by_created(results)
-
-    def relative_dir(self, file_path: str) -> str:
-        """Returns the file_path, relative to the root_prefix for
-        this local file system storage"""
-        paths = os.path.split(file_path)
-        parent_dir = os.path.join(self.root_prefix, paths[0])
-        if not os.path.exists(parent_dir):
-            os.makedirs(parent_dir)
-        return os.path.join(parent_dir, paths[1])
 
     def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
         return metadata.Storage.from_path(
             storage_type="file_system",
             root=self.root_prefix,
-            path=os.path.abspath(self.relative_dir(prefix))
+            path=prefix,
         )
 
     def _get_storage_location(self, meta_data: metadata.Storage) -> str:
@@ -167,13 +137,8 @@ class FileSystemStorage(BlobStorage):
         return os.path.join(self.root_prefix, meta_data.path)
 
     def _read_json_object(self, path: str) -> dict:
-        path = self.relative_dir(path)
-        return _read_json_file(path)
-
-
-def _read_json_file(path: str) -> dict:
-    try:
-        with open(path, "r") as lines:
-            return json.loads(lines.read())
-    except json.JSONDecodeError:
-        return None
+        try:
+            with open(path, "r") as lines:
+                return json.loads(lines.read())
+        except json.JSONDecodeError:
+            return None
