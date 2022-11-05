@@ -164,6 +164,7 @@ def test_storage_location(file_system_storage):
     prefix = remote_file_path()
     expected = metadata.Storage.from_path(
         storage_type="file_system",
+        root=file_system_storage.root_prefix,
         path=os.path.join(file_system_storage.root_prefix, prefix)
     )
     result = file_system_storage._storage_location(prefix)

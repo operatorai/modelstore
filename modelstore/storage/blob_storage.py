@@ -222,10 +222,9 @@ class BlobStorage(CloudStorage):
 
     def create_model_state(self, state_name: str):
         """Creates a state label that can be used to tag models"""
-        if is_reserved_state(state_name):
-            raise ValueError(f"Cannot create state with reserved name: '{state_name}'")
-        if is_valid_state_name(state_name):
-            raise ValueError(f"Cannot create state with invalid name: '{state_name}'")
+        if not is_reserved_state(state_name):
+            if not is_valid_state_name(state_name):
+                raise ValueError(f"Cannot create state with name: '{state_name}'")
         if self.state_exists(state_name):
             logger.debug("Model state '%s' already exists", state_name)
             return  # Exception is not raised; create_model_state() is idempotent

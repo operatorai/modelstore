@@ -38,27 +38,74 @@ def test_get_archive_path(tmp_path, has_root_prefix):
 
 
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
-def test_get_models_path_no_root_prefix(tmp_path, has_root_prefix):
+def test_get_model_versions_path_no_root_prefix(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
-    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions")
-    res = paths.get_models_path(root, "example-domain")
+    exp = os.path.join(
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "domain",
+        "versions",
+    )
+    res = paths.get_model_versions_path(root, "domain")
     assert exp == res
 
 
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
-def test_get_models_path_with_state(tmp_path, has_root_prefix):
+def test_get_model_versions_path_with_state(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
     exp = os.path.join(
-        root, paths.MODELSTORE_ROOT_PREFIX, "example-domain", "versions", "prod"
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "domain",
+        "versions",
+        "prod",
     )
-    res = paths.get_models_path(root, "example-domain", "prod")
+    res = paths.get_model_versions_path(root, "domain", "prod")
+    assert exp == res
+
+
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_model_version_path(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
+    exp = os.path.join(
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "domain",
+        "versions",
+        "model-id.json",
+    )
+    res = paths.get_model_version_path(root, "domain", "model-id")
+    assert exp == res
+
+
+@pytest.mark.parametrize("has_root_prefix", [(True), (False)])
+def test_get_model_version_with_state_path(tmp_path, has_root_prefix):
+    root = str(tmp_path) if has_root_prefix else ""
+    exp = os.path.join(
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "domain",
+        "versions",
+        "prod",
+        "model-id.json",
+    )
+    res = paths.get_model_version_path(
+        root,
+        "domain",
+        "model-id",
+        state_name="prod",
+    )
     assert exp == res
 
 
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
 def test_get_domains_path(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
-    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "domains")
+    exp = os.path.join(
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "domains",
+    )
     res = paths.get_domains_path(root)
     assert exp == res
 
@@ -66,15 +113,24 @@ def test_get_domains_path(tmp_path, has_root_prefix):
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
 def test_get_domain_path(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
-    exp = os.path.join(paths.MODELSTORE_ROOT_PREFIX, "domains", "domain.json")
-    res = paths.get_domain_path("", "domain")
+    exp = os.path.join(
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "domains",
+        "domain.json",
+    )
+    res = paths.get_domain_path(root, "domain")
     assert exp == res
 
 
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
 def test_get_model_states_path(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
-    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "model_states")
+    exp = os.path.join(
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "model_states",
+    )
     res = paths.get_model_states_path(root)
     assert exp == res
 
@@ -82,6 +138,11 @@ def test_get_model_states_path(tmp_path, has_root_prefix):
 @pytest.mark.parametrize("has_root_prefix", [(True), (False)])
 def test_get_model_state_path(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
-    exp = os.path.join(root, paths.MODELSTORE_ROOT_PREFIX, "model_states", "prod.json")
+    exp = os.path.join(
+        root,
+        paths.MODELSTORE_ROOT_PREFIX,
+        "model_states",
+        "prod.json",
+    )
     res = paths.get_model_state_path(root, "prod")
     assert exp == res
