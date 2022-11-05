@@ -89,7 +89,10 @@ class FileSystemStorage(BlobStorage):
             return False
 
     def _get_storage_location(self, meta_data: metadata.Storage) -> str:
-        return os.path.join(self.root_prefix, meta_data.path)
+        if self.root_prefix != meta_data.root:
+            warnings.warn("Warning: this model store instance different has a "
+            + "root_dir than the one where the model was saved")
+        return meta_data.path
 
     def _push(self, file_path: str, prefix: str) -> str:
         target_path = os.path.join(
@@ -176,6 +179,7 @@ class FileSystemStorage(BlobStorage):
             prefix,
         )
         try:
+            # pylint: disable=unspecified-encoding
             with open(origin_path, "r") as lines:
                 return json.loads(lines.read())
         except json.JSONDecodeError:
