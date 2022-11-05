@@ -210,7 +210,7 @@ class ModelManager(ABC):
         archive_path = self._create_archive(**kwargs)
 
         # Upload the model archive and any additional extras
-        storage_meta_data = self.storage.upload(domain, archive_path)
+        storage_meta_data = self.storage.upload(domain, model_id, archive_path)
         meta_data = metadata.Summary.generate(
             code_meta_data=metadata.Code.generate(
                 deps_list=self.get_dependencies()

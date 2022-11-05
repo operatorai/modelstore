@@ -121,9 +121,14 @@ class BlobStorage(CloudStorage):
             f"{model_id}.json",
         )
 
-    def upload(self, domain: str, local_path: str) -> metadata.Storage:
+    def upload(self, domain: str, model_id: str, local_path: str) -> metadata.Storage:
         # Upload the archive into storage
-        archive_remote_path = get_archive_path(self.root_prefix, domain, local_path)
+        archive_remote_path = get_archive_path(
+            self.root_prefix,
+            domain,
+            model_id,
+            local_path
+        )
         prefix = self._push(local_path, archive_remote_path)
         return self._storage_location(prefix)
 

@@ -20,13 +20,18 @@ MODELSTORE_ROOT_PREFIX = "operatorai-model-store"
 # @TODO move into blob_storage / override in local
 
 
-def get_archive_path(root_dir: str, domain: str, local_path: str) -> str:
+def get_archive_path(root_dir: str, domain: str, model_id: str, local_path: str) -> str:
     """Creates a bucket prefix where a model archive will be stored.
     I.e.: :code:`operatorai-model-store/<domain>/<prefix>/<file-name>`
 
     Args:
+        root_dir (str): The root directory/prefix for this type
+        of storage
+
         domain (str): A group of models that are trained for the
         same end-use are given the same domain.
+
+        model_id (str): The specific identifier for this model
 
         local_path (str): The path to the local file that is
         to be updated.
@@ -35,7 +40,14 @@ def get_archive_path(root_dir: str, domain: str, local_path: str) -> str:
     # Future: enable different types of prefixes
     # Warning! Mac OS translates ":" in paths to "/"
     prefix = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
-    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, prefix, file_name)
+    return os.path.join(
+        root_dir,
+        MODELSTORE_ROOT_PREFIX,
+        domain,
+        prefix,
+        model_id,
+        file_name
+    )
 
 
 def get_models_path(
