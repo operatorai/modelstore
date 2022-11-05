@@ -29,7 +29,8 @@ from modelstore.storage.util.paths import (
     get_domains_path,
     get_model_state_path,
     get_model_states_path,
-    get_models_path,
+    get_model_versions_path,
+    get_model_version_path,
 )
 from modelstore.storage.states.model_states import (
     is_valid_state_name,
@@ -63,7 +64,9 @@ class BlobStorage(CloudStorage):
         super().__init__(required_deps)
         if root_prefix_env_key is not None:
             root_prefix = environment.get_value(
-                root_prefix, root_prefix_env_key, allow_missing=True
+                root_prefix,
+                root_prefix_env_key,
+                allow_missing=True
             )
         self.root_prefix = root_prefix if root_prefix is not None else ""
         logger.debug("Root prefix is: %s", self.root_prefix)
@@ -103,33 +106,15 @@ class BlobStorage(CloudStorage):
         """Extracts the storage location from a meta data dictionary"""
         raise NotImplementedError()
 
-    def _get_metadata_path(
-        self, domain: str, model_id: str, state_name: Optional[str] = None
-    ) -> str:
-        """Creates a path where a meta-data file about a model is stored.
-        I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
-
-        Args:
-            domain (str): A group of models that are trained for the
-            same end-use are given the same domain.
-
-            model_id (str): A UUID4 string that identifies this specific
-            model.
-        """
-        return os.path.join(
-            get_models_path(self.root_prefix, domain, state_name),
-            f"{model_id}.json",
-        )
-
     def upload(self, domain: str, model_id: str, local_path: str) -> metadata.Storage:
-        # Upload the archive into storage
-        archive_remote_path = get_archive_path(
+        """ Uploads the archive into storage """
+        archive_path = get_archive_path(
             self.root_prefix,
             domain,
             model_id,
             local_path
         )
-        prefix = self._push(local_path, archive_remote_path)
+        prefix = self._push(local_path, archive_path)
         return self._storage_location(prefix)
 
     def download(self, local_path: str, domain: str, model_id: str = None):
@@ -138,6 +123,7 @@ class BlobStorage(CloudStorage):
         domain"""
         model_meta = None
         if model_id is None:
+            # @TODO switch to using dataclass fields
             model_domain = get_domain_path(self.root_prefix, domain)
             model_meta = self._read_json_object(model_domain)
             model_id = model_meta["model"]["model_id"]
@@ -176,7 +162,11 @@ class BlobStorage(CloudStorage):
         self.set_model_state(domain, model_id, ReservedModelStates.DELETED.value)
 
         logger.debug("Deleting meta-data for %s=%s", domain, model_id)
-        remote_path = self._get_metadata_path(domain, model_id)
+        remote_path = get_model_version_path(
+            self.root_prefix,
+            domain,
+            model_id,
+        )
         self._remove(remote_path)
 
         # @TODO (future): the model that is being deleted may be also set
@@ -185,9 +175,9 @@ class BlobStorage(CloudStorage):
 
     def list_domains(self) -> list:
         """Returns a list of all the existing model domains"""
-        domains = get_domains_path(self.root_prefix)
-        domains = self._read_json_objects(domains)
-        
+        domains_path = get_domains_path(self.root_prefix)
+        domains = self._read_json_objects(domains_path)
+     
         return [d["model"]["domain"] for d in domains]
 
     def get_domain(self, domain: str) -> dict:
@@ -201,23 +191,25 @@ class BlobStorage(CloudStorage):
     def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
             raise Exception(f"State: '{state_name}' does not exist")
+
+        # Assert the domain exists
         _ = self.get_domain(domain)
-        models_path = get_models_path(self.root_prefix, domain, state_name)
+
+        # List the models in the domain
+        models_path = get_model_versions_path(self.root_prefix, domain, state_name)
         models = self._read_json_objects(models_path)
-        # @TODO sort models by creation time stamp
+
+        # @TODO sort models by creation time stamp; use dataclass fields
         return [v["model"]["model_id"] for v in models]
 
     def state_exists(self, state_name: str) -> bool:
         """Returns whether a model state with name state_name exists"""
         try:
             state_path = get_model_state_path(self.root_prefix, state_name)
-            with tempfile.TemporaryDirectory() as tmp_dir:
-                self._pull(state_path, tmp_dir)
+            _ = self._pull_and_load(state_path)
             return True
-            # pylint: disable=broad-except,invalid-name
-        except Exception as e:
-            # @TODO - check the error type
-            logger.debug("Error checking state: %s", str(e))
+        except FilePullFailedException as exc:
+            logger.debug("Error checking state: %s", str(exc))
             return False
 
     def list_model_states(self) -> list:
@@ -230,9 +222,10 @@ class BlobStorage(CloudStorage):
 
     def create_model_state(self, state_name: str):
         """Creates a state label that can be used to tag models"""
-        if not is_reserved_state(state_name):
-            if not is_valid_state_name(state_name):
-                raise ValueError(f"Cannot create state with name: '{state_name}'")
+        if is_reserved_state(state_name):
+            raise ValueError(f"Cannot create state with reserved name: '{state_name}'")
+        if is_valid_state_name(state_name):
+            raise ValueError(f"Cannot create state with invalid name: '{state_name}'")
         if self.state_exists(state_name):
             logger.debug("Model state '%s' already exists", state_name)
             return  # Exception is not raised; create_model_state() is idempotent
@@ -261,10 +254,21 @@ class BlobStorage(CloudStorage):
             # with typos and other similar mistakes
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
-        model_path = self._get_metadata_path(domain, model_id)
-        model_state_path = self._get_metadata_path(domain, model_id, state_name)
+        
         with tempfile.TemporaryDirectory() as tmp_dir:
+            model_path = get_model_version_path(
+                self.root_prefix,
+                domain,
+                model_id,
+            )
             local_model_path = self._pull(model_path, tmp_dir)
+
+            model_state_path = get_model_version_path(
+                self.root_prefix,
+                domain,
+                model_id,
+                state_name,
+            )
             self._push(local_model_path, model_state_path)
         logger.debug("Successfully set %s=%s to state=%s", domain, model_id, state_name)
 
@@ -290,47 +294,48 @@ class BlobStorage(CloudStorage):
             # with typos and other similar mistakes
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
-        model_state_path = self._get_metadata_path(domain, model_id, state_name)
+
+        model_state_path = get_model_version_path(
+            self.root_prefix,
+            domain,
+            model_id,
+            state_name,
+        )
         if self._remove(model_state_path):
             logger.debug(
-                "Successfully unset %s=%s from state=%s", domain, model_id, state_name
+                "Successfully unset %s=%s from state=%s",
+                domain,
+                model_id,
+                state_name
             )
         else:
             logger.debug(
-                "Model  %s=%s was not set to state=%s", domain, model_id, state_name
+                "Model  %s=%s was not set to state=%s",
+                domain,
+                model_id,
+                state_name
             )
-
-    def _get_metadata_path(
-        self, domain: str, model_id: str, state_name: Optional[str] = None
-    ) -> str:
-        """Creates a path where a meta-data file about a model is stored.
-        I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
-
-        Args:
-            domain (str): A group of models that are trained for the
-            same end-use are given the same domain.
-
-            model_id (str): A UUID4 string that identifies this specific
-            model.
-        """
-        return os.path.join(
-            get_models_path(self.root_prefix, domain, state_name), f"{model_id}.json"
-        )
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: metadata.Summary):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = os.path.join(tmp_dir, f"{model_id}.json")
-            remote_path = self._get_metadata_path(domain, model_id)
-
             meta_data.dumps(local_path)
+
+            remote_path = get_model_version_path(
+                self.root_prefix,
+                domain,
+                model_id,
+            )
             self._push(local_path, remote_path)
 
-            # @TODO this is setting the "latest" model implicitly
+            # @TODO (future) this is setting the "latest" model implicitly
             remote_path = get_domain_path(self.root_prefix, domain)
             self._push(local_path, remote_path)
 
     def _pull_and_load(self, remote_path: str) -> dict:
+        """ Downloads a file from the registry to a temporary directory
+        and tries to load it as a JSON dictionary """
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = self._pull(remote_path, tmp_dir)
             # pylint: disable=unspecified-encoding
@@ -338,11 +343,17 @@ class BlobStorage(CloudStorage):
                 return json.loads(lines.read())
 
     def get_meta_data(self, domain: str, model_id: str) -> metadata.Summary:
-        if any(x in [None, ""] for x in [domain, model_id]):
-            raise ValueError("domain and model_id must be set")
-        logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
-        remote_path = self._get_metadata_path(domain, model_id)
+        """ Returns the meta data for a given model """
+        # Assert that the domain exists
+        _ = self.get_domain(domain)
+        
         try:
+            logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
+            remote_path = get_model_version_path(
+                self.root_prefix,
+                domain,
+                model_id,
+            )
             with tempfile.TemporaryDirectory() as tmp_dir:
                 local_path = self._pull(remote_path, tmp_dir)
                 return metadata.Summary.loads(local_path)
@@ -355,8 +366,11 @@ class BlobStorage(CloudStorage):
             # 4. A different error occurred (e.g. connectivity)
             # The block below currently checks for (2) and (3)
             try:
-                remote_path = self._get_metadata_path(
-                    domain, model_id, ReservedModelStates.DELETED.value
+                remote_path = get_model_version_path(
+                    self.root_prefix,
+                    domain,
+                    model_id,
+                    ReservedModelStates.DELETED.value,
                 )
                 self._pull_and_load(remote_path)
                 raise ModelDeletedException(domain, model_id) from exc

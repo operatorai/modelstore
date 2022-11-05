@@ -158,12 +158,13 @@ class FileSystemStorage(BlobStorage):
         """Returns a dict of the location the artifact was stored"""
         return metadata.Storage.from_path(
             storage_type="file_system",
+            root=self.root_prefix,
             path=os.path.abspath(self.relative_dir(prefix))
         )
 
     def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
-        return meta_data.path
+        return os.path.join(self.root_prefix, meta_data.path)
 
     def _read_json_object(self, path: str) -> dict:
         path = self.relative_dir(path)

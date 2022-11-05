@@ -17,12 +17,18 @@ from typing import Optional
 
 MODELSTORE_ROOT_PREFIX = "operatorai-model-store"
 
-# @TODO move into blob_storage / override in local
+
+def get_root_path(root_dir: str) -> str:
+    """ Returns the root location of the model registry """
+    return os.path.join(
+        root_dir,
+        MODELSTORE_ROOT_PREFIX,
+    )
 
 
 def get_archive_path(root_dir: str, domain: str, model_id: str, local_path: str) -> str:
-    """Creates a bucket prefix where a model archive will be stored.
-    I.e.: :code:`operatorai-model-store/<domain>/<prefix>/<model-id>/<file-name>`
+    """Creates a path where a model archive will be stored.
+    I.e.: :code:`<root>/<domain>/<date-based prefix>/<model-id>/<file-name>`
 
     Args:
         root_dir (str): The root directory/prefix for this type
@@ -36,43 +42,67 @@ def get_archive_path(root_dir: str, domain: str, model_id: str, local_path: str)
         local_path (str): The path to the local file that is
         to be updated.
     """
-    file_name = os.path.split(local_path)[1]
-    # Future: enable different types of prefixes
-    # Warning! Mac OS translates ":" in paths to "/"
-    prefix = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
     return os.path.join(
-        root_dir,
-        MODELSTORE_ROOT_PREFIX,
+        get_root_path(root_dir),
         domain,
-        prefix,
+        # Warning! Mac OS translates ":" in paths to "/"
+        datetime.now().strftime("%Y.%m.%d-%H.%M.%S"),
         model_id,
-        file_name
+        os.path.split(local_path)[1]
     )
 
 
-def get_models_path(
+def get_model_versions_path(
     root_dir: str, domain: str, state_name: Optional[str] = None
 ) -> str:
-    """Creates a path where a meta-data file about a model is stored.
-    I.e.: :code:`operatorai-model-store/<domain>/versions/`
+    """Creates a path where meta-data files about models are stored.
+    I.e.: :code:`<root>/<domain>/versions/[state]/`
 
     Args:
         domain (str): A group of models that are trained for the
         same end-use are given the same domain.
         state_name (str): A model's state tag (e.g. "prod" or "archived")
     """
+    versions = os.path.join(
+        get_root_path(root_dir),
+        domain,
+        "versions",
+    )
     if state_name is not None:
         return os.path.join(
-            root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions", state_name
+            versions,
+            state_name
         )
-    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, domain, "versions")
+    return versions
+
+
+def get_model_version_path(
+    root_dir: str, domain: str, model_id: str, state_name: Optional[str] = None
+) -> str:
+    """Creates a path where a meta-data file about a model is stored.
+    I.e.: :code:`<root>/<domain>/versions/[state]/<model-id>.json`
+
+    Args:
+        domain (str): A group of models that are trained for the
+        same end-use are given the same domain.
+
+        model_id (str): A UUID4 string that identifies this specific
+        model.
+    """
+    return os.path.join(
+        get_model_versions_path(root_dir, domain, state_name),
+        f"{model_id}.json",
+    )
 
 
 def get_domains_path(root_dir: str) -> str:
     """Creates a path where meta-data about the latest trained model
-    is stored, i.e.: :code:`operatorai-model-store/domains/`
+    is stored, i.e.: :code:`<root>/domains/`
     """
-    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, "domains")
+    return os.path.join(
+        get_root_path(root_dir),
+        "domains",
+    )
 
 
 def get_domain_path(root_dir: str, domain: str) -> str:
@@ -83,8 +113,10 @@ def get_domain_path(root_dir: str, domain: str) -> str:
         domain (str): A group of models that are trained for the
         same end-use are given the same domain.
     """
-    domains_path = get_domains_path(root_dir)
-    return os.path.join(domains_path, f"{domain}.json")
+    return os.path.join(
+        get_domains_path(root_dir),
+        f"{domain}.json",
+    )
 
 
 def get_model_states_path(root_dir: str) -> str:
@@ -95,7 +127,10 @@ def get_model_states_path(root_dir: str) -> str:
         domain (str): A group of models that are trained for the
         same end-use are given the same domain.
     """
-    return os.path.join(root_dir, MODELSTORE_ROOT_PREFIX, "model_states")
+    return os.path.join(
+        get_root_path(root_dir),
+        "model_states",
+    )
 
 
 def get_model_state_path(root_dir: str, state_name: str) -> str:
@@ -105,5 +140,7 @@ def get_model_state_path(root_dir: str, state_name: str) -> str:
     Args:
         state_name (str): The name of the model state (e.g., "prod").
     """
-    model_states = get_model_states_path(root_dir)
-    return os.path.join(model_states, f"{state_name}.json")
+    return os.path.join(
+        get_model_states_path(root_dir),
+        f"{state_name}.json",
+    )
