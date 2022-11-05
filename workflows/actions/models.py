@@ -19,7 +19,7 @@ from modelstore import ModelStore
 from modelstore.utils import exceptions
 
 
-def assert_get_missing_model_raises(model_store: ModelStore, domain: str):
+def assert_get_missing_model_raises(model_store: ModelStore, domain: str, _: dict):
     """ Calling get_model_info() for a missing model raise an exception """
     try:
         _ = model_store.get_model_info(domain, "missing-model")
