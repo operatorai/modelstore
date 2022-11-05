@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from tempfile import TemporaryDirectory
 import json
 import os
 import shutil
@@ -27,7 +28,7 @@ from tests.storage.test_utils import (
     file_contains_expected_contents,
     remote_file_path,
     remote_path,
-    temp_file,
+    create_file,
 )
 
 # pylint: disable=protected-access
@@ -35,23 +36,42 @@ from tests.storage.test_utils import (
 # pylint: disable=missing-function-docstring
 
 
+def push_temp_file(file_system_storage, contents = None) -> str:
+    with TemporaryDirectory() as tmp_dir:
+        result = file_system_storage._push(
+            create_file(tmp_dir, contents),
+            remote_path(),
+        )
+    return result
+
+
 @pytest.fixture
 def file_system_storage(tmp_path):
     return FileSystemStorage(root_dir=str(tmp_path))
 
 
-def test_create_model_store_with_at_location(tmp_path):
-    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST'), create_directory=True)
+def test_create_model_store_with_location(tmp_path):
+    root_dir = os.path.join(str(tmp_path), "test-true")
+    assert not os.path.exists(root_dir)
+    file_system_storage = FileSystemStorage(
+        root_dir=root_dir,
+        create_directory=True,
+    )
     assert file_system_storage.validate()
     assert os.path.exists(file_system_storage.root_prefix)
     shutil.rmtree(file_system_storage.root_prefix)
 
 
 def test_create_model_store_with_missing_location(tmp_path):
-    file_system_storage = FileSystemStorage(root_dir=os.path.join(str(tmp_path),'TEST_FALSE'), create_directory=False)
-    with pytest.raises(Exception):
+    root_dir = os.path.join(str(tmp_path), "test-false")
+    assert not os.path.exists(root_dir)
+    file_system_storage = FileSystemStorage(
+        root_dir=root_dir,
+        create_directory=False,
+    )
+    assert not os.path.exists(root_dir)
+    with pytest.raises(FileNotFoundError):
         _ = file_system_storage.validate()
-
 
 
 def test_create_from_environment_variables(monkeypatch):
@@ -77,23 +97,27 @@ def test_validate(file_system_storage):
     assert os.path.exists(file_system_storage.root_prefix)
 
 
-def test_push(tmp_path, file_system_storage):
-    prefix = remote_file_path()
-    result = file_system_storage._push(temp_file(tmp_path), prefix)
-    assert result == os.path.join(file_system_storage.root_prefix, prefix)
+def test_push(file_system_storage):
+    result = push_temp_file(file_system_storage)
+
+    # The correct remote prefix is returned
+    assert result == remote_file_path()
 
 
-def test_pull(tmp_path, file_system_storage):
-    # Push the file to storage
-    prefix = remote_file_path()
-    remote_destination = file_system_storage._push(temp_file(tmp_path), prefix)
+def test_pull(file_system_storage):
+    # Push a file to storage
+    _ = push_temp_file(file_system_storage)
 
     # Pull the file back from storage
-    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
-    result = file_system_storage._pull(remote_destination, tmp_path)
-    assert result == local_destination
-    assert os.path.exists(local_destination)
-    assert file_contains_expected_contents(local_destination)
+    with TemporaryDirectory() as tmp_dir:
+        result = file_system_storage._pull(
+            remote_file_path(),
+            tmp_dir,
+        )
+        exp_file = os.path.join(tmp_dir, TEST_FILE_NAME)
+        assert result == exp_file
+        assert os.path.exists(result)
+        assert file_contains_expected_contents(exp_file)
 
 
 @pytest.mark.parametrize(
@@ -109,20 +133,15 @@ def test_pull(tmp_path, file_system_storage):
         ),
     ],
 )
-def test_remove(file_exists, should_call_delete, tmp_path, file_system_storage):
-    # Push the file to storage
-    prefix = remote_file_path()
+def test_remove(file_exists, should_call_delete, file_system_storage):
     if file_exists:
-        file_system_storage._push(temp_file(tmp_path), prefix)
-    try:
-        # Remove the file
-        assert file_system_storage._remove(prefix) == should_call_delete
-        # The file no longer exists
-        assert not os.path.exists(os.path.join(file_system_storage.root_prefix, prefix))
-        # pylint: disable=bare-except
-    except:
-        # Should fail gracefully here
-        pytest.fail("Remove raised an exception")
+        # Push a file to storage
+        _ = push_temp_file(file_system_storage)
+    prefix = remote_file_path()
+    assert file_system_storage._remove(prefix) == should_call_delete
+    assert not os.path.exists(
+        os.path.join(file_system_storage.root_prefix, prefix)
+    )
 
 
 def test_read_json_objects_ignores_non_json(tmp_path, file_system_storage):
@@ -135,19 +154,17 @@ def test_read_json_objects_ignores_non_json(tmp_path, file_system_storage):
             out.write(json.dumps({"key": "value"}))
 
         # Push the file to storage
-        remote_destination = os.path.join(prefix, f"test-file-destination.{file_type}")
-        file_system_storage._push(source, remote_destination)
+        result = file_system_storage._push(source, prefix)
+        assert result == os.path.join(prefix, os.path.split(source)[1])
 
     # Read the json files at the prefix
     items = file_system_storage._read_json_objects(prefix)
     assert len(items) == 1
 
 
-def test_read_json_object_fails_gracefully(tmp_path, file_system_storage):
+def test_read_json_object_fails_gracefully(file_system_storage):
     # Push a file that doesn't contain JSON to storage
-    remote_path = file_system_storage._push(
-        temp_file(tmp_path, contents="not json"), remote_file_path()
-    )
+    remote_path = push_temp_file(file_system_storage, contents="not json")
 
     # Read the json files at the prefix
     item = file_system_storage._read_json_object(remote_path)
@@ -165,7 +182,7 @@ def test_storage_location(file_system_storage):
     expected = metadata.Storage.from_path(
         storage_type="file_system",
         root=file_system_storage.root_prefix,
-        path=os.path.join(file_system_storage.root_prefix, prefix)
+        path=prefix,
     )
     result = file_system_storage._storage_location(prefix)
     assert result == expected

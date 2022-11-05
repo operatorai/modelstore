@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from tempfile import TemporaryDirectory
 import json
 import os
 
@@ -28,7 +29,7 @@ from tests.storage.test_utils import (
     file_contains_expected_contents,
     remote_file_path,
     remote_path,
-    temp_file,
+    create_file,
 )
 
 # pylint: disable=redefined-outer-name
@@ -91,14 +92,17 @@ def test_validate(bucket_name, validate_should_pass):
     assert storage.validate() == validate_should_pass
 
 
-def test_push(tmp_path, moto_boto):
+def test_push(moto_boto):
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    prefix = remote_file_path()
-    result = storage._push(temp_file(tmp_path), prefix)
+    with TemporaryDirectory() as tmp_dir:
+        result = storage._push(
+            create_file(tmp_dir),
+            remote_path(),
+        )
 
     # The correct remote prefix is returned
-    assert result == prefix
+    assert result == remote_file_path()
 
     # The remote file has the right contents
     assert get_file_contents(moto_boto, result) == TEST_FILE_CONTENTS
@@ -107,19 +111,26 @@ def test_push(tmp_path, moto_boto):
 def test_pull(tmp_path):
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    prefix = remote_file_path()
-    remote_destination = storage._push(temp_file(tmp_path), prefix)
+    with TemporaryDirectory() as tmp_dir:
+        _ = storage._push(
+            create_file(tmp_dir),
+            remote_path(),
+        )
 
     # Pull the file back from storage
-    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
-    result = storage._pull(remote_destination, tmp_path)
+    with TemporaryDirectory() as tmp_dir:
+        tmp_path = os.path.join(tmp_dir, TEST_FILE_NAME)
+        result = storage._pull(
+            remote_file_path(),
+            tmp_path,
+        )
 
-    # The correct local path is returned
-    assert result == local_destination
+        # The correct local path is returned
+        assert result == tmp_path
 
-    # The local file exists, with the right content
-    assert os.path.exists(local_destination)
-    assert file_contains_expected_contents(local_destination)
+        # The local file exists, with the right content
+        assert os.path.exists(tmp_path)
+        assert file_contains_expected_contents(result)
 
 
 @pytest.mark.parametrize(
@@ -135,12 +146,17 @@ def test_pull(tmp_path):
         ),
     ],
 )
-def test_remove(tmp_path, file_exists, should_call_delete):
+def test_remove(file_exists, should_call_delete):
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+    
     remote_destination = remote_file_path()
     if file_exists:
-        storage._push(temp_file(tmp_path), remote_destination)
+        with TemporaryDirectory() as tmp_dir:
+            _ = storage._push(
+                create_file(tmp_dir),
+                remote_path(),
+            )
 
     # pylint: disable=bare-except
     try:

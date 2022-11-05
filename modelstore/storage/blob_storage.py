@@ -238,7 +238,7 @@ class BlobStorage(CloudStorage):
                     "state_name": state_name,
                 }
                 out.write(json.dumps(state_data))
-            state_path = get_model_state_path(self.root_prefix, state_name)
+            state_path = get_model_states_path(self.root_prefix)
             self._push(state_data_path, state_path)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
