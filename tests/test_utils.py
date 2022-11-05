@@ -12,6 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from functools import partial
+from pathlib import PosixPath, Path
+import os
 
 import pytest
 from modelstore.model_store import ModelStore
@@ -53,3 +55,10 @@ def validate_library_attributes(store: ModelStore, allowed: list, not_allowed: l
         assert isinstance(mgr, MissingDepManager)
         with pytest.raises(ModuleNotFoundError):
             mgr.upload(domain="test", model_id="model-id", model="test")
+
+
+@pytest.fixture
+def model_file(tmp_path: PosixPath):
+    file_path = os.path.join(tmp_path, "model.txt")
+    Path(file_path).touch()
+    return file_path

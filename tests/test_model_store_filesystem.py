@@ -21,13 +21,17 @@ import pytest
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES
 from modelstore.storage.local import FileSystemStorage
-from modelstore.utils.exceptions import ModelNotFoundException
+from modelstore.utils.exceptions import (
+    DomainNotFoundException,
+    ModelNotFoundException
+)
 
 # pylint: disable=unused-import
 from tests.test_utils import (
     libraries_without_sklearn,
     iter_only_sklearn,
     validate_library_attributes,
+    model_file,
 )
 
 # pylint: disable=missing-function-docstring
@@ -60,7 +64,8 @@ def test_from_file_system_missing_root(should_create: bool):
     assert not os.path.exists(root_directory)
     if should_create:
         store = ModelStore.from_file_system(
-            root_directory=root_directory, create_directory=should_create
+            root_directory=root_directory,
+            create_directory=should_create
         )
         assert os.path.exists(root_directory)
         assert os.path.isdir(root_directory)
@@ -84,7 +89,15 @@ def test_from_file_system_only_sklearn(_mock_iter_libraries, tmp_path):
     )
 
 
-def test_model_not_found(tmp_path: PosixPath):
+def test_model_not_found(tmp_path: PosixPath, model_file: str):
     store = ModelStore.from_file_system(root_directory=str(tmp_path))
-    with pytest.raises(ModelNotFoundException):
+    with pytest.raises(DomainNotFoundException):
         store.get_model_info("missing-domain", "missing-model")
+
+    store.upload(
+        domain="existing-domain",
+        model_id="test-model-id-1",
+        model=model_file
+    )
+    with pytest.raises(ModelNotFoundException):
+        store.get_model_info("existing-domain", "missing-model")

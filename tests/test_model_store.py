@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from pathlib import PosixPath, Path
+from pathlib import PosixPath
 import os
 
 import pytest
@@ -26,18 +26,15 @@ from modelstore.utils.exceptions import (
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
+# pylint: disable=unused-import
+from tests.test_utils import (
+    model_file,
+)
 
 
 @pytest.fixture
 def model_store(tmp_path: PosixPath):
     return ModelStore.from_file_system(root_directory=str(tmp_path))
-
-
-@pytest.fixture
-def model_file(tmp_path: PosixPath):
-    file_path = os.path.join(tmp_path, "model.txt")
-    Path(file_path).touch()
-    return file_path
 
 
 def test_model_not_found(model_store: ModelStore, model_file: str):
