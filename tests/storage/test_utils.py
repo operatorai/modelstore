@@ -20,6 +20,7 @@ import os
 TEST_FILE_NAME = "test-file.txt"
 TEST_FILE_CONTENTS = json.dumps({"k": "v"})
 TEST_FILE_LIST = [f"test-file-{i}.json" for i in range(3)]
+TEST_FILE_TYPES = ["json", "txt"]
 
 
 def create_file(tmp_path, contents = None):
@@ -55,3 +56,21 @@ def push_temp_file(storage, contents = None) -> str:
             remote_file_path(),
         )
     return result
+
+
+def push_temp_files(storage, prefix, file_types=TEST_FILE_TYPES):
+    with TemporaryDirectory() as tmp_dir:
+        for file_type in file_types:
+            file_name = f"test-file-source.{file_type}"
+            file_path = os.path.join(tmp_dir, file_name)
+            # pylint: disable=unspecified-encoding
+            with open(file_path, "w") as out:
+                out.write(json.dumps({"key": "value"}))
+
+            # Push the file to storage
+            # pylint: disable=protected-access
+            result = storage._push(
+                file_path,
+                os.path.join(prefix, file_name)
+            )
+            assert result == os.path.join(prefix, file_name)

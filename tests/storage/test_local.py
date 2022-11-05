@@ -29,6 +29,7 @@ from tests.storage.test_utils import (
     remote_file_path,
     remote_path,
     push_temp_file,
+    push_temp_files,
 )
 
 # pylint: disable=protected-access
@@ -136,20 +137,7 @@ def test_remove(file_exists, should_call_delete, file_system_storage):
 def test_read_json_objects_ignores_non_json(file_system_storage):
     # Create files with different suffixes
     prefix = remote_path()
-    with TemporaryDirectory() as tmp_dir:
-        for file_type in ["txt", "json"]:
-            file_name = f"test-file-source.{file_type}"
-            file_path = os.path.join(tmp_dir, file_name)
-            # pylint: disable=unspecified-encoding
-            with open(file_path, "w") as out:
-                out.write(json.dumps({"key": "value"}))
-
-            # Push the file to storage
-            result = file_system_storage._push(
-                file_path,
-                os.path.join(prefix, file_name)
-            )
-            assert result == os.path.join(prefix, file_name)
+    push_temp_files(file_system_storage, prefix)
 
     # Read the json files at the prefix
     items = file_system_storage._read_json_objects(prefix)

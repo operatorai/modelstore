@@ -29,7 +29,8 @@ from tests.storage.test_utils import (
     file_contains_expected_contents,
     remote_file_path,
     remote_path,
-    create_file,
+    push_temp_file,
+    push_temp_files,
 )
 
 # pylint: disable=redefined-outer-name
@@ -95,11 +96,7 @@ def test_validate(bucket_name, validate_should_pass):
 def test_push(moto_boto):
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    with TemporaryDirectory() as tmp_dir:
-        result = storage._push(
-            create_file(tmp_dir),
-            remote_file_path(),
-        )
+    result = push_temp_file(storage)
 
     # The correct remote prefix is returned
     assert result == remote_file_path()
@@ -111,11 +108,7 @@ def test_push(moto_boto):
 def test_pull():
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    with TemporaryDirectory() as tmp_dir:
-        _ = storage._push(
-            create_file(tmp_dir),
-            remote_file_path(),
-        )
+    _ = push_temp_file(storage)
 
     # Pull the file back from storage
     with TemporaryDirectory() as tmp_dir:
@@ -151,100 +144,78 @@ def test_pull():
 def test_remove(file_exists, should_call_delete):
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    remote_destination = remote_file_path()
     if file_exists:
-        with TemporaryDirectory() as tmp_dir:
-            _ = storage._push(
-                create_file(tmp_dir),
-                remote_file_path(),
-            )
+        _ = push_temp_file(storage)
 
     # pylint: disable=bare-except
-    assert storage._remove(remote_destination) == should_call_delete
+    prefix = remote_file_path()
+    assert storage._remove(prefix) == should_call_delete
 
 
 def test_read_json_objects_ignores_non_json(tmp_path):
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_path()
-    # Create files with different suffixes
-    for file_type in ["txt", "json"]:
-        source = os.path.join(tmp_path, f"test-file-source.{file_type}")
-        with open(source, "w") as out:
-            # content
-            out.write(json.dumps({"key": "value"}))
-
-        # Push the file to storage
-        remote_destination = os.path.join(
-            prefix, f"test-file-destination.{file_type}"
-        )
-        storage._push(source, remote_destination)
+    push_temp_files(storage, prefix)
 
     # Read the json files at the prefix
     items = storage._read_json_objects(prefix)
     assert len(items) == 1
 
 
-# def test_read_json_object_fails_gracefully(tmp_path):
-#     # Push a file that doesn't contain JSON to storage
-#     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-#     prefix = remote_file_path()
-#     text_file = os.path.join(tmp_path, "test.txt")
-#     # pylint: disable=unspecified-encoding
-#     with open(text_file, "w") as out:
-#         out.write("some text in a file")
-#     remote_path = storage._push(text_file, prefix)
+def test_read_json_object_fails_gracefully(tmp_path):
+    storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+    # Push a file that doesn't contain JSON to storage
+    remote_path = push_temp_file(storage, contents="not json")
 
-#     # Read the json files at the prefix
-#     item = storage._read_json_object(remote_path)
-
-#     # Return None if we can't decode the JSON
-#     assert item is None
+    # Read the json files at the prefix
+    item = storage._read_json_object(remote_path)
+    assert item is None
 
 
-# def test_storage_location():
-#     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-#     prefix = remote_path()
-#     # Asserts that the location meta data is correctly formatted
-#     expected = metadata.Storage.from_bucket(
-#         storage_type="aws:s3",
-#         bucket=_MOCK_BUCKET_NAME,
-#         prefix=prefix,
-#     )
-#     assert storage._storage_location(prefix) == expected
+def test_storage_location():
+    storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+    prefix = remote_path()
+    # Asserts that the location meta data is correctly formatted
+    expected = metadata.Storage.from_bucket(
+        storage_type="aws:s3",
+        bucket=_MOCK_BUCKET_NAME,
+        prefix=prefix,
+    )
+    assert storage._storage_location(prefix) == expected
 
 
-# @pytest.mark.parametrize(
-#     "meta_data,should_raise,result",
-#     [
-#         (
-#             metadata.Storage(
-#                 type=None, 
-#                 path=None, 
-#                 bucket=_MOCK_BUCKET_NAME,
-#                 container=None,
-#                 prefix="/path/to/file"
-#             ),
-#             False,
-#             "/path/to/file",
-#         ),
-#         (
-#             metadata.Storage(
-#                 type=None, 
-#                 path=None, 
-#                 bucket="a-different-bucket",
-#                 container=None,
-#                 prefix="/path/to/file"
-#             ),
-#             True,
-#             None,
-#         ),
-#     ],
-# )
-# def test_get_location(meta_data, should_raise, result):
-#     # Asserts that pulling the location out of meta data is correct
-#     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-#     if should_raise:
-#         with pytest.raises(ValueError):
-#             storage._get_storage_location(meta_data)
-#     else:
-#         assert storage._get_storage_location(meta_data) == result
+@pytest.mark.parametrize(
+    "meta_data,should_raise,result",
+    [
+        (
+            metadata.Storage(
+                type=None, 
+                path=None, 
+                bucket=_MOCK_BUCKET_NAME,
+                container=None,
+                prefix="/path/to/file"
+            ),
+            False,
+            "/path/to/file",
+        ),
+        (
+            metadata.Storage(
+                type=None, 
+                path=None, 
+                bucket="a-different-bucket",
+                container=None,
+                prefix="/path/to/file"
+            ),
+            True,
+            None,
+        ),
+    ],
+)
+def test_get_location(meta_data, should_raise, result):
+    # Asserts that pulling the location out of meta data is correct
+    storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+    if should_raise:
+        with pytest.raises(ValueError):
+            storage._get_storage_location(meta_data)
+    else:
+        assert storage._get_storage_location(meta_data) == result

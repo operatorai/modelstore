@@ -130,6 +130,7 @@ class AWSStorage(BlobStorage):
     def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
         if self.bucket_name != meta_data.bucket:
+            # @TODO: downgrade to a warning if the file exists
             raise ValueError("Meta-data has a different bucket name")
         return meta_data.prefix
 

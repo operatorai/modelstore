@@ -34,7 +34,7 @@ from tests.storage.test_utils import (
     file_contains_expected_contents,
     remote_file_path,
     remote_path,
-    create_file,
+    push_temp_file,
 )
 
 # pylint: disable=redefined-outer-name
@@ -134,20 +134,21 @@ def test_validate(container_exists, validate_should_pass):
     assert storage.validate() == validate_should_pass
 
 
-def test_push(tmp_path):
+def test_push():
     # Create a mock storage instance
     blob_service_client = mock_blob_service_client(
         container_exists=True,
         files_exist=False,
     )
-    storage = azure_storage(blob_service_client)
 
-    # Push a file to storage
-    prefix = remote_file_path()
-    storage._push(temp_file(tmp_path), prefix)
+    storage = azure_storage(blob_service_client)
+    result = push_temp_file(storage)
+
+    # The correct remote prefix is returned
+    assert result == remote_file_path()
 
     # Asserts that pushing a file results in an upload
-    blob_client = storage._blob_client(prefix)
+    blob_client = storage._blob_client(result)
     blob_client.upload_blob.assert_called()
 
 
