@@ -92,21 +92,30 @@ class FileSystemStorage(BlobStorage):
         return os.path.join(self.root_prefix, meta_data.path)
 
     def _push(self, file_path: str, prefix: str) -> str:
-        parent_dir = os.path.split(prefix)[0]
+        target_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        parent_dir = os.path.split(target_path)[0]
         if not os.path.exists(parent_dir):
             logger.debug("Creating: %s", parent_dir)
             os.makedirs(parent_dir)
-        created_path = shutil.copy(file_path, prefix)
-        return created_path.replace(self.root_prefix + "/", "")
+        created_path = shutil.copy(file_path, target_path)
+        logger.debug("Created: %s", created_path)
+        return prefix
 
     def _pull(self, prefix: str, dir_path: str) -> str:
         """ Copies a file from destination to source """
+        origin_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
         destination_path = os.path.join(
             dir_path,
             os.path.split(prefix)[1],
         )
         try:
-            shutil.copy(prefix, destination_path)
+            shutil.copy(origin_path, destination_path)
             return destination_path
         except FileNotFoundError as exc:
             logger.error(exc)
@@ -115,28 +124,36 @@ class FileSystemStorage(BlobStorage):
     def _remove(self, prefix: str) -> bool:
         """ Removes a file from the destination path
         and any empty directories up the tree """
-        if not os.path.exists(prefix):
-            logger.debug("Remote file does not exist: %s", prefix)
+        target_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        if not os.path.exists(target_path):
+            logger.debug("Remote file does not exist: %s", target_path)
             return False
-        os.remove(prefix)
+        os.remove(target_path)
 
-        parent_dir = os.path.split(prefix)[0]
+        parent_dir = os.path.split(target_path)[0]
         while len(os.listdir(parent_dir)) == 0:
+            if parent_dir == self.root_prefix:
+                break
             try:
                 logger.debug("Removing directory: %s", parent_dir)
                 os.rmdir(parent_dir)
                 parent_dir = os.path.split(parent_dir)[0]
-                if parent_dir == self.root_prefix:
-                    break
             except OSError:
                 break
         return True
 
     def _read_json_objects(self, prefix: str) -> list:
-        if not os.path.exists(prefix):
+        origin_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        if not os.path.exists(origin_path):
             return []
         results = []
-        for entry in os.listdir(prefix):
+        for entry in os.listdir(origin_path):
             if not entry.endswith(".json"):
                 continue
             version_path = os.path.join(prefix, entry)
@@ -154,8 +171,12 @@ class FileSystemStorage(BlobStorage):
         )
 
     def _read_json_object(self, prefix: str) -> dict:
+        origin_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
         try:
-            with open(prefix, "r") as lines:
+            with open(origin_path, "r") as lines:
                 return json.loads(lines.read())
         except json.JSONDecodeError:
             return None

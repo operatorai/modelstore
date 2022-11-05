@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from tempfile import TemporaryDirectory
 import json
 import os
 
@@ -44,3 +45,13 @@ def remote_path():
 
 def remote_file_path():
     return os.path.join(remote_path(), TEST_FILE_NAME)
+
+
+def push_temp_file(storage, contents = None) -> str:
+    with TemporaryDirectory() as tmp_dir:
+        # pylint: disable=protected-access
+        result = storage._push(
+            create_file(tmp_dir, contents),
+            remote_file_path(),
+        )
+    return result

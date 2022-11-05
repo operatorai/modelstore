@@ -91,10 +91,7 @@ class AWSStorage(BlobStorage):
     def _push(self, file_path: str, prefix: str) -> str:
         logger.info("Uploading to: %s...", prefix)
         self.client.upload_file(file_path, self.bucket_name, prefix)
-        return os.path.join(
-            prefix,
-            os.path.split(file_path)[1],
-        )
+        return prefix
 
     def _pull(self, prefix: str, dir_path: str) -> str:
         try:

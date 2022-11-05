@@ -98,7 +98,7 @@ def test_push(moto_boto):
     with TemporaryDirectory() as tmp_dir:
         result = storage._push(
             create_file(tmp_dir),
-            remote_path(),
+            remote_file_path(),
         )
 
     # The correct remote prefix is returned
@@ -108,79 +108,80 @@ def test_push(moto_boto):
     assert get_file_contents(moto_boto, result) == TEST_FILE_CONTENTS
 
 
-# def test_pull(tmp_path):
-#     # Push a file to storage
-#     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-#     with TemporaryDirectory() as tmp_dir:
-#         _ = storage._push(
-#             create_file(tmp_dir),
-#             remote_path(),
-#         )
+def test_pull():
+    # Push a file to storage
+    storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+    with TemporaryDirectory() as tmp_dir:
+        _ = storage._push(
+            create_file(tmp_dir),
+            remote_file_path(),
+        )
 
-#     # Pull the file back from storage
-#     with TemporaryDirectory() as tmp_dir:
-#         tmp_path = os.path.join(tmp_dir, TEST_FILE_NAME)
-#         result = storage._pull(
-#             remote_file_path(),
-#             tmp_path,
-#         )
+    # Pull the file back from storage
+    with TemporaryDirectory() as tmp_dir:
+        result = storage._pull(
+            remote_file_path(),
+            tmp_dir,
+        )
 
-#         # The correct local path is returned
-#         assert result == tmp_path
+        # The correct local path is returned
+        assert result == os.path.join(
+            tmp_dir,
+            TEST_FILE_NAME
+        )
 
-#         # The local file exists, with the right content
-#         assert os.path.exists(tmp_path)
-#         assert file_contains_expected_contents(result)
-
-
-# @pytest.mark.parametrize(
-#     "file_exists,should_call_delete",
-#     [
-#         (
-#             False,
-#             False,
-#         ),
-#         (
-#             True,
-#             True,
-#         ),
-#     ],
-# )
-# def test_remove(file_exists, should_call_delete):
-#     # Push a file to storage
-#     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    
-#     remote_destination = remote_file_path()
-#     if file_exists:
-#         with TemporaryDirectory() as tmp_dir:
-#             _ = storage._push(
-#                 create_file(tmp_dir),
-#                 remote_path(),
-#             )
-
-#     # pylint: disable=bare-except
-#     assert storage._remove(remote_destination) == should_call_delete
+        # The local file exists, with the right content
+        assert os.path.exists(result)
+        assert file_contains_expected_contents(result)
 
 
-# def test_read_json_objects_ignores_non_json(tmp_path):
-#     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-#     prefix = remote_path()
-#     # Create files with different suffixes
-#     for file_type in ["txt", "json"]:
-#         source = os.path.join(tmp_path, f"test-file-source.{file_type}")
-#         with open(source, "w") as out:
-#             # content
-#             out.write(json.dumps({"key": "value"}))
+@pytest.mark.parametrize(
+    "file_exists,should_call_delete",
+    [
+        (
+            False,
+            False,
+        ),
+        (
+            True,
+            True,
+        ),
+    ],
+)
+def test_remove(file_exists, should_call_delete):
+    # Push a file to storage
+    storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+    remote_destination = remote_file_path()
+    if file_exists:
+        with TemporaryDirectory() as tmp_dir:
+            _ = storage._push(
+                create_file(tmp_dir),
+                remote_file_path(),
+            )
 
-#         # Push the file to storage
-#         remote_destination = os.path.join(
-#             prefix, f"test-file-destination.{file_type}"
-#         )
-#         storage._push(source, remote_destination)
+    # pylint: disable=bare-except
+    assert storage._remove(remote_destination) == should_call_delete
 
-#     # Read the json files at the prefix
-#     items = storage._read_json_objects(prefix)
-#     assert len(items) == 1
+
+def test_read_json_objects_ignores_non_json(tmp_path):
+    storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
+    prefix = remote_path()
+    # Create files with different suffixes
+    for file_type in ["txt", "json"]:
+        source = os.path.join(tmp_path, f"test-file-source.{file_type}")
+        with open(source, "w") as out:
+            # content
+            out.write(json.dumps({"key": "value"}))
+
+        # Push the file to storage
+        remote_destination = os.path.join(
+            prefix, f"test-file-destination.{file_type}"
+        )
+        storage._push(source, remote_destination)
+
+    # Read the json files at the prefix
+    items = storage._read_json_objects(prefix)
+    assert len(items) == 1
 
 
 # def test_read_json_object_fails_gracefully(tmp_path):
