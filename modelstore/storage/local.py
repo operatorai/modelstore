@@ -121,7 +121,7 @@ class FileSystemStorage(BlobStorage):
             shutil.copy(origin_path, destination_path)
             return destination_path
         except FileNotFoundError as exc:
-            logger.error(exc)
+            logger.debug(exc)
             raise FilePullFailedException(exc) from exc
 
     def _remove(self, prefix: str) -> bool:
