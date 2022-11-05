@@ -20,6 +20,7 @@ from modelstore.model_store import ModelStore
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.utils.exceptions import (
     ModelExistsException,
+    DomainNotFoundException,
     ModelNotFoundException,
 )
 
@@ -39,9 +40,17 @@ def model_file(tmp_path: PosixPath):
     return file_path
 
 
-def test_model_not_found(model_store: ModelStore):
-    with pytest.raises(ModelNotFoundException):
+def test_model_not_found(model_store: ModelStore, model_file: str):
+    with pytest.raises(DomainNotFoundException):
         model_store.get_model_info("missing-domain", "missing-model")
+
+    model_store.upload(
+        domain="existing-domain",
+        model_id="test-model-id-1",
+        model=model_file
+    )
+    with pytest.raises(ModelNotFoundException):
+        model_store.get_model_info("existing-domain", "missing-model")
 
 
 def test_model_exists(model_store: ModelStore, model_file: str):
