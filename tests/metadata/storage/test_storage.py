@@ -23,12 +23,17 @@ from modelstore.metadata import metadata
 def test_generate_from_path():
     expected = metadata.Storage(
         type="file_system",
+        root="root",
         path="/path/to/files",
         bucket=None,
         container=None,
         prefix=None,
     )
-    result = metadata.Storage.from_path("file_system", "/path/to/files")
+    result = metadata.Storage.from_path(
+        "file_system", 
+        "root",
+        "/path/to/files",
+    )
     assert expected == result
 
     result_dict = json.loads(result.to_json())

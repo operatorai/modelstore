@@ -52,7 +52,8 @@ def meta_data(extra_meta_data):
         ),
         storage=metadata.Storage.from_path(
             "example-storage-type",
-            "path-to-files",
+            "root-directory",
+            "path/to/files",
         ),
         modelstore=modelstore.__version__,
         extra=extra_meta_data,
