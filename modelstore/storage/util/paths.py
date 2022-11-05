@@ -22,7 +22,7 @@ MODELSTORE_ROOT_PREFIX = "operatorai-model-store"
 
 def get_archive_path(root_dir: str, domain: str, model_id: str, local_path: str) -> str:
     """Creates a bucket prefix where a model archive will be stored.
-    I.e.: :code:`operatorai-model-store/<domain>/<prefix>/<file-name>`
+    I.e.: :code:`operatorai-model-store/<domain>/<prefix>/<model-id>/<file-name>`
 
     Args:
         root_dir (str): The root directory/prefix for this type
