@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+**🆕  New functionality**
+
+You can move model stores that you created in one file system directory to another one (e.g., making it a mounted volume in a container) and `modelstore` will continue to work ([#209](https://github.com/operatorai/modelstore/pull/209), thanks [@hauks96](https://github.com/operatorai/modelstore/issues/189)).
+
 **🐛  Bug fixes & general updates**
 
 Fixes an issue where model archives would be overwritten if models are uploaded too quickly ([#208](https://github.com/operatorai/modelstore/pull/208), thanks [@shsnyder](https://github.com/operatorai/modelstore/issues/197)).

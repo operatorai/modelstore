@@ -30,8 +30,9 @@ class Storage:
     type: str
 
     # Path-like storage (e.g. local)
+    root: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
     path: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
-    
+
     # Container-like storage
     bucket: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
     prefix: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
@@ -40,15 +41,13 @@ class Storage:
     container: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
-    def from_path(cls, storage_type: str, path: str) -> "Storage":
+    def from_path(cls, storage_type: str, root: str, path: str) -> "Storage":
         """ Generates the meta data about where the model
         is going to be saved when it is saved in path-like storage """
         return Storage(
             type=storage_type,
+            root=root,
             path=path,
-            bucket=None,
-            container=None,
-            prefix=None,
         )
 
     @classmethod
@@ -57,9 +56,7 @@ class Storage:
         is going to be saved when it is saved in container storage """
         return Storage(
             type=storage_type,
-            path=None,
             bucket=bucket,
-            container=None,
             prefix=prefix,
         )
 
@@ -69,8 +66,6 @@ class Storage:
         is going to be saved when it is saved in an Azure container """
         return Storage(
             type=storage_type,
-            path=None,
-            bucket=None,
             container=container,
             prefix=prefix,
         )

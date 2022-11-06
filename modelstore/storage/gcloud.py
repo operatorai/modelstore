@@ -168,28 +168,30 @@ class GoogleCloudStorage(BlobStorage):
                 )
                 return False
 
-    def _push(self, source: str, destination: str) -> str:
+    def _push(self, file_path: str, prefix: str) -> str:
         if self.is_anon_client:
             raise NotImplementedError(
                 "File upload is only supported for authenticated clients."
             )
-        logger.info("Uploading to: %s...", destination)
-        blob = self.bucket.blob(destination)
+        logger.info("Uploading to: %s...", prefix)
+        blob = self.bucket.blob(prefix)
 
         ## For slow upload speed
         # https://stackoverflow.com/questions/61001454/why-does-upload-from-file-google-cloud-storage-function-throws-timeout-error
 
-        with open(source, "rb") as f:
+        with open(file_path, "rb") as f:
             blob.upload_from_file(f)
-        return destination
+        return prefix
 
-    def _pull(self, source: str, destination: str) -> str:
+    def _pull(self, prefix: str, dir_path: str) -> str:
         """Pulls a model to a destination"""
         try:
-            logger.debug("Downloading from: %s...", source)
-            file_name = os.path.split(source)[1]
-            destination = os.path.join(destination, file_name)
-            blob = self.bucket.blob(source)
+            logger.debug("Downloading from: %s...", prefix)
+            destination = os.path.join(
+                dir_path, 
+                os.path.split(prefix)[1],
+            )
+            blob = self.bucket.blob(prefix)
             blob.download_to_filename(destination)
             return destination
         except NotFound as exc:

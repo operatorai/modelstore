@@ -26,7 +26,7 @@ from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_NAME,
     remote_file_path,
-    temp_file,
+    push_temp_file,
 )
 
 # pylint: disable=redefined-outer-name
@@ -94,7 +94,9 @@ def gcloud_storage(mock_client: storage.Client, is_anon_client: bool):
     )
 
 
-def gcloud_client(bucket_exists: bool, blob_exists: bool, is_anon_client: bool, file_contents: str = TEST_FILE_CONTENTS):
+def gcloud_client(
+    bucket_exists: bool, blob_exists: bool, is_anon_client: bool, 
+    file_contents: str = TEST_FILE_CONTENTS):
     if is_anon_client:
         client = gcloud_anon_client(bucket_exists, blob_exists, file_contents)
         return client, gcloud_storage(client, is_anon_client)
@@ -140,7 +142,7 @@ def test_validate(bucket_exists, is_anon_client, validate_should_pass):
     assert storage.validate() == validate_should_pass
 
 
-def test_push(tmp_path):
+def test_push():
     _, storage = gcloud_client(
         bucket_exists=True,
         blob_exists=False,
@@ -148,29 +150,27 @@ def test_push(tmp_path):
     )
 
     # Push a file
-    prefix = remote_file_path()
-    result = storage._push(temp_file(tmp_path), prefix)
+    result = push_temp_file(storage)
 
     # Assert that the correct prefix is returned
     # and that an upload happened
-    assert result == prefix
+    assert result == remote_file_path()
 
     # Assert that an upload happened
     mock_bucket = storage.client.get_bucket(storage.bucket_name)
-    mock_blob = mock_bucket.blob(prefix)
+    mock_blob = mock_bucket.blob(result)
     mock_blob.upload_from_file.assert_called()
 
 
-def test_anonymous_push(tmp_path):
+def test_anonymous_push():
     _, storage = gcloud_client(
         bucket_exists=True,
         blob_exists=False,
         is_anon_client=True
     )
 
-    prefix = remote_file_path()
     with pytest.raises(NotImplementedError):
-        _ = storage._push(temp_file(tmp_path), prefix)
+        _ = push_temp_file(storage)
 
 
 def test_pull(tmp_path):

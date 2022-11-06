@@ -18,8 +18,9 @@ from modelstore.metadata import metadata
 from modelstore.storage.util.paths import (
     MODELSTORE_ROOT_PREFIX,
     get_domain_path,
-    get_models_path,
+    get_model_version_path,
 )
+from modelstore.utils.exceptions import DomainNotFoundException
 
 # pylint: disable=unused-import
 from tests.storage.test_blob_storage import (
@@ -66,18 +67,6 @@ def test_list_models(mock_blob_storage):
     assert models[1] == "model-1"
 
 
-def test_get_metadata_path(mock_blob_storage):
-    exp = os.path.join(
-        mock_blob_storage.root_prefix,
-        MODELSTORE_ROOT_PREFIX,
-        "domain",
-        "versions",
-        "model-id.json",
-    )
-    res = mock_blob_storage._get_metadata_path("domain", "model-id")
-    assert exp == res
-
-
 def test_set_meta_data(mock_blob_storage):
     # Set the meta data of a fake model
     meta_data = mock_meta_data("domain-1", "model-1", inc_time=0)
@@ -89,12 +78,10 @@ def test_set_meta_data(mock_blob_storage):
     assert_file_contents_equals(domain_meta_data_path, meta_data)
 
     # (2) The meta data for a specific model
-    model_meta_data_path = os.path.join(
-        get_models_path(
-            mock_blob_storage.root_prefix,
-            "domain-1"
-        ),
-        "model-1.json",
+    model_meta_data_path = get_model_version_path(
+        mock_blob_storage.root_prefix,
+        "domain-1",
+        "model-1",
     )
     assert_file_contents_equals(model_meta_data_path, meta_data)
 
@@ -116,5 +103,5 @@ def test_get_meta_data(mock_blob_storage):
     [(None, "model-2"), ("", "model-2"), ("domain-1", None), ("domain-1", "")],
 )
 def test_get_meta_data_undefined_input(mock_blob_storage, domain, model_id):
-    with pytest.raises(ValueError):
+    with pytest.raises(DomainNotFoundException):
         mock_blob_storage.get_meta_data(domain, model_id)

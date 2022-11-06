@@ -19,6 +19,16 @@ from modelstore import ModelStore
 from modelstore.utils import exceptions
 
 
+def assert_get_missing_model_raises(model_store: ModelStore, domain: str, _: dict):
+    """ Calling get_model_info() for a missing model raise an exception """
+    try:
+        _ = model_store.get_model_info(domain, "missing-model")
+    except exceptions.ModelNotFoundException:
+        print("✅  Modelstore raises a ModelNotFoundException if it can't find a model")
+        return
+    raise AssertionError("failed to raise ModelNotFoundException")
+
+
 def assert_list_domains(model_store: ModelStore, domain: str, _: dict):
     """ The result of listing all domains contains the `domain` value """
     domains = model_store.list_domains()
@@ -101,6 +111,7 @@ def get_actions() -> List[Callable]:
     """ Returns the set of actions that can be run on a model_store
     after a model has been uploaded """
     return [
+        assert_get_missing_model_raises,
         assert_list_domains,
         assert_get_domain,
         assert_list_models,

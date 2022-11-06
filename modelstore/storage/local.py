@@ -61,7 +61,7 @@ class FileSystemStorage(BlobStorage):
         self._create_directory = create_directory
 
     def validate(self) -> bool:
-        """This validates that the directory exists and can be written to"""
+        """ Validates that the directory exists and can be written to """
         # pylint: disable=broad-except
         # Check that the directory exists & we can write to it
         parent_dir = os.path.split(self.root_prefix)[0]
@@ -72,7 +72,7 @@ class FileSystemStorage(BlobStorage):
 
         if not os.path.exists(self.root_prefix):
             if not self._create_directory:
-                raise Exception("Error: root_dir does not exist")
+                raise FileNotFoundError("Error: root_dir does not exist")
             logger.debug("creating root directory %s", self.root_prefix)
             os.mkdir(self.root_prefix)
         if not os.path.isdir(self.root_prefix):
@@ -88,91 +88,99 @@ class FileSystemStorage(BlobStorage):
             logger.error(ex)
             return False
 
-    def _get_metadata_path(
-        self, domain: str, model_id: str, state_name: Optional[str] = None
-    ) -> str:
-        """Creates a path where a meta-data file about a model is stored.
-        I.e.: :code:`operatorai-model-store/<domain>/versions/<model-id>.json`
+    def _get_storage_location(self, meta_data: metadata.Storage) -> str:
+        if self.root_prefix != meta_data.root:
+            warnings.warn("Warning: this model store instance different has a "
+            + "root_dir than the one where the model was saved")
+        return meta_data.path
 
-        Args:
-            domain (str): A group of models that are trained for the
-            same end-use are given the same domain.
+    def _push(self, file_path: str, prefix: str) -> str:
+        target_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        parent_dir = os.path.split(target_path)[0]
+        if not os.path.exists(parent_dir):
+            logger.debug("Creating: %s", parent_dir)
+            os.makedirs(parent_dir)
+        created_path = shutil.copy(file_path, target_path)
+        logger.debug("Created: %s", created_path)
+        return prefix
 
-            model_id (str): A UUID4 string that identifies this specific
-            model.
-        """
-        meta_data_path = super()._get_metadata_path(domain, model_id, state_name)
-        return self.relative_dir(meta_data_path)
-
-    def _push(self, source: str, destination: str) -> str:
-        destination = self.relative_dir(destination)
-        shutil.copy(source, destination)
-        return destination
-
-    def _pull(self, source: str, destination: str) -> str:
-        if not os.path.exists(source):
-            raise FilePullFailedException(f"File {source} does not exist.")
-
+    def _pull(self, prefix: str, dir_path: str) -> str:
+        """ Copies a file from destination to source """
+        origin_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        destination_path = os.path.join(
+            dir_path,
+            os.path.split(prefix)[1],
+        )
         try:
-            file_name = os.path.split(source)[1]
-            shutil.copy(source, destination)
-            return os.path.join(os.path.abspath(destination), file_name)
+            shutil.copy(origin_path, destination_path)
+            return destination_path
         except FileNotFoundError as exc:
+            logger.debug(exc)
             raise FilePullFailedException(exc) from exc
 
-    def _remove(self, destination: str) -> bool:
-        """Removes a file from the destination path"""
-        # @TODO: Empty directories are left behind after the destination file
-        # has been deleted
-        destination = self.relative_dir(destination)
-        if not os.path.exists(destination):
-            logger.debug("Remote file does not exist: %s", destination)
+    def _remove(self, prefix: str) -> bool:
+        """ Removes a file from the destination path
+        and any empty directories up the tree """
+        target_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        if not os.path.exists(target_path):
+            logger.debug("Remote file does not exist: %s", target_path)
             return False
-        os.remove(destination)
+        os.remove(target_path)
+
+        parent_dir = os.path.split(target_path)[0]
+        while len(os.listdir(parent_dir)) == 0:
+            if parent_dir == self.root_prefix:
+                break
+            try:
+                logger.debug("Removing directory: %s", parent_dir)
+                os.rmdir(parent_dir)
+                parent_dir = os.path.split(parent_dir)[0]
+            except OSError:
+                break
         return True
 
-    def _read_json_objects(self, path: str) -> list:
-        path = self.relative_dir(path)
-        if not os.path.exists(path):
+    def _read_json_objects(self, prefix: str) -> list:
+        origin_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        if not os.path.exists(origin_path):
             return []
         results = []
-        for entry in os.listdir(path):
+        for entry in os.listdir(origin_path):
             if not entry.endswith(".json"):
                 continue
-            version_path = os.path.join(path, entry)
-            body = _read_json_file(version_path)
+            version_path = os.path.join(prefix, entry)
+            body = self._read_json_object(version_path)
             if body is not None:
                 results.append(body)
         return sorted_by_created(results)
-
-    def relative_dir(self, file_path: str) -> str:
-        """Returns the file_path, relative to the root_prefix for
-        this local file system storage"""
-        paths = os.path.split(file_path)
-        parent_dir = os.path.join(self.root_prefix, paths[0])
-        if not os.path.exists(parent_dir):
-            os.makedirs(parent_dir)
-        return os.path.join(parent_dir, paths[1])
 
     def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
         return metadata.Storage.from_path(
             storage_type="file_system",
-            path=os.path.abspath(self.relative_dir(prefix))
+            root=self.root_prefix,
+            path=prefix,
         )
 
-    def _get_storage_location(self, meta_data: metadata.Storage) -> str:
-        """Extracts the storage location from a meta data dictionary"""
-        return meta_data.path
-
-    def _read_json_object(self, path: str) -> dict:
-        path = self.relative_dir(path)
-        return _read_json_file(path)
-
-
-def _read_json_file(path: str) -> dict:
-    try:
-        with open(path, "r") as lines:
-            return json.loads(lines.read())
-    except json.JSONDecodeError:
-        return None
+    def _read_json_object(self, prefix: str) -> dict:
+        origin_path = os.path.join(
+            self.root_prefix,
+            prefix,
+        )
+        try:
+            # pylint: disable=unspecified-encoding
+            with open(origin_path, "r") as lines:
+                return json.loads(lines.read())
+        except json.JSONDecodeError:
+            return None

@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from pathlib import PosixPath, Path
+from pathlib import PosixPath
 import os
 
 import pytest
@@ -20,11 +20,16 @@ from modelstore.model_store import ModelStore
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.utils.exceptions import (
     ModelExistsException,
+    DomainNotFoundException,
     ModelNotFoundException,
 )
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
+# pylint: disable=unused-import
+from tests.test_utils import (
+    model_file,
+)
 
 
 @pytest.fixture
@@ -32,16 +37,17 @@ def model_store(tmp_path: PosixPath):
     return ModelStore.from_file_system(root_directory=str(tmp_path))
 
 
-@pytest.fixture
-def model_file(tmp_path: PosixPath):
-    file_path = os.path.join(tmp_path, "model.txt")
-    Path(file_path).touch()
-    return file_path
-
-
-def test_model_not_found(model_store: ModelStore):
-    with pytest.raises(ModelNotFoundException):
+def test_model_not_found(model_store: ModelStore, model_file: str):
+    with pytest.raises(DomainNotFoundException):
         model_store.get_model_info("missing-domain", "missing-model")
+
+    model_store.upload(
+        domain="existing-domain",
+        model_id="test-model-id-1",
+        model=model_file
+    )
+    with pytest.raises(ModelNotFoundException):
+        model_store.get_model_info("existing-domain", "missing-model")
 
 
 def test_model_exists(model_store: ModelStore, model_file: str):

@@ -11,6 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from tempfile import TemporaryDirectory
 import json
 import os
 
@@ -28,7 +29,8 @@ from tests.storage.test_utils import (
     file_contains_expected_contents,
     remote_file_path,
     remote_path,
-    temp_file,
+    push_temp_file,
+    push_temp_files,
 )
 
 # pylint: disable=redefined-outer-name
@@ -91,35 +93,39 @@ def test_validate(bucket_name, validate_should_pass):
     assert storage.validate() == validate_should_pass
 
 
-def test_push(tmp_path, moto_boto):
+def test_push(moto_boto):
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    prefix = remote_file_path()
-    result = storage._push(temp_file(tmp_path), prefix)
+    result = push_temp_file(storage)
 
     # The correct remote prefix is returned
-    assert result == prefix
+    assert result == remote_file_path()
 
     # The remote file has the right contents
     assert get_file_contents(moto_boto, result) == TEST_FILE_CONTENTS
 
 
-def test_pull(tmp_path):
+def test_pull():
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    prefix = remote_file_path()
-    remote_destination = storage._push(temp_file(tmp_path), prefix)
+    _ = push_temp_file(storage)
 
     # Pull the file back from storage
-    local_destination = os.path.join(tmp_path, TEST_FILE_NAME)
-    result = storage._pull(remote_destination, tmp_path)
+    with TemporaryDirectory() as tmp_dir:
+        result = storage._pull(
+            remote_file_path(),
+            tmp_dir,
+        )
 
-    # The correct local path is returned
-    assert result == local_destination
+        # The correct local path is returned
+        assert result == os.path.join(
+            tmp_dir,
+            TEST_FILE_NAME
+        )
 
-    # The local file exists, with the right content
-    assert os.path.exists(local_destination)
-    assert file_contains_expected_contents(local_destination)
+        # The local file exists, with the right content
+        assert os.path.exists(result)
+        assert file_contains_expected_contents(result)
 
 
 @pytest.mark.parametrize(
@@ -135,36 +141,21 @@ def test_pull(tmp_path):
         ),
     ],
 )
-def test_remove(tmp_path, file_exists, should_call_delete):
+def test_remove(file_exists, should_call_delete):
     # Push a file to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    remote_destination = remote_file_path()
     if file_exists:
-        storage._push(temp_file(tmp_path), remote_destination)
+        _ = push_temp_file(storage)
 
     # pylint: disable=bare-except
-    try:
-        assert storage._remove(remote_destination) == should_call_delete
-    except:
-        # Should fail gracefully here
-        pytest.fail("Remove raised an exception")
+    prefix = remote_file_path()
+    assert storage._remove(prefix) == should_call_delete
 
 
 def test_read_json_objects_ignores_non_json(tmp_path):
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
     prefix = remote_path()
-    # Create files with different suffixes
-    for file_type in ["txt", "json"]:
-        source = os.path.join(tmp_path, f"test-file-source.{file_type}")
-        with open(source, "w") as out:
-            # content
-            out.write(json.dumps({"key": "value"}))
-
-        # Push the file to storage
-        remote_destination = os.path.join(
-            prefix, f"test-file-destination.{file_type}"
-        )
-        storage._push(source, remote_destination)
+    push_temp_files(storage, prefix)
 
     # Read the json files at the prefix
     items = storage._read_json_objects(prefix)
@@ -172,19 +163,12 @@ def test_read_json_objects_ignores_non_json(tmp_path):
 
 
 def test_read_json_object_fails_gracefully(tmp_path):
-    # Push a file that doesn't contain JSON to storage
     storage = AWSStorage(bucket_name=_MOCK_BUCKET_NAME)
-    prefix = remote_file_path()
-    text_file = os.path.join(tmp_path, "test.txt")
-    # pylint: disable=unspecified-encoding
-    with open(text_file, "w") as out:
-        out.write("some text in a file")
-    remote_path = storage._push(text_file, prefix)
+    # Push a file that doesn't contain JSON to storage
+    remote_path = push_temp_file(storage, contents="not json")
 
     # Read the json files at the prefix
     item = storage._read_json_object(remote_path)
-
-    # Return None if we can't decode the JSON
     assert item is None
 
 
