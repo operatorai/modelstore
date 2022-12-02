@@ -31,9 +31,9 @@ jobs:
       MODEL_STORE_STORAGE: ${{ matrix.storage-type }}
     steps:
     - name: 'Check out repo'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.8
     - name: Install dependencies
@@ -44,7 +44,7 @@ jobs:
         pip install -e ..
     - name: 'Authenticate to Google Cloud'
       if: ${{ env.MODEL_STORE_STORAGE == 'google-cloud-storage' }}
-      uses: 'google-github-actions/auth@v0.8.1'
+      uses: 'google-github-actions/auth@v1'
       with:
         create_credentials_file: true
         workload_identity_provider: ${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}
