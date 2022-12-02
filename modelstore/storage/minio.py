@@ -131,7 +131,7 @@ class MinIOStorage(BlobStorage):
     def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
         return metadata.Storage.from_bucket(
-            storage_type="minio",
+            storage_type=f"minio:{self.endpoint}",
             bucket=self.bucket_name,
             prefix=prefix,
         )
