@@ -38,7 +38,9 @@ pip install modelstore
 * AWS S3 Bucket ([example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L17-L21))
 * Azure Blob Storage ([example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L24-L31))
 * Google Cloud Storage Bucket ([example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L34-L41))
+* Any s3-compatible object storage that you can access via [MinIO](https://min.io/)
 * A filesystem directory ([example](https://github.com/operatorai/modelstore/blob/b096275018674243835d21102f75b6270dfa2c97/examples/examples-by-storage/modelstores.py#L44-L49))
+
 
 ## Supported machine learning libraries
 
