@@ -1,5 +1,5 @@
 set -e
-backends=( filesystem aws azure gcloud )
+backends=( filesystem aws-s3 google-cloud-storage azure-container minio )
 frameworks=( annoy catboost fastai file gensim keras lightgbm \
 	mxnet onnx-sklearn onnx-lightgbm prophet pytorch pytorch-lightning sklearn \
 	sklearn-with-explainer sklearn-with-extras skorch \

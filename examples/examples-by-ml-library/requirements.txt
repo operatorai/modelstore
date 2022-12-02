@@ -1,12 +1,15 @@
 # Demo requirements
-click==8.1.2
+# Versions unpinned to make it easier to test everything with
+# the latest version
+click
 
 # Storage requirements
 protobuf==3.20.1 # https://github.com/protocolbuffers/protobuf/issues/10051
-google-cloud-storage==2.2.1
-boto3==1.21.32
-azure-core==1.23.1
-azure-storage-blob==12.11.0
+google-cloud-storage
+boto3
+azure-core
+azure-storage-blob
+minio
 
 # Data / dependencies for ML libraries
 numpy>=1.19.2
@@ -17,23 +20,23 @@ numba==0.55.1
 pystan==2.19.1.1 # required to be installed before prophet
 
 # Machine learning libraries
-annoy==1.17.0
-catboost==1.0.4
-fastai==2.5.6
-gensim==4.1.2
-lightgbm==3.2.1
-mxnet==1.8.0.post0
-onnx==1.11.0
-onnxruntime==1.11.0
-onnxmltools==1.11.0
-prophet==1.0.1
-pytorch-lightning==1.6.1
-scikit-learn==1.0.2
-shap==0.40.0
-skl2onnx==1.11.1
-skorch==0.11.0
-tensorflow==2.9.3
-transformers==4.18.0
-torch==1.11.0
-torchvision==0.12.0
-xgboost==1.5.2
+annoy
+catboost
+fastai
+gensim
+lightgbm
+mxnet
+onnx
+onnxruntime
+onnxmltools
+prophet
+pytorch-lightning
+scikit-learn
+shap
+skl2onnx
+skorch
+tensorflow
+transformers
+torch
+torchvision
+xgboost
