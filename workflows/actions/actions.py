@@ -27,6 +27,7 @@ MODEL_DOMAIN = "diabetes-boosting-demo"
 def run_on_storage(model_store: ModelStore):
     """ Runs a series of actions on `model_store` that don't require a model """
     for func in storage.get_actions():
+        print(f"🔍  Running {str(func)}")
         func(model_store, MODEL_DOMAIN)
     print("✅  Storage assertions passed")
 

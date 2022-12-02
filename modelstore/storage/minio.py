@@ -24,7 +24,7 @@ from modelstore.utils.exceptions import FilePullFailedException
 
 try:
     from minio import Minio
-    from minio.error import ResponseError
+    from minio.error import InvalidResponseError, S3Error
 
     MINIO_EXISTS = True
 except ImportError:
@@ -112,7 +112,7 @@ class MinIOStorage(BlobStorage):
                 destination
             )
             return destination
-        except ResponseError as exc:
+        except (InvalidResponseError, S3Error) as exc:
             raise FilePullFailedException(exc) from exc
 
     def _remove(self, prefix: str) -> bool:
@@ -152,11 +152,15 @@ class MinIOStorage(BlobStorage):
         objects = self.client.list_objects(
             self.bucket_name,
             prefix,
-            recursive=False,
+            recursive=True,
         )
         for obj in objects:
             if not obj.object_name.endswith(".json"):
                 logger.debug("Skipping non-json file: %s", obj.object_name)
+                continue
+            if os.path.split(obj.object_name)[0] != prefix:
+                # We don't want to read files in a sub-prefix
+                logger.debug("Skipping file in sub-prefix: %s", obj.object_name)
                 continue
             obj = self._read_json_object(obj.object_name)
             if obj is not None:

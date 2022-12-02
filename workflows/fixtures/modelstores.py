@@ -18,6 +18,7 @@ from modelstore.storage.aws import AWSStorage
 from modelstore.storage.azure import AzureBlobStorage
 from modelstore.storage.gcloud import GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.minio import MinIOStorage
 
 
 def create_model_store(backend) -> ModelStore:
@@ -27,6 +28,7 @@ def create_model_store(backend) -> ModelStore:
         AzureBlobStorage.NAME: create_azure_model_store,
         GoogleCloudStorage.NAME: create_gcloud_model_store,
         FileSystemStorage.NAME: create_file_system_model_store,
+        MinIOStorage.NAME: create_minio_model_store,
     }
     return modelstores[backend]()
 
@@ -36,6 +38,16 @@ def create_aws_model_store() -> ModelStore:
     return ModelStore.from_aws_s3(
         os.environ["MODEL_STORE_AWS_BUCKET"],
         root_prefix="example-by-ml-library",
+    )
+
+
+def create_minio_model_store() -> ModelStore:
+    """ A model store that uses an s3 bucket with a MinIO client """
+    return ModelStore.from_minio(
+        access_key=os.environ["AWS_ACCESS_KEY_ID"],
+        secret_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+        bucket_name=os.environ["MODEL_STORE_AWS_BUCKET"],
+        root_prefix="example-by-ml-library"
     )
 
 
