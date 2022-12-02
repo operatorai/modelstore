@@ -11,17 +11,13 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from tempfile import TemporaryDirectory
-import os
-from urllib3.response import HTTPResponse
 from unittest.mock import ANY
 import mock
+import pytest
 
+from urllib3.response import HTTPResponse
 from minio import Minio
 from minio.datatypes import Object
-import boto3
-import pytest
-from moto import mock_s3
 
 from modelstore.metadata import metadata
 from modelstore.storage.minio import MinIOStorage
@@ -60,11 +56,11 @@ def storage(mock_minio):
 
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
-    monkeypatch.setenv("MODEL_STORE_AWS_BUCKET", _MOCK_BUCKET_NAME)
-    # pylint: disable=bare-except
+    for key in MinIOStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
+        monkeypatch.setenv(key, "a-value")
     try:
         _ = MinIOStorage()
-    except:
+    except KeyError:
         pytest.fail("Failed to initialise storage from env variables")
 
 
@@ -205,9 +201,8 @@ def test_storage_location(storage):
         ),
     ],
 )
-def test_get_location(meta_data, should_raise, result):
+def test_get_location(storage, meta_data, should_raise, result):
     # Asserts that pulling the location out of meta data is correct
-    storage = MinIOStorage(bucket_name=_MOCK_BUCKET_NAME)
     if should_raise:
         with pytest.raises(ValueError):
             storage._get_storage_location(meta_data)
