@@ -42,17 +42,17 @@ class MinIOStorage(BlobStorage):
     """
 
     NAME = "minio"
-    # BUILD_FROM_ENVIRONMENT = {
-    #     "required": [
-    #         "MODEL_STORE_AWS_BUCKET",
-    #         "AWS_ACCESS_KEY_ID",
-    #         "AWS_SECRET_ACCESS_KEY",
-    #     ],
-    #     "optional": [
-    #         "MODEL_STORE_REGION",
-    #         "MODEL_STORE_AWS_ROOT_PREFIX",
-    #     ],
-    # }
+    BUILD_FROM_ENVIRONMENT = {
+        "required": [
+            "MODEL_STORE_MINIO_BUCKET",
+            "MINIO_ACCESS_KEY",
+            "MINIO_SECRET_KEY",
+            "MINIO_ENDPOINT",
+        ],
+        "optional": [
+            "MODEL_STORE_MINIO_ROOT_PREFIX",
+        ],
+    }
 
     def __init__(
         self,
@@ -67,7 +67,7 @@ class MinIOStorage(BlobStorage):
         self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_MINIO_BUCKET")
         self.access_key = environment.get_value(access_key, "MINIO_ACCESS_KEY")
         self.secret_key = environment.get_value(secret_key, "MINIO_SECRET_KEY")
-        self.endpoint = environment.get_value(bucket_name, "MINIO_ENDPOINT", allow_missing=True)
+        self.endpoint = environment.get_value(endpoint, "MINIO_ENDPOINT", allow_missing=True)
         if self.endpoint is None:
             self.endpoint = "s3.amazonaws.com"
         self.__client = None
