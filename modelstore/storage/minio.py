@@ -66,15 +66,15 @@ class MinIOStorage(BlobStorage):
         super().__init__(["minio"], root_prefix, "MODEL_STORE_MINIO_ROOT_PREFIX")
         # If arguments are None, try to populate them using environment variables
         self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_MINIO_BUCKET")
+        self.endpoint = environment.get_value(endpoint, "MINIO_ENDPOINT", allow_missing=True)
+        if self.endpoint is None:
+            self.endpoint = "s3.amazonaws.com"
         self.__client = client
         if client is not None:
             # access / secret not required when the client is passed in
             return
         self.access_key = environment.get_value(access_key, "MINIO_ACCESS_KEY")
         self.secret_key = environment.get_value(secret_key, "MINIO_SECRET_KEY")
-        self.endpoint = environment.get_value(endpoint, "MINIO_ENDPOINT", allow_missing=True)
-        if self.endpoint is None:
-            self.endpoint = "s3.amazonaws.com"
 
     @property
     def client(self):
