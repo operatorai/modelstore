@@ -61,6 +61,7 @@ class MinIOStorage(BlobStorage):
         secret_key: Optional[str] = None,
         bucket_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
+        client: "Minio" = None
     ):
         super().__init__(["minio"], root_prefix, "MODEL_STORE_MINIO_ROOT_PREFIX")
         # If arguments are None, try to populate them using environment variables
@@ -70,7 +71,7 @@ class MinIOStorage(BlobStorage):
         self.endpoint = environment.get_value(endpoint, "MINIO_ENDPOINT", allow_missing=True)
         if self.endpoint is None:
             self.endpoint = "s3.amazonaws.com"
-        self.__client = None
+        self.__client = client
 
     @property
     def client(self):
@@ -138,6 +139,8 @@ class MinIOStorage(BlobStorage):
 
     def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         """Extracts the storage location from a meta data dictionary"""
+        if not meta_data.type.endswith(self.endpoint):
+            raise ValueError("Meta-data has a different endpoint name")
         if self.bucket_name != meta_data.bucket:
             # @TODO: downgrade to a warning if the file exists
             raise ValueError("Meta-data has a different bucket name")
@@ -169,4 +172,4 @@ class MinIOStorage(BlobStorage):
         try:
             return json.loads(lines[0])
         except json.JSONDecodeError:
-                return None
+            return None
