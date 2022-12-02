@@ -21,6 +21,7 @@ from modelstore.storage.aws import AWSStorage
 from modelstore.storage.azure import AzureBlobStorage
 from modelstore.storage.gcloud import GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.minio import MinIOStorage
 
 
 STORAGE_TYPES = {
@@ -28,6 +29,7 @@ STORAGE_TYPES = {
     AzureBlobStorage.NAME: AzureBlobStorage,
     GoogleCloudStorage.NAME: GoogleCloudStorage,
     FileSystemStorage.NAME: FileSystemStorage,
+    MinIOStorage.NAME: MinIOStorage,
 }
 
 MODEL_STORE_TYPES = {
@@ -35,6 +37,7 @@ MODEL_STORE_TYPES = {
     AzureBlobStorage.NAME: ModelStore.from_azure,
     GoogleCloudStorage.NAME: ModelStore.from_gcloud,
     FileSystemStorage.NAME: ModelStore.from_file_system,
+    MinIOStorage.NAME: ModelStore.from_minio,
 }
 
 
