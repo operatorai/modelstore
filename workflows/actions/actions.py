@@ -45,6 +45,7 @@ def run_with_model(model_store: ModelStore, model: Any,
     print(f"✅  Finished uploading the model={model_id}")
 
     for func in models.get_actions():
+        print(f"🔍  Running {str(func)}")
         func(model_store, MODEL_DOMAIN, meta_data)
     print("✅  Model assertions passed")
 
