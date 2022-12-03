@@ -97,11 +97,7 @@ def _model_files_path(tmp_dir: str) -> str:
 
 
 def save_model(tmp_dir: str, model) -> str:
-    """From the docs:
-    The model is saved in an XGBoost internal format which is universal
-    among the various XGBoost interfaces.
-    """
-    logger.debug("Saving xgboost model")
+    logger.debug("Saving pyspark model")
     file_path = _model_files_path(tmp_dir)
     model.save(file_path)
     return file_path
