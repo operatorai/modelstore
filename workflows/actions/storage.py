@@ -32,6 +32,7 @@ def assert_create_model_states(model_store: ModelStore, _: str):
     for state_name in state_names:
         model_store.create_model_state(state_name)
     model_state_names = model_store.list_model_states()
+    
     for state_name in state_names:
         assert state_name in model_state_names
     print(f"✅  Created {len(state_names)} model states.")

@@ -4,6 +4,8 @@
 
 **🆕  New functionality**
 
+Added support for any s3-compatible object storage that you can access via [MinIO](https://min.io/): `ModelStore.from_minio()`.
+
 You can move model stores that you created in one file system directory to another one (e.g., making it a mounted volume in a container) and `modelstore` will continue to work ([#209](https://github.com/operatorai/modelstore/pull/209), thanks [@hauks96](https://github.com/operatorai/modelstore/issues/189)).
 
 **🐛  Bug fixes & general updates**
@@ -150,7 +152,7 @@ Add support for scikit-learn pipelines.
 
 Added PyTorch Lightning and LightGBM support.
 
-Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and do not want to manage your own storage, get in touch with me for an API key.
+[Update - this has been removed] Added a new type of storage: `ModelStore.from_api_key()`. If you're reading this and do not want to manage your own storage, get in touch with me for an API key.
 
 Added skeleton functions for summary stats about training data; implemented feature importances for sklearn models.
 

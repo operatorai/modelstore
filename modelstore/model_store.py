@@ -26,6 +26,7 @@ from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.minio import MINIO_EXISTS, MinIOStorage
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.exceptions import (
     ModelExistsException,
@@ -60,13 +61,17 @@ class ModelStore:
             raise ModuleNotFoundError("boto3 is not installed!")
         return ModelStore(
             storage=AWSStorage(
-                bucket_name=bucket_name, region=region, root_prefix=root_prefix
+                bucket_name=bucket_name,
+                region=region,
+                root_prefix=root_prefix
             )
         )
 
     @classmethod
     def from_azure(
-        cls, container_name: Optional[str] = None, root_prefix: Optional[str] = None
+        cls,
+        container_name: Optional[str] = None,
+        root_prefix: Optional[str] = None
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an
         Azure blob container. This assumes that the container
@@ -94,6 +99,29 @@ class ModelStore:
         return ModelStore(
             storage=GoogleCloudStorage(
                 project_name, bucket_name, root_prefix=root_prefix
+            )
+        )
+
+    @classmethod
+    def from_minio(
+        cls,
+        endpoint: Optional[str] = None, # Defaults to s3.amazonaws.com
+        access_key: Optional[str] = None,
+        secret_key: Optional[str] = None,
+        bucket_name: Optional[str] = None,
+        root_prefix: Optional[str] = None
+    ) -> "ModelStore":
+        """Creates a ModelStore instance that stores models using a MinIO client.
+        This assumes that the bucket already exists."""
+        if not MINIO_EXISTS:
+            raise ModuleNotFoundError("minio is not installed!")
+        return ModelStore(
+            storage=MinIOStorage(
+                endpoint,
+                access_key,
+                secret_key,
+                bucket_name,
+                root_prefix
             )
         )
 

@@ -23,7 +23,7 @@ TEST_FILE_LIST = [f"test-file-{i}.json" for i in range(3)]
 TEST_FILE_TYPES = ["json", "txt"]
 
 
-def create_file(tmp_path, contents = None):
+def create_file(tmp_path, contents: str = None) -> str:
     # pylint: disable=unspecified-encoding
     if contents is None:
         contents = TEST_FILE_CONTENTS
@@ -33,22 +33,22 @@ def create_file(tmp_path, contents = None):
     return source
 
 
-def file_contains_expected_contents(file_path):
+def file_contains_expected_contents(file_path: str) -> bool:
     # pylint: disable=unspecified-encoding
     with open(file_path, "r") as lines:
         contents = lines.read()
     return contents == TEST_FILE_CONTENTS
 
 
-def remote_path():
+def remote_path() -> str:
     return "prefix/to/file"
 
 
-def remote_file_path():
+def remote_file_path() -> str:
     return os.path.join(remote_path(), TEST_FILE_NAME)
 
 
-def push_temp_file(storage, contents = None) -> str:
+def push_temp_file(storage, contents: str = None) -> str:
     with TemporaryDirectory() as tmp_dir:
         # pylint: disable=protected-access
         result = storage._push(

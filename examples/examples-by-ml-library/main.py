@@ -55,7 +55,13 @@ EXAMPLES = {
 @click.command()
 @click.option(
     "--modelstore-in",
-    type=click.Choice(["aws", "azure", "gcloud", "filesystem"], case_sensitive=False),
+    type=click.Choice([
+        "aws",
+        "azure",
+        "gcloud",
+        "filesystem",
+        "minio"
+    ], case_sensitive=False),
 )
 @click.option(
     "--ml-framework",

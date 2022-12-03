@@ -25,7 +25,13 @@ from fixtures.modelstores import create_model_store
 @click.command()
 @click.option(
     "--modelstore-in",
-    type=click.Choice(["filesystem", "aws-s3", "google-cloud-storage", "azure-container"]),
+    type=click.Choice([
+        "filesystem",
+        "aws-s3",
+        "google-cloud-storage",
+        "azure-container",
+        "minio",
+    ]),
 )
 def main(modelstore_in: str):
     """ Executes all of the integration tests in a given storage type """

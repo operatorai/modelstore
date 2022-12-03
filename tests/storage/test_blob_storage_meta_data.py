@@ -11,16 +11,15 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import os
 import pytest
 
 from modelstore.metadata import metadata
+from modelstore.utils.exceptions import DomainNotFoundException
+
 from modelstore.storage.util.paths import (
-    MODELSTORE_ROOT_PREFIX,
     get_domain_path,
     get_model_version_path,
 )
-from modelstore.utils.exceptions import DomainNotFoundException
 
 # pylint: disable=unused-import
 from tests.storage.test_blob_storage import (
