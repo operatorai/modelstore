@@ -46,11 +46,11 @@ class MinIOStorage(BlobStorage):
         "required": [
             "MODEL_STORE_MINIO_BUCKET",
             "MINIO_ACCESS_KEY",
-            "MINIO_SECRET_KEY",
-            "MINIO_ENDPOINT",
+            "MINIO_SECRET_KEY"
         ],
         "optional": [
             "MODEL_STORE_MINIO_ROOT_PREFIX",
+            "MINIO_ENDPOINT",
         ],
     }
 
