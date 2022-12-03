@@ -19,4 +19,3 @@ pyenv-uninstall:
 setup:
 	pip install --upgrade pip setuptools wheel	
 	pip install -r requirements.txt
-	pip install --no-cache-dir -e $(REPO_ROOT)
