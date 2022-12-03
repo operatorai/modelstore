@@ -37,7 +37,7 @@ def create_aws_model_store() -> ModelStore:
     """ A model store that uses an s3 bucket """
     return ModelStore.from_aws_s3(
         os.environ["MODEL_STORE_AWS_BUCKET"],
-        root_prefix="example-by-ml-library",
+        root_prefix="boto3-client",
     )
 
 
@@ -47,7 +47,7 @@ def create_minio_model_store() -> ModelStore:
         access_key=os.environ["AWS_ACCESS_KEY_ID"],
         secret_key=os.environ["AWS_SECRET_ACCESS_KEY"],
         bucket_name=os.environ["MODEL_STORE_AWS_BUCKET"],
-        root_prefix="example-by-ml-library"
+        root_prefix="minio-client"
     )
 
 

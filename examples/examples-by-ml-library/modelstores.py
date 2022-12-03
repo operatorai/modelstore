@@ -59,6 +59,7 @@ def create_azure_model_store() -> ModelStore:
     # 2. You have an os environment variable called AZURE_STORAGE_CONNECTION_STRING
     return ModelStore.from_azure(
         container_name=os.environ["MODEL_STORE_AZURE_CONTAINER"],
+        root_prefix=os.environ.get("MODEL_STORE_AZURE_ROOT_PREFIX"),
     )
 
 
@@ -69,12 +70,16 @@ def create_gcloud_model_store() -> ModelStore:
     return ModelStore.from_gcloud(
         os.environ["MODEL_STORE_GCP_PROJECT"],
         os.environ["MODEL_STORE_GCP_BUCKET"],
+        root_prefix=os.environ.get("MODEL_STORE_GCP_ROOT_PREFIX"),
     )
 
 
 def create_file_system_model_store() -> ModelStore:
     """ A model store in a local file system """
     # Here, we create a new local model store in our home directory
-    home_dir = os.path.expanduser("~")
-    print(f"🏦  Creating store in: {home_dir}")
-    return ModelStore.from_file_system(root_directory=home_dir)
+    root_dir = os.environ.get(
+        "MODEL_STORE_ROOT_PREFIX",
+        os.path.expanduser("~"),
+    )
+    print(f"🏦  Creating store in: {root_dir}")
+    return ModelStore.from_file_system(root_directory=root_dir)

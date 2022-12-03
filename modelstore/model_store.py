@@ -61,7 +61,9 @@ class ModelStore:
             raise ModuleNotFoundError("boto3 is not installed!")
         return ModelStore(
             storage=AWSStorage(
-                bucket_name=bucket_name, region=region, root_prefix=root_prefix
+                bucket_name=bucket_name,
+                region=region,
+                root_prefix=root_prefix
             )
         )
 
