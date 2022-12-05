@@ -97,8 +97,8 @@ def test_get_params(spark_manager, spark_model):
 def test_save_model(spark_model, tmp_path):
     res = pyspark.save_model(tmp_path, spark_model)
     exp = [
-        os.path.join(tmp_path, "metadata"),
-        os.path.join(tmp_path, "stages")
+        os.path.join(tmp_path, "pyspark", "metadata"),
+        os.path.join(tmp_path, "pyspark", "stages")
     ]
     assert exp == res
     assert all(os.path.exists(x) for x in exp)
@@ -109,11 +109,12 @@ def test_load_model(tmp_path, spark_manager, spark_model, spark_df):
     y_pred = spark_model.transform(spark_df).toPandas()
 
     # Save the model to a tmp directory
-    spark_model.save(str(tmp_path))
+    model_path = os.path.join(tmp_path, "model")
+    spark_model.save(str(model_path))
 
     #  Load the model
     loaded_model = spark_manager.load(
-        tmp_path,
+        model_path,
         metadata.Summary(
             model=metadata.Model(
                 domain=None,

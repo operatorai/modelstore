@@ -6,6 +6,8 @@
 
 Added support for any s3-compatible object storage that you can access via [MinIO](https://min.io/): `ModelStore.from_minio()`.
 
+Added support for [Spark ML Lib](https://spark.apache.org/) models.
+
 You can move model stores that you created in one file system directory to another one (e.g., making it a mounted volume in a container) and `modelstore` will continue to work ([#209](https://github.com/operatorai/modelstore/pull/209), thanks [@hauks96](https://github.com/operatorai/modelstore/issues/189)).
 
 **🐛  Bug fixes & general updates**
