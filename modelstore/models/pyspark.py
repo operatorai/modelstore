@@ -83,17 +83,17 @@ class PySparkManager(ModelManager):
         from pyspark.ml import classification
         from pyspark.ml import PipelineModel
         model_types = {
-            # "DecisionTreeClassificationModel": psk.DecisionTreeClassificationModel,
-            # "DecisionTreeRegressionModel": psk.DecisionTreeRegressionModel,
-            # "FMClassificationModel": psk.FMClassificationModel,
-            # "GBTClassificationModel": psk.GBTClassificationModel,
-            # "LinearSVCModel": psk.LinearSVCModel,
-            # "LogisticRegressionModel": psk.LogisticRegressionModel,
-            # "MultilayerPerceptronClassificationModel": psk.MultilayerPerceptronClassificationModel,
-            # "NaiveBayesModel": psk.NaiveBayesModel,
-            # "OneVsRestModel": psk.OneVsRestModel,
-            # "ProbabilisticClassifier": psk.ProbabilisticClassificationModel,
             "PipelineModel": PipelineModel,
+            "DecisionTreeClassificationModel": classification.DecisionTreeClassificationModel,
+            "DecisionTreeRegressionModel": classification.DecisionTreeRegressionModel,
+            "FMClassificationModel": classification.FMClassificationModel,
+            "GBTClassificationModel": classification.GBTClassificationModel,
+            "LinearSVCModel": classification.LinearSVCModel,
+            "LogisticRegressionModel": classification.LogisticRegressionModel,
+            "MultilayerPerceptronClassificationModel": classification.MultilayerPerceptronClassificationModel,
+            "NaiveBayesModel": classification.NaiveBayesModel,
+            "OneVsRestModel": classification.OneVsRestModel,
+            "ProbabilisticClassifier": classification.ProbabilisticClassificationModel,
             "RandomForestClassificationModel": classification.RandomForestClassificationModel,
         }
         model_type = meta_data.model_type().type
