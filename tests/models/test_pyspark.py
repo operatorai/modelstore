@@ -29,6 +29,7 @@ from modelstore.models import pyspark
 from tests.models.utils import classification_data, classification_df 
 
 # pylint: disable=missing-function-docstring
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture(autouse=True)
@@ -95,9 +96,12 @@ def test_get_params(spark_manager, spark_model):
 
 def test_save_model(spark_model, tmp_path):
     res = pyspark.save_model(tmp_path, spark_model)
-    exp = os.path.join(tmp_path, pyspark.MODEL_DIRECTORY)
-    assert os.path.exists(exp)
-    assert [f.startswith(os.path.join(exp, "metadata")) for f in res]
+    exp = [
+        os.path.join(tmp_path, "metadata"),
+        os.path.join(tmp_path, "stages")
+    ]
+    assert exp == res
+    assert all(os.path.exists(x) for x in exp)
 
 
 def test_load_model(tmp_path, spark_manager, spark_model, spark_df):
@@ -105,8 +109,7 @@ def test_load_model(tmp_path, spark_manager, spark_model, spark_df):
     y_pred = spark_model.transform(spark_df).toPandas()
 
     # Save the model to a tmp directory
-    model_path = os.path.join(tmp_path, pyspark.MODEL_DIRECTORY)
-    spark_model.save(model_path)
+    spark_model.save(tmp_path)
 
     #  Load the model
     loaded_model = spark_manager.load(
