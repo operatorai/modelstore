@@ -20,8 +20,6 @@ from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.log import logger
 
-MODEL_DIRECTORY = "pyspark"
-
 
 class PySparkManager(ModelManager):
 
@@ -70,12 +68,6 @@ class PySparkManager(ModelManager):
             partial(save_model, model=kwargs["model"])
         ]
 
-    # def get_params(self, **kwargs) -> dict:
-    #     model = kwargs["model"]
-    #     if hasattr(model, "extractParamMap"):
-    #         return model.extractParamMap()
-    #     return {}
-
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         super().load(model_path, meta_data)
 
@@ -100,21 +92,17 @@ class PySparkManager(ModelManager):
         if model_type not in model_types:
             raise ValueError(f"Cannot load pyspark model type: {model_type}")
 
-        logger.debug("Loading xgboost model from %s", model_path)
-        target = _model_files_path(model_path)
-        model = model_types[model_type].load(target)
+        logger.debug("Loading pyspark model from %s", model_path)
+        model = model_types[model_type].load(model_path)
         return model
-
-
-def _model_files_path(tmp_dir: str) -> str:
-    return os.path.join(tmp_dir, MODEL_DIRECTORY)
 
 
 def save_model(tmp_dir: str, model: "pyspark.ml.Model") -> List[str]:
     """ Saves the pyspark model """
     logger.debug("Saving pyspark model")
-    file_path = _model_files_path(tmp_dir)
-    model.save(file_path)
-
-    files_path = os.path.join(file_path, "metadata")
-    return [os.path.join(files_path, f) for f in os.listdir(files_path)]
+    target = os.path.join(tmp_dir, "pyspark")
+    model.save(target)
+    return [
+        os.path.join(target, "metadata"),
+        os.path.join(target, "stages")
+    ]
