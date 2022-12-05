@@ -13,7 +13,7 @@
 #    limitations under the License.
 import os
 from functools import partial
-from typing import Any
+from typing import Any, List
 
 from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
@@ -48,9 +48,21 @@ class PySparkManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
+        from pyspark.ml import Pipeline
         from pyspark.ml.classification import Model
+        from pyspark.ml import Model as mlModel
+        from pyspark.ml.classification import _JavaProbabilisticClassifier
 
-        return isinstance(kwargs.get("model"), Model)
+        # Warning: for Apache Spark prior to 2.0.0, save isn't 
+        # available yet for the Pipeline API.
+
+        model = kwargs.get("model")
+        return any([
+            isinstance(model, Pipeline),
+            isinstance(model, _JavaProbabilisticClassifier),
+            isinstance(model, mlModel),
+            isinstance(model, Model)
+        ])
 
     def _get_functions(self, **kwargs) -> list:
         return [
@@ -58,29 +70,31 @@ class PySparkManager(ModelManager):
             partial(save_model, model=kwargs["model"])
         ]
 
-    def get_params(self, **kwargs) -> dict:
-        model = kwargs["model"]
-        if hasattr(model, "extractParamMap"):
-            return model.extractParamMap()
-        return {}
+    # def get_params(self, **kwargs) -> dict:
+    #     model = kwargs["model"]
+    #     if hasattr(model, "extractParamMap"):
+    #         return model.extractParamMap()
+    #     return {}
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         super().load(model_path, meta_data)
 
         # pylint: disable=import-outside-toplevel
-        from pyspark.ml import classification as psk
+        from pyspark.ml import classification
+        from pyspark.ml import PipelineModel
         model_types = {
-            "DecisionTreeClassificationModel": psk.DecisionTreeClassificationModel,
-            "DecisionTreeRegressionModel": psk.DecisionTreeRegressionModel,
-            "FMClassificationModel": psk.FMClassificationModel,
-            "GBTClassificationModel": psk.GBTClassificationModel,
-            "LinearSVCModel": psk.LinearSVCModel,
-            "LogisticRegressionModel": psk.LogisticRegressionModel,
-            "MultilayerPerceptronClassificationModel": psk.MultilayerPerceptronClassificationModel,
-            "NaiveBayesModel": psk.NaiveBayesModel,
-            "OneVsRestModel": psk.OneVsRestModel,
-            "ProbabilisticClassificationModel": psk.ProbabilisticClassificationModel,
-            "RandomForestClassificationModel": psk.RandomForestClassificationModel,
+            # "DecisionTreeClassificationModel": psk.DecisionTreeClassificationModel,
+            # "DecisionTreeRegressionModel": psk.DecisionTreeRegressionModel,
+            # "FMClassificationModel": psk.FMClassificationModel,
+            # "GBTClassificationModel": psk.GBTClassificationModel,
+            # "LinearSVCModel": psk.LinearSVCModel,
+            # "LogisticRegressionModel": psk.LogisticRegressionModel,
+            # "MultilayerPerceptronClassificationModel": psk.MultilayerPerceptronClassificationModel,
+            # "NaiveBayesModel": psk.NaiveBayesModel,
+            # "OneVsRestModel": psk.OneVsRestModel,
+            # "ProbabilisticClassifier": psk.ProbabilisticClassificationModel,
+            "PipelineModel": PipelineModel,
+            "RandomForestClassificationModel": classification.RandomForestClassificationModel,
         }
         model_type = meta_data.model_type().type
         if model_type not in model_types:
@@ -96,8 +110,11 @@ def _model_files_path(tmp_dir: str) -> str:
     return os.path.join(tmp_dir, MODEL_DIRECTORY)
 
 
-def save_model(tmp_dir: str, model) -> str:
+def save_model(tmp_dir: str, model: "pyspark.ml.Model") -> List[str]:
+    """ Saves the pyspark model """
     logger.debug("Saving pyspark model")
     file_path = _model_files_path(tmp_dir)
     model.save(file_path)
-    return file_path
+
+    files_path = os.path.join(file_path, "metadata")
+    return [os.path.join(files_path, f) for f in os.listdir(files_path)]
