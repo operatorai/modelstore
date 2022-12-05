@@ -109,7 +109,7 @@ def test_load_model(tmp_path, spark_manager, spark_model, spark_df):
     y_pred = spark_model.transform(spark_df).toPandas()
 
     # Save the model to a tmp directory
-    spark_model.save(tmp_path)
+    spark_model.save(str(tmp_path))
 
     #  Load the model
     loaded_model = spark_manager.load(
