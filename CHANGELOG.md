@@ -1,6 +1,6 @@
 # Change log
 
-## modelstore 0.0.77 ([December 202](https://github.com/operatorai/modelstore/pull/216)) 
+## modelstore 0.0.77 ([December 202](https://github.com/operatorai/modelstore/pull/216)) 
 
 **🆕  New functionality**
 
