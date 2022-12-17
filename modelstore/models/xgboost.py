@@ -52,10 +52,12 @@ class XGBoostManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         import xgboost as xgb
 
-        return any([
-            isinstance(kwargs.get("model"), xgb.XGBModel),
-            isinstance(kwargs.get("model"), xgb.Booster)
-        ])
+        return any(
+            [
+                isinstance(kwargs.get("model"), xgb.XGBModel),
+                isinstance(kwargs.get("model"), xgb.Booster),
+            ]
+        )
 
     def _get_functions(self, **kwargs) -> list:
         # pylint: disable=import-outside-toplevel
@@ -79,7 +81,9 @@ class XGBoostManager(ModelManager):
 
         model = kwargs["model"]
         if isinstance(model, xgb.Booster):
-            logger.warning("Cannot retrieve xgb params for low-level xgboost xgb.Booster object")
+            logger.warning(
+                "Cannot retrieve xgb params for low-level xgboost xgb.Booster object"
+            )
             return {}
         return model.get_xgb_params()
 
@@ -134,7 +138,7 @@ def dump_booster(tmp_dir: str, booster: "xgb.Booster") -> str:
 
 
 def save_booster_config(tmp_dir: str, booster: "xgb.Booster") -> str:
-    """ Saves the booster config to file """
+    """Saves the booster config to file"""
     logger.debug("Dumping model config")
     config = booster.save_config()
     return save_json(tmp_dir, MODEL_CONFIG, config)

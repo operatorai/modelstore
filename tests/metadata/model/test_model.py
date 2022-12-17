@@ -18,6 +18,7 @@ from modelstore.metadata import metadata
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 
+
 @pytest.fixture
 def model_meta_data():
     return metadata.Model(
@@ -25,7 +26,7 @@ def model_meta_data():
         model_id="model_id",
         model_type=metadata.ModelType.generate("library", "class-name"),
         parameters=None,
-        data=None
+        data=None,
     )
 
 

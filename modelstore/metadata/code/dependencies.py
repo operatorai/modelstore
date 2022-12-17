@@ -59,5 +59,5 @@ def get_dependency_versions(modnames: list) -> dict:
 
 
 def module_exists(modname: str) -> bool:
-    """ Returns True if a module has been installed """
+    """Returns True if a module has been installed"""
     return _get_version(modname) is not None

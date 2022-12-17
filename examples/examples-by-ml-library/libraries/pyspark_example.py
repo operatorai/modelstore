@@ -28,11 +28,7 @@ def _train_example_model() -> PipelineModel:
     spark_df = _spark_dataset(sqlContext)
 
     # Train a pipeline
-    rf = RandomForestRegressor(
-        labelCol="y",
-        featuresCol="x",
-        numTrees=5
-    )
+    rf = RandomForestRegressor(labelCol="y", featuresCol="x", numTrees=5)
     pipeline = Pipeline(stages=[rf])
     model = pipeline.fit(spark_df)
 

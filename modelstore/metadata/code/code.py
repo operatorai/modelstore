@@ -25,8 +25,8 @@ from modelstore.metadata.utils.utils import remove_nones, exclude_field
 @dataclass
 class Code:
 
-    """ Code contains fields that are captured about
-    the code/runtime when a model is saved """
+    """Code contains fields that are captured about
+    the code/runtime when a model is saved"""
 
     runtime: str
     user: str
@@ -36,16 +36,16 @@ class Code:
 
     @classmethod
     def generate(cls, deps_list: list, created: datetime = None) -> "Code":
-        """ Generates the meta data for the code being run to create the model """
+        """Generates the meta data for the code being run to create the model"""
         versioned_deps = dependencies.get_dependency_versions(deps_list)
         if created is None:
             # created can be overridden in unit tests where we need to
-            # control time stamps of mock model objects
+            # control time stamps of mock model objects
             created = datetime.now()
         return Code(
             runtime=runtime.get_python_version(),
             user=runtime.get_user(),
             created=created.strftime("%Y/%m/%d/%H:%M:%S"),
             dependencies=remove_nones(versioned_deps),
-            git=revision.git_meta()
+            git=revision.git_meta(),
         )

@@ -26,12 +26,7 @@ def test_get_archive_path(tmp_path, has_root_prefix):
     root = str(tmp_path) if has_root_prefix else ""
     prefix = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
     exp = os.path.join(
-        root,
-        paths.MODELSTORE_ROOT_PREFIX,
-        "domain",
-        prefix,
-        "model-id",
-        "file-name"
+        root, paths.MODELSTORE_ROOT_PREFIX, "domain", prefix, "model-id", "file-name"
     )
     res = paths.get_archive_path(root, "domain", "model-id", "path/to/file-name")
     assert exp == res

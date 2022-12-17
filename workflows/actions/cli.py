@@ -17,24 +17,30 @@ import subprocess
 
 
 def _run_cli_command(args: list) -> str:
-    """ Runs a modelstore CLI command """
+    """Runs a modelstore CLI command"""
     command = ["python", "-m", "modelstore"] + args
     print(f"⏱  Running: {command}")
-    return subprocess.run(
-        command,
-        stdout=subprocess.PIPE,
-        check=True,
-    ).stdout.decode("utf-8").replace("\n", "")
+    return (
+        subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            check=True,
+        )
+        .stdout.decode("utf-8")
+        .replace("\n", "")
+    )
 
 
 def assert_upload_runs(domain: str, model_path: str) -> str:
-    """ Runs the 'python -m modelstore upload' command """
+    """Runs the 'python -m modelstore upload' command"""
     assert os.path.exists(model_path)
-    model_id = _run_cli_command([
-        "upload",
-        domain,
-        model_path,
-    ])
+    model_id = _run_cli_command(
+        [
+            "upload",
+            domain,
+            model_path,
+        ]
+    )
     assert model_id is not None
     assert model_id != ""
     print(f"✅  CLI command uploaded model={model_id}")
@@ -42,15 +48,10 @@ def assert_upload_runs(domain: str, model_path: str) -> str:
 
 
 def assert_download_runs(domain: str, model_id: str):
-    """ Runs the 'python -m modelstore download' command
-    in a temporary directory """
+    """Runs the 'python -m modelstore download' command
+    in a temporary directory"""
     with tempfile.TemporaryDirectory() as tmp_dir:
-        _run_cli_command([
-            "download",
-            domain,
-            model_id,
-            str(tmp_dir)
-        ])
+        _run_cli_command(["download", domain, model_id, str(tmp_dir)])
         model_dir = os.path.join(tmp_dir, domain, model_id)
         assert os.path.exists(model_dir)
         assert len(os.listdir(model_dir)) != 0

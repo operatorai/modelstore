@@ -17,15 +17,17 @@ import numpy as np
 from modelstore.metadata.utils.utils import (
     remove_nones,
     exclude_field,
-    validate_json_serializable
+    validate_json_serializable,
 )
 
 # pylint: disable=missing-function-docstring
+
 
 def test_remove_nones():
     exp = {"a": "value-a"}
     res = remove_nones({"a": "value-a", "b": None})
     assert exp == res
+
 
 @pytest.mark.parametrize(
     "value,should_exclude",
@@ -45,11 +47,11 @@ def test_exclude_field(value, should_exclude):
         ({}, False),
         ({"key": 1}, False),
         ([], True),  # Not a dictionary
-        ({"key": np.array([1,2,3])}, True),  # Not JSON serializable
+        ({"key": np.array([1, 2, 3])}, True),  # Not JSON serializable
     ],
 )
 def test_validate_json_serializable(value, should_raise):
-    """ Validates that `value` is a JSON serializable dictionary """
+    """Validates that `value` is a JSON serializable dictionary"""
     if should_raise:
         with pytest.raises(TypeError):
             validate_json_serializable("field-name", value)

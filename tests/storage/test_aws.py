@@ -49,10 +49,7 @@ def moto_boto():
 
 def get_file_contents(moto_boto, prefix):
     return (
-        moto_boto.Object(_MOCK_BUCKET_NAME, prefix)
-        .get()["Body"]
-        .read()
-        .decode("utf-8")
+        moto_boto.Object(_MOCK_BUCKET_NAME, prefix).get()["Body"].read().decode("utf-8")
     )
 
 
@@ -117,10 +114,7 @@ def test_pull():
         )
 
         # The correct local path is returned
-        assert result == os.path.join(
-            tmp_dir,
-            TEST_FILE_NAME
-        )
+        assert result == os.path.join(tmp_dir, TEST_FILE_NAME)
 
         # The local file exists, with the right content
         assert os.path.exists(result)
@@ -188,22 +182,22 @@ def test_storage_location():
     [
         (
             metadata.Storage(
-                type=None, 
-                path=None, 
+                type=None,
+                path=None,
                 bucket=_MOCK_BUCKET_NAME,
                 container=None,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             False,
             "/path/to/file",
         ),
         (
             metadata.Storage(
-                type=None, 
-                path=None, 
+                type=None,
+                path=None,
                 bucket="a-different-bucket",
                 container=None,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             True,
             None,

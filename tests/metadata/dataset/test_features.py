@@ -11,9 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from modelstore.metadata.dataset.features import (
-    Features
-)
+from modelstore.metadata.dataset.features import Features
 
 # pylint: disable=unused-import
 from tests.metadata.dataset.fixtures import (
@@ -24,6 +22,7 @@ from tests.metadata.dataset.fixtures import (
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring
+
 
 def test_describe_nothing():
     res = Features.generate()

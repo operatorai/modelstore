@@ -38,7 +38,7 @@ class MinIOStorage(BlobStorage):
 
     Assumes that you have `minio` installed
     https://github.com/minio/minio-py
-    https://min.io/docs/minio/kubernetes/upstream/index.html 
+    https://min.io/docs/minio/kubernetes/upstream/index.html
     """
 
     NAME = "minio"
@@ -46,7 +46,7 @@ class MinIOStorage(BlobStorage):
         "required": [
             "MODEL_STORE_MINIO_BUCKET",
             "MINIO_ACCESS_KEY",
-            "MINIO_SECRET_KEY"
+            "MINIO_SECRET_KEY",
         ],
         "optional": [
             "MODEL_STORE_MINIO_ROOT_PREFIX",
@@ -61,12 +61,16 @@ class MinIOStorage(BlobStorage):
         secret_key: Optional[str] = None,
         bucket_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
-        client: "Minio" = None
+        client: "Minio" = None,
     ):
         super().__init__(["minio"], root_prefix, "MODEL_STORE_MINIO_ROOT_PREFIX")
         # If arguments are None, try to populate them using environment variables
-        self.bucket_name = environment.get_value(bucket_name, "MODEL_STORE_MINIO_BUCKET")
-        self.endpoint = environment.get_value(endpoint, "MINIO_ENDPOINT", allow_missing=True)
+        self.bucket_name = environment.get_value(
+            bucket_name, "MODEL_STORE_MINIO_BUCKET"
+        )
+        self.endpoint = environment.get_value(
+            endpoint, "MINIO_ENDPOINT", allow_missing=True
+        )
         if self.endpoint is None:
             self.endpoint = "s3.amazonaws.com"
         self.__client = client
@@ -78,7 +82,7 @@ class MinIOStorage(BlobStorage):
 
     @property
     def client(self):
-        """ Returns the minio client """
+        """Returns the minio client"""
         if self.__client is None:
             self.__client = Minio(
                 self.endpoint,
@@ -93,7 +97,7 @@ class MinIOStorage(BlobStorage):
 
     def _push(self, file_path: str, prefix: str) -> str:
         logger.info("Uploading to: %s...", prefix)
-        with open(file_path, 'rb') as file_data:
+        with open(file_path, "rb") as file_data:
             file_stat = os.stat(file_path)
             self.client.put_object(
                 self.bucket_name,
@@ -109,22 +113,21 @@ class MinIOStorage(BlobStorage):
             file_name = os.path.split(prefix)[1]
             destination = os.path.join(dir_path, file_name)
 
-            self.client.fget_object(
-                self.bucket_name,
-                prefix,
-                destination
-            )
+            self.client.fget_object(self.bucket_name, prefix, destination)
             return destination
         except (InvalidResponseError, S3Error) as exc:
             raise FilePullFailedException(exc) from exc
 
     def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
-        objects = [obj for obj in self.client.list_objects(
-            self.bucket_name,
-            prefix,
-            recursive=False,
-        )]
+        objects = [
+            obj
+            for obj in self.client.list_objects(
+                self.bucket_name,
+                prefix,
+                recursive=False,
+            )
+        ]
         if len(objects) == 0:
             logger.debug("Remote file does not exist: %s", prefix)
             return False

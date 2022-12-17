@@ -112,6 +112,6 @@ def test_load_model(tmp_path, gensim_manager, word2vec_model):
 
     # Expect the two to be the same
     assert isinstance(loaded_model, type(word2vec_model))
-    assert gensim_manager.get_params(
-        model=word2vec_model
-    ) == gensim_manager.get_params(model=loaded_model)
+    assert gensim_manager.get_params(model=word2vec_model) == gensim_manager.get_params(
+        model=loaded_model
+    )

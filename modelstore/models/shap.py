@@ -41,7 +41,7 @@ class ShapManager(ModelManager):
         return ["explainer"]
 
     def model_info(self, **kwargs) -> ModelType:
-        """ Returns meta-data about the explainer type """
+        """Returns meta-data about the explainer type"""
         return ModelType.generate(
             library=self.ml_library,
             class_name=type(kwargs["explainer"]).__name__,

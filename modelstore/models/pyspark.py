@@ -51,16 +51,18 @@ class PySparkManager(ModelManager):
         from pyspark.ml import Model as mlModel
         from pyspark.ml.classification import _JavaProbabilisticClassifier
 
-        # Warning: for Apache Spark prior to 2.0.0, save isn't 
+        # Warning: for Apache Spark prior to 2.0.0, save isn't
         # available yet for the Pipeline API.
 
         model = kwargs.get("model")
-        return any([
-            isinstance(model, Pipeline),
-            isinstance(model, _JavaProbabilisticClassifier),
-            isinstance(model, mlModel),
-            isinstance(model, Model)
-        ])
+        return any(
+            [
+                isinstance(model, Pipeline),
+                isinstance(model, _JavaProbabilisticClassifier),
+                isinstance(model, mlModel),
+                isinstance(model, Model),
+            ]
+        )
 
     def _get_functions(self, **kwargs) -> list:
         return [
@@ -74,6 +76,7 @@ class PySparkManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         from pyspark.ml import classification
         from pyspark.ml import PipelineModel
+
         model_types = {
             "PipelineModel": PipelineModel,
             "DecisionTreeClassificationModel": classification.DecisionTreeClassificationModel,
@@ -98,11 +101,8 @@ class PySparkManager(ModelManager):
 
 
 def save_model(tmp_dir: str, model: "pyspark.ml.Model") -> List[str]:
-    """ Saves the pyspark model """
+    """Saves the pyspark model"""
     logger.debug("Saving pyspark model")
     target = os.path.join(tmp_dir, "pyspark")
     model.save(target)
-    return [
-        os.path.join(target, "metadata"),
-        os.path.join(target, "stages")
-    ]
+    return [os.path.join(target, "metadata"), os.path.join(target, "stages")]

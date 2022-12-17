@@ -29,13 +29,15 @@ def _load_dataset():
 
 
 def _train_sklearn(X_train, y_train):
-    model = GradientBoostingRegressor(**{
-        "n_estimators": 500,
-        "max_depth": 4,
-        "min_samples_split": 5,
-        "learning_rate": 0.01,
-        "loss": "ls",
-    })
+    model = GradientBoostingRegressor(
+        **{
+            "n_estimators": 500,
+            "max_depth": 4,
+            "min_samples_split": 5,
+            "learning_rate": 0.01,
+            "loss": "ls",
+        }
+    )
     model.fit(X_train, y_train)
     return model
 
@@ -54,7 +56,7 @@ def _train_xgboost(X_train, y_train):
 
 
 def iter_models():
-    """ Generator for test models """
+    """Generator for test models"""
     X_train, y_train = _load_dataset()
     models = [_train_sklearn, _train_xgboost]
     for model in models:
@@ -62,7 +64,7 @@ def iter_models():
 
 
 def iter_model_files(tmp_dir: str):
-    """ Generator for test model files """
+    """Generator for test model files"""
     for model in iter_models():
         model_path = os.path.join(tmp_dir, "model.joblib")
         joblib.dump(model, model_path)

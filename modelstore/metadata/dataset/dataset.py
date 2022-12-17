@@ -25,20 +25,17 @@ from modelstore.metadata.utils.utils import exclude_field
 @dataclass
 class Dataset:
 
-    """ Dataset contains fields that are captured about
-    the training dataset when the model is saved """
+    """Dataset contains fields that are captured about
+    the training dataset when the model is saved"""
 
     features: Features = field(default=None, metadata=config(exclude=exclude_field))
     labels: Labels = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, features: Any = None, labels: Any = None) -> "Dataset":
-        """ Returns summary stats about a dataset """
+        """Returns summary stats about a dataset"""
         features = Features.generate(features)
         labels = Labels.generate(labels)
         if features is None and labels is None:
             return None
-        return Dataset(
-            features=features,
-            labels=labels
-        )
+        return Dataset(features=features, labels=labels)

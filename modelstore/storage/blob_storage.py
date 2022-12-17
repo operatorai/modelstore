@@ -64,25 +64,23 @@ class BlobStorage(CloudStorage):
         super().__init__(required_deps)
         if root_prefix_env_key is not None:
             root_prefix = environment.get_value(
-                root_prefix,
-                root_prefix_env_key,
-                allow_missing=True
+                root_prefix, root_prefix_env_key, allow_missing=True
             )
         self.root_prefix = root_prefix if root_prefix is not None else ""
         logger.debug("Root prefix is: %s", self.root_prefix)
 
     @abstractmethod
     def _push(self, file_path: str, prefix: str) -> str:
-        """ Uploads a file from file_path to a
+        """Uploads a file from file_path to a
         prefix and returns the full prefix that would be
-        required to pull() the file back """
+        required to pull() the file back"""
         raise NotImplementedError()
 
     @abstractmethod
     def _pull(self, prefix: str, dir_path: str) -> str:
-        """ Downloads a file from a prefix that includes
+        """Downloads a file from a prefix that includes
         the file name, to the directory in dir_path and
-        returns the path to the downloaded file """
+        returns the path to the downloaded file"""
         raise NotImplementedError()
 
     @abstractmethod
@@ -111,13 +109,8 @@ class BlobStorage(CloudStorage):
         raise NotImplementedError()
 
     def upload(self, domain: str, model_id: str, local_path: str) -> metadata.Storage:
-        """ Uploads the archive into storage """
-        archive_path = get_archive_path(
-            self.root_prefix,
-            domain,
-            model_id,
-            local_path
-        )
+        """Uploads the archive into storage"""
+        archive_path = get_archive_path(self.root_prefix, domain, model_id, local_path)
         prefix = self._push(local_path, archive_path)
         return self._storage_location(prefix)
 
@@ -138,7 +131,11 @@ class BlobStorage(CloudStorage):
         return self._pull(storage_path, local_path)
 
     def delete_model(
-        self, domain: str, model_id: str, meta_data: metadata.Summary, skip_prompt: bool = False
+        self,
+        domain: str,
+        model_id: str,
+        meta_data: metadata.Summary,
+        skip_prompt: bool = False,
     ):
         """Deletes a model artifact from storage. Other than the artifact itself
         being deleted:
@@ -181,7 +178,7 @@ class BlobStorage(CloudStorage):
         """Returns a list of all the existing model domains"""
         domains_path = get_domains_path(self.root_prefix)
         domains = self._read_json_objects(domains_path)
-     
+
         return [d["model"]["domain"] for d in domains]
 
     def get_domain(self, domain: str) -> dict:
@@ -257,7 +254,7 @@ class BlobStorage(CloudStorage):
             # with typos and other similar mistakes
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
-        
+
         with tempfile.TemporaryDirectory() as tmp_dir:
             model_path = get_model_version_path(
                 self.root_prefix,
@@ -306,10 +303,7 @@ class BlobStorage(CloudStorage):
         )
         if self._remove(model_state_path):
             logger.debug(
-                "Successfully unset %s=%s from state=%s",
-                domain,
-                model_id,
-                state_name
+                "Successfully unset %s=%s from state=%s", domain, model_id, state_name
             )
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: metadata.Summary):
@@ -330,8 +324,8 @@ class BlobStorage(CloudStorage):
             self._push(local_path, remote_path)
 
     def _pull_and_load(self, prefix: str) -> dict:
-        """ Downloads a file from the registry to a temporary directory
-        and tries to load it as a JSON dictionary """
+        """Downloads a file from the registry to a temporary directory
+        and tries to load it as a JSON dictionary"""
         with tempfile.TemporaryDirectory() as tmp_dir:
             local_path = self._pull(prefix, tmp_dir)
             # pylint: disable=unspecified-encoding
@@ -339,10 +333,10 @@ class BlobStorage(CloudStorage):
                 return json.loads(lines.read())
 
     def get_meta_data(self, domain: str, model_id: str) -> metadata.Summary:
-        """ Returns the meta data for a given model """
+        """Returns the meta data for a given model"""
         # Assert that the domain exists
         _ = self.get_domain(domain)
-        
+
         try:
             logger.debug("Retrieving meta-data for %s=%s", domain, model_id)
             remote_path = get_model_version_path(

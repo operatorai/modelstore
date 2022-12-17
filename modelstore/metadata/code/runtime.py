@@ -16,12 +16,12 @@ import sys
 
 
 def get_python_version() -> str:
-    """ Returns the current python version """
+    """Returns the current python version"""
     vers = sys.version_info
     version = ".".join(str(x) for x in [vers.major, vers.minor, vers.micro])
     return f"python:{version}"
 
 
 def get_user() -> str:
-    """ Returns the current user """
+    """Returns the current user"""
     return getpass.getuser()

@@ -72,7 +72,7 @@ class AzureBlobStorage(BlobStorage):
 
     @property
     def client(self) -> "BlobServiceClient":
-        """ Returns the azure client """
+        """Returns the azure client"""
         if not AZURE_EXISTS:
             raise ImportError("Please install azure-storage-blob")
         if self.connection_string_key not in os.environ:

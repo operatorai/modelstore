@@ -26,7 +26,7 @@ from modelstore.metadata import metadata
 from modelstore.models import pyspark
 
 # pylint: disable=unused-import
-from tests.models.utils import classification_data, classification_df 
+from tests.models.utils import classification_data, classification_df
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
@@ -50,11 +50,7 @@ def spark_df(spark, classification_df):
 
 @pytest.fixture
 def spark_model(spark_df):
-    rf = RandomForestClassifier(
-        labelCol="y",
-        featuresCol="x",
-        numTrees=5
-    )
+    rf = RandomForestClassifier(labelCol="y", featuresCol="x", numTrees=5)
     pipeline = Pipeline(stages=[rf])
     return pipeline.fit(spark_df)
 
@@ -98,7 +94,7 @@ def test_save_model(spark_model, tmp_path):
     res = pyspark.save_model(tmp_path, spark_model)
     exp = [
         os.path.join(tmp_path, "pyspark", "metadata"),
-        os.path.join(tmp_path, "pyspark", "stages")
+        os.path.join(tmp_path, "pyspark", "stages"),
     ]
     assert exp == res
     assert all(os.path.exists(x) for x in exp)
@@ -139,4 +135,3 @@ def test_load_model(tmp_path, spark_manager, spark_model, spark_df):
     # They should have the same predictions
     y_loaded_pred = loaded_model.transform(spark_df).toPandas()
     assert np.allclose(y_pred["prediction"], y_loaded_pred["prediction"])
-

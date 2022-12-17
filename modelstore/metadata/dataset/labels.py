@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import List, Any 
+from typing import List, Any
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
@@ -20,7 +20,7 @@ import numpy as np
 from modelstore.metadata.dataset.types import (
     is_numpy_array,
     is_pandas_dataframe,
-    is_pandas_series
+    is_pandas_series,
 )
 from modelstore.metadata.utils.utils import exclude_field
 from modelstore.utils.log import logger
@@ -30,15 +30,15 @@ from modelstore.utils.log import logger
 @dataclass
 class Labels:
 
-    """ Labels contains fields that are captured about
-    the training dataset's labels when the model is saved """
+    """Labels contains fields that are captured about
+    the training dataset's labels when the model is saved"""
 
     shape: List[int] = field(default=None, metadata=config(exclude=exclude_field))
     values: dict = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, values: Any = None) -> "Labels":
-        """Returns summary stats about a set of labels """
+        """Returns summary stats about a set of labels"""
         if values is None:
             return None
         if is_numpy_array(values):
@@ -47,8 +47,7 @@ class Labels:
                 # its shape and value counts
                 unique, counts = np.unique(values, return_counts=True)
                 return Labels(
-                    shape=list(values.shape),
-                    values=dict(zip(unique, counts))
+                    shape=list(values.shape), values=dict(zip(unique, counts))
                 )
             # Array is multi-dimensional, only return its shape
             return Labels(

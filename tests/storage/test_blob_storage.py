@@ -31,7 +31,7 @@ def mock_meta_data(domain: str, model_id: str, inc_time: int) -> metadata.Summar
         ),
         code_meta_data=metadata.Code.generate(
             deps_list=[],
-            created= datetime.now() + timedelta(hours=inc_time),
+            created=datetime.now() + timedelta(hours=inc_time),
         ),
         storage_meta_data=None,
     )

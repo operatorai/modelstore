@@ -46,7 +46,7 @@ class FileSystemStorage(BlobStorage):
         super().__init__(
             required_deps=[],
             root_prefix=root_dir,
-            root_prefix_env_key="MODEL_STORE_ROOT_PREFIX"
+            root_prefix_env_key="MODEL_STORE_ROOT_PREFIX",
         )
         if self.root_prefix == "":
             raise Exception(
@@ -61,7 +61,7 @@ class FileSystemStorage(BlobStorage):
         self._create_directory = create_directory
 
     def validate(self) -> bool:
-        """ Validates that the directory exists and can be written to """
+        """Validates that the directory exists and can be written to"""
         # pylint: disable=broad-except
         # Check that the directory exists & we can write to it
         parent_dir = os.path.split(self.root_prefix)[0]
@@ -90,8 +90,10 @@ class FileSystemStorage(BlobStorage):
 
     def _get_storage_location(self, meta_data: metadata.Storage) -> str:
         if self.root_prefix != meta_data.root:
-            warnings.warn("Warning: this model store instance different has a "
-            + "root_dir than the one where the model was saved")
+            warnings.warn(
+                "Warning: this model store instance different has a "
+                + "root_dir than the one where the model was saved"
+            )
         return meta_data.path
 
     def _push(self, file_path: str, prefix: str) -> str:
@@ -108,7 +110,7 @@ class FileSystemStorage(BlobStorage):
         return prefix
 
     def _pull(self, prefix: str, dir_path: str) -> str:
-        """ Copies a file from destination to source """
+        """Copies a file from destination to source"""
         origin_path = os.path.join(
             self.root_prefix,
             prefix,
@@ -125,8 +127,8 @@ class FileSystemStorage(BlobStorage):
             raise FilePullFailedException(exc) from exc
 
     def _remove(self, prefix: str) -> bool:
-        """ Removes a file from the destination path
-        and any empty directories up the tree """
+        """Removes a file from the destination path
+        and any empty directories up the tree"""
         target_path = os.path.join(
             self.root_prefix,
             prefix,

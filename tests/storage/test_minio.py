@@ -48,10 +48,7 @@ def mock_minio():
 
 @pytest.fixture
 def storage(mock_minio):
-    return MinIOStorage(
-        bucket_name=_MOCK_BUCKET_NAME,
-        client=mock_minio
-    )
+    return MinIOStorage(bucket_name=_MOCK_BUCKET_NAME, client=mock_minio)
 
 
 def test_create_from_environment_variables(monkeypatch):
@@ -79,10 +76,7 @@ def test_validate(storage):
 def test_push(storage):
     push_temp_file(storage)
     storage.client.put_object.assert_called_with(
-        _MOCK_BUCKET_NAME,
-        remote_file_path(),
-        ANY,
-        ANY
+        _MOCK_BUCKET_NAME, remote_file_path(), ANY, ANY
     )
 
 
@@ -93,9 +87,7 @@ def test_pull(storage):
         "tmp_dir",
     )
     storage.client.fget_object.assert_called_with(
-        _MOCK_BUCKET_NAME,
-        prefix,
-        "tmp_dir/test-file.txt"
+        _MOCK_BUCKET_NAME, prefix, "tmp_dir/test-file.txt"
     )
 
 
@@ -120,25 +112,17 @@ def test_remove(storage, file_exists, should_call_delete):
     storage.client.list_objects.return_value = objects
     assert storage._remove(prefix) == should_call_delete
     storage.client.list_objects.assert_called_with(
-        _MOCK_BUCKET_NAME,
-        prefix,
-        recursive=False
+        _MOCK_BUCKET_NAME, prefix, recursive=False
     )
     if file_exists:
-        storage.client.remove_object.assert_called_with(
-            _MOCK_BUCKET_NAME,
-            prefix
-        )
+        storage.client.remove_object.assert_called_with(_MOCK_BUCKET_NAME, prefix)
     else:
         storage.client.remove_object.assert_not_called()
 
 
 def test_read_json_objects_ignores_non_json(storage):
     storage.client.list_objects.return_value = [
-        Object(
-            bucket_name=_MOCK_BUCKET_NAME,
-            object_name="text-file.txt"
-        ),
+        Object(bucket_name=_MOCK_BUCKET_NAME, object_name="text-file.txt"),
     ]
     items = storage._read_json_objects("")
     assert len(items) == 0
@@ -172,7 +156,7 @@ def test_storage_location(storage):
                 path=None,
                 bucket=_MOCK_BUCKET_NAME,
                 container=None,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             False,
             "/path/to/file",
@@ -183,7 +167,7 @@ def test_storage_location(storage):
                 path=None,
                 bucket="a-different-bucket-name",
                 container=None,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             True,
             None,
@@ -194,7 +178,7 @@ def test_storage_location(storage):
                 path=None,
                 bucket=_MOCK_BUCKET_NAME,
                 container=None,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             True,
             None,

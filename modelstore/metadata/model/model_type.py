@@ -27,23 +27,24 @@ _MODEL_TYPE_FILE = "model-info.json"
 @dataclass
 class ModelType:
 
-    """ ModelType contains fields that are captured about
-    the model type when it is saved """
+    """ModelType contains fields that are captured about
+    the model type when it is saved"""
 
     library: str
     type: str = field(default=None, metadata=config(exclude=exclude_field))
 
     # When saving multiple models together, the models'
     # types are specified in this list
-    models: Optional[List['ModelType']] = field(
-        default=None,
-        metadata=config(exclude=exclude_field)
+    models: Optional[List["ModelType"]] = field(
+        default=None, metadata=config(exclude=exclude_field)
     )
 
     @classmethod
-    def generate(cls, library: str, class_name: str = None, models: List[Dict] = None) -> "ModelType":
-        """ Generates the meta data for the type of model
-        that is being saved """
+    def generate(
+        cls, library: str, class_name: str = None, models: List[Dict] = None
+    ) -> "ModelType":
+        """Generates the meta data for the type of model
+        that is being saved"""
         return ModelType(
             library=library,
             type=class_name,
@@ -51,8 +52,8 @@ class ModelType:
         )
 
     def dumps(self, target_dir: str) -> str:
-        """ Dumps the data class as JSON into a file
-        and returns the path to the file """
+        """Dumps the data class as JSON into a file
+        and returns the path to the file"""
         # pylint: disable=no-member
         # pylint: disable=unspecified-encoding
         target_file = os.path.join(target_dir, _MODEL_TYPE_FILE)

@@ -20,34 +20,32 @@ import modelstore
 from modelstore.metadata.code.code import Code
 from modelstore.metadata.model.model import Model, ModelType, Dataset
 from modelstore.metadata.storage.storage import Storage
-from modelstore.metadata.utils.utils import (
-    exclude_field,
-    validate_json_serializable
-)
+from modelstore.metadata.utils.utils import exclude_field, validate_json_serializable
 
 
 @dataclass_json
 @dataclass
 class Summary:
 
-    """ Summary holds all of the fields that are captured
-    when a model is saved """
+    """Summary holds all of the fields that are captured
+    when a model is saved"""
 
     model: Model
     storage: Storage
-    modelstore: str # Version of modelstore
+    modelstore: str  # Version of modelstore
     code: Optional[Code] = field(default=None, metadata=config(exclude=exclude_field))
     extra: Optional[dict] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
-    def generate(cls,
+    def generate(
+        cls,
         code_meta_data: Code,
         model_meta_data: Model,
         storage_meta_data: Storage,
         extra_metadata: dict = None,
     ) -> "Summary":
-        """ Generates all of the meta data for a model
-        and adds the modelstore version """
+        """Generates all of the meta data for a model
+        and adds the modelstore version"""
         validate_json_serializable("extra_metadata", extra_metadata)
         return Summary(
             model=model_meta_data,
@@ -58,7 +56,7 @@ class Summary:
         )
 
     def dumps(self, target_file: str):
-        """ Dumps the data class as JSON into target_file"""
+        """Dumps the data class as JSON into target_file"""
         # pylint: disable=no-member
         # pylint: disable=unspecified-encoding
         with open(target_file, "w") as out:
@@ -66,7 +64,7 @@ class Summary:
 
     @classmethod
     def loads(cls, source_file: str) -> "Summary":
-        """ Loads the data class from a JSON source_file """
+        """Loads the data class from a JSON source_file"""
         # pylint: disable=no-member
         # pylint: disable=unspecified-encoding
         with open(source_file, "r") as lines:
@@ -74,9 +72,9 @@ class Summary:
         return Summary.from_json(content)
 
     def model_type(self) -> ModelType:
-        """ Returns the model type """
+        """Returns the model type"""
         return self.model.model_type
 
     def dataset(self) -> Dataset:
-        """ Returns meta data about the training data """
+        """Returns meta data about the training data"""
         return self.model.data

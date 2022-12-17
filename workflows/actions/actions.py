@@ -25,16 +25,17 @@ MODEL_DOMAIN = "diabetes-boosting-demo"
 
 
 def run_on_storage(model_store: ModelStore):
-    """ Runs a series of actions on `model_store` that don't require a model """
+    """Runs a series of actions on `model_store` that don't require a model"""
     for func in storage.get_actions():
         print(f"🔍  Running {str(func)}")
         func(model_store, MODEL_DOMAIN)
     print("✅  Storage assertions passed")
 
 
-def run_with_model(model_store: ModelStore, model: Any,
-    extra_metadata: dict, extra_files: List[str]):
-    """ Runs a series of actions on `model_store` using `model` """
+def run_with_model(
+    model_store: ModelStore, model: Any, extra_metadata: dict, extra_files: List[str]
+):
+    """Runs a series of actions on `model_store` using `model`"""
     meta_data = model_store.upload(
         domain=MODEL_DOMAIN,
         model=model,
@@ -51,6 +52,6 @@ def run_with_model(model_store: ModelStore, model: Any,
 
 
 def run_cli_commands(model_path: str):
-    """ Runs a series of CLI commands """
+    """Runs a series of CLI commands"""
     model_id = cli.assert_upload_runs(MODEL_DOMAIN, model_path)
     cli.assert_download_runs(MODEL_DOMAIN, model_id)

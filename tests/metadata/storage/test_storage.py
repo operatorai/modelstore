@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import json 
+import json
 
 from modelstore.metadata import metadata
 
@@ -30,7 +30,7 @@ def test_generate_from_path():
         prefix=None,
     )
     result = metadata.Storage.from_path(
-        "file_system", 
+        "file_system",
         "root",
         "/path/to/files",
     )
@@ -52,7 +52,9 @@ def test_generate_from_container():
         container="container-name",
         prefix="/path/to/files",
     )
-    result = metadata.Storage.from_container("container-system", "container-name", "/path/to/files")
+    result = metadata.Storage.from_container(
+        "container-system", "container-name", "/path/to/files"
+    )
     assert expected == result
 
 
@@ -64,5 +66,7 @@ def test_generate_from_bucket():
         container=None,
         prefix="/path/to/files",
     )
-    result = metadata.Storage.from_bucket("bucket-system", "bucket-name", "/path/to/files")
+    result = metadata.Storage.from_bucket(
+        "bucket-system", "bucket-name", "/path/to/files"
+    )
     assert expected == result

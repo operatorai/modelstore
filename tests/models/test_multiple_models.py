@@ -64,9 +64,11 @@ def test_model_info_with_explainer(
         library="multiple-models",
         type=None,
         models=[
-            metadata.ModelType(SKLearnManager.NAME, "RandomForestRegressor", models=None),
+            metadata.ModelType(
+                SKLearnManager.NAME, "RandomForestRegressor", models=None
+            ),
             metadata.ModelType(ShapManager.NAME, "Tree", models=None),
-        ]
+        ],
     )
     res = multiple_model_manager.model_info(
         model=sklearn_tree,

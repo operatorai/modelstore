@@ -25,27 +25,33 @@ from modelstore.metadata.utils.utils import exclude_field
 @dataclass
 class Model:
 
-    """ Model contains fields that are captured about
-    the model when it is saved """
+    """Model contains fields that are captured about
+    the model when it is saved"""
 
     domain: str
     model_id: str
     model_type: ModelType
-    parameters: Optional[dict] = field(default=None, metadata=config(exclude=exclude_field))
-    data: Optional[Dataset] = field(default=None, metadata=config(exclude=exclude_field))
+    parameters: Optional[dict] = field(
+        default=None, metadata=config(exclude=exclude_field)
+    )
+    data: Optional[Dataset] = field(
+        default=None, metadata=config(exclude=exclude_field)
+    )
 
     @classmethod
-    def generate(cls,
+    def generate(
+        cls,
         domain: str,
         model_id: str,
         model_type: ModelType,
         parameters: dict = None,
-        data: Dataset = None) -> "Model":
-        """ Generates the meta data for the model that is being saved """
+        data: Dataset = None,
+    ) -> "Model":
+        """Generates the meta data for the model that is being saved"""
         return Model(
             domain=domain,
             model_id=model_id,
             model_type=model_type,
             parameters=parameters,
-            data=data
+            data=data,
         )

@@ -35,7 +35,7 @@ def _repo_name(repo: "git.Repo") -> str:
 
 
 def git_meta() -> dict:
-    """ Returns meta data about the current git repo """
+    """Returns meta data about the current git repo"""
     if not GIT_EXISTS:
         return {}
     # pylint: disable=broad-except

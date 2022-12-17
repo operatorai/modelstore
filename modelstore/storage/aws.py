@@ -69,7 +69,7 @@ class AWSStorage(BlobStorage):
 
     @property
     def client(self):
-        """ Returns the boto s3 client """
+        """Returns the boto s3 client"""
         try:
             if self.__client is None:
                 self.__client = boto3.client("s3", region_name=self.region)

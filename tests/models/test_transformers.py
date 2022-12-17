@@ -145,9 +145,7 @@ def test_load_model(tmp_path, tr_manager, tr_model, tr_config, tr_tokenizer):
     tr_tokenizer.save_pretrained(model_dir)
 
     #  Load the model
-    loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(
-        tmp_path, None
-    )
+    loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(tmp_path, None)
 
     # Expect the two to be the same
     assert isinstance(loaded_model, DistilBertModel)

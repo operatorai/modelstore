@@ -21,9 +21,11 @@ from modelstore.metadata import metadata
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 
+
 @pytest.fixture
 def now():
     return datetime.now()
+
 
 @pytest.fixture
 def code_meta_data(now):

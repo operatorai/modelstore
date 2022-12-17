@@ -23,13 +23,13 @@ from modelstore.metadata.utils.utils import exclude_field
 @dataclass
 class Storage:
 
-    """ Storage contains fields that are captured about
-    where the model is saved """
+    """Storage contains fields that are captured about
+    where the model is saved"""
 
     # Constant to describe the storage type
     type: str
 
-    # Path-like storage (e.g. local)
+    # Path-like storage (e.g. local)
     root: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
     path: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
 
@@ -37,13 +37,15 @@ class Storage:
     bucket: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
     prefix: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
 
-    # Retained for backwards compatibility (Azure)
-    container: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
+    # Retained for backwards compatibility (Azure)
+    container: Optional[str] = field(
+        default=None, metadata=config(exclude=exclude_field)
+    )
 
     @classmethod
     def from_path(cls, storage_type: str, root: str, path: str) -> "Storage":
-        """ Generates the meta data about where the model
-        is going to be saved when it is saved in path-like storage """
+        """Generates the meta data about where the model
+        is going to be saved when it is saved in path-like storage"""
         return Storage(
             type=storage_type,
             root=root,
@@ -52,8 +54,8 @@ class Storage:
 
     @classmethod
     def from_bucket(cls, storage_type: str, bucket: str, prefix: str) -> "Storage":
-        """ Generates the meta data about where the model
-        is going to be saved when it is saved in container storage """
+        """Generates the meta data about where the model
+        is going to be saved when it is saved in container storage"""
         return Storage(
             type=storage_type,
             bucket=bucket,
@@ -61,9 +63,11 @@ class Storage:
         )
 
     @classmethod
-    def from_container(cls, storage_type: str, container: str, prefix: str) -> "Storage":
-        """ Generates the meta data about where the model
-        is going to be saved when it is saved in an Azure container """
+    def from_container(
+        cls, storage_type: str, container: str, prefix: str
+    ) -> "Storage":
+        """Generates the meta data about where the model
+        is going to be saved when it is saved in an Azure container"""
         return Storage(
             type=storage_type,
             container=container,

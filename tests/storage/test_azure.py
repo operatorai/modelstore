@@ -260,22 +260,22 @@ def test_storage_location():
     [
         (
             metadata.Storage(
-                type=None, 
-                path=None, 
+                type=None,
+                path=None,
                 bucket=None,
                 container=_MOCK_CONTAINER_NAME,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             False,
             "/path/to/file",
         ),
         (
             metadata.Storage(
-                type=None, 
-                path=None, 
+                type=None,
+                path=None,
                 bucket=None,
                 container="a-different-bucket",
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             True,
             None,

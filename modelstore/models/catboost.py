@@ -128,7 +128,7 @@ def save_model(
 
 
 def dump_attributes(tmp_dir: str, model: "catboost.CatBoost") -> str:
-    """ Dumps the model attributes into a JSON file """
+    """Dumps the model attributes into a JSON file"""
     logger.debug("Dumping model config")
     config = {
         "tree_count": model.tree_count_,

@@ -17,10 +17,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
 
-from modelstore.metadata.dataset.types import (
-    is_numpy_array,
-    is_pandas_dataframe
-)
+from modelstore.metadata.dataset.types import is_numpy_array, is_pandas_dataframe
 from modelstore.metadata.utils.utils import exclude_field
 from modelstore.utils.log import logger
 
@@ -29,14 +26,14 @@ from modelstore.utils.log import logger
 @dataclass
 class Features:
 
-    """ Features contains fields that are captured about
-    the training dataset's features when the model is saved """
+    """Features contains fields that are captured about
+    the training dataset's features when the model is saved"""
 
     shape: List[int] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, values: Any = None) -> "Features":
-        """Returns summary stats about a set of features """
+        """Returns summary stats about a set of features"""
         if values is None:
             return None
         if is_numpy_array(values):
