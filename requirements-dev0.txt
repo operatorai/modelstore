@@ -1,6 +1,6 @@
 # Code & testing
 black==22.12.0
-flake8==6.0.0
+flake8>=6.0.0
 isort==5.11.3
 moto==4.0.11
 pylint==2.15.8
