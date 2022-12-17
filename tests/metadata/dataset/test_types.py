@@ -14,7 +14,7 @@
 from modelstore.metadata.dataset.types import (
     is_numpy_array,
     is_pandas_dataframe,
-    is_pandas_series
+    is_pandas_series,
 )
 
 # pylint: disable=unused-import

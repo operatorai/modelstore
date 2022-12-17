@@ -178,7 +178,7 @@ def test_storage_location(file_system_storage):
                 path="/path/to/file",
                 bucket=None,
                 container=None,
-                prefix=None
+                prefix=None,
             ),
             False,
             "/path/to/file",

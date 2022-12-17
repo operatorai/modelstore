@@ -153,7 +153,7 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
     assert isinstance(loaded_model, type(xgb_model))
 
     # They should have the same predictions
-    y_loaded_pred = xgb_model.predict(X_train)
+    y_loaded_pred = loaded_model.predict(X_train)
     assert np.allclose(y_pred, y_loaded_pred)
 
     # They should also have the same params
@@ -197,5 +197,5 @@ def test_load_booster(tmp_path, xgb_manager, xgb_booster, classification_data):
     assert isinstance(loaded_model, type(xgb_booster))
 
     # They should have the same predictions
-    y_loaded_pred = xgb_booster.predict(xgb.DMatrix(X_train))
+    y_loaded_pred = loaded_model.predict(xgb.DMatrix(X_train))
     assert np.allclose(y_pred, y_loaded_pred)

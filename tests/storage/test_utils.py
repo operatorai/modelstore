@@ -69,8 +69,5 @@ def push_temp_files(storage, prefix, file_types=TEST_FILE_TYPES):
 
             # Push the file to storage
             # pylint: disable=protected-access
-            result = storage._push(
-                file_path,
-                os.path.join(prefix, file_name)
-            )
+            result = storage._push(file_path, os.path.join(prefix, file_name))
             assert result == os.path.join(prefix, file_name)

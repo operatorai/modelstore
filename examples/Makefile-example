@@ -4,7 +4,7 @@ REPO_ROOT=$(shell cd ../../ && pwd)
 .PHONY: name pyenv pyenv-local pyenv-prod pyenv-test pyenv-uninstall refresh
 
 name:
-	echo $(VIRTUALENV_NAME)
+	@echo $(VIRTUALENV_NAME)
 
 pyenv-uninstall:
 	@$(REPO_ROOT)/bin/_remove_pyenv
@@ -26,7 +26,7 @@ pyenv-prod: pyenv
 	pip install --no-cache-dir --upgrade modelstore
 
 refresh:
-	echo "\n 🔵  Refreshing installation of modelstore"
+	@echo "\n 🔵  Refreshing installation of modelstore"
 	pip install --upgrade pip setuptools wheel	
 	pip uninstall -y modelstore
 	pip install --no-cache-dir -e $(REPO_ROOT)

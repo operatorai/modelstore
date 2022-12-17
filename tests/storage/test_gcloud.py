@@ -65,7 +65,7 @@ def gcloud_anon_client(bucket_exists: bool, blob_exists: bool, file_contents: st
         mock_blob = gcloud_blob(blob_exists, file_contents)
         mock_bucket.blob.return_value = mock_blob
         if blob_exists:
-             # The anonymous client can list the blobs
+            # The anonymous client can list the blobs
             mock_client.list_blobs.return_value = [mock_blob]
     return mock_client
 
@@ -95,8 +95,11 @@ def gcloud_storage(mock_client: storage.Client, is_anon_client: bool):
 
 
 def gcloud_client(
-    bucket_exists: bool, blob_exists: bool, is_anon_client: bool, 
-    file_contents: str = TEST_FILE_CONTENTS):
+    bucket_exists: bool,
+    blob_exists: bool,
+    is_anon_client: bool,
+    file_contents: str = TEST_FILE_CONTENTS,
+):
     if is_anon_client:
         client = gcloud_anon_client(bucket_exists, blob_exists, file_contents)
         return client, gcloud_storage(client, is_anon_client)
@@ -135,18 +138,14 @@ def test_create_fails_with_missing_environment_variables(monkeypatch):
 )
 def test_validate(bucket_exists, is_anon_client, validate_should_pass):
     _, storage = gcloud_client(
-        bucket_exists=bucket_exists,
-        blob_exists=False,
-        is_anon_client=is_anon_client
+        bucket_exists=bucket_exists, blob_exists=False, is_anon_client=is_anon_client
     )
     assert storage.validate() == validate_should_pass
 
 
 def test_push():
     _, storage = gcloud_client(
-        bucket_exists=True,
-        blob_exists=False,
-        is_anon_client=False
+        bucket_exists=True, blob_exists=False, is_anon_client=False
     )
 
     # Push a file
@@ -164,9 +163,7 @@ def test_push():
 
 def test_anonymous_push():
     _, storage = gcloud_client(
-        bucket_exists=True,
-        blob_exists=False,
-        is_anon_client=True
+        bucket_exists=True, blob_exists=False, is_anon_client=True
     )
 
     with pytest.raises(NotImplementedError):
@@ -175,9 +172,7 @@ def test_anonymous_push():
 
 def test_pull(tmp_path):
     _, storage = gcloud_client(
-        bucket_exists=True,
-        blob_exists=True,
-        is_anon_client=False
+        bucket_exists=True, blob_exists=True, is_anon_client=False
     )
 
     # Pull the file back from storage
@@ -196,9 +191,7 @@ def test_pull(tmp_path):
 
 def test_anonymous_pull(tmp_path):
     _, storage = gcloud_client(
-        bucket_exists=True,
-        blob_exists=True,
-        is_anon_client=True
+        bucket_exists=True, blob_exists=True, is_anon_client=True
     )
 
     # Pull the file back from storage
@@ -224,9 +217,7 @@ def test_anonymous_pull(tmp_path):
 )
 def test_remove(blob_exists, should_call_delete):
     mock_client, storage = gcloud_client(
-        bucket_exists=True,
-        blob_exists=blob_exists,
-        is_anon_client=False
+        bucket_exists=True, blob_exists=blob_exists, is_anon_client=False
     )
 
     prefix = remote_file_path()
@@ -245,9 +236,7 @@ def test_remove(blob_exists, should_call_delete):
 
 def test_anonymous_remove():
     _, storage = gcloud_client(
-        bucket_exists=True,
-        blob_exists=True,
-        is_anon_client=True
+        bucket_exists=True, blob_exists=True, is_anon_client=True
     )
 
     prefix = remote_file_path()
@@ -257,9 +246,7 @@ def test_anonymous_remove():
 
 def test_read_json_objects_ignores_non_json():
     mock_client, storage = gcloud_client(
-        bucket_exists=True,
-        blob_exists=False,
-        is_anon_client=False
+        bucket_exists=True, blob_exists=False, is_anon_client=False
     )
     mock_client.list_blobs.return_value = [
         Blob(name="test-file-source-1.txt", bucket=_MOCK_BUCKET_NAME),
@@ -274,7 +261,7 @@ def test_read_json_object_fails_gracefully():
         bucket_exists=True,
         blob_exists=True,
         is_anon_client=False,
-        file_contents="not json"
+        file_contents="not json",
     )
     prefix = remote_file_path()
 
@@ -286,9 +273,7 @@ def test_read_json_object_fails_gracefully():
 
 def test_storage_location():
     _, storage = gcloud_client(
-        bucket_exists=False,
-        blob_exists=False,
-        is_anon_client=False
+        bucket_exists=False, blob_exists=False, is_anon_client=False
     )
 
     # Asserts that the location meta data is correctly formatted
@@ -310,7 +295,7 @@ def test_storage_location():
                 path=None,
                 bucket=_MOCK_BUCKET_NAME,
                 container=None,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             False,
             "/path/to/file",
@@ -321,7 +306,7 @@ def test_storage_location():
                 path=None,
                 bucket="a-different-bucket",
                 container=None,
-                prefix="/path/to/file"
+                prefix="/path/to/file",
             ),
             True,
             None,
@@ -330,9 +315,7 @@ def test_storage_location():
 )
 def test_get_location(meta_data, should_raise, result):
     _, storage = gcloud_client(
-        bucket_exists=False,
-        blob_exists=False,
-        is_anon_client=False
+        bucket_exists=False, blob_exists=False, is_anon_client=False
     )
 
     # Asserts that pulling the location out of meta data is correct

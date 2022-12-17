@@ -66,9 +66,7 @@ class MultipleModelsManager(ModelManager):
         """Returns meta-data about the model's type"""
         return metadata.ModelType.generate(
             library=self.ml_library,
-            models=[
-                m.model_info(**kwargs) for m in self.managers
-            ]
+            models=[m.model_info(**kwargs) for m in self.managers],
         )
 
     def get_params(self, **kwargs) -> dict:

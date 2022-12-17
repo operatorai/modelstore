@@ -25,6 +25,7 @@ from modelstore.models.model_manager import ModelManager
 from modelstore.models.mxnet import MxnetManager
 from modelstore.models.onnx import OnnxManager
 from modelstore.models.prophet import ProphetManager
+from modelstore.models.pyspark import PySparkManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.pytorch_lightning import PyTorchLightningManager
 from modelstore.models.shap import ShapManager
@@ -48,6 +49,7 @@ _LIBRARIES = {
         MxnetManager,
         OnnxManager,
         ProphetManager,
+        PySparkManager,
         PyTorchManager,
         PyTorchLightningManager,
         ShapManager,

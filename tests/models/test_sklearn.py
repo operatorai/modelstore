@@ -71,7 +71,7 @@ def sklearn_manager():
     [
         (
             RandomForestRegressor,
-            metadata.ModelType("sklearn","RandomForestRegressor", None),
+            metadata.ModelType("sklearn", "RandomForestRegressor", None),
         ),
         (
             LogisticRegression,

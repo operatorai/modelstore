@@ -16,18 +16,18 @@ import json
 
 
 def remove_nones(values: dict) -> dict:
-    """ Removes any entries in a dictionary that have None values """
+    """Removes any entries in a dictionary that have None values"""
     return {k: v for k, v in values.items() if v is not None}
 
 
 def exclude_field(value: Any) -> bool:
-    """ Whether to exclude a field from being included in the JSON
-    meta data """
+    """Whether to exclude a field from being included in the JSON
+    meta data"""
     return value is None
 
 
 def validate_json_serializable(name: str, value: dict):
-    """ Validates that `value` is a JSON serializable dictionary """
+    """Validates that `value` is a JSON serializable dictionary"""
     if value is None:
         # None fields will not be dumped from dataclasses
         return

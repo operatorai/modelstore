@@ -42,9 +42,7 @@ def test_model_not_found(model_store: ModelStore, model_file: str):
         model_store.get_model_info("missing-domain", "missing-model")
 
     model_store.upload(
-        domain="existing-domain",
-        model_id="test-model-id-1",
-        model=model_file
+        domain="existing-domain", model_id="test-model-id-1", model=model_file
     )
     with pytest.raises(ModelNotFoundException):
         model_store.get_model_info("existing-domain", "missing-model")
@@ -58,19 +56,11 @@ def test_model_exists(model_store: ModelStore, model_file: str):
     assert not model_store.model_exists(domain, model_id)
 
     # Upload model 2 => domain exists => model 1 still doesn't exist
-    model_store.upload(
-        domain=domain,
-        model_id="test-model-id-2",
-        model=model_file
-    )
+    model_store.upload(domain=domain, model_id="test-model-id-2", model=model_file)
     assert not model_store.model_exists(domain, model_id)
 
     # Upload model 1 => model exists
-    model_store.upload(
-        domain=domain,
-        model_id=model_id,
-        model=model_file
-    )
+    model_store.upload(domain=domain, model_id=model_id, model=model_file)
     assert model_store.model_exists(domain, model_id)
 
 
@@ -81,7 +71,7 @@ def test_extra_metadata(model_store: ModelStore, model_file: str):
         domain="test-domain",
         model_id="test-model-id-1",
         model=model_file,
-        extra_metadata=extra_metadata
+        extra_metadata=extra_metadata,
     )
 
     # Extras are appended to the returned meta data

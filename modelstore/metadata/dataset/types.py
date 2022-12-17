@@ -24,19 +24,19 @@ except ImportError:
 
 
 def is_numpy_array(values) -> bool:
-    """ Whether values is a numpy array """
+    """Whether values is a numpy array"""
     return isinstance(values, np.ndarray)
 
 
 def is_pandas_dataframe(values) -> bool:
-    """ Whether values is a pandas data frame"""
+    """Whether values is a pandas data frame"""
     if PANDAS_EXISTS:
         return isinstance(values, pd.DataFrame)
     return False
 
 
 def is_pandas_series(values) -> bool:
-    """ Whether values is a pandas series """
+    """Whether values is a pandas series"""
     if PANDAS_EXISTS:
         return isinstance(values, pd.Series)
     return False

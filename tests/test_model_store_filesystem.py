@@ -21,10 +21,7 @@ import pytest
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES
 from modelstore.storage.local import FileSystemStorage
-from modelstore.utils.exceptions import (
-    DomainNotFoundException,
-    ModelNotFoundException
-)
+from modelstore.utils.exceptions import DomainNotFoundException, ModelNotFoundException
 
 # pylint: disable=unused-import
 from tests.test_utils import (
@@ -64,8 +61,7 @@ def test_from_file_system_missing_root(should_create: bool):
     assert not os.path.exists(root_directory)
     if should_create:
         store = ModelStore.from_file_system(
-            root_directory=root_directory,
-            create_directory=should_create
+            root_directory=root_directory, create_directory=should_create
         )
         assert os.path.exists(root_directory)
         assert os.path.isdir(root_directory)
@@ -94,10 +90,6 @@ def test_model_not_found(tmp_path: PosixPath, model_file: str):
     with pytest.raises(DomainNotFoundException):
         store.get_model_info("missing-domain", "missing-model")
 
-    store.upload(
-        domain="existing-domain",
-        model_id="test-model-id-1",
-        model=model_file
-    )
+    store.upload(domain="existing-domain", model_id="test-model-id-1", model=model_file)
     with pytest.raises(ModelNotFoundException):
         store.get_model_info("existing-domain", "missing-model")

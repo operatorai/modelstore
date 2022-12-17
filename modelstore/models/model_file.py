@@ -74,9 +74,7 @@ class ModelFileManager(ModelManager):
         return ["model"]
 
     def model_info(self, **kwargs) -> ModelType:
-        return ModelType.generate(
-            library=self.ml_library
-        )
+        return ModelType.generate(library=self.ml_library)
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         """

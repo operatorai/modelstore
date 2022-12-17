@@ -19,7 +19,7 @@ MODELSTORE_ROOT_PREFIX = "operatorai-model-store"
 
 
 def get_root_path(root_dir: str) -> str:
-    """ Returns the root location of the model registry """
+    """Returns the root location of the model registry"""
     return os.path.join(
         root_dir,
         MODELSTORE_ROOT_PREFIX,
@@ -48,7 +48,7 @@ def get_archive_path(root_dir: str, domain: str, model_id: str, local_path: str)
         # Warning! Mac OS translates ":" in paths to "/"
         datetime.now().strftime("%Y.%m.%d-%H.%M.%S"),
         model_id,
-        os.path.split(local_path)[1]
+        os.path.split(local_path)[1],
     )
 
 
@@ -69,10 +69,7 @@ def get_model_versions_path(
         "versions",
     )
     if state_name is not None:
-        return os.path.join(
-            versions,
-            state_name
-        )
+        return os.path.join(versions, state_name)
     return versions
 
 

@@ -58,6 +58,7 @@ pip install modelstore
 * [Scikit Learn](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/sklearn_example.py)
 * [Skorch](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/skorch_example.py)
 * [Shap](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/shap_example.py)
+* [Spark ML Lib](https://spark.apache.org/)
 * [Tensorflow](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/tensorflow_example.py)
 * [Transformers](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/transformers_example.py)
 * [XGBoost](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/xgboost_example.py)

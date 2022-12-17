@@ -42,7 +42,7 @@ from tests.models.utils import (
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring
 
 
 @pytest.fixture
@@ -77,7 +77,7 @@ def test_model_info(fai_manager):
     expected = metadata.ModelType("fastai", None, None)
     res = fai_manager.model_info()
     assert expected == res
-    
+
 
 def test_model_data(fai_manager, fai_learner):
     res = fai_manager.model_data(learner=fai_learner)

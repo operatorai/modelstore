@@ -39,9 +39,7 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def upload(
-        self, domain: str, model_id: str, local_path: str
-    ) -> metadata.Storage:
+    def upload(self, domain: str, model_id: str, local_path: str) -> metadata.Storage:
         """Uploads an archive to this type of storage
         :param extras can be a path to a file or list of files
         if these are specified, those files are upload
@@ -67,14 +65,18 @@ class CloudStorage(ABC):
 
     @abstractmethod
     def delete_model(
-        self, domain: str, model_id: str, meta_data: metadata.Summary, skip_prompt: bool = False
+        self,
+        domain: str,
+        model_id: str,
+        meta_data: metadata.Summary,
+        skip_prompt: bool = False,
     ):
         """Deletes a model artifact from storage."""
         raise NotImplementedError()
 
     @abstractmethod
     def get_domain(self, domain: str) -> dict:
-        """ Returns information about the domain """
+        """Returns information about the domain"""
         raise NotImplementedError()
 
     @abstractmethod
@@ -103,6 +105,12 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def unset_model_state(self, domain: str, model_id: str, state_name: str, modifying_reserved: bool = False):
+    def unset_model_state(
+        self,
+        domain: str,
+        model_id: str,
+        state_name: str,
+        modifying_reserved: bool = False,
+    ):
         """Removes the given model ID from the set that are in the state_name path"""
         raise NotImplementedError()

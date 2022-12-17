@@ -30,6 +30,7 @@ onnx
 onnxruntime
 onnxmltools
 prophet
+pyspark
 pytorch-lightning
 scikit-learn
 shap

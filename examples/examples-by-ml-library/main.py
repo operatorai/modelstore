@@ -11,6 +11,7 @@ from libraries import (
     onnx_sklearn_example,
     onnx_lightgbm_example,
     prophet_example,
+    pyspark_example,
     pytorch_example,
     pytorch_lightning_example,
     raw_file_example,
@@ -38,6 +39,7 @@ EXAMPLES = {
     "onnx-sklearn": onnx_sklearn_example,
     "onnx-lightgbm": onnx_lightgbm_example,
     "prophet": prophet_example,
+    "pyspark": pyspark_example,
     "pytorch": pytorch_example,
     "pytorch-lightning": pytorch_lightning_example,
     "shap": shap_example,
@@ -55,13 +57,9 @@ EXAMPLES = {
 @click.command()
 @click.option(
     "--modelstore-in",
-    type=click.Choice([
-        "aws",
-        "azure",
-        "gcloud",
-        "filesystem",
-        "minio"
-    ], case_sensitive=False),
+    type=click.Choice(
+        ["aws", "azure", "gcloud", "filesystem", "minio"], case_sensitive=False
+    ),
 )
 @click.option(
     "--ml-framework",

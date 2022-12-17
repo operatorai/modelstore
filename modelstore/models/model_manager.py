@@ -57,7 +57,7 @@ class ModelManager(ABC):
         return ["pip", "setuptools", "numpy", "scipy", "pandas"]
 
     def get_dependencies(self) -> list:
-        """ Returns the full list of dependencies """
+        """Returns the full list of dependencies"""
         return self.required_dependencies() + self.optional_dependencies()
 
     @abstractmethod
@@ -89,7 +89,7 @@ class ModelManager(ABC):
 
     @abstractmethod
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
-        """ Loads a model, stored in model_path, back into memory """
+        """Loads a model, stored in model_path, back into memory"""
         version = get_python_version()
         if meta_data is not None and meta_data.code is not None:
             if version != meta_data.code.runtime:
@@ -115,7 +115,7 @@ class ModelManager(ABC):
         )
 
     def model_data(self, **kwargs) -> Optional[metadata.Dataset]:
-        """ Returns meta data about the training data """
+        """Returns meta data about the training data"""
         return metadata.Dataset.generate(
             kwargs.get("X_train"),
             kwargs.get("y_train"),
@@ -212,9 +212,7 @@ class ModelManager(ABC):
         # Upload the model archive and any additional extras
         storage_meta_data = self.storage.upload(domain, model_id, archive_path)
         meta_data = metadata.Summary.generate(
-            code_meta_data=metadata.Code.generate(
-                deps_list=self.get_dependencies()
-            ),
+            code_meta_data=metadata.Code.generate(deps_list=self.get_dependencies()),
             model_meta_data=model_meta_data,
             storage_meta_data=storage_meta_data,
             extra_metadata=kwargs.get("extra_metadata"),

@@ -24,6 +24,7 @@ from modelstore.metadata import metadata
 # pylint: disable=missing-function-docstring
 # pylint: disable=no-member
 
+
 @pytest.fixture
 def extra_meta_data() -> dict:
     return {

@@ -20,7 +20,7 @@ from modelstore.utils import exceptions
 
 
 def assert_get_missing_model_raises(model_store: ModelStore, domain: str, _: dict):
-    """ Calling get_model_info() for a missing model raise an exception """
+    """Calling get_model_info() for a missing model raise an exception"""
     try:
         _ = model_store.get_model_info(domain, "missing-model")
     except exceptions.ModelNotFoundException:
@@ -30,14 +30,14 @@ def assert_get_missing_model_raises(model_store: ModelStore, domain: str, _: dic
 
 
 def assert_list_domains(model_store: ModelStore, domain: str, _: dict):
-    """ The result of listing all domains contains the `domain` value """
+    """The result of listing all domains contains the `domain` value"""
     domains = model_store.list_domains()
     assert domain in domains
     print(f"✅  list_domains() contains domain={domain}")
 
 
 def assert_get_domain(model_store: ModelStore, domain: str, _: dict):
-    """ The result of listing all domains contains the `domain` value """
+    """The result of listing all domains contains the `domain` value"""
     meta_data = model_store.get_domain(domain)
     assert isinstance(meta_data, dict)
     # @TODO better assertions
@@ -45,7 +45,7 @@ def assert_get_domain(model_store: ModelStore, domain: str, _: dict):
 
 
 def assert_list_models(model_store: ModelStore, model_domain: str, meta_data: dict):
-    """ The result of listing models contains the recently uploaded model """
+    """The result of listing models contains the recently uploaded model"""
     model_id = meta_data["model"]["model_id"]
     model_ids = model_store.list_models(domain=model_domain)
     assert model_id in model_ids
@@ -53,7 +53,7 @@ def assert_list_models(model_store: ModelStore, model_domain: str, meta_data: di
 
 
 def assert_get_model(model_store: ModelStore, model_domain: str, meta_data: dict):
-    """ Can retrieve an uploaded model's meta data"""
+    """Can retrieve an uploaded model's meta data"""
     model_id = meta_data["model"]["model_id"]
     stored_meta_data = model_store.get_model_info(model_domain, model_id)
     assert meta_data == stored_meta_data
@@ -61,14 +61,14 @@ def assert_get_model(model_store: ModelStore, model_domain: str, meta_data: dict
 
 
 def assert_load_model(model_store: ModelStore, model_domain: str, meta_data: dict):
-    """ Model store can load a model back into memory"""
+    """Model store can load a model back into memory"""
     model_id = meta_data["model"]["model_id"]
     model = model_store.load(model_domain, model_id)
     print(f"✅  Loaded model={model_id} into memory with type={type(model)}")
 
 
 def assert_download_model(model_store: ModelStore, model_domain: str, meta_data: dict):
-    """ A model archive can be downloaded """
+    """A model archive can be downloaded"""
     with tempfile.TemporaryDirectory() as tmp_dir:
         model_id = meta_data["model"]["model_id"]
         model_path = model_store.download(tmp_dir, model_domain, model_id)
@@ -77,8 +77,10 @@ def assert_download_model(model_store: ModelStore, model_domain: str, meta_data:
     print(f"✅  Downloaded model={model_id}")
 
 
-def assert_update_model_state(model_store: ModelStore, model_domain: str, meta_data: dict):
-    """ A model's state can be set and unset """
+def assert_update_model_state(
+    model_store: ModelStore, model_domain: str, meta_data: dict
+):
+    """A model's state can be set and unset"""
     model_id = meta_data["model"]["model_id"]
     state_name = "production"
     model_store.set_model_state(model_domain, model_id, state_name)
@@ -91,7 +93,7 @@ def assert_update_model_state(model_store: ModelStore, model_domain: str, meta_d
 
 
 def assert_delete_model(model_store: ModelStore, model_domain: str, meta_data: dict):
-    """ Deleting a model removes it from the store """
+    """Deleting a model removes it from the store"""
     model_id = meta_data["model"]["model_id"]
     state_name = "production"
     model_store.set_model_state(model_domain, model_id, state_name)
@@ -108,8 +110,8 @@ def assert_delete_model(model_store: ModelStore, model_domain: str, meta_data: d
 
 
 def get_actions() -> List[Callable]:
-    """ Returns the set of actions that can be run on a model_store
-    after a model has been uploaded """
+    """Returns the set of actions that can be run on a model_store
+    after a model has been uploaded"""
     return [
         assert_get_missing_model_raises,
         assert_list_domains,
@@ -119,5 +121,5 @@ def get_actions() -> List[Callable]:
         assert_load_model,
         assert_download_model,
         assert_update_model_state,
-        assert_delete_model, # Note: this action must be last
+        assert_delete_model,  # Note: this action must be last
     ]

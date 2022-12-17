@@ -47,13 +47,8 @@ class GoogleCloudStorage(BlobStorage):
 
     NAME = "google-cloud-storage"
     BUILD_FROM_ENVIRONMENT = {
-        "required": [
-            "MODEL_STORE_GCP_PROJECT",
-            "MODEL_STORE_GCP_BUCKET"
-        ],
-        "optional": [
-            "MODEL_STORE_GCP_ROOT_PREFIX"
-        ],
+        "required": ["MODEL_STORE_GCP_PROJECT", "MODEL_STORE_GCP_BUCKET"],
+        "optional": ["MODEL_STORE_GCP_ROOT_PREFIX"],
     }
 
     def __init__(
@@ -126,7 +121,7 @@ class GoogleCloudStorage(BlobStorage):
 
     @property
     def bucket(self):
-        """ The bucket where model artifacts will be stored """
+        """The bucket where model artifacts will be stored"""
         if self.is_anon_client:
             return self.client.bucket(bucket_name=self.bucket_name)
         try:
@@ -140,7 +135,7 @@ class GoogleCloudStorage(BlobStorage):
             return self.client.bucket(bucket_name=self.bucket_name)
 
     def validate(self) -> bool:
-        """ Validates that the cloud bucket exists"""
+        """Validates that the cloud bucket exists"""
         try:
             logger.debug("Checking if bucket exists (%s)...", self.bucket_name)
             if not self.bucket.exists():
@@ -160,7 +155,10 @@ class GoogleCloudStorage(BlobStorage):
             # to check whether we can read its contents
             try:
                 logger.debug("Querying for blobs in bucket (%s)...", self.bucket_name)
-                return list(self.client.list_blobs(self.bucket_name, max_results=1)) is not None
+                return (
+                    list(self.client.list_blobs(self.bucket_name, max_results=1))
+                    is not None
+                )
             except NotFound:
                 logger.error(
                     "Cannot list blobs in '%s' with an anonymous client.",
@@ -188,7 +186,7 @@ class GoogleCloudStorage(BlobStorage):
         try:
             logger.debug("Downloading from: %s...", prefix)
             destination = os.path.join(
-                dir_path, 
+                dir_path,
                 os.path.split(prefix)[1],
             )
             blob = self.bucket.blob(prefix)

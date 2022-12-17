@@ -39,9 +39,9 @@ from modelstore.utils.exceptions import (
 @dataclass(frozen=True)
 class ModelStore:
 
-    """ ModelStore is the main object that encapsulates a
+    """ModelStore is the main object that encapsulates a
     model registry. To create a new model store, use one of the
-    ModelStore.from_ functions """
+    ModelStore.from_ functions"""
 
     # The backend provider, e.g. "gcloud"
     storage: CloudStorage
@@ -61,17 +61,13 @@ class ModelStore:
             raise ModuleNotFoundError("boto3 is not installed!")
         return ModelStore(
             storage=AWSStorage(
-                bucket_name=bucket_name,
-                region=region,
-                root_prefix=root_prefix
+                bucket_name=bucket_name, region=region, root_prefix=root_prefix
             )
         )
 
     @classmethod
     def from_azure(
-        cls,
-        container_name: Optional[str] = None,
-        root_prefix: Optional[str] = None
+        cls, container_name: Optional[str] = None, root_prefix: Optional[str] = None
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to an
         Azure blob container. This assumes that the container
@@ -105,11 +101,11 @@ class ModelStore:
     @classmethod
     def from_minio(
         cls,
-        endpoint: Optional[str] = None, # Defaults to s3.amazonaws.com
+        endpoint: Optional[str] = None,  # Defaults to s3.amazonaws.com
         access_key: Optional[str] = None,
         secret_key: Optional[str] = None,
         bucket_name: Optional[str] = None,
-        root_prefix: Optional[str] = None
+        root_prefix: Optional[str] = None,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models using a MinIO client.
         This assumes that the bucket already exists."""
@@ -117,11 +113,7 @@ class ModelStore:
             raise ModuleNotFoundError("minio is not installed!")
         return ModelStore(
             storage=MinIOStorage(
-                endpoint,
-                access_key,
-                secret_key,
-                bucket_name,
-                root_prefix
+                endpoint, access_key, secret_key, bucket_name, root_prefix
             )
         )
 
@@ -167,7 +159,7 @@ class ModelStore:
     """
 
     def list_versions(self, domain: str, state_name: Optional[str] = None) -> list:
-        """ Lists the models in a domain (deprecated) """
+        """Lists the models in a domain (deprecated)"""
         warnings.warn(
             "list_versions() is deprecated; use list_models()",
             category=DeprecationWarning,
@@ -222,7 +214,7 @@ class ModelStore:
         return asdict(self.storage.get_meta_data(domain, model_id))
 
     def model_exists(self, domain: str, model_id: str) -> bool:
-        """ Returns True if a model with the given id exists in the domain """
+        """Returns True if a model with the given id exists in the domain"""
         try:
             self.storage.get_meta_data(domain, model_id)
             return True
@@ -291,19 +283,20 @@ class ModelStore:
         local_path = os.path.abspath(local_path)
         archive_path = self.storage.download(local_path, domain, model_id)
         with tarfile.open(archive_path, "r:gz") as tar:
-            def is_within_directory(directory, target):            
+
+            def is_within_directory(directory, target):
                 abs_directory = os.path.abspath(directory)
                 abs_target = os.path.abspath(target)
                 prefix = os.path.commonprefix([abs_directory, abs_target])
                 return prefix == abs_directory
-      
+
             def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
                 for member in tar.getmembers():
                     member_path = os.path.join(path, member.name)
                     if not is_within_directory(path, member_path):
                         raise Exception("Attempted Path Traversal in Tar File")
-                tar.extractall(path, members, numeric_owner=numeric_owner) 
- 
+                tar.extractall(path, members, numeric_owner=numeric_owner)
+
             safe_extract(tar, local_path)
         os.remove(archive_path)
         return local_path
