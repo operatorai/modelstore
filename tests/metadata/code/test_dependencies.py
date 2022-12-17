@@ -26,7 +26,7 @@ def test_get_version():
     if "isort" in sys.modules:
         # Force import
         del sys.modules["isort"]
-    assert dependencies._get_version("isort") == "5.10.1"
+    assert dependencies._get_version("isort") == "5.11.3"
 
 
 def test_get_dependency_versions():
