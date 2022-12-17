@@ -14,7 +14,7 @@ You can move model stores that you created in one file system directory to anoth
 
 Fixes an issue where model archives would be overwritten if models are uploaded too quickly ([#208](https://github.com/operatorai/modelstore/pull/208), thanks [@shsnyder](https://github.com/operatorai/modelstore/issues/197)).
 
-## modelstore 0.0.76 ([October 2022](https://github.com/operatorai/modelstore/pull/205))
+## modelstore 0.0.76 ([October 2022](https://github.com/operatorai/modelstore/pull/205))
 
 **🐛  Bug fixes & general updates**
 
