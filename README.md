@@ -4,7 +4,7 @@
 
 [![Downloads](https://pepy.tech/badge/modelstore)](https://pepy.tech/project/modelstore) [![Downloads](https://pepy.tech/badge/modelstore/month)](https://pepy.tech/project/modelstore)
 
-For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
+For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/) or come to the [MLOps Community Slack](https://go.mlops.community/slack)'s `#oss-modelstore` channel.
 
 ## modelstore is an open source model registry library
 
