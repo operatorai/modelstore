@@ -1,13 +1,13 @@
 # Code & testing
-black==22.12.0
+black>=22.12.0
 flake8>=5.0.4
-isort==5.11.3
-moto==4.0.11
-pylint==2.15.8
-pytest==7.2.0
+isort>=5.11.3
+moto>=4.0.11
+pylint>=2.15.8
+pytest>=7.2.0
 mock>=4.0.3
-rope==1.6.0
-twine==4.0.2
+rope>=1.6.0
+twine>=4.0.2
 
 # Data / dependencies for ML libraries
 numpy>=1.21.6 # numpy==1.21.6 is currently the max version on Python 3.7.13

@@ -1,5 +1,5 @@
 # Dependencies for storage libraries
-protobuf==3.19.5 # https://github.com/protocolbuffers/protobuf/issues/10051
+protobuf>=3.19.5 # https://github.com/protocolbuffers/protobuf/issues/10051
 
 # Storage
 azure-core>=1.23.1
@@ -8,27 +8,27 @@ boto3>=1.21.41
 google-cloud-storage>=2.3.0
 minio>=7.1.12
 
-pystan==2.19.1.1 # required to be installed before prophet
+pystan>=2.19.1.1 # required to be installed before prophet
 
 # Machine Learning
-annoy==1.17.0
-catboost==1.0.5
-fastai==2.5.6  # Note: 1.0.61 has different import paths!
-gensim==4.1.2
-Keras-Preprocessing==1.1.2
-lightgbm==3.3.2
-mxnet==1.8.0.post0
-onnx==1.13.0
-onnxruntime==1.11.0
-prophet==1.0.1
-pyspark==3.3.1
-pytorch-lightning==1.6.1
-scikit-learn==1.0.2
-shap==0.40.0
-skl2onnx==1.11.1
-skorch==0.11.0
-tensorflow==2.9.3
-torch==1.13.1
-torchvision==0.12.0
-transformers==4.18.0
-xgboost==1.5.2
+annoy>=1.17.0
+catboost>=1.0.5
+fastai>=2.5.6  # Note: 1.0.61 has different import paths!
+gensim>=4.1.2
+Keras-Preprocessing>=1.1.2
+lightgbm>=3.3.2
+mxnet>=1.8.0.post0
+onnx>=1.11.0 # onnx 1.13.0 depends on protobuf<4 and >=3.20.2, which breaks everything else
+onnxruntime>=1.11.0
+prophet>=1.0.1
+pyspark>=3.3.1
+pytorch-lightning>=1.6.1
+scikit-learn>=1.0.2
+shap>=0.40.0
+skl2onnx>=1.11.1
+skorch>=0.11.0
+tensorflow>=2.9.3
+torch>=1.13.1
+torchvision>=0.12.0
+transformers>=4.18.0
+xgboost>=1.5.2
