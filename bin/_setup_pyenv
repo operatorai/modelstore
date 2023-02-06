@@ -4,13 +4,13 @@ set -e
 source $(dirname $0)/_config
 
 if [[ $(pyenv versions | grep -L $PYTHON_VERSION) ]]; then
-    echo "\n ⏱  Installing Python $PYTHON_VERSION"
+    echo -e "\n ⏱  Installing Python $PYTHON_VERSION"
     pyenv install $PYTHON_VERSION
 fi
 
 VIRTUALENV_NAME="$1-${PYTHON_VERSION//./-}"
 
-echo "\n ⏱  Creating a $PYTHON_VERSION environment: $VIRTUALENV_NAME"
+echo -e "\n ⏱  Creating a $PYTHON_VERSION environment: $VIRTUALENV_NAME"
 env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" \
     pyenv virtualenv \
         --force $PYTHON_VERSION \
@@ -19,9 +19,9 @@ pyenv local $VIRTUALENV_NAME
 
 pip install --upgrade pip setuptools wheel
 for i in ./requirements*txt; do
-    echo "\n ⏱  Installing requirements in: $i"
-    pip install --no-cache-dir -r $i
+    echo -e "\n ⏱  Installing requirements in: $i"
+    pip install -r $i
 done
 
 pip install -e $REPO_ROOT
-echo "\n ✅  Done."
+echo -e "\n ✅  Done."
