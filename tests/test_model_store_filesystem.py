@@ -56,8 +56,8 @@ def test_from_file_system_existing_root(tmp_path: PosixPath, should_create: bool
         False,
     ],
 )
-def test_from_file_system_missing_root(should_create: bool):
-    root_directory = "unit-test"
+def test_from_file_system_missing_root(tmp_path: PosixPath, should_create: bool):
+    root_directory = os.path.join(tmp_path, "unit-test")
     assert not os.path.exists(root_directory)
     if should_create:
         store = ModelStore.from_file_system(
