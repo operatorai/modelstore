@@ -1,25 +1,27 @@
 #!/bin/bash
 set -e
 
-source $(dirname $0)/_config
+echo -e "\n 💬  Installing..."
+
+source $(dirname $0)/_pyenv_config "$@"
 
 if [[ $(pyenv versions | grep -L $PYTHON_VERSION) ]]; then
-    echo -e "\n ⏱  Installing Python $PYTHON_VERSION"
+    echo -e "\n 💬  Installing Python $PYTHON_VERSION"
     pyenv install $PYTHON_VERSION
 fi
 
-VIRTUALENV_NAME="$1-${PYTHON_VERSION//./-}"
-
-echo -e "\n ⏱  Creating a $PYTHON_VERSION environment: $VIRTUALENV_NAME"
+echo -e "\n 💬  Creating a $PYTHON_VERSION environment: $VIRTUALENV_NAME"
 env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" \
     pyenv virtualenv \
         --force $PYTHON_VERSION \
         "$VIRTUALENV_NAME"
+
+echo -e "\n 💬  Setting local: $VIRTUALENV_NAME"
 pyenv local $VIRTUALENV_NAME
 
 pip install --upgrade pip setuptools wheel
 for i in ./requirements*txt; do
-    echo -e "\n ⏱  Installing requirements in: $i"
+    echo -e "\n\n 💬  Installing requirements in: $i"
     pip install -r $i
 done
 

@@ -4,7 +4,7 @@ REPO_ROOT=$(shell cd ../ && pwd)
 .PHONY: setup pyenv pyenv-uninstall refresh
 
 pyenv: pyenv-uninstall
-	@$(REPO_ROOT)/bin/_setup_pyenv $(VIRTUALENV_NAME)
+	@$(REPO_ROOT)/bin/_pyenv_install $(VIRTUALENV_NAME)
 	find requirements/ -name "*.txt" -type f -exec pip install -r '{}' ';'
 
 refresh:
@@ -14,7 +14,7 @@ refresh:
 	pip install --no-cache-dir -e $(REPO_ROOT)
 
 pyenv-uninstall:
-	@$(REPO_ROOT)/bin/_remove_pyenv
+	@$(REPO_ROOT)/bin/_pyenv_uninstall $(VIRTUALENV_NAME)
 
 setup:
 	pip install --upgrade pip setuptools wheel	
