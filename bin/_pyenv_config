@@ -1,6 +1,6 @@
 #!/bin/bash
-export PYTHON_VERSION=3.7.15
-#export PYTHON_VERSION=3.8.12
+#export PYTHON_VERSION=3.7.15
+export PYTHON_VERSION=3.8.12
 #export PYTHON_VERSION=3.9.9
 
 export VIRTUALENV_NAME="$1-${PYTHON_VERSION//./-}"
