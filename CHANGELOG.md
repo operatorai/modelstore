@@ -1,5 +1,11 @@
 # Change log
 
+## Unreleased
+
+**🐛  Bug fixes & general updates**
+
+`modelstore` will now raise an exception if the user is attempting to upload a file from their current working directory that is called `artifacts.tar.gz` -- because that's the file that `modelstore` wants to create ([#222](https://github.com/operatorai/modelstore/pull/222)).
+
 ## modelstore 0.0.77 ([December 2022](https://github.com/operatorai/modelstore/pull/216)) 
 
 **🆕  New functionality**

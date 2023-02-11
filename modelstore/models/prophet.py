@@ -37,7 +37,10 @@ class ProphetManager(ModelManager):
         super().__init__(self.NAME, storage)
 
     def required_dependencies(self) -> list:
-        return ["pystan", "prophet"]
+        return ["prophet"]
+
+    def optional_dependencies(self) -> list:
+        return super().optional_dependencies() + ["pystan"]
 
     def _required_kwargs(self):
         return ["model"]

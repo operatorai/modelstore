@@ -7,11 +7,11 @@ name:
 	@echo $(VIRTUALENV_NAME)
 
 pyenv-uninstall:
-	@$(REPO_ROOT)/bin/_remove_pyenv
+	@$(REPO_ROOT)/bin/_pyenv_uninstall $(VIRTUALENV_NAME)
 
 pyenv: pyenv-uninstall
 	#@$(REPO_ROOT)/bin/_setup_brew
-	@$(REPO_ROOT)/bin/_setup_pyenv $(VIRTUALENV_NAME)
+	@$(REPO_ROOT)/bin/_pyenv_install $(VIRTUALENV_NAME)
 
 pyenv-local: pyenv
 	pip uninstall -y modelstore

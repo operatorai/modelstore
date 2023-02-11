@@ -35,7 +35,7 @@ def _train_sklearn(X_train, y_train):
             "max_depth": 4,
             "min_samples_split": 5,
             "learning_rate": 0.01,
-            "loss": "ls",
+            "loss": "absolute_error",
         }
     )
     model.fit(X_train, y_train)

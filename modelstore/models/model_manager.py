@@ -157,6 +157,9 @@ class ModelManager(ABC):
         """
         self._validate_kwargs(**kwargs)
         archive_name = "artifacts.tar.gz"
+        archive_path = os.path.join(os.getcwd(), archive_name)
+        if os.path.exists(archive_path):
+            raise FileExistsError(f"modelstore cannot create an: {archive_name} file.")
         with tempfile.TemporaryDirectory() as tmp_dir:
             result = os.path.join(tmp_dir, archive_name)
             with tarfile.open(result, "w:gz") as tar:
@@ -176,7 +179,6 @@ class ModelManager(ABC):
                     )
 
             # Move the archive to the current working directory
-            archive_path = os.path.join(os.getcwd(), archive_name)
             shutil.move(result, archive_path)
         return archive_path
 

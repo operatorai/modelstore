@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+echo -e "\n 💬  Uninstalling..."
+
+source $(dirname $0)/_pyenv_config "$@"
+
+if [[ -f ".python-version" ]]; then
+    # Keep pyenv-virtualenvs for other versions of Python
+    if [ "${VIRTUALENV_NAME}" == "$(cat .python-version)" ] ;then
+        echo -e "\n ⏱  Force removing: $VIRTUALENV_NAME"
+        pyenv uninstall -f $VIRTUALENV_NAME  
+    fi
+    rm .python-version
+    echo -e "\n ✅  Done."
+else
+    echo -e "\n ✅  Nothing to do."
+fi
+
