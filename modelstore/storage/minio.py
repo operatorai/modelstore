@@ -62,6 +62,7 @@ class MinIOStorage(BlobStorage):
         bucket_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
         client: "Minio" = None,
+        secure: Optional[bool] = True,
     ):
         super().__init__(["minio"], root_prefix, "MODEL_STORE_MINIO_ROOT_PREFIX")
         # If arguments are None, try to populate them using environment variables
@@ -79,6 +80,7 @@ class MinIOStorage(BlobStorage):
             return
         self.access_key = environment.get_value(access_key, "MINIO_ACCESS_KEY")
         self.secret_key = environment.get_value(secret_key, "MINIO_SECRET_KEY")
+        self.secure = secure
 
     @property
     def client(self):
@@ -88,6 +90,7 @@ class MinIOStorage(BlobStorage):
                 self.endpoint,
                 access_key=self.access_key,
                 secret_key=self.secret_key,
+                secure=self.secure
             )
         return self.__client
 
