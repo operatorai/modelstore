@@ -114,7 +114,12 @@ class ModelStore:
             raise ModuleNotFoundError("minio is not installed!")
         return ModelStore(
             storage=MinIOStorage(
-                endpoint, access_key, secret_key, bucket_name, root_prefix, secure
+                endpoint=endpoint,
+                access_key=access_key,
+                secret_key=secret_key,
+                bucket_name=bucket_name,
+                root_prefix=root_prefix,
+                secure=secure,
             )
         )
 
