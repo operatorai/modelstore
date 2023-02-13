@@ -62,7 +62,7 @@ def main(modelstore_in: str):
 
     # Run CLI actions - the storage type is read from an
     # environment variable
-    os.environ['MODEL_STORE_STORAGE'] = modelstore_in
+    os.environ["MODEL_STORE_STORAGE"] = modelstore_in
     print(f"⏱  Running CLI actions for: {os.environ['MODEL_STORE_STORAGE']}")
     with tempfile.TemporaryDirectory() as tmp_dir:
         for model_path in iter_model_files(tmp_dir):
