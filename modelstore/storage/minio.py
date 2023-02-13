@@ -62,7 +62,7 @@ class MinIOStorage(BlobStorage):
         bucket_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
         client: "Minio" = None,
-        secure: bool = True,
+        secure: Optional[bool] = True,
     ):
         super().__init__(["minio"], root_prefix, "MODEL_STORE_MINIO_ROOT_PREFIX")
         # If arguments are None, try to populate them using environment variables

@@ -106,7 +106,7 @@ class ModelStore:
         secret_key: Optional[str] = None,
         bucket_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
-        secure: Optional[bool] = False
+        secure: Optional[bool] = True
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models using a MinIO client.
         This assumes that the bucket already exists."""
