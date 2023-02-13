@@ -8,7 +8,7 @@ pyenv: pyenv-uninstall
 	find requirements/ -name "*.txt" -type f -exec pip install -r '{}' ';'
 
 refresh:
-	echo "\n 🔵  Refreshing installation of modelstore"
+	@echo -e "\n 🔵  Refreshing installation of modelstore"
 	pip install --upgrade pip setuptools wheel	
 	pip uninstall -y modelstore
 	pip install --no-cache-dir -e $(REPO_ROOT)
