@@ -4,6 +4,8 @@
 
 **🐛  Bug fixes & general updates**
 
+You can now use `modelstore` with a local MinIO server that doesn't have SSL enabled [#223](workflows/investigate-minio-error), thanks to [@sspillard](https://github.com/sspillard).
+
 `modelstore` will now raise an exception if the user is attempting to upload a file from their current working directory that is called `artifacts.tar.gz` -- because that's the file that `modelstore` wants to create ([#222](https://github.com/operatorai/modelstore/pull/222)).
 
 ## modelstore 0.0.77 ([December 2022](https://github.com/operatorai/modelstore/pull/216)) 
