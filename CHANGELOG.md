@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+**🆕  New functionality**
+
+Added support for Python 3.9, and an example where a yolov5 model is loaded from the torch hub, saved to modelstore, and then loaded back from the model store [#225](https://github.com/operatorai/modelstore/pull/225), thanks to @h4mmer in the MLOps Community.
+
 **🐛  Bug fixes & general updates**
 
 You can now use `modelstore` with a local MinIO server that doesn't have SSL enabled [#223](workflows/investigate-minio-error), thanks to [@sspillard](https://github.com/sspillard).
