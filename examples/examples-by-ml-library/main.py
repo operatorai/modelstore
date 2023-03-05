@@ -24,6 +24,7 @@ from libraries import (
     transformers_example,
     xgboost_booster_example,
     xgboost_example,
+    yolo_example,
 )
 from modelstores import create_model_store
 
@@ -51,6 +52,7 @@ EXAMPLES = {
     "transformers": transformers_example,
     "xgboost": xgboost_example,
     "xgboost-booster": xgboost_booster_example,
+    "yolov5": yolo_example,
 }
 
 
