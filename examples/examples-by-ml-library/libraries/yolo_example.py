@@ -1,14 +1,14 @@
 import torch
 from modelstore.model_store import ModelStore
 
-
 _YOLO_DOMAIN = "yolov5"
+
 
 def _predict(model):
     model.eval()
     img = 'https://ultralytics.com/images/zidane.jpg' 
     results = model(img)
-    print(f"🔍  Prediction result: {results.show()}.")
+    print(f"🔍  Prediction result: \n{results.pandas().xyxy[0]}.")
 
 
 def train_and_upload(modelstore: ModelStore) -> dict:

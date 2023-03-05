@@ -28,3 +28,5 @@ catboost_info/
 
 modelstore.egg-info
 
+*.pt
+

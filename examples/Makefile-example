@@ -12,6 +12,7 @@ pyenv-uninstall:
 pyenv: pyenv-uninstall
 	#@$(REPO_ROOT)/bin/_setup_brew
 	@$(REPO_ROOT)/bin/_pyenv_install $(VIRTUALENV_NAME)
+	pip install -r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt
 
 pyenv-local: pyenv
 	pip uninstall -y modelstore
