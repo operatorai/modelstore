@@ -17,7 +17,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+import torch
+import fastai
+
+# pylint: disable=unused-import
 from fastai.learner import load_learner
+from fastai.callback.schedule import fit_one_cycle
 from fastai.tabular.data import TabularDataLoaders
 from fastai.tabular.learner import TabularLearner, tabular_learner
 
@@ -29,12 +34,11 @@ from modelstore.models.fastai import (
     _save_model,
 )
 
-# pylint: disable=unused-import
-from fastai.callback.schedule import fit_one_cycle
 from tests.models.utils import (
     classification_data,
     classification_df,
     classification_row,
+    is_macos,
 )
 
 # Not using the * import because it triggers fastcore tests (missing fixture errors)
@@ -67,18 +71,19 @@ def assert_models_equal(
     model_a: TabularLearner, model_b: TabularLearner, classification_row
 ):
     assert type(model_a) == type(model_b)
-
     _, _, saved_probs = model_a.predict(classification_row)
     _, _, loaded_probs = model_b.predict(classification_row)
     np.testing.assert_allclose(saved_probs.numpy(), loaded_probs.numpy())
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_model_info(fai_manager):
     expected = metadata.ModelType("fastai", None, None)
     res = fai_manager.model_info()
     assert expected == res
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_model_data(fai_manager, fai_learner):
     res = fai_manager.model_data(learner=fai_learner)
     assert res is None
@@ -88,22 +93,26 @@ def test_required_kwargs(fai_manager):
     assert fai_manager._required_kwargs() == ["learner"]
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_matches_with(fai_manager, fai_learner):
     assert fai_manager.matches_with(learner=fai_learner)
     assert not fai_manager.matches_with(learner="a-string-value")
     assert not fai_manager.matches_with(model=fai_learner)
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_get_functions(fai_manager, fai_learner):
     assert len(fai_manager._get_functions(learner=fai_learner)) == 2
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_get_params(fai_manager, fai_learner):
     exp = {}
     res = fai_manager.get_params(learner=fai_learner)
     assert exp == res
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_save_model(tmp_path, fai_learner, fai_dl, classification_row):
     exp = os.path.join(tmp_path, "models", "learner.pth")
     model_path = _save_model(tmp_path, fai_learner)
@@ -115,6 +124,7 @@ def test_save_model(tmp_path, fai_learner, fai_dl, classification_row):
     learner.load("learner")
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_export_model(tmp_path, fai_learner, classification_row):
     exp = os.path.join(tmp_path, "learner.pkl")
     model_path = _export_model(tmp_path, fai_learner)
@@ -126,6 +136,7 @@ def test_export_model(tmp_path, fai_learner, classification_row):
     assert_models_equal(fai_learner, loaded_learner, classification_row)
 
 
+@pytest.mark.skipif(is_macos(), reason="fastai tries to force MPS hardware")
 def test_load_model(tmp_path, fai_manager, fai_learner, classification_row):
     # Save the model to a tmp directory
     fai_learner.path = Path(tmp_path)
@@ -148,5 +159,5 @@ def test_load_model(tmp_path, fai_manager, fai_learner, classification_row):
         ),
     )
 
-    # Expect the two to be the same
+#     # Expect the two to be the same
     assert_models_equal(fai_learner, loaded_learner, classification_row)
