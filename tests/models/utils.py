@@ -12,12 +12,17 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from random import randint
+import sys
 
 import pandas as pd
 import pytest
 from sklearn.datasets import make_classification
 
 # pylint: disable=missing-function-docstring
+
+
+def is_macos() -> bool:
+    return sys.platform == "darwin"
 
 
 @pytest.fixture(scope="session")
