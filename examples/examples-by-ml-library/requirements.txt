@@ -12,9 +12,9 @@ azure-storage-blob
 minio
 
 # Data / dependencies for ML libraries
-numpy>=1.19.2
-python-Levenshtein==0.12.2
 numba==0.55.1
+numpy==1.19.2
+python-Levenshtein==0.12.2
 
 # Prophet
 pystan==2.19.1.1 # required to be installed before prophet
