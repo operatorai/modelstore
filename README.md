@@ -4,28 +4,34 @@
 
 [![Downloads](https://pepy.tech/badge/modelstore)](https://pepy.tech/project/modelstore) [![Downloads](https://pepy.tech/badge/modelstore/month)](https://pepy.tech/project/modelstore)
 
-For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/) or come to the [MLOps Community Slack](https://go.mlops.community/slack)'s `#oss-modelstore` channel.
+💭  Give us feedback by completing this survey: https://forms.gle/XShU3zrZcnLRWsk36
 
-## modelstore is an open source model registry library
+## modelstore is an open source model registry
 
-No tracking server required
+✅ No tracking server required
 * Store models on a local file system or in a bucket
 * Support for multiple clouds (AWS, GCP, Azure)
 
-Upload and version all your models
+✅ Upload and version all your models
 * Models are versioned on each upload
 * Replaces all the boiler plate code you need to save models
 
-Manage models by domains and states
+✅ Manage models by domains and states
 * List models in a domain
 * Create model states and manage which state a model is in
 
-Download and load
+✅ Download or load straight into memory
 * Download models by id
 * Load models straight from your storage back into memory
 
-Use as a command line tool
+✅ Use as a command line tool
 * Download models from the command line
+
+For more details, please refer to [the documentation](https://modelstore.readthedocs.io/en/latest/).
+
+## modelstore is being built in the open
+
+💬. Come and find us in the [MLOps Community Slack](https://go.mlops.community/slack)'s `#oss-modelstore` channel.
 
 ## Installation
 
