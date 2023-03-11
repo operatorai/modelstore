@@ -17,9 +17,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import torch
-import fastai
-
 # pylint: disable=unused-import
 from fastai.learner import load_learner
 from fastai.callback.schedule import fit_one_cycle
