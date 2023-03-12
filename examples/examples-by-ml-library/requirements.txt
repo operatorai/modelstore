@@ -4,7 +4,7 @@
 click
 
 # Storage requirements
-protobuf==3.20.1 # https://github.com/protocolbuffers/protobuf/issues/10051
+protobuf==3.20.2
 google-cloud-storage
 boto3
 azure-core
@@ -12,9 +12,9 @@ azure-storage-blob
 minio
 
 # Data / dependencies for ML libraries
-numpy>=1.19.2
+numba==0.56.4
+numpy==1.23.5
 python-Levenshtein==0.12.2
-numba==0.55.1
 
 # Prophet
 pystan==2.19.1.1 # required to be installed before prophet
@@ -26,7 +26,7 @@ fastai
 gensim
 lightgbm
 mxnet
-onnx
+onnx==1.10.0
 onnxruntime
 onnxmltools
 prophet
@@ -36,8 +36,8 @@ scikit-learn
 shap
 skl2onnx
 skorch
-tensorflow
+tensorflow==2.7.2
 transformers
 torch
 torchvision
-xgboost
+xgboost==1.7.4

@@ -17,7 +17,7 @@ def _train_example_model() -> Pipeline:
         "max_depth": 4,
         "min_samples_split": 5,
         "learning_rate": 0.01,
-        "loss": "ls",
+        "loss": "squared_error",
     }
     pipeline = Pipeline(
         [

@@ -1,4 +1,5 @@
 import click
+import sys
 
 from libraries import (
     annoy_example,
@@ -72,6 +73,9 @@ EXAMPLES = {
     ),
 )
 def main(modelstore_in, ml_framework):
+    if sys.platform == "darwin" and ml_framework == "fastai":
+        print(f"⏩  Skipping {ml_framework} on darwin.")
+        return
     print(
         f"\n🆕  Running {ml_framework} modelstore example with {modelstore_in} backend."
     )
