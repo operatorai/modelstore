@@ -6,6 +6,8 @@
 
 💭  Give us feedback by completing this survey: https://forms.gle/XShU3zrZcnLRWsk36
 
+[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/nlathia/)
+
 ## modelstore is an open source model registry
 
 ✅ No tracking server required
@@ -113,11 +115,13 @@ model_path = model_store.download(
 )
 ```
 
-## Recorded demo from Data Talks Club
+## Find out more
 
-_Note_ the talk below is based on an older version of `modelstore` and the API has been simplified since then.
+💭  Give us feedback by completing this survey: https://forms.gle/XShU3zrZcnLRWsk36
 
-This interview and demo, recorded with Alexey from the [Data Talks Club](https://datatalks.club/) in July 2021, is based on `modelstore==0.0.6`. Click [here to watch on YouTube](https://www.youtube.com/watch?v=85BWnKmOZl8 "DTC's minis: Model Store").
+[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/nlathia/)
+
+Watch an interview and demo, recorded with Alexey from the [Data Talks Club](https://datatalks.club/) in July 2021, is based on `modelstore==0.0.6`, [on YouTube](https://www.youtube.com/watch?v=85BWnKmOZl8 "DTC's minis: Model Store"). _Note_ the talk below is based on an older version of `modelstore` and the API has been simplified since then.
 
 ## License
 
