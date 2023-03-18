@@ -8,18 +8,20 @@ from modelstore.model_store import ModelStore
 
 _DOMAIN_NAME = "example-gpt2-model"
 
+def _run_prediction(model: TFGPT2LMHeadModel, tokenizer: GPT2Tokenizer):
+    text = "What is MLOps, and why is it important?"
+    encoded_input = tokenizer(text, return_tensors='tf')
+    output = model.generate(**encoded_input)
+    decoded = tokenizer.decode(output[0])
+    print(f"🔍 Model output={decoded}.")
+
 
 def _train_example_model():
     tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
     model = TFGPT2LMHeadModel.from_pretrained("gpt2")
     config = PretrainedConfig.from_pretrained("gpt2")
 
-    text = "What is MLOps, and why is it important?"
-    encoded_input = tokenizer(text, return_tensors='tf')
-    output = model.generate(**encoded_input)
-    decoded = tokenizer.decode(output[0])
-
-    print(f"🔍 Model output={decoded}.")
+    _run_prediction(model, tokenizer)
     return model, tokenizer, config
 
 
@@ -43,7 +45,4 @@ def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     print(f'⤵️  Loading the transformers "{model_domain}" domain model={model_id}')
     model, tokenizer, config = modelstore.load(model_domain, model_id)
 
-    text = "What is MLOps, and why is it important?"
-    encoded_input = tokenizer(text, return_tensors='tf')
-    output = model(encoded_input)
-    print(f"🔍 Model output={output}.")
+    _run_prediction(model, tokenizer)
