@@ -19,7 +19,6 @@ def _train_example_model():
     output = model.generate(**encoded_input)
     decoded = tokenizer.decode(output[0])
 
-    import pdb; pdb.set_trace()
     print(f"🔍 Model output={decoded}.")
     return model, tokenizer, config
 
