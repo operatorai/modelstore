@@ -1,9 +1,10 @@
-from modelstore.model_store import ModelStore
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
     AutoTokenizer,
 )
+from modelstore.model_store import ModelStore
+
 
 _DOMAIN_NAME = "example-distilbert-model"
 

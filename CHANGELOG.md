@@ -1,5 +1,9 @@
 # Change log
 
+## Not released
+
+Fixed [issues with saving & loading GPT-2 models](https://github.com/operatorai/modelstore/issues/233) in [#234](https://github.com/operatorai/modelstore/pull/234), thank you [@sayandigital](https://github.com/sayandigital).
+
 ## modelstore 0.0.78 ([March 2023](https://github.com/operatorai/modelstore/pull/227))
 
 **🆕  New functionality**
