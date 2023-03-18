@@ -27,7 +27,6 @@ from transformers import (
 from transformers.file_utils import CONFIG_NAME
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.transformers import (
     MODEL_DIRECTORY,
     TransformersManager,
@@ -145,7 +144,23 @@ def test_load_model(tmp_path, tr_manager, tr_model, tr_config, tr_tokenizer):
     tr_tokenizer.save_pretrained(model_dir)
 
     #  Load the model
-    loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(tmp_path, None)
+    meta_data = metadata.Summary(
+        model=metadata.Model(
+            domain=None,
+            model_id=None,
+            model_type=metadata.ModelType(
+                library=None,
+                type=type(tr_model).__name__,
+                models=None,
+            ),
+            parameters=None,
+            data=None,
+        ),
+        code=None,
+        storage=None,
+        modelstore=None,
+    )
+    loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(tmp_path, meta_data)
 
     # Expect the two to be the same
     assert isinstance(loaded_model, DistilBertModel)

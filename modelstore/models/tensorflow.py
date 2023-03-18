@@ -77,7 +77,6 @@ class TensorflowManager(ModelManager):
         ]
 
     def get_params(self, **kwargs) -> dict:
-        # @TODO add safety check here
         return kwargs["model"].optimizer.get_config()
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:

@@ -62,6 +62,7 @@ class TransformersManager(ModelManager):
 
         return (
             (
+                # The model must be either a PyTorch or TF pretrained model
                 isinstance(kwargs.get("model"), PreTrainedModel)
                 or isinstance(kwargs.get("model"), TFPreTrainedModel)
             )
