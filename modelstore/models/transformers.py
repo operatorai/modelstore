@@ -88,11 +88,15 @@ class TransformersManager(ModelManager):
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         super().load(model_path, meta_data)
 
+        # Infer whether we're loading a PyTorch or Tensorflow model
+        model_files = set(os.listdir(model_path))
+        from_tf = "pytorch_model.bin" not in model_files
+
         # pylint: disable=import-outside-toplevel
         from transformers import AutoConfig, AutoModel, AutoTokenizer
 
         model_dir = _get_model_directory(model_path)
-        model = AutoModel.from_pretrained(model_dir)
+        model = AutoModel.from_pretrained(model_dir, from_tf=from_tf)
         config = AutoConfig.from_pretrained(model_dir)
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
         return model, tokenizer, config
