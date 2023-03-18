@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+from importlib import import_module
 from functools import partial
 from typing import Any, Union
 
@@ -45,7 +46,7 @@ class TransformersManager(ModelManager):
         return deps + ["torch", "tensorflow"]
 
     def _required_kwargs(self):
-        return ["model", "tokenizer", "config"]
+        return ["model", "tokenizer"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
@@ -55,25 +56,27 @@ class TransformersManager(ModelManager):
             PreTrainedTokenizerBase,
             TFPreTrainedModel
         )
+        if "config" in kwargs:
+            if not isinstance(kwargs.get("config"), PretrainedConfig):
+                return False
 
         return (
             (
                 isinstance(kwargs.get("model"), PreTrainedModel)
                 or isinstance(kwargs.get("model"), TFPreTrainedModel)
             )
-            and isinstance(kwargs.get("config"), PretrainedConfig)
             and isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase)
         )
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
             raise TypeError(
-                "Model/config/tokenizer is not a transformers.PretrainedConfig!"
+                "Model/tokenizer/config not matched with transformers"
             )
         return [
             partial(
                 _save_transformers,
-                config=kwargs["config"],
+                config=kwargs.get("config"),
                 model=kwargs["model"],
                 tokenizer=kwargs["tokenizer"],
             ),
@@ -82,25 +85,67 @@ class TransformersManager(ModelManager):
     def get_params(self, **kwargs) -> dict:
         """
         Returns a dictionary containing the config for the model
-        https://huggingface.co/transformers/main_classes/configuration.html#transformers.PretrainedConfig
         """
-        return kwargs["config"].to_dict()
+        if "config" in kwargs:
+            return kwargs["config"].to_dict()
+        return {}
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
         super().load(model_path, meta_data)
-
-        # Infer whether we're loading a PyTorch or Tensorflow model
-        model_files = set(os.listdir(model_path))
-        from_tf = "pytorch_model.bin" not in model_files
-        logger.debug("Loading transformers model with from_tf=%s", from_tf)
+        model_dir = _get_model_directory(model_path)
+        model_files = set(os.listdir(model_dir))
 
         # pylint: disable=import-outside-toplevel
-        from transformers import AutoConfig, AutoModel, AutoTokenizer
+        from transformers import AutoTokenizer, AutoConfig
 
-        model_dir = _get_model_directory(model_path)
-        model = AutoModel.from_pretrained(model_dir, from_tf=from_tf)
-        config = AutoConfig.from_pretrained(model_dir)
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
+
+        # Infer whether a config was saved
+        config = None
+        if "config.json" in model_files:
+            config = AutoConfig.from_pretrained(model_dir)
+
+        # Infer whether we're loading a PyTorch or Tensorflow model
+        is_pytorch = "pytorch_model.bin" in model_files
+        logger.debug("Loading transformers model with pytorch=%s", is_pytorch)
+
+        if is_pytorch:
+            logger.debug("Loading with AutoModel...")
+            from transformers import AutoModel, GPT2LMHeadModel
+
+            # In examples-by-ml-library/transformers_pt_example.py, we want
+            # to load a GPT2 model with a language model head. If we just
+            # load the model with AutoModel, then it won't have this.
+            # This is a hack to get around that, like we did in the XGBoost
+            # manager, and currently does not generalise beyond this case
+            model_types = {
+                "GPT2LMHeadModel": GPT2LMHeadModel,
+                # @TODO add other model types
+            }
+            model_type = meta_data.model_type().type
+            if model_type in model_types:
+                model = model_types[model_type].from_pretrained(model_dir)
+            else:
+                model = AutoModel.from_pretrained(model_dir)
+        else:
+            logger.debug("Loading with TFAutoModel...")
+            from transformers import TFAutoModel, TFGPT2LMHeadModel
+
+            # In examples-by-ml-library/transformers_tf_example.py, we want
+            # to load a GPT2 model with a language model head. If we just
+            # load the model with TFAutoModel, then it won't have this.
+            # This is a hack to get around that, like we did in the XGBoost
+            # manager, and currently does not generalise beyond this case
+            model_types = {
+                "TFGPT2LMHeadModel": TFGPT2LMHeadModel,
+                # @TODO add other model types
+            }
+            model_type = meta_data.model_type().type
+            if model_type in model_types:
+                model = model_types[model_type].from_pretrained(model_dir)
+            else:   
+                model = TFAutoModel.from_pretrained(model_dir)
+
         return model, tokenizer, config
 
 
@@ -118,6 +163,7 @@ def _save_transformers(
     os.makedirs(model_dir)
     
     model.save_pretrained(model_dir)
-    config.save_pretrained(model_dir)
     tokenizer.save_pretrained(model_dir)
+    if config is not None:
+        config.save_pretrained(model_dir)
     return model_dir
