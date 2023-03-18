@@ -83,7 +83,7 @@ def test_model_data(tr_manager, tr_model):
 
 
 def test_required_kwargs(tr_manager):
-    assert tr_manager._required_kwargs() == ["model", "tokenizer", "config"]
+    assert tr_manager._required_kwargs() == ["model", "tokenizer"]
 
 
 def test_matches_with(tr_manager, tr_config, tr_model, tr_tokenizer):

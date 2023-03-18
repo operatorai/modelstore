@@ -21,7 +21,7 @@ def get_logger():
     formatter = logging.Formatter("%(asctime)s - %(message)s")
     handler = logging.StreamHandler(sys.stderr)
     handler.setFormatter(formatter)
-    log.setLevel(logging.INFO)
+    log.setLevel(logging.DEBUG) # @TODO change
     log.addHandler(handler)
     return log
 
