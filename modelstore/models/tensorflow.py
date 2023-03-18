@@ -50,6 +50,16 @@ class TensorflowManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
+        try:
+            from transformers import TFPreTrainedModel
+
+            # transformer tensorflow models are an instance of keras.Model
+            # but we want to upload them using the transformers manager
+            # we therefore check specifically for this case
+            if isinstance(kwargs.get("model"), TFPreTrainedModel):
+                return False
+        except ImportError:
+            pass
         from tensorflow import keras
 
         return isinstance(kwargs.get("model"), keras.Model)
@@ -67,6 +77,7 @@ class TensorflowManager(ModelManager):
         ]
 
     def get_params(self, **kwargs) -> dict:
+        # @TODO add safety check here
         return kwargs["model"].optimizer.get_config()
 
     def load(self, model_path: str, meta_data: metadata.Summary) -> Any:
