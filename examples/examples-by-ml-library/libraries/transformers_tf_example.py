@@ -1,36 +1,26 @@
 from transformers import (
-    AutoConfig,
-    AutoModelForSequenceClassification,
-    AutoTokenizer,
+    GPT2Tokenizer,
+    TFGPT2LMHeadModel,
+    PretrainedConfig
 )
 from modelstore.model_store import ModelStore
 
 
-_DOMAIN_NAME = "example-distilbert-model"
+_DOMAIN_NAME = "example-gpt2-model"
 
 
 def _train_example_model():
-    model_name = "distilbert-base-cased"
-    config = AutoConfig.from_pretrained(
-        model_name,
-        num_labels=2,
-        finetuning_task="mnli",
-    )
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_name,
-        config=config,
-    )
+    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+    model = TFGPT2LMHeadModel.from_pretrained("gpt2")
+    config = PretrainedConfig.from_pretrained("gpt2")
 
-    # Skipped for brevity!
-    # trainer = Trainer(
-    #     model=model,
-    #     args=training_args,
-    #     train_dataset=train_dataset,
-    #     eval_dataset=eval_dataset,
-    #     compute_metrics=build_compute_metrics_fn(data_args.task_name),
-    # )
-    # trainer.train()
+    text = "What is MLOps, and why is it important?"
+    encoded_input = tokenizer(text, return_tensors='tf')
+    output = model.generate(**encoded_input)
+    decoded = tokenizer.decode(output[0])
+
+    import pdb; pdb.set_trace()
+    print(f"🔍 Model output={decoded}.")
     return model, tokenizer, config
 
 
@@ -54,5 +44,7 @@ def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     print(f'⤵️  Loading the transformers "{model_domain}" domain model={model_id}')
     model, tokenizer, config = modelstore.load(model_domain, model_id)
 
-    # Run some example predictions
-    # ...
+    text = "What is MLOps, and why is it important?"
+    encoded_input = tokenizer(text, return_tensors='tf')
+    output = model(encoded_input)
+    print(f"🔍 Model output={output}.")
