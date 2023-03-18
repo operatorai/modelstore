@@ -48,14 +48,20 @@ class TransformersManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
-        import transformers
+        from transformers import (
+            PreTrainedModel,
+            PretrainedConfig,
+            PreTrainedTokenizerBase,
+            TFPreTrainedModel
+        )
 
         return (
-            isinstance(kwargs.get("model"), transformers.PreTrainedModel)
-            and isinstance(kwargs.get("config"), transformers.PretrainedConfig)
-            and isinstance(
-                kwargs.get("tokenizer"), transformers.PreTrainedTokenizerBase
+            (
+                isinstance(kwargs.get("model"), PreTrainedModel)
+                or isinstance(kwargs.get("model"), TFPreTrainedModel)
             )
+            and isinstance(kwargs.get("config"), PretrainedConfig)
+            and isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase)
         )
 
     def _get_functions(self, **kwargs) -> list:
