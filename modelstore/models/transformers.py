@@ -13,11 +13,12 @@
 #    limitations under the License.
 import os
 from functools import partial
-from typing import Any
+from typing import Any, Union
 
 from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
+from modelstore.utils.log import logger
 
 # pylint disable=import-outside-toplevel
 MODEL_DIRECTORY = "transformers"
@@ -91,6 +92,7 @@ class TransformersManager(ModelManager):
         # Infer whether we're loading a PyTorch or Tensorflow model
         model_files = set(os.listdir(model_path))
         from_tf = "pytorch_model.bin" not in model_files
+        logger.debug("Loading transformers model with from_tf=%s", from_tf)
 
         # pylint: disable=import-outside-toplevel
         from transformers import AutoConfig, AutoModel, AutoTokenizer
@@ -108,13 +110,13 @@ def _get_model_directory(parent_dir: str) -> str:
 
 def _save_transformers(
     tmp_dir: str,
-    config: "transformers.PretrainedConfig",
-    model: "transformers.PreTrainedModel",
-    tokenizer: "transformers.PreTrainedTokenizerBase",
+    config: "PretrainedConfig",
+    model: Union["PreTrainedModel", "TFPreTrainedModel"],
+    tokenizer: "PreTrainedTokenizerBase",
 ) -> str:
     model_dir = _get_model_directory(tmp_dir)
     os.makedirs(model_dir)
-
+    
     model.save_pretrained(model_dir)
     config.save_pretrained(model_dir)
     tokenizer.save_pretrained(model_dir)
