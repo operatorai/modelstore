@@ -54,26 +54,22 @@ class TransformersManager(ModelManager):
             PreTrainedModel,
             PretrainedConfig,
             PreTrainedTokenizerBase,
-            TFPreTrainedModel
+            TFPreTrainedModel,
         )
+
         if "config" in kwargs:
             if not isinstance(kwargs.get("config"), PretrainedConfig):
                 return False
 
         return (
-            (
-                # The model must be either a PyTorch or TF pretrained model
-                isinstance(kwargs.get("model"), PreTrainedModel)
-                or isinstance(kwargs.get("model"), TFPreTrainedModel)
-            )
-            and isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase)
-        )
+            # The model must be either a PyTorch or TF pretrained model
+            isinstance(kwargs.get("model"), PreTrainedModel)
+            or isinstance(kwargs.get("model"), TFPreTrainedModel)
+        ) and isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase)
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
-            raise TypeError(
-                "Model/tokenizer/config not matched with transformers"
-            )
+            raise TypeError("Model/tokenizer/config not matched with transformers")
         return [
             partial(
                 _save_transformers,
@@ -101,7 +97,7 @@ class TransformersManager(ModelManager):
 
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
 
-        # Infer whether a config was saved
+        # Infer whether a config was saved
         config = None
         if "config.json" in model_files:
             config = AutoConfig.from_pretrained(model_dir)
@@ -116,12 +112,12 @@ class TransformersManager(ModelManager):
 
             # In examples-by-ml-library/transformers_pt_example.py, we want
             # to load a GPT2 model with a language model head. If we just
-            # load the model with AutoModel, then it won't have this.
-            # This is a hack to get around that, like we did in the XGBoost
+            # load the model with AutoModel, then it won't have this.
+            # This is a hack to get around that, like we did in the XGBoost
             # manager, and currently does not generalise beyond this case
             model_types = {
                 "GPT2LMHeadModel": GPT2LMHeadModel,
-                # @TODO add other model types
+                # @TODO add other model types
             }
             model_type = meta_data.model_type().type
             if model_type in model_types:
@@ -134,17 +130,17 @@ class TransformersManager(ModelManager):
 
             # In examples-by-ml-library/transformers_tf_example.py, we want
             # to load a GPT2 model with a language model head. If we just
-            # load the model with TFAutoModel, then it won't have this.
-            # This is a hack to get around that, like we did in the XGBoost
+            # load the model with TFAutoModel, then it won't have this.
+            # This is a hack to get around that, like we did in the XGBoost
             # manager, and currently does not generalise beyond this case
             model_types = {
                 "TFGPT2LMHeadModel": TFGPT2LMHeadModel,
-                # @TODO add other model types
+                # @TODO add other model types
             }
             model_type = meta_data.model_type().type
             if model_type in model_types:
                 model = model_types[model_type].from_pretrained(model_dir)
-            else:   
+            else:
                 model = TFAutoModel.from_pretrained(model_dir)
 
         return model, tokenizer, config
@@ -162,7 +158,7 @@ def _save_transformers(
 ) -> str:
     model_dir = _get_model_directory(tmp_dir)
     os.makedirs(model_dir)
-    
+
     model.save_pretrained(model_dir)
     tokenizer.save_pretrained(model_dir)
     if config is not None:

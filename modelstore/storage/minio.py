@@ -90,7 +90,7 @@ class MinIOStorage(BlobStorage):
                 self.endpoint,
                 access_key=self.access_key,
                 secret_key=self.secret_key,
-                secure=self.secure
+                secure=self.secure,
             )
         return self.__client
 
