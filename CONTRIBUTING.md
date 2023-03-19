@@ -6,13 +6,13 @@ If you have any questions or ideas, feel free to reach out.
 
 💬  Come and find us in the [MLOps Community Slack](https://go.mlops.community/slack)'s `#oss-modelstore` channel.
 
-# Level 1: contribute your experience
+# 1️⃣ Contribute your experience
 
 If you've ever used `modelstore`, we've love for you to blog about your experience and link to your blog post in the repo's [README.md](https://github.com/operatorai/modelstore/blob/main/README.md) in the "Read more about modelstore" section.
 
 You can also contribute to the [modelstore documentation](https://github.com/operatorai/modelstore-docs), which is in a separate Github repo.
 
-# Level 100: contribute to the code base
+# 2️⃣ Contribute to the code base
 
 To contribute to `modelstore`'s code base, we recommend taking the following journey:
 
@@ -20,7 +20,8 @@ To contribute to `modelstore`'s code base, we recommend taking the following jou
 2. Contribute fixes for [bugs or issues](https://github.com/operatorai/modelstore/issues)
 3. Contribute new feature ideas from the [discussions](https://github.com/operatorai/modelstore/discussions) section 
 
-## (1) Get familiar with the code base
+
+## 👨🏽‍💻 Get familiar with the code base
 
 ### Setup a virtual environment
 
@@ -68,11 +69,13 @@ We have two types of examples:
 
 For details, head over to the [README.md](examples/README.md) in the `examples` directory.
 
-## (2) Contribute fixes for bugs or issues
+
+## 🐛 Contribute fixes for bugs or issues
 
 All of `modelstore`'s bugs are publicly tracked via [Github issues](https://github.com/operatorai/modelstore/issues). 
 
-## (3) Contribute new feature ideas
+
+## 💡 Contribute new feature ideas
 
 There are a variety of ideas that have been listed in the repo's [discussions](https://github.com/operatorai/modelstore/discussions) section. For example:
 
