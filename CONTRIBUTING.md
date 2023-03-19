@@ -6,13 +6,13 @@ If you have any questions or ideas, feel free to reach out.
 
 💬  Come and find us in the [MLOps Community Slack](https://go.mlops.community/slack)'s `#oss-modelstore` channel.
 
-# 1️⃣ Contribute your experience
+# Contribute your experience
 
 If you've ever used `modelstore`, we've love for you to blog about your experience and link to your blog post in the repo's [README.md](https://github.com/operatorai/modelstore/blob/main/README.md) in the "Read more about modelstore" section.
 
 You can also contribute to the [modelstore documentation](https://github.com/operatorai/modelstore-docs), which is in a separate Github repo.
 
-# 2️⃣ Contribute to the code base
+# Contribute to the code base
 
 To contribute to `modelstore`'s code base, we recommend taking the following journey:
 
