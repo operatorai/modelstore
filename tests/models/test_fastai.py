@@ -156,5 +156,5 @@ def test_load_model(tmp_path, fai_manager, fai_learner, classification_row):
         ),
     )
 
-    #     # Expect the two to be the same
+    # Expect the two to be the same
     assert_models_equal(fai_learner, loaded_learner, classification_row)
