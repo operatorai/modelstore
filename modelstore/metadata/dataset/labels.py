@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import List, Any
+from typing import List, Any, Optional
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
@@ -33,8 +33,8 @@ class Labels:
     """Labels contains fields that are captured about
     the training dataset's labels when the model is saved"""
 
-    shape: List[int] = field(default=None, metadata=config(exclude=exclude_field))
-    values: dict = field(default=None, metadata=config(exclude=exclude_field))
+    shape: Optional[List[int]] = field(default=None, metadata=config(exclude=exclude_field))
+    values: Optional[dict] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, values: Any = None) -> "Labels":

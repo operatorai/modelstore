@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any
+from typing import Any, Optional
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
@@ -28,8 +28,8 @@ class Dataset:
     """Dataset contains fields that are captured about
     the training dataset when the model is saved"""
 
-    features: Features = field(default=None, metadata=config(exclude=exclude_field))
-    labels: Labels = field(default=None, metadata=config(exclude=exclude_field))
+    features: Optional[Features] = field(default=None, metadata=config(exclude=exclude_field))
+    labels: Optional[Labels] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, features: Any = None, labels: Any = None) -> "Dataset":

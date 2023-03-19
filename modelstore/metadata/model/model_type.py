@@ -31,7 +31,7 @@ class ModelType:
     the model type when it is saved"""
 
     library: str
-    type: str = field(default=None, metadata=config(exclude=exclude_field))
+    type: Optional[str] = field(default=None, metadata=config(exclude=exclude_field))
 
     # When saving multiple models together, the models'
     # types are specified in this list
