@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any, List
+from typing import Any, List, Optional
 
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
@@ -29,7 +29,7 @@ class Features:
     """Features contains fields that are captured about
     the training dataset's features when the model is saved"""
 
-    shape: List[int] = field(default=None, metadata=config(exclude=exclude_field))
+    shape: Optional[List[int]] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod
     def generate(cls, values: Any = None) -> "Features":
