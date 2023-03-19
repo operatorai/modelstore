@@ -75,6 +75,13 @@ Is there a machine learning framework that is missing?
 * Save your model and then upload it [as a raw file](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/raw_file_example.py).
 * Feel free to [open an issue](https://github.com/operatorai/modelstore/issues)
 
+## Read more about modelstore
+
+* [Evidently.AI AMA with Neal Lathia](https://www.evidentlyai.com/blog/ama-neal-lathia), January 2023
+* [MLOps Model Stores: Definition, Functionality, Tools Review](https://neptune.ai/blog/mlops-model-stores), January 2023
+* [Monzo's machine learning stack](https://monzo.com/blog/2022/04/26/monzos-machine-learning-stack), April 2022
+* [Model arterfacts: the war stories](https://nlathia.github.io/2020/09/Model-artifacts-war-stories.html), September 2020
+
 ## Example Usage
 
 ### Colab Notebook
@@ -105,14 +112,8 @@ meta_data = model_store.upload(domain, model=clf)
 # Print the meta-data about the model
 print(json.dumps(meta_data, indent=4))
 
-# Download the model back!
-target = f"downloaded-{model_type}-model"
-os.makedirs(target, exist_ok=True)
-model_path = model_store.download(
-   local_path=target,
-   domain=model_domain,
-   model_id=meta["model"]["model_id"],
-)
+# Load the model back!
+clf = model_store.load(domain=model_domain, model_id=meta["model"]["model_id"])
 ```
 
 ## Find out more
