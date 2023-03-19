@@ -4,7 +4,6 @@
 click
 
 # Storage requirements
-protobuf==3.20.2
 google-cloud-storage
 boto3
 azure-core
@@ -26,7 +25,7 @@ fastai
 gensim
 lightgbm
 mxnet
-onnx==1.13.0
+onnx
 onnxruntime
 onnxmltools
 prophet
@@ -36,8 +35,8 @@ scikit-learn
 shap
 skl2onnx
 skorch
-tensorflow==2.9.3
+tensorflow
 transformers
 torch
 torchvision
-xgboost==1.7.4
+xgboost
