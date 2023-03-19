@@ -6,14 +6,14 @@ _YOLO_DOMAIN = "yolov5"
 
 def _predict(model):
     model.eval()
-    img = 'https://ultralytics.com/images/zidane.jpg' 
+    img = "https://ultralytics.com/images/zidane.jpg"
     results = model(img)
     print(f"🔍  Prediction result: \n{results.pandas().xyxy[0]}.")
 
 
 def train_and_upload(modelstore: ModelStore) -> dict:
     # Load the yolov5 model
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model = torch.hub.load("ultralytics/yolov5", "yolov5s")
     _predict(model)
 
     # Upload the model to the model store

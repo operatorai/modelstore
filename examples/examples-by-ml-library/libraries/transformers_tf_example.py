@@ -4,9 +4,10 @@ from modelstore.model_store import ModelStore
 
 _DOMAIN_NAME = "example-gpt2-model"
 
+
 def _run_prediction(model: TFGPT2LMHeadModel, tokenizer: GPT2Tokenizer):
     text = "What is MLOps, and why is it important?"
-    encoded_input = tokenizer(text, return_tensors='tf')
+    encoded_input = tokenizer(text, return_tensors="tf")
     output = model.generate(**encoded_input)
     decoded = tokenizer.decode(output[0])
     print(f"🔍 Model output={decoded}.")

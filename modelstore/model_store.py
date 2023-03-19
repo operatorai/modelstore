@@ -106,7 +106,7 @@ class ModelStore:
         secret_key: Optional[str] = None,
         bucket_name: Optional[str] = None,
         root_prefix: Optional[str] = None,
-        secure: Optional[bool] = True
+        secure: Optional[bool] = True,
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models using a MinIO client.
         This assumes that the bucket already exists."""
@@ -193,7 +193,8 @@ class ModelStore:
 
     def create_model_state(self, state_name: str):
         """Creates a state label models (e.g., shadow/prod/archived).
-        There are some values that are reserved, see modelstore/storage/states/model_states.py"""
+        There are some values that are reserved, see modelstore/storage/states/model_states.py
+        """
         return self.storage.create_model_state(state_name)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
