@@ -44,6 +44,7 @@ from libraries.huggingface import (
     distilbert,
     gpt2_pytorch,
     gpt2_tensorflow,
+    sam,
 )
 from modelstores import create_model_store
 
@@ -65,6 +66,7 @@ EXAMPLES = {
     "pyspark": pyspark_example,
     "pytorch": pytorch_example,
     "pytorch-lightning": pytorch_lightning_example,
+    "segment-anything": sam,
     "shap": shap_example,
     "sklearn": sklearn_example,
     "sklearn-with-explainer": sklearn_with_explainer_example,
