@@ -1,5 +1,19 @@
-import click
+#    Copyright 2023 Neal Lathia
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
 import sys
+import click
+
 
 from libraries import (
     annoy_example,
@@ -22,12 +36,15 @@ from libraries import (
     sklearn_with_extras_example,
     skorch_example,
     tensorflow_example,
-    transformers_example,
-    transformers_tf_example,
-    transformers_pt_example,
     xgboost_booster_example,
     xgboost_example,
     yolo_example,
+)
+from libraries.huggingface import (
+    distilbert,
+    gpt2_pytorch,
+    gpt2_tensorflow,
+    sam,
 )
 from modelstores import create_model_store
 
@@ -37,6 +54,9 @@ EXAMPLES = {
     "fastai": fastai_example,
     "file": raw_file_example,
     "gensim": gensim_example,
+    "hf-distilbert": distilbert,
+    "hf-gpt2-pt": gpt2_pytorch,
+    "hf-gpt2-tf": gpt2_tensorflow,
     "keras": keras_example,
     "lightgbm": lightgbm_example,
     "mxnet": mxnet_example,
@@ -46,15 +66,13 @@ EXAMPLES = {
     "pyspark": pyspark_example,
     "pytorch": pytorch_example,
     "pytorch-lightning": pytorch_lightning_example,
+    "segment-anything": sam,
     "shap": shap_example,
     "sklearn": sklearn_example,
     "sklearn-with-explainer": sklearn_with_explainer_example,
     "sklearn-with-extras": sklearn_with_extras_example,
     "skorch": skorch_example,
     "tensorflow": tensorflow_example,
-    "transformers": transformers_example,
-    "transformers-tf": transformers_tf_example,
-    "transformers-pt": transformers_pt_example,
     "xgboost": xgboost_example,
     "xgboost-booster": xgboost_booster_example,
     "yolov5": yolo_example,

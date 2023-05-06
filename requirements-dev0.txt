@@ -10,7 +10,7 @@ rope>=1.6.0
 twine>=4.0.2
 
 # Data / dependencies for ML libraries
-numpy>=1.21.6 # numpy==1.21.6 is currently the max version on Python 3.7.13
+numpy==1.23.5 # numpy==1.21.6 is currently the max version on Python 3.7.13
 numba>=0.55.1
 Cython>=0.29.28
 python-Levenshtein==0.12.2

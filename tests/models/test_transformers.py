@@ -82,7 +82,7 @@ def test_model_data(tr_manager, tr_model):
 
 
 def test_required_kwargs(tr_manager):
-    assert tr_manager._required_kwargs() == ["model", "tokenizer"]
+    assert tr_manager._required_kwargs() == ["model"]
 
 
 def test_matches_with(tr_manager, tr_config, tr_model, tr_tokenizer):
@@ -114,7 +114,7 @@ def test_get_params(tr_manager, tr_config):
 
 def test_save_transformers(tr_config, tr_model, tr_tokenizer, tmp_path):
     exp = os.path.join(tmp_path, "transformers")
-    file_path = _save_transformers(tmp_path, tr_config, tr_model, tr_tokenizer)
+    file_path = _save_transformers(tmp_path, entities=[tr_config, tr_model, tr_tokenizer])
     assert exp == file_path
 
     # Validate config

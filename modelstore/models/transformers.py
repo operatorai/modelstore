@@ -12,9 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-from importlib import import_module
 from functools import partial
-from typing import Any, Union
+from typing import Any, List
 
 from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager
@@ -46,38 +45,49 @@ class TransformersManager(ModelManager):
         return deps + ["torch", "tensorflow"]
 
     def _required_kwargs(self):
-        return ["model", "tokenizer"]
+        return ["model"]
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
         from transformers import (
             PreTrainedModel,
-            PretrainedConfig,
-            PreTrainedTokenizerBase,
             TFPreTrainedModel,
         )
 
         if "config" in kwargs:
+            from transformers import PretrainedConfig
             if not isinstance(kwargs.get("config"), PretrainedConfig):
+                return False
+        if "tokenizer" in kwargs:
+            from transformers import PreTrainedTokenizerBase
+            if not isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase):
+                return False
+        if "processor" in kwargs:
+            from transformers import ProcessorMixin
+            if not isinstance(kwargs.get("processor"), ProcessorMixin):
                 return False
 
         return (
             # The model must be either a PyTorch or TF pretrained model
             isinstance(kwargs.get("model"), PreTrainedModel)
             or isinstance(kwargs.get("model"), TFPreTrainedModel)
-        ) and isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase)
+        )
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
-            raise TypeError("Model/tokenizer/config not matched with transformers")
+            raise TypeError("Model not matched with transformers")
         return [
             partial(
                 _save_transformers,
-                config=kwargs.get("config"),
-                model=kwargs["model"],
-                tokenizer=kwargs["tokenizer"],
+                entities=[
+                    kwargs["model"],
+                    kwargs.get("tokenizer"),
+                    kwargs.get("config"),
+                    kwargs.get("processor"),
+                ],
             ),
         ]
+            
 
     def get_params(self, **kwargs) -> dict:
         """
@@ -91,26 +101,37 @@ class TransformersManager(ModelManager):
         super().load(model_path, meta_data)
         model_dir = _get_model_directory(model_path)
         model_files = set(os.listdir(model_dir))
+        logger.debug("Loading from: %s...", model_files)
 
         # pylint: disable=import-outside-toplevel
-        from transformers import AutoTokenizer, AutoConfig
-
-        tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        # Infer whether a tokenizer was saved
+        tokenizer = None
+        if "tokenizer.json" in model_files:
+            from transformers import AutoTokenizer
+            tokenizer = AutoTokenizer.from_pretrained(model_dir)
+            logger.debug("Loaded: %s...", type(tokenizer))
 
         # Infer whether a config was saved
         config = None
         if "config.json" in model_files:
+            from transformers import AutoConfig
             config = AutoConfig.from_pretrained(model_dir)
+            logger.debug("Loaded: %s...", type(config))
+
+        processor = None
+        if "preprocessor_config.json" in model_files:
+            from transformers import AutoProcessor
+            processor = AutoProcessor.from_pretrained(model_dir)
+            logger.debug("Loaded: %s...", type(processor))
 
         # Infer whether we're loading a PyTorch or Tensorflow model
         is_pytorch = "pytorch_model.bin" in model_files
         logger.debug("Loading transformers model with pytorch=%s", is_pytorch)
 
         if is_pytorch:
-            logger.debug("Loading with AutoModel...")
             from transformers import AutoModel, GPT2LMHeadModel
 
-            # In examples-by-ml-library/transformers_pt_example.py, we want
+            # In examples-by-ml-library/libraries/huggingface/gpt2*.py, we want
             # to load a GPT2 model with a language model head. If we just
             # load the model with AutoModel, then it won't have this.
             # This is a hack to get around that, like we did in the XGBoost
@@ -121,14 +142,15 @@ class TransformersManager(ModelManager):
             }
             model_type = meta_data.model_type().type
             if model_type in model_types:
+                logger.debug("Loading with %s...", model_type)
                 model = model_types[model_type].from_pretrained(model_dir)
             else:
+                logger.debug("Loading with AutoModel...")
                 model = AutoModel.from_pretrained(model_dir)
         else:
-            logger.debug("Loading with TFAutoModel...")
             from transformers import TFAutoModel, TFGPT2LMHeadModel
 
-            # In examples-by-ml-library/transformers_tf_example.py, we want
+            # In examples-by-ml-library/libraries/huggingface/gpt2*.py, we want
             # to load a GPT2 model with a language model head. If we just
             # load the model with TFAutoModel, then it won't have this.
             # This is a hack to get around that, like we did in the XGBoost
@@ -139,11 +161,16 @@ class TransformersManager(ModelManager):
             }
             model_type = meta_data.model_type().type
             if model_type in model_types:
+                logger.debug("Loading with %s...", model_type)
                 model = model_types[model_type].from_pretrained(model_dir)
             else:
+                logger.debug("Loading with TFAutoModel...")
                 model = TFAutoModel.from_pretrained(model_dir)
-
-        return model, tokenizer, config
+        if tokenizer is not None:
+            return model, tokenizer, config
+        if processor is not None:
+            return model, processor, config
+        return model, config
 
 
 def _get_model_directory(parent_dir: str) -> str:
@@ -152,15 +179,11 @@ def _get_model_directory(parent_dir: str) -> str:
 
 def _save_transformers(
     tmp_dir: str,
-    config: "PretrainedConfig",
-    model: Union["PreTrainedModel", "TFPreTrainedModel"],
-    tokenizer: "PreTrainedTokenizerBase",
+    entities: List,
 ) -> str:
     model_dir = _get_model_directory(tmp_dir)
     os.makedirs(model_dir)
-
-    model.save_pretrained(model_dir)
-    tokenizer.save_pretrained(model_dir)
-    if config is not None:
-        config.save_pretrained(model_dir)
+    for entity in entities:
+        if entity is not None:
+            entity.save_pretrained(model_dir)
     return model_dir
