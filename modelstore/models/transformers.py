@@ -129,7 +129,7 @@ class TransformersManager(ModelManager):
         logger.debug("Loading transformers model with pytorch=%s", is_pytorch)
 
         if is_pytorch:
-            from transformers import AutoModel, GPT2LMHeadModel, SamModel
+            from transformers import AutoModel, GPT2LMHeadModel
 
             # In examples-by-ml-library/libraries/huggingface/gpt2*.py, we want
             # to load a GPT2 model with a language model head. If we just
