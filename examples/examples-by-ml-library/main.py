@@ -42,6 +42,7 @@ from libraries import (
 )
 from libraries.huggingface import (
     distilbert,
+    dpt,
     gpt2_pytorch,
     gpt2_tensorflow,
     sam,
@@ -51,6 +52,7 @@ from modelstores import create_model_store
 EXAMPLES = {
     "annoy": annoy_example,
     "catboost": catboost_example,
+    "dpt": dpt,
     "fastai": fastai_example,
     "file": raw_file_example,
     "gensim": gensim_example,
