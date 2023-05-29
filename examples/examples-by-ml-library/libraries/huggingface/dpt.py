@@ -24,10 +24,10 @@ _DOMAIN_NAME = "example-dpt-model"
 
 
 def _load_dpt_model(
-        source: str = "facebook/sam-vit-base") -> Tuple[DPTPreTrainedModel, DPTImageProcessor]:
-    print(f"Loading a segment anything model from:{source}.")
-    processor = DPTImageProcessor.from_pretrained("Intel/dpt-large")
-    model = DPTForDepthEstimation.from_pretrained("Intel/dpt-large")
+        source: str = "Intel/dpt-large") -> Tuple[DPTPreTrainedModel, DPTImageProcessor]:
+    print(f"Loading a dpt anything model from:{source}.")
+    processor = DPTImageProcessor.from_pretrained(source)
+    model = DPTForDepthEstimation.from_pretrained(source)
     return model, processor
 
 
