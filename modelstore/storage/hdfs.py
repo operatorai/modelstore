@@ -88,15 +88,11 @@ class HdfsStorage(BlobStorage):
         return meta_data.path
 
     def _read_json_objects(self, prefix: str) -> list:
-        logger.debug("Listing files in: %s/%s", self.bucket_name, prefix)
+        logger.debug("Listing files in: %s", prefix)
         results = []
-        objects = self.client.list_objects(
-            self.bucket_name,
-            prefix,
-            recursive=True,
-        )
+        objects = [f for f in hdfs.ls(os.path.join(prefix))]
         for obj in objects:
-            if not obj.object_name.endswith(".json"):
+            if not hdfs.path.basename(obj).endswith(".json"):
                 logger.debug("Skipping non-json file: %s", obj.object_name)
                 continue
             if os.path.split(obj.object_name)[0] != prefix:
@@ -109,8 +105,8 @@ class HdfsStorage(BlobStorage):
         return sorted_by_created(results)
 
     def _read_json_object(self, prefix: str) -> dict:
-        logger.debug("Reading: %s/%s", self.bucket_name, prefix)
-        obj = self.client.get_object(self.bucket_name, prefix)
+        logger.debug("Reading: %s", prefix)
+        obj = hdfs.load(prefix)
         lines = obj.readlines()
         if len(lines) == 0:
             return None
