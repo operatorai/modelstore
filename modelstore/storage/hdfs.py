@@ -47,17 +47,22 @@ class HdfsStorage(BlobStorage):
     }
 
     def __init__(self, root_prefix: Optional[str] = None, create_directory: bool = False):
-        super().__init__(["hdfs"], root_prefix, "MODEL_STORE_HDFS_ROOT_PREFIX")
+        super().__init__(["pydoop"], root_prefix, "MODEL_STORE_HDFS_ROOT_PREFIX")
         self._create_directory = create_directory
 
     def validate(self) -> bool:
-        logger.debug("Creating path=%s...", self.root_prefix)
-        # @TODO check if root_prefix already exists
-        hdfs.mkdir(self.root_prefix)
-        return True
+        try:
+            hdfs.ls(self.root_prefix)
+        except FileNotFoundError:
+            if not self._create_directory:
+                raise
+            logger.debug("creating root directory %s", self.root_prefix)
+            hdfs.mkdir(self.root_prefix)
+            return True
 
     def _push(self, file_path: str, prefix: str) -> str:
         logger.info("Uploading to: %s...", prefix)
+        # This will raise an exception if the file already exists
         hdfs.put(file_path, prefix)
         return prefix
 
@@ -69,6 +74,7 @@ class HdfsStorage(BlobStorage):
             hdfs.get(prefix, destination)
             return destination
         except Exception as exc:
+            logger.exception(exc)
             raise FilePullFailedException(exc) from exc
 
     def _remove(self, prefix: str) -> bool:
