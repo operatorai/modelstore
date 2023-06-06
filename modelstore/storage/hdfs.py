@@ -46,11 +46,13 @@ class HdfsStorage(BlobStorage):
         ],
     }
 
-    def __init__(self, root_prefix: Optional[str] = None):
+    def __init__(self, root_prefix: Optional[str] = None, create_directory: bool = False):
         super().__init__(["hdfs"], root_prefix, "MODEL_STORE_HDFS_ROOT_PREFIX")
+        self._create_directory = create_directory
 
     def validate(self) -> bool:
         logger.debug("Creating path=%s...", self.root_prefix)
+        # @TODO check if root_prefix already exists
         hdfs.mkdir(self.root_prefix)
         return True
 
