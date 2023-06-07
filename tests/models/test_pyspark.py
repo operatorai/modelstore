@@ -14,7 +14,6 @@
 import os
 import platform
 import pytest
-import pydoop.hdfs as hdfs
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.ml.feature import VectorAssembler
@@ -102,6 +101,7 @@ def test_save_model(spark_model, tmp_path):
     if platform.system() == 'Darwin':
         # Running hadoop locally, so need to check
         # for the files in hdfs
+        import pydoop.hdfs as hdfs
         exists_fn = hdfs.path.exists
     assert all(exists_fn(x) for x in exp)
 

@@ -14,7 +14,12 @@
 import os
 import platform
 import pytest
-import pydoop.hdfs as hdfs
+try :
+    import pydoop.hdfs as hdfs
+except:
+    # Cannot install pydoop without java_home
+    # in the ci
+    pass
 
 from modelstore.metadata import metadata
 from modelstore.storage.hdfs import HdfsStorage
@@ -32,6 +37,7 @@ from tests.storage.test_utils import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 # pylint: disable=missing-function-docstring
+
 
 def is_not_mac() -> bool:
     return platform.system() != 'Darwin'
