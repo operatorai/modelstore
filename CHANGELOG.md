@@ -2,6 +2,8 @@
 
 ## Not released
 
+Added support for any HDFS storage that you can access via [pydoop](https://crs4.github.io/pydoop/tutorial/hdfs_api.html#hdfs-api-tutorial): `ModelStore.from_hdfs()` [#241](https://github.com/operatorai/modelstore/pull/241), thanks [@sayandigital](https://github.com/sayandigital).
+
 Updated the transformers manager: it no longer requires a `tokenizer` argument, so it can now be used to (for example) save/load SAM models [#238](https://github.com/operatorai/modelstore/pull/238) or DPT models [#239](https://github.com/operatorai/modelstore/pull/239). Thank you, [Cate in the MLOps Community](https://mlops-community.slack.com/archives/C0227QJCDS8/p1683293544101389)
 
 Fixed [issues with saving & loading GPT-2 models](https://github.com/operatorai/modelstore/issues/233) in [#234](https://github.com/operatorai/modelstore/pull/234), thank you [@sayandigital](https://github.com/sayandigital).
