@@ -105,4 +105,7 @@ def save_model(tmp_dir: str, model: "pyspark.ml.Model") -> List[str]:
     logger.debug("Saving pyspark model")
     target = os.path.join(tmp_dir, "pyspark")
     model.save(target)
-    return [os.path.join(target, "metadata"), os.path.join(target, "stages")]
+    return [
+        os.path.join(target, "metadata"),
+        os.path.join(target, "stages"),
+    ]

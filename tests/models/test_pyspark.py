@@ -12,8 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-
+import platform
 import pytest
+import pydoop.hdfs as hdfs
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.ml.feature import VectorAssembler
@@ -97,7 +98,12 @@ def test_save_model(spark_model, tmp_path):
         os.path.join(tmp_path, "pyspark", "stages"),
     ]
     assert exp == res
-    assert all(os.path.exists(x) for x in exp)
+    exists_fn = os.path.exists
+    if platform.system() == 'Darwin':
+        # Running hadoop locally, so need to check
+        # for the files in hdfs
+        exists_fn = hdfs.path.exists
+    assert all(exists_fn(x) for x in exp)
 
 
 def test_load_model(tmp_path, spark_manager, spark_model, spark_df):

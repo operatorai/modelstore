@@ -101,14 +101,14 @@ class HdfsStorage(BlobStorage):
         logger.debug("Listing files in: %s", prefix)
         results = []
         for obj in hdfs.ls(prefix):
-            logger.info("reading: %s", obj)
+            logger.debug("reading: %s", obj)
             if not hdfs.path.basename(obj).endswith(".json"):
-                logger.info("Skipping non-json file: %s", obj)
+                logger.debug("Skipping non-json file: %s", obj)
                 continue
             parent = obj[obj.index(prefix):]
             if os.path.split(parent)[0] != prefix:
                 # We don't want to read files in a sub-prefix
-                logger.info("Skipping file in sub-prefix: %s", obj)
+                logger.debug("Skipping file in sub-prefix: %s", obj)
                 continue
             json_obj = self._read_json_object(obj)
             if json_obj is not None:
