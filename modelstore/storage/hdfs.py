@@ -79,9 +79,11 @@ class HdfsStorage(BlobStorage):
 
     def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
-        logger.debug("Deleting: %s...", prefix)
-        hdfs.rm(prefix)
-        return True
+        if hdfs.path.exists(prefix):
+            logger.debug("Deleting: %s...", prefix)
+            hdfs.rm(prefix)
+            return True
+        return False
 
     def _storage_location(self, prefix: str) -> metadata.Storage:
         """Returns a dict of the location the artifact was stored"""
@@ -98,27 +100,28 @@ class HdfsStorage(BlobStorage):
     def _read_json_objects(self, prefix: str) -> list:
         logger.debug("Listing files in: %s", prefix)
         results = []
-        objects = [f for f in hdfs.ls(os.path.join(prefix))]
-        for obj in objects:
+        for obj in hdfs.ls(prefix):
+            logger.info("reading: %s", obj)
             if not hdfs.path.basename(obj).endswith(".json"):
-                logger.debug("Skipping non-json file: %s", obj.object_name)
+                logger.info("Skipping non-json file: %s", obj)
                 continue
-            if os.path.split(obj.object_name)[0] != prefix:
+            parent = obj[obj.index(prefix):]
+            if os.path.split(parent)[0] != prefix:
                 # We don't want to read files in a sub-prefix
-                logger.debug("Skipping file in sub-prefix: %s", obj.object_name)
+                logger.info("Skipping file in sub-prefix: %s", obj)
                 continue
-            obj = self._read_json_object(obj.object_name)
-            if obj is not None:
-                results.append(obj)
+            json_obj = self._read_json_object(obj)
+            if json_obj is not None:
+                results.append(json_obj)
         return sorted_by_created(results)
 
     def _read_json_object(self, prefix: str) -> dict:
         logger.debug("Reading: %s", prefix)
-        obj = hdfs.load(prefix)
-        lines = obj.readlines()
+        lines = hdfs.load(prefix)
         if len(lines) == 0:
             return None
         try:
-            return json.loads(lines[0])
-        except json.JSONDecodeError:
+            return json.loads(lines)
+        except json.JSONDecodeError as exc:
+            logger.exception(exc)
             return None

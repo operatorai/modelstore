@@ -11,8 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from unittest.mock import ANY
 import os
+import platform
 import pytest
 import pydoop.hdfs as hdfs
 
@@ -23,7 +23,6 @@ from modelstore.storage.hdfs import HdfsStorage
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_NAME,
-    file_contains_expected_contents,
     remote_file_path,
     remote_path,
     push_temp_file,
@@ -33,6 +32,9 @@ from tests.storage.test_utils import (
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 # pylint: disable=missing-function-docstring
+
+def is_not_mac() -> bool:
+    return platform.system() != 'Darwin'
 
 
 @pytest.fixture
@@ -50,12 +52,12 @@ def test_create_from_environment_variables(monkeypatch):
         pytest.fail("Failed to initialise storage from env variables")
 
 
-@pytest.mark.skip(reason="no hadoop in ci")
+@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_validate(storage):
     assert storage.validate()
 
 
-@pytest.mark.skip(reason="no hadoop in ci")
+@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_push_and_pull(storage, tmp_path):
     prefix = push_temp_file(storage)
     files = hdfs.ls(prefix)
@@ -68,104 +70,74 @@ def test_push_and_pull(storage, tmp_path):
     hdfs.rm(files[0])
 
 
-# @pytest.mark.parametrize(
-#     "file_exists,should_call_delete",
-#     [
-#         (
-#             False,
-#             False,
-#         ),
-#         (
-#             True,
-#             True,
-#         ),
-#     ],
-# )
-# def test_remove(storage, file_exists, should_call_delete):
-#     prefix = remote_file_path()
-#     objects = []
-#     if file_exists:
-#         objects = [1]
-#     storage.client.list_objects.return_value = objects
-#     assert storage._remove(prefix) == should_call_delete
-#     storage.client.list_objects.assert_called_with(
-#         _MOCK_BUCKET_NAME, prefix, recursive=False
-#     )
-#     if file_exists:
-#         storage.client.remove_object.assert_called_with(_MOCK_BUCKET_NAME, prefix)
-#     else:
-#         storage.client.remove_object.assert_not_called()
+@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.parametrize(
+    "file_exists,should_call_delete",
+    [
+        (
+            False,
+            False,
+        ),
+        (
+            True,
+            True,
+        ),
+    ],
+)
+def test_remove(storage, file_exists, should_call_delete):
+    if file_exists:
+        # Push a file to storage
+        _ = push_temp_file(storage)
+    prefix = remote_file_path()
+    assert storage._remove(prefix) == should_call_delete
+    assert not os.path.exists(prefix)
 
 
-# def test_read_json_objects_ignores_non_json(storage):
-#     storage.client.list_objects.return_value = [
-#         Object(bucket_name=_MOCK_BUCKET_NAME, object_name="text-file.txt"),
-#     ]
-#     items = storage._read_json_objects("")
-#     assert len(items) == 0
+@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+def test_read_json_objects_ignores_non_json(storage):
+    # Create files with different suffixes
+    prefix = remote_path()
+    _ = [hdfs.rm(f) for f in hdfs.ls(prefix)]
+    push_temp_files(storage, prefix)
+
+    # Read the json files at the prefix
+    items = storage._read_json_objects(prefix)
+    assert len(items) == 1
+    _ = [hdfs.rm(f) for f in hdfs.ls(prefix)]
 
 
-# def test_read_json_object_fails_gracefully(storage):
-#     obj = mock.create_autospec(HTTPResponse)
-#     obj.readlines.return_value = "not json"
-#     storage.client.get_object.return_value = obj
-#     item = storage._read_json_object(remote_path())
-#     assert item is None
+def test_storage_location(storage):
+    prefix = remote_path()
+    # Asserts that the location meta data is correctly formatted
+    expected = metadata.Storage.from_path(
+        storage_type="hdfs",
+        root=storage.root_prefix,
+        path=prefix,
+    )
+    assert storage._storage_location(prefix) == expected
 
 
-# def test_storage_location(storage):
-#     prefix = remote_path()
-#     # Asserts that the location meta data is correctly formatted
-#     expected = metadata.Storage.from_bucket(
-#         storage_type="minio:s3.amazonaws.com",
-#         bucket=_MOCK_BUCKET_NAME,
-#         prefix=prefix,
-#     )
-#     assert storage._storage_location(prefix) == expected
-
-
-# @pytest.mark.parametrize(
-#     "meta_data,should_raise,result",
-#     [
-#         (
-#             metadata.Storage(
-#                 type="minio:s3.amazonaws.com",
-#                 path=None,
-#                 bucket=_MOCK_BUCKET_NAME,
-#                 container=None,
-#                 prefix="/path/to/file",
-#             ),
-#             False,
-#             "/path/to/file",
-#         ),
-#         (
-#             metadata.Storage(
-#                 type="minio:s3.amazonaws.com",
-#                 path=None,
-#                 bucket="a-different-bucket-name",
-#                 container=None,
-#                 prefix="/path/to/file",
-#             ),
-#             True,
-#             None,
-#         ),
-#         (
-#             metadata.Storage(
-#                 type="minio:http://0.0.0.0",
-#                 path=None,
-#                 bucket=_MOCK_BUCKET_NAME,
-#                 container=None,
-#                 prefix="/path/to/file",
-#             ),
-#             True,
-#             None,
-#         ),
-#     ],
-# )
-# def test_get_location(storage, meta_data, should_raise, result):
-#     # Asserts that pulling the location out of meta data is correct
-#     if should_raise:
-#         with pytest.raises(ValueError):
-#             storage._get_storage_location(meta_data)
-#     else:
-#         assert storage._get_storage_location(meta_data) == result
+@pytest.mark.parametrize(
+    "meta_data,should_raise,result",
+    [
+        (
+            metadata.Storage(
+                type="hdfs",
+                root="",
+                path="/path/to/file",
+                bucket=None,
+                container=None,
+                prefix=None,
+            ),
+            False,
+            "/path/to/file",
+        ),
+    ],
+)
+def test_get_location(storage, meta_data, should_raise, result):
+    # Asserts that pulling the location out of meta data is correct
+    if should_raise:
+        with pytest.raises(ValueError):
+            storage._get_storage_location(meta_data)
+    else:
+        assert storage._get_storage_location(meta_data) == result
