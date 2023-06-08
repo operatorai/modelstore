@@ -20,8 +20,6 @@ from modelstore.storage.hdfs import HdfsStorage
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
-    TEST_FILE_CONTENTS,
-    TEST_FILE_NAME,
     remote_file_path,
     remote_path,
     push_temp_file,
@@ -42,6 +40,7 @@ def storage(tmp_path):
     return HdfsStorage(root_prefix=str(tmp_path), create_directory=True)
 
 
+@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     for key in HdfsStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
@@ -59,6 +58,7 @@ def test_validate(storage):
 
 @pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_push_and_pull(storage, tmp_path):
+    # pylint: disable=import-outside-toplevel
     import pydoop.hdfs as hdfs
     prefix = push_temp_file(storage)
     files = hdfs.ls(prefix)
@@ -96,6 +96,7 @@ def test_remove(storage, file_exists, should_call_delete):
 
 @pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_read_json_objects_ignores_non_json(storage):
+    # pylint: disable=import-outside-toplevel
     import pydoop.hdfs as hdfs
     # Create files with different suffixes
     prefix = remote_path()
@@ -108,6 +109,7 @@ def test_read_json_objects_ignores_non_json(storage):
     _ = [hdfs.rm(f) for f in hdfs.ls(prefix)]
 
 
+@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_storage_location(storage):
     prefix = remote_path()
     # Asserts that the location meta data is correctly formatted
@@ -119,6 +121,7 @@ def test_storage_location(storage):
     assert storage._storage_location(prefix) == expected
 
 
+@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 @pytest.mark.parametrize(
     "meta_data,should_raise,result",
     [
