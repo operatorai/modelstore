@@ -47,7 +47,7 @@ from libraries.huggingface import (
     gpt2_tensorflow,
     sam,
 )
-from modelstores import create_model_store
+from modelstores import MODELSTORES, create_model_store
 
 EXAMPLES = {
     "annoy": annoy_example,
@@ -85,7 +85,7 @@ EXAMPLES = {
 @click.option(
     "--modelstore-in",
     type=click.Choice(
-        ["aws-s3", "azure-container", "google-cloud-storage", "filesystem", "minio"],
+        MODELSTORES.keys(),
         case_sensitive=False,
     ),
 )
