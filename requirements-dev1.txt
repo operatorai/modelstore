@@ -7,7 +7,7 @@ azure-storage-blob>=12.11.0
 boto3>=1.21.41
 google-cloud-storage>=2.3.0
 minio>=7.1.12
-
+pydoop<=2.0.0; sys_platform == 'darwin'
 pystan>=2.19.1.1 # required to be installed before prophet
 
 # Machine Learning

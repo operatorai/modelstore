@@ -25,6 +25,7 @@ from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
 from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
 from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
+from modelstore.storage.hdfs import HDFS_EXISTS, HdfsStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.minio import MINIO_EXISTS, MinIOStorage
 from modelstore.storage.storage import CloudStorage
@@ -122,6 +123,16 @@ class ModelStore:
                 secure=secure,
             )
         )
+
+    @classmethod
+    def from_hdfs(
+        cls, root_prefix: Optional[str] = None, create_directory: bool = False
+    ) -> "ModelStore":
+        """Creates a ModelStore instance that stores models to
+        the local HDFS system."""
+        if not HDFS_EXISTS:
+            raise ModuleNotFoundError("pydoop is not installed!")
+        return ModelStore(storage=HdfsStorage(root_prefix, create_directory))
 
     @classmethod
     def from_file_system(
