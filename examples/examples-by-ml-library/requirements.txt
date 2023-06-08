@@ -4,10 +4,11 @@
 click
 
 # Storage requirements
-google-cloud-storage
-boto3
 azure-core
 azure-storage-blob
+boto3
+google-cloud-storage
+pydoop
 minio
 
 # Data / dependencies for ML libraries

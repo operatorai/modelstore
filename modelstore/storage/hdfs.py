@@ -48,14 +48,17 @@ class HdfsStorage(BlobStorage):
 
     def __init__(self, root_prefix: Optional[str] = None, create_directory: bool = False):
         super().__init__(["pydoop"], root_prefix, "MODEL_STORE_HDFS_ROOT_PREFIX")
+        logger.debug("creating root directory %s", create_directory)
         self._create_directory = create_directory
 
     def validate(self) -> bool:
         try:
             hdfs.ls(self.root_prefix)
-        except FileNotFoundError:
+            return True
+        except FileNotFoundError as exc:
             if not self._create_directory:
-                raise
+                logger.exception(exc)
+                return False
             logger.debug("creating root directory %s", self.root_prefix)
             hdfs.mkdir(self.root_prefix)
             return True
@@ -63,6 +66,9 @@ class HdfsStorage(BlobStorage):
     def _push(self, file_path: str, prefix: str) -> str:
         logger.info("Uploading to: %s...", prefix)
         # This will raise an exception if the file already exists
+        hdfs.mkdir(os.path.split(prefix)[0])
+        if hdfs.path.exists(prefix):
+            hdfs.rm(prefix)
         hdfs.put(file_path, prefix)
         return prefix
 
@@ -74,7 +80,6 @@ class HdfsStorage(BlobStorage):
             hdfs.get(prefix, destination)
             return destination
         except Exception as exc:
-            logger.exception(exc)
             raise FilePullFailedException(exc) from exc
 
     def _remove(self, prefix: str) -> bool:
@@ -100,6 +105,8 @@ class HdfsStorage(BlobStorage):
     def _read_json_objects(self, prefix: str) -> list:
         logger.debug("Listing files in: %s", prefix)
         results = []
+        if not hdfs.path.exists(prefix):
+            return results
         for obj in hdfs.ls(prefix):
             logger.debug("reading: %s", obj)
             if not hdfs.path.basename(obj).endswith(".json"):

@@ -16,37 +16,16 @@ import os
 from modelstore import ModelStore
 from modelstore.storage.aws import AWSStorage
 from modelstore.storage.azure import AzureBlobStorage
-from modelstore.storage.gcloud import GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
+from modelstore.storage.gcloud import GoogleCloudStorage
+from modelstore.storage.hdfs import HdfsStorage
 from modelstore.storage.minio import MinIOStorage
-
-
-def create_model_store(backend) -> ModelStore:
-    """Returns a modelstore instance with the required storage type"""
-    modelstores = {
-        AWSStorage.NAME: create_aws_model_store,
-        AzureBlobStorage.NAME: create_azure_model_store,
-        GoogleCloudStorage.NAME: create_gcloud_model_store,
-        FileSystemStorage.NAME: create_file_system_model_store,
-        MinIOStorage.NAME: create_minio_model_store,
-    }
-    return modelstores[backend]()
 
 
 def create_aws_model_store() -> ModelStore:
     """A model store that uses an s3 bucket"""
     return ModelStore.from_aws_s3(
         os.environ["MODEL_STORE_AWS_BUCKET"],
-        root_prefix="example-by-ml-library",
-    )
-
-
-def create_minio_model_store() -> ModelStore:
-    """A model store that uses an s3 bucket with a MinIO client"""
-    return ModelStore.from_minio(
-        access_key=os.environ["AWS_ACCESS_KEY_ID"],
-        secret_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-        bucket_name=os.environ["MODEL_STORE_AWS_BUCKET"],
         root_prefix="example-by-ml-library",
     )
 
@@ -63,6 +42,17 @@ def create_azure_model_store() -> ModelStore:
     )
 
 
+def create_file_system_model_store() -> ModelStore:
+    """A model store in a local file system"""
+    # Here, we create a new local model store in our home directory
+    root_dir = os.environ.get(
+        "MODEL_STORE_ROOT_PREFIX",
+        os.path.expanduser("~"),
+    )
+    print(f"🏦  Creating store in: {root_dir}")
+    return ModelStore.from_file_system(root_directory=root_dir)
+
+
 def create_gcloud_model_store() -> ModelStore:
     """A model store in a Google Cloud bucket"""
     # The modelstore library assumes you have already created
@@ -74,12 +64,33 @@ def create_gcloud_model_store() -> ModelStore:
     )
 
 
-def create_file_system_model_store() -> ModelStore:
-    """A model store in a local file system"""
-    # Here, we create a new local model store in our home directory
-    root_dir = os.environ.get(
-        "MODEL_STORE_ROOT_PREFIX",
-        os.path.expanduser("~"),
+def create_hdfs_model_store() -> ModelStore:
+    """A model store in HDFS storage"""
+    return ModelStore.from_hdfs(
+        root_prefix=os.environ["MODEL_STORE_HDFS_ROOT_PREFIX"],
+        create_directory=True,
     )
-    print(f"🏦  Creating store in: {root_dir}")
-    return ModelStore.from_file_system(root_directory=root_dir)
+
+
+def create_minio_model_store() -> ModelStore:
+    """A model store that uses an s3 bucket with a MinIO client"""
+    return ModelStore.from_minio(
+        access_key=os.environ["AWS_ACCESS_KEY_ID"],
+        secret_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+        bucket_name=os.environ["MODEL_STORE_AWS_BUCKET"],
+        root_prefix="example-by-ml-library",
+    )
+
+
+MODELSTORES = {
+    AWSStorage.NAME: create_aws_model_store,
+    AzureBlobStorage.NAME: create_azure_model_store,
+    FileSystemStorage.NAME: create_file_system_model_store,
+    GoogleCloudStorage.NAME: create_gcloud_model_store,
+    HdfsStorage.NAME: create_hdfs_model_store,
+    MinIOStorage.NAME: create_minio_model_store,
+}
+
+def create_model_store(backend) -> ModelStore:
+    """Returns a modelstore instance with the required storage type"""
+    return MODELSTORES[backend]()
