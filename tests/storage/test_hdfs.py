@@ -14,12 +14,6 @@
 import os
 import platform
 import pytest
-try :
-    import pydoop.hdfs as hdfs
-except:
-    # Cannot install pydoop without java_home
-    # in the ci
-    pass
 
 from modelstore.metadata import metadata
 from modelstore.storage.hdfs import HdfsStorage
@@ -65,6 +59,7 @@ def test_validate(storage):
 
 @pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_push_and_pull(storage, tmp_path):
+    import pydoop.hdfs as hdfs
     prefix = push_temp_file(storage)
     files = hdfs.ls(prefix)
     assert len(files) == 1
@@ -101,6 +96,7 @@ def test_remove(storage, file_exists, should_call_delete):
 
 @pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
 def test_read_json_objects_ignores_non_json(storage):
+    import pydoop.hdfs as hdfs
     # Create files with different suffixes
     prefix = remote_path()
     _ = [hdfs.rm(f) for f in hdfs.ls(prefix)]
