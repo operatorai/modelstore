@@ -44,7 +44,7 @@ from libraries.huggingface import (
     distilbert,
     dpt,
     gpt2_pytorch,
-    gpt2_tensorflow,
+    # gpt2_tensorflow,
     sam,
 )
 from modelstores import MODELSTORES, create_model_store
@@ -58,7 +58,7 @@ EXAMPLES = {
     "gensim": gensim_example,
     "hf-distilbert": distilbert,
     "hf-gpt2-pt": gpt2_pytorch,
-    "hf-gpt2-tf": gpt2_tensorflow,
+    # "hf-gpt2-tf": gpt2_tensorflow,
     "keras": keras_example,
     "lightgbm": lightgbm_example,
     "mxnet": mxnet_example,

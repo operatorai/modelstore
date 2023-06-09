@@ -8,8 +8,8 @@ with open("requirements.txt", "r") as lines:
 
 setup(
     name="modelstore",
-    version="0.0.78",
-    packages=find_packages(exclude=["tests", "examples", "docs"]),
+    version="0.0.79",
+    packages=find_packages(exclude=["tests", "examples", "docs", "workflows"]),
     include_package_data=True,
     description="modelstore is a library for versioning, exporting, storing, and loading machine learning models",
     long_description="Please refer to: https://modelstore.readthedocs.io/en/latest/",

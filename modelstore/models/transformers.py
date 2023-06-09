@@ -49,11 +49,6 @@ class TransformersManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
-        from transformers import (
-            PreTrainedModel,
-            TFPreTrainedModel,
-        )
-
         if "config" in kwargs:
             from transformers import PretrainedConfig
             if not isinstance(kwargs.get("config"), PretrainedConfig):
@@ -76,11 +71,17 @@ class TransformersManager(ModelManager):
                 logger.debug("unknown processor type: %s", type(processor))
                 return False
 
-        return (
-            # The model must be either a PyTorch or TF pretrained model
-            isinstance(kwargs.get("model"), PreTrainedModel)
-            or isinstance(kwargs.get("model"), TFPreTrainedModel)
-        )
+        # The model must be either a PyTorch or TF pretrained model
+        try:
+            from transformers import TFPreTrainedModel
+            if isinstance(kwargs.get("model"), TFPreTrainedModel):
+                return True
+        except RuntimeError:
+            # Cannot import tensorflow things
+            pass
+        
+        from transformers import PreTrainedModel
+        return isinstance(kwargs.get("model"), PreTrainedModel)
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):

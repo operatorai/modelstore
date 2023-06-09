@@ -59,6 +59,10 @@ class TensorflowManager(ModelManager):
             if isinstance(kwargs.get("model"), TFPreTrainedModel):
                 return False
         except ImportError:
+            # transformers does not exist
+            pass
+        except RuntimeError:
+            # transformers cannot import tensorflow stuff
             pass
         from tensorflow import keras
 
