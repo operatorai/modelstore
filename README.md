@@ -68,7 +68,7 @@ pip install modelstore
 * [Shap](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/shap_example.py)
 * [Spark ML Lib](https://spark.apache.org/)
 * [Tensorflow](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/tensorflow_example.py)
-* [Transformers](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/transformers_example.py)
+* Transformers - there are several examples in [this directory](https://github.com/operatorai/modelstore/tree/main/examples/examples-by-ml-library/libraries/huggingface)
 * [XGBoost](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/xgboost_example.py)
 
 Is there a machine learning framework that is missing? 
