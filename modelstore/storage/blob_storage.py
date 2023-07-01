@@ -306,6 +306,15 @@ class BlobStorage(CloudStorage):
                 "Successfully unset %s=%s from state=%s", domain, model_id, state_name
             )
 
+    def delete_model_state(self, state_name: str, skip_prompt: bool):
+        # Make sure the state exists
+        # Make sure it's not a reserved state
+        # Prompt to confirm
+        # List all the models with that state
+        # Call unset_model_state() for each one
+        # Delete the model state itself
+        pass
+
     def set_meta_data(self, domain: str, model_id: str, meta_data: metadata.Summary):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -114,3 +114,8 @@ class CloudStorage(ABC):
     ):
         """Removes the given model ID from the set that are in the state_name path"""
         raise NotImplementedError()
+    
+    @abstractmethod
+    def delete_model_state(self, state_name: str, skip_prompt: bool):
+        """Deletes a model state"""
+        raise NotImplementedError()
