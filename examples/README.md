@@ -1,10 +1,10 @@
-# Model Store Examples
+# modelstore examples
 
-This directory contains examples of training models and storing them into a model store.
+This directory contains examples of training models and storing them into a model store over different types of storage.
 
-* `examples-by-ml-model` iterates over all of the supported ML frameworks and all of the supported storage types. For each pair, it trains a model, uploads it to storage, and then
-downloads/loads it back. 
-* `examples-by-storage` iterates over all of the supported storage types. For each one, it trains two models (using scikit-learn and xgboost) and uploads them to storage, downloads them back, and demos other functionality like listing all of the model versions that are available and creating/setting model states.
+The Python script in `examples-by-ml-model` iterates over all of the supported ML frameworks and all of the supported storage types. For each pair, it trains a model, uploads it to storage, and then downloads/loads it back. 
+
+The bash script `cli-examples` has exaples of how to run `python -m modelstore` commands.
 
 ## Pre-requisites
 
@@ -18,21 +18,6 @@ Start by `cd`'ing into the directory containing the example you want to run:
 
 ```bash
 ❯ cd examples-by-ml-model/
-```
-
-And then you can use this `Makefile` command that creates a new virtual environment
-and installs all of the requirements:
-
-```bash
-❯ make pyenv
-```
-
-## Set up - examples by storage type
-
-Warning: the `examples-by-ml-storage` virtual environment installs ALL of the storage libraries that are supported by `modelstore`. In your own project, you will only need to install the storage library that you need.
-
-```bash
-❯ cd examples-by-ml-storage/
 ```
 
 And then you can use this `Makefile` command that creates a new virtual environment
