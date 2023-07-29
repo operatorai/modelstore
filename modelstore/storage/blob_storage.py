@@ -191,7 +191,7 @@ class BlobStorage(CloudStorage):
 
     def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
         if state_name and not self.state_exists(state_name):
-            raise Exception(f"State: '{state_name}' does not exist")
+            raise ValueError(f"State: '{state_name}' does not exist")
 
         # Assert the domain exists
         _ = self.get_domain(domain)
@@ -302,18 +302,38 @@ class BlobStorage(CloudStorage):
             state_name,
         )
         if self._remove(model_state_path):
-            logger.debug(
+            logger.info(
                 "Successfully unset %s=%s from state=%s", domain, model_id, state_name
             )
 
     def delete_model_state(self, state_name: str, skip_prompt: bool):
-        # Make sure the state exists
-        # Make sure it's not a reserved state
-        # Prompt to confirm
-        # List all the models with that state
-        # Call unset_model_state() for each one
+        if is_reserved_state(state_name):
+            # Reserved model states (e.g. 'deleted') cannot be deleted by the user
+            # because they are used by modelstore
+            raise ValueError(f"State '{state_name}' is reserved and cannot be deleted")
+        if not self.state_exists(state_name):
+            # Non-reserved states need to be created manually by modelstore users
+            # before model states can be modified, to avoid creating states
+            # with typos and other similar mistakes
+            logger.debug("Model state '%s' does not exist", state_name)
+            raise ValueError(f"State '{state_name}' does not exist")
+        if not skip_prompt:
+            message = f"Delete model state '{state_name}' and remove it from all models?"
+            if not click.confirm(message):
+                logger.info("Aborting; not deleting model")
+                return
+            
+        # Remove all models from that state
+        domains = self.list_domains()
+        for domain in domains:
+            model_id = self.list_models(domain, state_name)
+            self.unset_model_state(domain, model_id, state_name)
+        
         # Delete the model state itself
-        pass
+        state_path = get_model_state_path(self.root_prefix, state_name)
+        if self._remove(state_path):
+            logger.info("Deleted model state: %s", state_name)
+        logger.info("Deleting model state failed: %s", state_name)
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: metadata.Summary):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
