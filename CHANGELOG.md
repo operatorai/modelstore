@@ -4,7 +4,7 @@
 
 **🆕  New functionality**
 
-
+Delete model states that are unused [#251](https://github.com/operatorai/modelstore/pull/251). Thank you, [Tom in the MLOps Community](https://mlops-community.slack.com/archives/C0227QJCDS8/p1687793712448619?thread_ts=1687777412.934619&cid=C0227QJCDS8).
 
 ## modelstore 0.0.79 ([June 2023](https://github.com/operatorai/modelstore/pull/243))
 
