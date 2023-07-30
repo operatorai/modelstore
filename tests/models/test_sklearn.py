@@ -25,7 +25,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from modelstore.metadata import metadata
 from modelstore.models.common import save_joblib
-from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
+from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager
 
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
@@ -142,24 +142,6 @@ def test_get_params_from_pipeline(sklearn_manager):
     )
     result = sklearn_manager.get_params(model=pipeline)
     assert result == {}
-
-
-def test_feature_importances_tree_model(sklearn_tree, classification_data):
-    X_train, y_train = classification_data
-    df = pd.DataFrame(X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])])
-    sklearn_tree.fit(df, y_train)
-    exp = dict(zip(df, sklearn_tree.feature_importances_))
-    res = _feature_importances(sklearn_tree, df)
-    assert exp == res
-
-
-def test_feature_importances_pipeline(sklearn_pipeline, classification_data):
-    X_train, y_train = classification_data
-    df = pd.DataFrame(X_train, columns=[f"col_{i}" for i in range(X_train.shape[1])])
-    sklearn_pipeline.fit(df, y_train)
-    exp = {"regressor": sklearn_pipeline.steps[1][1].feature_importances_}
-    res = _feature_importances(sklearn_pipeline, df)
-    assert (exp["regressor"] == res["regressor"]).all()
 
 
 def test_load_model(tmp_path, sklearn_manager, sklearn_tree):
