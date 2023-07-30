@@ -193,9 +193,6 @@ class ModelStore:
     """
     MODEL STATES: a model state is a string that has a 1:many relationship
     with models.
-
-    @TODO: There is no function to get the meta-data for a state
-    @TODO: Model states are currently raw dictionaries
     """
 
     def list_model_states(self) -> list:
@@ -308,26 +305,30 @@ class ModelStore:
 
     def download(self, local_path: str, domain: str, model_id: str = None) -> str:
         """Downloads the model a domain to local_path"""
-        local_path = os.path.abspath(local_path)
-        archive_path = self.storage.download(local_path, domain, model_id)
-        with tarfile.open(archive_path, "r:gz") as tar:
+        try:
+            local_path = os.path.abspath(local_path)
+            archive_path = self.storage.download(local_path, domain, model_id)
+            with tarfile.open(archive_path, "r:gz") as tar:
 
-            def is_within_directory(directory, target):
-                abs_directory = os.path.abspath(directory)
-                abs_target = os.path.abspath(target)
-                prefix = os.path.commonprefix([abs_directory, abs_target])
-                return prefix == abs_directory
+                def is_within_directory(directory, target):
+                    abs_directory = os.path.abspath(directory)
+                    abs_target = os.path.abspath(target)
+                    prefix = os.path.commonprefix([abs_directory, abs_target])
+                    return prefix == abs_directory
 
-            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
-                for member in tar.getmembers():
-                    member_path = os.path.join(path, member.name)
-                    if not is_within_directory(path, member_path):
-                        # pylint: disable=broad-exception-raised
-                        raise Exception("Attempted Path Traversal in Tar File")
-                tar.extractall(path, members, numeric_owner=numeric_owner)
+                def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+                    for member in tar.getmembers():
+                        member_path = os.path.join(path, member.name)
+                        if not is_within_directory(path, member_path):
+                            # pylint: disable=broad-exception-raised
+                            raise Exception("Attempted Path Traversal in Tar File")
+                    tar.extractall(path, members, numeric_owner=numeric_owner)
 
-            safe_extract(tar, local_path)
-        os.remove(archive_path)
+                safe_extract(tar, local_path)
+        finally:
+            # Clean up, even on exceptions (e.g. KeyboardInterrupt)
+            if os.path.exists(archive_path):
+                os.remove(archive_path)
         return local_path
 
     def delete_model(self, domain: str, model_id: str, skip_prompt: bool = False):

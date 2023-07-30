@@ -207,23 +207,28 @@ class ModelManager(ABC):
             data=self.model_data(**kwargs),
         )
 
-        # Create the model archive and return
-        # meta-data about its location
-        archive_path = self._create_archive(**kwargs)
+        try:
+            # Create the model archive and return
+            # meta-data about its location
+            archive_path = self._create_archive(**kwargs)
 
-        # Upload the model archive and any additional extras
-        storage_meta_data = self.storage.upload(domain, model_id, archive_path)
-        meta_data = metadata.Summary.generate(
-            code_meta_data=metadata.Code.generate(deps_list=self.get_dependencies()),
-            model_meta_data=model_meta_data,
-            storage_meta_data=storage_meta_data,
-            extra_metadata=kwargs.get("extra_metadata"),
-        )
+            # Upload the model archive and any additional extras
+            storage_meta_data = self.storage.upload(domain, model_id, archive_path)
+            meta_data = metadata.Summary.generate(
+                code_meta_data=metadata.Code.generate(
+                    deps_list=self.get_dependencies()
+                ),
+                model_meta_data=model_meta_data,
+                storage_meta_data=storage_meta_data,
+                extra_metadata=kwargs.get("extra_metadata"),
+            )
 
-        # Save the combined meta-data to storage
-        self.storage.set_meta_data(domain, model_id, meta_data)
-        os.remove(archive_path)
-
+            # Save the combined meta-data to storage
+            self.storage.set_meta_data(domain, model_id, meta_data)
+        finally:
+            # Clean up on exceptions (including KeyboardInterrupt)
+            if os.path.exists(archive_path):
+                os.remove(archive_path)
         return meta_data
 
 
