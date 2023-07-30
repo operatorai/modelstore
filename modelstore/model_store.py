@@ -16,7 +16,7 @@ import tarfile
 import tempfile
 import warnings
 from dataclasses import dataclass, asdict
-from typing import Optional
+from typing import Optional, List
 
 from modelstore.ids import model_ids
 from modelstore.storage.states.model_states import ReservedModelStates
@@ -144,6 +144,7 @@ class ModelStore:
 
     def __post_init__(self):
         if not self.storage.validate():
+            # pylint: disable=broad-exception-raised
             raise Exception(
                 f"Failed to set up the {type(self.storage).__name__} storage."
             )
@@ -207,6 +208,11 @@ class ModelStore:
         There are some values that are reserved, see modelstore/storage/states/model_states.py
         """
         return self.storage.create_model_state(state_name)
+    
+    def delete_model_state(self, state_name: str, skip_prompt: bool = False):
+        """ Deletes a model state altogether; all models that were
+        in this state will have this state removed. """
+        self.storage.delete_model_state(state_name, skip_prompt)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """Sets the model_id model to a specific state.
@@ -221,10 +227,9 @@ class ModelStore:
         with, but it will if that state does not exist"""
         return self.storage.unset_model_state(domain, model_id, state_name)
     
-    def delete_model_state(self, state_name: str, skip_prompt: bool = False):
-        """ Deletes a model state altogether; all models that were
-        in this state will have this state removed. """
-        self.storage.delete_model_state(state_name, skip_prompt)
+    def get_model_states(self, domain: str, model_id: str, state_name: str) -> List[str]:
+        """Retrieves the states that have been set for a given model"""
+        return self.storage.get_model_states(domain, model_id, state_name)
 
     """
     MODELS: a model archive is created and stored when using upload(). Each model
@@ -317,6 +322,7 @@ class ModelStore:
                 for member in tar.getmembers():
                     member_path = os.path.join(path, member.name)
                     if not is_within_directory(path, member_path):
+                        # pylint: disable=broad-exception-raised
                         raise Exception("Attempted Path Traversal in Tar File")
                 tar.extractall(path, members, numeric_owner=numeric_owner)
 
