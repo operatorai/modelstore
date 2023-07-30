@@ -92,7 +92,6 @@ def test_get_params(lgb_manager, lgb_model):
         "num_leaves": 31,
         "objective": "binary",
         "num_iterations": 1,
-        "early_stopping_round": None,
         "num_threads": 1,
     }
     res = lgb_manager.get_params(model=lgb_model)
