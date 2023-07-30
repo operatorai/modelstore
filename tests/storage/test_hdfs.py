@@ -33,8 +33,7 @@ from tests.storage.test_utils import (
 
 
 def is_not_mac() -> bool:
-    # return platform.system() != "Darwin"
-    return True
+    return platform.system() != "Darwin"
 
 
 @pytest.fixture
