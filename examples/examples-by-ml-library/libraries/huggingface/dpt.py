@@ -12,11 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import Tuple
-from transformers import (
-    DPTImageProcessor,
-    DPTPreTrainedModel,
-    DPTForDepthEstimation
-)
+from transformers import DPTImageProcessor, DPTPreTrainedModel, DPTForDepthEstimation
 from modelstore.model_store import ModelStore
 
 
@@ -24,7 +20,8 @@ _DOMAIN_NAME = "example-dpt-model"
 
 
 def _load_dpt_model(
-        source: str = "Intel/dpt-large") -> Tuple[DPTPreTrainedModel, DPTImageProcessor]:
+    source: str = "Intel/dpt-large",
+) -> Tuple[DPTPreTrainedModel, DPTImageProcessor]:
     print(f"Loading a dpt anything model from:{source}.")
     processor = DPTImageProcessor.from_pretrained(source)
     model = DPTForDepthEstimation.from_pretrained(source)
@@ -49,7 +46,7 @@ def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
     print(f'⤵️  Loading the transformers "{model_domain}" domain model={model_id}')
     model, processor, config = modelstore.load(model_domain, model_id)
-    
+
     print(f"Loaded model={type(model)}")
     print(f"Loaded processor={type(processor)}")
     print(f"Loaded config={type(config)}")

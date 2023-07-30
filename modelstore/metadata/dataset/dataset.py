@@ -28,8 +28,12 @@ class Dataset:
     """Dataset contains fields that are captured about
     the training dataset when the model is saved"""
 
-    features: Optional[Features] = field(default=None, metadata=config(exclude=exclude_field))
-    labels: Optional[Labels] = field(default=None, metadata=config(exclude=exclude_field))
+    features: Optional[Features] = field(
+        default=None, metadata=config(exclude=exclude_field)
+    )
+    labels: Optional[Labels] = field(
+        default=None, metadata=config(exclude=exclude_field)
+    )
 
     @classmethod
     def generate(cls, features: Any = None, labels: Any = None) -> "Dataset":

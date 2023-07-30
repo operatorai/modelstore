@@ -46,7 +46,9 @@ class HdfsStorage(BlobStorage):
         ],
     }
 
-    def __init__(self, root_prefix: Optional[str] = None, create_directory: bool = False):
+    def __init__(
+        self, root_prefix: Optional[str] = None, create_directory: bool = False
+    ):
         super().__init__(["pydoop"], root_prefix, "MODEL_STORE_HDFS_ROOT_PREFIX")
         logger.debug("creating root directory %s", create_directory)
         self._create_directory = create_directory
@@ -112,7 +114,7 @@ class HdfsStorage(BlobStorage):
             if not hdfs.path.basename(obj).endswith(".json"):
                 logger.debug("Skipping non-json file: %s", obj)
                 continue
-            parent = obj[obj.index(prefix):]
+            parent = obj[obj.index(prefix) :]
             if os.path.split(parent)[0] != prefix:
                 # We don't want to read files in a sub-prefix
                 logger.debug("Skipping file in sub-prefix: %s", obj)

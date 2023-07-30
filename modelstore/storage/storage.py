@@ -98,7 +98,7 @@ class CloudStorage(ABC):
     def create_model_state(self, state_name: str):
         """Creates a state label that can be used to tag models"""
         raise NotImplementedError()
-    
+
     @abstractmethod
     def delete_model_state(self, state_name: str, skip_prompt: bool):
         """Deletes a model state"""
