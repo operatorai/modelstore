@@ -13,9 +13,9 @@
 #    limitations under the License.
 import os
 
+import numpy as np
 import pytest
 import xgboost as xgb
-import numpy as np
 
 from modelstore.metadata import metadata
 from modelstore.metadata.dataset.dataset import Features, Labels

@@ -11,25 +11,23 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from pathlib import PosixPath
 import os
+from pathlib import PosixPath
 
 import pytest
 
 from modelstore.model_store import ModelStore
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.utils.exceptions import (
-    ModelExistsException,
     DomainNotFoundException,
+    ModelExistsException,
     ModelNotFoundException,
 )
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 # pylint: disable=unused-import
-from tests.test_utils import (
-    model_file,
-)
+from tests.test_utils import model_file
 
 
 @pytest.fixture

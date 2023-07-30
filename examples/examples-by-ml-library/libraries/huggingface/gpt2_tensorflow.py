@@ -13,8 +13,8 @@
 #    limitations under the License.
 
 from transformers import GPT2Tokenizer, TFGPT2LMHeadModel
-from modelstore.model_store import ModelStore
 
+from modelstore.model_store import ModelStore
 
 _DOMAIN_NAME = "example-gpt2-model"
 

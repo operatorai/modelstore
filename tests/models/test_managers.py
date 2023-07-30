@@ -15,12 +15,12 @@ import pytest
 
 from modelstore.models import managers
 from modelstore.models.catboost import CatBoostManager
+from modelstore.models.pyspark import PySparkManager
 from modelstore.models.pytorch import PyTorchManager
 from modelstore.models.pytorch_lightning import PyTorchLightningManager
 from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.xgboost import XGBoostManager
-from modelstore.models.pyspark import PySparkManager
 
 # pylint: disable=missing-function-docstring
 

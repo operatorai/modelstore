@@ -19,8 +19,8 @@ from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
+from modelstore.utils.log import logger
 
 try:
     from minio import Minio
@@ -123,14 +123,13 @@ class MinIOStorage(BlobStorage):
 
     def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
-        objects = [
-            obj
-            for obj in self.client.list_objects(
+        objects = list(
+            self.client.list_objects(
                 self.bucket_name,
                 prefix,
                 recursive=False,
             )
-        ]
+        )
         if len(objects) == 0:
             logger.debug("Remote file does not exist: %s", prefix)
             return False

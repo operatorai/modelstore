@@ -11,13 +11,14 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Optional
 from dataclasses import dataclass, field
+from typing import Optional
+
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
 
-from modelstore.metadata.model.model_type import ModelType
 from modelstore.metadata.dataset.dataset import Dataset
+from modelstore.metadata.model.model_type import ModelType
 from modelstore.metadata.utils.utils import exclude_field
 
 

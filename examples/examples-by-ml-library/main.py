@@ -12,9 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import sys
+
 import click
-
-
 from libraries import (
     annoy_example,
     catboost_example,
@@ -23,8 +22,8 @@ from libraries import (
     keras_example,
     lightgbm_example,
     mxnet_example,
-    onnx_sklearn_example,
     onnx_lightgbm_example,
+    onnx_sklearn_example,
     prophet_example,
     pyspark_example,
     pytorch_example,
@@ -40,13 +39,7 @@ from libraries import (
     xgboost_example,
     yolo_example,
 )
-from libraries.huggingface import (
-    distilbert,
-    dpt,
-    gpt2_pytorch,
-    # gpt2_tensorflow,
-    sam,
-)
+from libraries.huggingface import distilbert, dpt, gpt2_pytorch, gpt2_tensorflow, sam
 from modelstores import MODELSTORES, create_model_store
 
 EXAMPLES = {
@@ -58,7 +51,7 @@ EXAMPLES = {
     "gensim": gensim_example,
     "hf-distilbert": distilbert,
     "hf-gpt2-pt": gpt2_pytorch,
-    # "hf-gpt2-tf": gpt2_tensorflow,
+    "hf-gpt2-tf": gpt2_tensorflow,
     "keras": keras_example,
     "lightgbm": lightgbm_example,
     "mxnet": mxnet_example,

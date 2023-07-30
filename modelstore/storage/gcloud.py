@@ -13,19 +13,19 @@
 #    limitations under the License.
 import json
 import os
-from typing import Optional
 import warnings
+from typing import Optional
 
 from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
+from modelstore.utils.log import logger
 
 try:
+    from google.api_core.exceptions import Forbidden, NotFound
     from google.auth.exceptions import DefaultCredentialsError
-    from google.api_core.exceptions import NotFound, Forbidden
     from google.cloud import storage
 
     # pylint: disable=protected-access
@@ -195,16 +195,16 @@ class GoogleCloudStorage(BlobStorage):
         except NotFound as exc:
             raise FilePullFailedException(exc) from exc
 
-    def _remove(self, destination: str) -> bool:
+    def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
         if self.is_anon_client:
             raise NotImplementedError(
                 "File removal is only supported for authenticated clients."
             )
 
-        blob = self.bucket.blob(destination)
+        blob = self.bucket.blob(prefix)
         if not blob.exists():
-            logger.debug("Remote file does not exist: %s", destination)
+            logger.debug("Remote file does not exist: %s", prefix)
             return False
         blob.delete()
         return True
@@ -223,11 +223,11 @@ class GoogleCloudStorage(BlobStorage):
             raise ValueError("Meta-data has a different bucket name")
         return meta_data.prefix
 
-    def _read_json_objects(self, path: str) -> list:
-        logger.debug("Listing files in: %s/%s", self.bucket_name, path)
+    def _read_json_objects(self, prefix: str) -> list:
+        logger.debug("Listing files in: %s/%s", self.bucket_name, prefix)
         results = []
         blobs = self.client.list_blobs(
-            self.bucket_name, prefix=path + "/", delimiter="/"
+            self.bucket_name, prefix=prefix + "/", delimiter="/"
         )
         for blob in blobs:
             if not blob.name.endswith(".json"):
@@ -240,9 +240,9 @@ class GoogleCloudStorage(BlobStorage):
                 continue
         return sorted_by_created(results)
 
-    def _read_json_object(self, path: str) -> Optional[dict]:
+    def _read_json_object(self, prefix: str) -> Optional[dict]:
         """Returns a dictionary of the JSON stored in a given path"""
-        blob = self.bucket.blob(path)
+        blob = self.bucket.blob(prefix)
         obj = blob.download_as_string()
         try:
             return json.loads(obj)

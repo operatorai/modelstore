@@ -52,24 +52,25 @@ class TransformersManager(ModelManager):
         if "config" in kwargs:
             from transformers import PretrainedConfig
 
-            if not isinstance(kwargs.get("config"), PretrainedConfig):
-                logger.debug("unknown config type: %s", type(processor))
+            config = kwargs.get("config")
+            if not isinstance(config, PretrainedConfig):
+                logger.debug("unknown config type: %s", type(config))
                 return False
+
         if "tokenizer" in kwargs:
             from transformers import PreTrainedTokenizerBase
 
-            if not isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase):
-                logger.debug("unknown tokenizer type: %s", type(processor))
+            tokenizer = kwargs.get("tokenizer")
+            if not isinstance(tokenizer, PreTrainedTokenizerBase):
+                logger.debug("unknown tokenizer type: %s", type(tokenizer))
                 return False
+
         if "processor" in kwargs:
             from transformers import ProcessorMixin
             from transformers.image_processing_utils import BaseImageProcessor
 
             processor = kwargs.get("processor")
-            is_processor = isinstance(processor, ProcessorMixin) or isinstance(
-                processor, BaseImageProcessor
-            )
-            if not is_processor:
+            if not isinstance(processor, (ProcessorMixin, BaseImageProcessor)):
                 logger.debug("unknown processor type: %s", type(processor))
                 return False
 

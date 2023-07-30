@@ -1,5 +1,6 @@
 from pkg_resources import DistributionNotFound, get_distribution
 
+# pylint: disable=unused-import
 from modelstore.model_store import ModelStore
 
 try:

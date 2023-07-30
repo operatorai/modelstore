@@ -14,6 +14,7 @@
 import random
 
 from annoy import AnnoyIndex
+
 from modelstore.model_store import ModelStore
 
 _NUM_DIMENSIONS = 40

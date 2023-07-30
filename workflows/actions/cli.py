@@ -12,8 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import tempfile
 import subprocess
+import tempfile
 
 
 def _run_cli_command(args: list) -> str:

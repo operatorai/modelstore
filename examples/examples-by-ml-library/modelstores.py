@@ -16,9 +16,9 @@ import os
 from modelstore import ModelStore
 from modelstore.storage.aws import AWSStorage
 from modelstore.storage.azure import AzureBlobStorage
-from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.gcloud import GoogleCloudStorage
 from modelstore.storage.hdfs import HdfsStorage
+from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.minio import MinIOStorage
 
 

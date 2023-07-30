@@ -15,6 +15,7 @@ import importlib
 import sys
 
 import pkg_resources
+
 from modelstore.utils.log import logger
 
 # pylint: disable=broad-except

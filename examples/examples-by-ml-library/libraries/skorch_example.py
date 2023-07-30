@@ -12,13 +12,13 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 from sklearn.metrics import mean_squared_error
 from skorch.regressor import NeuralNetRegressor
 from torch import nn
 
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 
 
 class ExampleModule(nn.Module):

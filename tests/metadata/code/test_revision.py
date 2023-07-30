@@ -13,9 +13,10 @@
 #    limitations under the License.
 import os
 import subprocess
-import pytest
 
 import git
+import pytest
+
 from modelstore.metadata.code import revision
 
 # pylint: disable=missing-function-docstring

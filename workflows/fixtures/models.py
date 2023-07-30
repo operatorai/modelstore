@@ -12,12 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import joblib
 
+import joblib
+import xgboost as xgb
 from sklearn.datasets import load_diabetes
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
-import xgboost as xgb
 
 
 def _load_dataset():

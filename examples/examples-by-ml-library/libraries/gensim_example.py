@@ -13,10 +13,10 @@
 #    limitations under the License.
 
 from gensim.models import word2vec
-from modelstore.model_store import ModelStore
-
 from libraries.util.datasets import load_text_dataset
 from libraries.util.domains import NEWSGROUP_EMBEDDINGS_DOMAIN
+
+from modelstore.model_store import ModelStore
 
 
 def _train_example_model() -> word2vec.Word2Vec:

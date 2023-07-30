@@ -13,6 +13,7 @@
 #    limitations under the License.
 import os
 import platform
+
 import pytest
 
 from modelstore.metadata import metadata
@@ -20,10 +21,10 @@ from modelstore.storage.hdfs import HdfsStorage
 
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
-    remote_file_path,
-    remote_path,
     push_temp_file,
     push_temp_files,
+    remote_file_path,
+    remote_path,
 )
 
 # pylint: disable=redefined-outer-name

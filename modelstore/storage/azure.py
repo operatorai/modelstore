@@ -19,12 +19,12 @@ from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
+from modelstore.utils.log import logger
 
 try:
-    from azure.storage.blob import BlobServiceClient
     from azure.core.exceptions import ResourceNotFoundError
+    from azure.storage.blob import BlobServiceClient
 
     AZURE_EXISTS = True
 except ImportError:
@@ -76,7 +76,7 @@ class AzureBlobStorage(BlobStorage):
         if not AZURE_EXISTS:
             raise ImportError("Please install azure-storage-blob")
         if self.connection_string_key not in os.environ:
-            raise Exception(f"{self.connection_string_key} is not in os.environ")
+            raise PermissionError(f"{self.connection_string_key} is not in os.environ")
         if self.__client is None:
             connect_str = os.environ[self.connection_string_key]
             self.__client = BlobServiceClient.from_connection_string(connect_str)

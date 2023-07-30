@@ -11,21 +11,17 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import os
 import json
+import os
 from datetime import datetime
 
 import pytest
+
 from modelstore.storage.states.model_states import ReservedModelStates
-from modelstore.storage.util.paths import (
-    get_model_state_path,
-)
+from modelstore.storage.util.paths import get_model_state_path
 
 # pylint: disable=unused-import
-from tests.storage.test_blob_storage import (
-    mock_blob_storage,
-    mock_meta_data,
-)
+from tests.storage.test_blob_storage import mock_blob_storage, mock_meta_data
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring

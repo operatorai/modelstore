@@ -11,11 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from functools import partial
-from pathlib import PosixPath, Path
 import os
+from functools import partial
+from pathlib import Path, PosixPath
 
 import pytest
+
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES
 from modelstore.models.missing_manager import MissingDepManager

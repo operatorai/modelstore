@@ -12,12 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from unittest.mock import ANY
+
 import mock
 import pytest
-
-from urllib3.response import HTTPResponse
 from minio import Minio
 from minio.datatypes import Object
+from urllib3.response import HTTPResponse
 
 from modelstore.metadata import metadata
 from modelstore.storage.minio import MinIOStorage
@@ -27,10 +27,10 @@ from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_NAME,
     file_contains_expected_contents,
-    remote_file_path,
-    remote_path,
     push_temp_file,
     push_temp_files,
+    remote_file_path,
+    remote_path,
 )
 
 # pylint: disable=redefined-outer-name

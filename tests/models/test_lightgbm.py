@@ -95,6 +95,9 @@ def test_get_params(lgb_manager, lgb_model):
         "num_threads": 1,
     }
     res = lgb_manager.get_params(model=lgb_model)
+    if "early_stopping_round" in res:
+        # Sometimes appears as {'early_stopping_round': None}
+        res.pop("early_stopping_round") 
     assert exp == res
 
 

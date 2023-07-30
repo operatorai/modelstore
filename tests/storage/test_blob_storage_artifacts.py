@@ -16,18 +16,11 @@ import os
 import pytest
 
 from modelstore.metadata import metadata
-from modelstore.storage.util.paths import (
-    get_archive_path,
-)
-from modelstore.utils.exceptions import (
-    ModelDeletedException,
-)
+from modelstore.storage.util.paths import get_archive_path
+from modelstore.utils.exceptions import ModelDeletedException
 
 # pylint: disable=unused-import
-from tests.storage.test_blob_storage import (
-    mock_blob_storage,
-    mock_model_file,
-)
+from tests.storage.test_blob_storage import mock_blob_storage, mock_model_file
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name

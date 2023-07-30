@@ -11,9 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from tempfile import TemporaryDirectory
 import os
 import shutil
+from tempfile import TemporaryDirectory
 
 import pytest
 
@@ -25,10 +25,10 @@ from modelstore.utils.exceptions import DomainNotFoundException
 from tests.storage.test_utils import (
     TEST_FILE_NAME,
     file_contains_expected_contents,
-    remote_file_path,
-    remote_path,
     push_temp_file,
     push_temp_files,
+    remote_file_path,
+    remote_path,
 )
 
 # pylint: disable=protected-access

@@ -11,12 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from pathlib import PosixPath
-import shutil
 import os
+import shutil
+from pathlib import PosixPath
 
-from mock import patch
 import pytest
+from mock import patch
 
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES
@@ -25,10 +25,10 @@ from modelstore.utils.exceptions import DomainNotFoundException, ModelNotFoundEx
 
 # pylint: disable=unused-import
 from tests.test_utils import (
-    libraries_without_sklearn,
     iter_only_sklearn,
-    validate_library_attributes,
+    libraries_without_sklearn,
     model_file,
+    validate_library_attributes,
 )
 
 # pylint: disable=missing-function-docstring

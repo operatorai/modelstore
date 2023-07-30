@@ -13,8 +13,8 @@
 #    limitations under the License.
 from datetime import datetime
 
-from mock import patch
 import pytest
+from mock import patch
 
 from modelstore.metadata import metadata
 

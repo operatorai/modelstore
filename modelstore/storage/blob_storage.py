@@ -11,16 +11,21 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from abc import ABCMeta, abstractmethod
-from datetime import datetime
-from typing import Optional, List
-
 import json
 import os
 import tempfile
+from abc import ABCMeta, abstractmethod
+from datetime import datetime
+from typing import List, Optional
+
 import click
 
 from modelstore.metadata import metadata
+from modelstore.storage.states.model_states import (
+    ReservedModelStates,
+    is_reserved_state,
+    is_valid_state_name,
+)
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.paths import (
@@ -29,21 +34,16 @@ from modelstore.storage.util.paths import (
     get_domains_path,
     get_model_state_path,
     get_model_states_path,
-    get_model_versions_path,
     get_model_version_path,
+    get_model_versions_path,
 )
-from modelstore.storage.states.model_states import (
-    is_valid_state_name,
-    is_reserved_state,
-    ReservedModelStates,
-)
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import (
     DomainNotFoundException,
+    FilePullFailedException,
     ModelDeletedException,
     ModelNotFoundException,
-    FilePullFailedException,
 )
+from modelstore.utils.log import logger
 
 
 class BlobStorage(CloudStorage):

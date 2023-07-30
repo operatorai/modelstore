@@ -12,18 +12,15 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from pyspark.sql import SparkSession
-from pyspark.sql import SQLContext
-from pyspark.ml.feature import VectorAssembler
-
-from pyspark.ml import Pipeline, PipelineModel
-from pyspark.ml.regression import RandomForestRegressor
-
-from modelstore.model_store import ModelStore
-from sklearn.metrics import mean_squared_error
-
 from libraries.util.datasets import load_regression_dataframe
 from libraries.util.domains import DIABETES_DOMAIN
+from pyspark.ml import Pipeline, PipelineModel
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.regression import RandomForestRegressor
+from pyspark.sql import SparkSession, SQLContext
+from sklearn.metrics import mean_squared_error
+
+from modelstore.model_store import ModelStore
 
 
 def _spark_dataset(sqlContext):

@@ -17,7 +17,6 @@ from typing import Tuple
 import numpy as np
 import onnxruntime as rt
 import pytest
-
 from onnxruntime.capi.onnxruntime_inference_collection import InferenceSession
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType

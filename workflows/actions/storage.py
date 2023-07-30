@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import Callable, List
+
 from modelstore import ModelStore
 from modelstore.utils import exceptions
 

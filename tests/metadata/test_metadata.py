@@ -13,10 +13,10 @@
 #    limitations under the License.
 import os
 from datetime import datetime
+
 import pytest
 
 import modelstore
-
 from modelstore.metadata import metadata
 
 # pylint: disable=redefined-outer-name

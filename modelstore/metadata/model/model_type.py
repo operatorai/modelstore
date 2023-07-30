@@ -12,9 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-from typing import List, Dict, Optional
-
 from dataclasses import dataclass, field
+from typing import Dict, List, Optional
+
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
 

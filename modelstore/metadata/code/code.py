@@ -11,14 +11,15 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Optional
-from datetime import datetime
 from dataclasses import dataclass, field
-from dataclasses_json.cfg import config
-from dataclasses_json import dataclass_json
+from datetime import datetime
+from typing import Optional
 
-from modelstore.metadata.code import runtime, dependencies, revision
-from modelstore.metadata.utils.utils import remove_nones, exclude_field
+from dataclasses_json import dataclass_json
+from dataclasses_json.cfg import config
+
+from modelstore.metadata.code import dependencies, revision, runtime
+from modelstore.metadata.utils.utils import exclude_field, remove_nones
 
 
 @dataclass_json

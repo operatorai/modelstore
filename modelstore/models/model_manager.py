@@ -11,15 +11,16 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any, Optional
 import os
 import shutil
 import tarfile
 import tempfile
 import warnings
 from abc import ABC, ABCMeta, abstractmethod
+from typing import Any, Optional
 
 import numpy as np
+
 from modelstore.metadata import metadata
 from modelstore.metadata.code.runtime import get_python_version
 from modelstore.storage.storage import CloudStorage
@@ -50,7 +51,6 @@ class ModelManager(ABC):
         must be pip installed for this ModelManager to work"""
         raise NotImplementedError()
 
-    # pylint: disable=no-self-use
     def optional_dependencies(self) -> list:
         """Returns a list of dependencies that, if installed
         are useful to log info about"""
@@ -233,13 +233,13 @@ class ModelManager(ABC):
 
 
 def _format_numpy(model_params: dict) -> dict:
-    for k, v in model_params.items():
-        if isinstance(v, (np.float_, np.float16, np.float32, np.float64)):
-            model_params[k] = float(v)
-        if isinstance(v, np.ndarray):
-            model_params[k] = v.tolist()
-        if isinstance(v, dict):
-            model_params[k] = _format_numpy(v)
+    for key, value in model_params.items():
+        if isinstance(value, (np.float_, np.float16, np.float32, np.float64)):
+            model_params[key] = float(value)
+        if isinstance(value, np.ndarray):
+            model_params[key] = value.tolist()
+        if isinstance(value, dict):
+            model_params[key] = _format_numpy(value)
     return model_params
 
 

@@ -52,7 +52,7 @@ class ModelFileManager(ModelManager):
         if "model" in kwargs:
             # model is a path to a file
             model_path = kwargs["model"]
-            if isinstance(model_path, PosixPath) or isinstance(model_path, str):
+            if isinstance(model_path, (PosixPath, str)):
                 if os.path.isdir(model_path):
                     # @Future - support adding directories
                     return False

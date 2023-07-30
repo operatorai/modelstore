@@ -18,8 +18,8 @@ from typing import Optional
 from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util.versions import sorted_by_created
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
+from modelstore.utils.log import logger
 
 try:
     import pydoop.hdfs as hdfs

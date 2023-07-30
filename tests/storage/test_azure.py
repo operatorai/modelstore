@@ -13,8 +13,8 @@
 #    limitations under the License.
 import json
 import os
-import mock
 
+import mock
 import pytest
 from azure.storage.blob import (
     BlobClient,
@@ -32,9 +32,9 @@ from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_LIST,
     file_contains_expected_contents,
+    push_temp_file,
     remote_file_path,
     remote_path,
-    push_temp_file,
 )
 
 # pylint: disable=redefined-outer-name

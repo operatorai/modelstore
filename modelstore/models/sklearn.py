@@ -17,7 +17,6 @@ from functools import partial
 from typing import Any
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.types import is_pandas_dataframe
 from modelstore.models.common import load_joblib, save_joblib
 from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
@@ -106,25 +105,3 @@ class SKLearnManager(ModelManager):
         # as was used for saving
         file_name = os.path.join(model_path, MODEL_JOBLIB)
         return load_joblib(file_name)
-
-
-def _feature_importances(model: "BaseEstimator", x_train: "pandas.DataFrame") -> dict:
-    result = {}
-    if is_pandas_dataframe(x_train):
-        weights = _get_weights(model)
-        if weights is not None:
-            return dict(zip(x_train, weights))
-        if hasattr(model, "steps"):
-            # Scikit pipelines
-            for key, step in model.steps:
-                weights = _get_weights(step)
-                if weights is not None:
-                    result[key] = weights
-    return result
-
-
-def _get_weights(model: "BaseEstimator"):
-    if hasattr(model, "feature_importances_"):
-        return model.feature_importances_
-    if hasattr(model, "coef_"):
-        return model.coef_[0]

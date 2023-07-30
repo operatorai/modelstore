@@ -14,11 +14,7 @@
 from modelstore.metadata.dataset.features import Features
 
 # pylint: disable=unused-import
-from tests.metadata.dataset.fixtures import (
-    np_2d_array,
-    np_1d_array,
-    pd_dataframe,
-)
+from tests.metadata.dataset.fixtures import np_1d_array, np_2d_array, pd_dataframe
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring

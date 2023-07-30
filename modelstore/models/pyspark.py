@@ -46,10 +46,9 @@ class PySparkManager(ModelManager):
 
     def matches_with(self, **kwargs) -> bool:
         # pylint: disable=import-outside-toplevel
-        from pyspark.ml import Pipeline
-        from pyspark.ml.classification import Model
         from pyspark.ml import Model as mlModel
-        from pyspark.ml.classification import _JavaProbabilisticClassifier
+        from pyspark.ml import Pipeline
+        from pyspark.ml.classification import Model, _JavaProbabilisticClassifier
 
         # Warning: for Apache Spark prior to 2.0.0, save isn't
         # available yet for the Pipeline API.
@@ -74,8 +73,7 @@ class PySparkManager(ModelManager):
         super().load(model_path, meta_data)
 
         # pylint: disable=import-outside-toplevel
-        from pyspark.ml import classification
-        from pyspark.ml import PipelineModel
+        from pyspark.ml import PipelineModel, classification
 
         model_types = {
             "PipelineModel": PipelineModel,
