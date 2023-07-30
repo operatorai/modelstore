@@ -121,6 +121,6 @@ class CloudStorage(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_model_states(self, domain: str, model_id: str, state_name: str) -> List[str]:
+    def get_model_states(self, domain: str, model_id: str, state_name: str) -> List[dict]:
         """Retrieves the states that have been set for a given model"""
         raise NotImplementedError()

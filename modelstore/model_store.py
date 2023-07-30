@@ -227,7 +227,7 @@ class ModelStore:
         with, but it will if that state does not exist"""
         return self.storage.unset_model_state(domain, model_id, state_name)
     
-    def get_model_states(self, domain: str, model_id: str, state_name: str) -> List[str]:
+    def get_model_states(self, domain: str, model_id: str, state_name: str) -> List[dict]:
         """Retrieves the states that have been set for a given model"""
         return self.storage.get_model_states(domain, model_id, state_name)
 
