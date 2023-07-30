@@ -12,41 +12,20 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import sys
+
 import click
-
-
-from libraries import (
-    annoy_example,
-    catboost_example,
-    fastai_example,
-    gensim_example,
-    keras_example,
-    lightgbm_example,
-    mxnet_example,
-    onnx_sklearn_example,
-    onnx_lightgbm_example,
-    prophet_example,
-    pyspark_example,
-    pytorch_example,
-    pytorch_lightning_example,
-    raw_file_example,
-    shap_example,
-    sklearn_example,
-    sklearn_with_explainer_example,
-    sklearn_with_extras_example,
-    skorch_example,
-    tensorflow_example,
-    xgboost_booster_example,
-    xgboost_example,
-    yolo_example,
-)
-from libraries.huggingface import (
-    distilbert,
-    dpt,
-    gpt2_pytorch,
-    # gpt2_tensorflow,
-    sam,
-)
+from libraries import (annoy_example, catboost_example, fastai_example,
+                       gensim_example, keras_example, lightgbm_example,
+                       mxnet_example, onnx_lightgbm_example,
+                       onnx_sklearn_example, prophet_example, pyspark_example,
+                       pytorch_example, pytorch_lightning_example,
+                       raw_file_example, shap_example, sklearn_example,
+                       sklearn_with_explainer_example,
+                       sklearn_with_extras_example, skorch_example,
+                       tensorflow_example, xgboost_booster_example,
+                       xgboost_example, yolo_example)
+from libraries.huggingface import (distilbert, dpt,  # gpt2_tensorflow,
+                                   gpt2_pytorch, sam)
 from modelstores import MODELSTORES, create_model_store
 
 EXAMPLES = {

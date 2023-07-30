@@ -17,7 +17,6 @@ from typing import Tuple
 import numpy as np
 import onnxruntime as rt
 import pytest
-
 from onnxruntime.capi.onnxruntime_inference_collection import InferenceSession
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
@@ -25,7 +24,6 @@ from sklearn.ensemble import RandomForestClassifier
 
 from modelstore.metadata import metadata
 from modelstore.models import onnx
-
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

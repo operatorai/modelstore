@@ -15,6 +15,7 @@ import json
 import os
 
 import pytest
+
 from modelstore.models import common
 
 # pylint: disable=redefined-outer-name,missing-function-docstring

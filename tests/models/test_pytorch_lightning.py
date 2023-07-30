@@ -22,11 +22,9 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from modelstore.metadata import metadata
 from modelstore.metadata.dataset.dataset import Features, Labels
-from modelstore.models.pytorch_lightning import (
-    MODEL_CHECKPOINT,
-    PyTorchLightningManager,
-    _save_lightning_model,
-)
+from modelstore.models.pytorch_lightning import (MODEL_CHECKPOINT,
+                                                 PyTorchLightningManager,
+                                                 _save_lightning_model)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name

@@ -19,12 +19,12 @@ from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
+from modelstore.utils.log import logger
 
 try:
-    from azure.storage.blob import BlobServiceClient
     from azure.core.exceptions import ResourceNotFoundError
+    from azure.storage.blob import BlobServiceClient
 
     AZURE_EXISTS = True
 except ImportError:

@@ -13,19 +13,19 @@
 #    limitations under the License.
 import json
 import os
-from typing import Optional
 import warnings
+from typing import Optional
 
 from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
 from modelstore.storage.util import environment
 from modelstore.storage.util.versions import sorted_by_created
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import FilePullFailedException
+from modelstore.utils.log import logger
 
 try:
+    from google.api_core.exceptions import Forbidden, NotFound
     from google.auth.exceptions import DefaultCredentialsError
-    from google.api_core.exceptions import NotFound, Forbidden
     from google.cloud import storage
 
     # pylint: disable=protected-access

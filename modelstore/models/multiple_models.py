@@ -14,8 +14,8 @@
 from typing import Any, List
 
 from modelstore.metadata import metadata
-from modelstore.models.model_manager import ModelManager
 from modelstore.models.managers import get_manager
+from modelstore.models.model_manager import ModelManager
 from modelstore.storage.storage import CloudStorage
 
 

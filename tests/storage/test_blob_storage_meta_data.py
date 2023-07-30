@@ -14,20 +14,13 @@
 import pytest
 
 from modelstore.metadata import metadata
+from modelstore.storage.util.paths import (get_domain_path,
+                                           get_model_version_path)
 from modelstore.utils.exceptions import DomainNotFoundException
-
-from modelstore.storage.util.paths import (
-    get_domain_path,
-    get_model_version_path,
-)
-
 # pylint: disable=unused-import
-from tests.storage.test_blob_storage import (
-    mock_meta_data,
-    mock_model_file,
-    mock_blob_storage,
-    assert_file_contents_equals,
-)
+from tests.storage.test_blob_storage import (assert_file_contents_equals,
+                                             mock_blob_storage, mock_meta_data,
+                                             mock_model_file)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring

@@ -11,15 +11,16 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from typing import Any, Optional
 import os
 import shutil
 import tarfile
 import tempfile
 import warnings
 from abc import ABC, ABCMeta, abstractmethod
+from typing import Any, Optional
 
 import numpy as np
+
 from modelstore.metadata import metadata
 from modelstore.metadata.code.runtime import get_python_version
 from modelstore.storage.storage import CloudStorage

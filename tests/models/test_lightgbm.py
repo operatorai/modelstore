@@ -20,15 +20,9 @@ import numpy as np
 import pytest
 
 from modelstore.metadata import metadata
-from modelstore.models.lightgbm import (
-    MODEL_FILE,
-    MODEL_JSON,
-    LightGbmManager,
-    _model_file_path,
-    dump_model,
-    save_model,
-)
-
+from modelstore.models.lightgbm import (MODEL_FILE, MODEL_JSON,
+                                        LightGbmManager, _model_file_path,
+                                        dump_model, save_model)
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

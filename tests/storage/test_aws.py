@@ -11,8 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from tempfile import TemporaryDirectory
 import os
+from tempfile import TemporaryDirectory
 
 import boto3
 import pytest
@@ -20,17 +20,11 @@ from moto import mock_s3
 
 from modelstore.metadata import metadata
 from modelstore.storage.aws import AWSStorage
-
 # pylint: disable=unused-import
-from tests.storage.test_utils import (
-    TEST_FILE_CONTENTS,
-    TEST_FILE_NAME,
-    file_contains_expected_contents,
-    remote_file_path,
-    remote_path,
-    push_temp_file,
-    push_temp_files,
-)
+from tests.storage.test_utils import (TEST_FILE_CONTENTS, TEST_FILE_NAME,
+                                      file_contains_expected_contents,
+                                      push_temp_file, push_temp_files,
+                                      remote_file_path, remote_path)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access

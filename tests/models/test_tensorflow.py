@@ -11,8 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import os
 import json
+import os
 
 import numpy as np
 import pytest
@@ -20,13 +20,9 @@ import tensorflow as tf
 
 from modelstore.metadata import metadata
 from modelstore.metadata.dataset.dataset import Features, Labels
-from modelstore.models.tensorflow import (
-    MODEL_DIRECTORY,
-    TensorflowManager,
-    _save_model,
-    _save_weights,
-    save_json,
-)
+from modelstore.models.tensorflow import (MODEL_DIRECTORY, TensorflowManager,
+                                          _save_model, _save_weights,
+                                          save_json)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name

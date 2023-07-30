@@ -11,13 +11,14 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
-from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
 
-from modelstore.metadata.dataset.types import is_numpy_array, is_pandas_dataframe
+from modelstore.metadata.dataset.types import (is_numpy_array,
+                                               is_pandas_dataframe)
 from modelstore.metadata.utils.utils import exclude_field
 from modelstore.utils.log import logger
 

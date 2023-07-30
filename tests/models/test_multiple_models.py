@@ -21,9 +21,8 @@ from sklearn.ensemble import RandomForestRegressor
 from modelstore.metadata import metadata
 from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
-from modelstore.models.shap import ShapManager, EXPLAINER_FILE
-from modelstore.models.sklearn import SKLearnManager, MODEL_JOBLIB
-
+from modelstore.models.shap import EXPLAINER_FILE, ShapManager
+from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

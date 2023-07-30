@@ -12,11 +12,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import pytest
-from modelstore.storage.states.model_states import (
-    ReservedModelStates,
-    is_valid_state_name,
-    is_reserved_state,
-)
+
+from modelstore.storage.states.model_states import (ReservedModelStates,
+                                                    is_reserved_state,
+                                                    is_valid_state_name)
 
 # pylint: disable=missing-function-docstring
 

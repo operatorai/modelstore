@@ -11,14 +11,13 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import tempfile
 import os
+import tempfile
 
 import click
-
 from actions import actions
 from fixtures import extra
-from fixtures.models import iter_models, iter_model_files
+from fixtures.models import iter_model_files, iter_models
 from fixtures.modelstores import create_model_store
 
 

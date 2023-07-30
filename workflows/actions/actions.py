@@ -12,14 +12,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import Any, List
-from modelstore import ModelStore
 
+from modelstore import ModelStore
 # pylint: disable=import-error
-from workflows.actions import (
-    cli,
-    models,
-    storage,
-)
+from workflows.actions import cli, models, storage
 
 MODEL_DOMAIN = "diabetes-boosting-demo"
 

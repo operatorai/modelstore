@@ -15,6 +15,7 @@ import os
 from datetime import datetime
 
 import pytest
+
 from modelstore.storage.util import paths
 
 # pylint: disable=protected-access

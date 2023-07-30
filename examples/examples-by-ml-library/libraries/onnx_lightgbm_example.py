@@ -14,23 +14,19 @@
 
 import numpy as np
 import onnx
-from modelstore.model_store import ModelStore
-
-from onnxruntime import InferenceSession
-from skl2onnx import convert_sklearn, update_registered_converter
-from skl2onnx.common.shape_calculator import (
-    calculate_linear_classifier_output_shapes,
-)
-from skl2onnx.common.data_types import FloatTensorType
-from onnxmltools.convert.lightgbm.operator_converters.LightGbm import (
-    convert_lightgbm,
-)
-
-from lightgbm import LGBMClassifier
-from sklearn.metrics import mean_squared_error
-
 from libraries.util.datasets import load_classification_dataset
 from libraries.util.domains import BREAST_CANCER_DOMAIN
+from lightgbm import LGBMClassifier
+from onnxmltools.convert.lightgbm.operator_converters.LightGbm import \
+    convert_lightgbm
+from onnxruntime import InferenceSession
+from skl2onnx import convert_sklearn, update_registered_converter
+from skl2onnx.common.data_types import FloatTensorType
+from skl2onnx.common.shape_calculator import \
+    calculate_linear_classifier_output_shapes
+from sklearn.metrics import mean_squared_error
+
+from modelstore.model_store import ModelStore
 
 
 def _train_example_model() -> onnx.ModelProto:

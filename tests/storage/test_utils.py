@@ -11,9 +11,9 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from tempfile import TemporaryDirectory
 import json
 import os
+from tempfile import TemporaryDirectory
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring

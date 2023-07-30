@@ -13,18 +13,17 @@
 #    limitations under the License.
 import os
 import platform
+
+import numpy as np
 import pytest
 from pyspark import SparkContext
-from pyspark.sql import SQLContext
-from pyspark.ml.feature import VectorAssembler
-
 from pyspark.ml import Pipeline
 from pyspark.ml.classification import RandomForestClassifier
-import numpy as np
+from pyspark.ml.feature import VectorAssembler
+from pyspark.sql import SQLContext
 
 from modelstore.metadata import metadata
 from modelstore.models import pyspark
-
 # pylint: disable=unused-import
 from tests.models.utils import classification_data, classification_df
 

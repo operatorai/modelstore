@@ -14,9 +14,9 @@
 import os
 import warnings
 
-import pytest
 import mxnet as mx
 import numpy as np
+import pytest
 from mxnet.gluon import nn
 
 from modelstore.metadata import metadata

@@ -14,6 +14,7 @@
 import sys
 
 import pytest
+
 from modelstore.metadata.code import dependencies
 
 # pylint: disable=protected-access

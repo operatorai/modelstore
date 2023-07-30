@@ -11,19 +11,12 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from modelstore.metadata.dataset.types import (
-    is_numpy_array,
-    is_pandas_dataframe,
-    is_pandas_series,
-)
-
+from modelstore.metadata.dataset.types import (is_numpy_array,
+                                               is_pandas_dataframe,
+                                               is_pandas_series)
 # pylint: disable=unused-import
-from tests.metadata.dataset.fixtures import (
-    np_1d_array,
-    np_2d_array,
-    pd_dataframe,
-    pd_series,
-)
+from tests.metadata.dataset.fixtures import (np_1d_array, np_2d_array,
+                                             pd_dataframe, pd_series)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=missing-function-docstring

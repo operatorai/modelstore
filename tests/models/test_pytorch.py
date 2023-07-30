@@ -19,12 +19,8 @@ from torch import nn, optim
 from torch.nn import functional as F
 
 from modelstore.metadata import metadata
-from modelstore.models.pytorch import (
-    MODEL_PT,
-    PyTorchManager,
-    _save_model,
-    _save_state_dict,
-)
+from modelstore.models.pytorch import (MODEL_PT, PyTorchManager, _save_model,
+                                       _save_state_dict)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name

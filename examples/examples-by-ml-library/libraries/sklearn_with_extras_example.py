@@ -12,18 +12,18 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from typing import Tuple
-import tempfile
-import numpy
 import os
+import tempfile
+from typing import Tuple
 
-from modelstore.model_store import ModelStore
+import numpy
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 
 
 def _train_example_model(tmp_dir: str) -> Tuple[Pipeline, str]:

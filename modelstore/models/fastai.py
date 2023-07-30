@@ -12,10 +12,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+import warnings
 from functools import partial
 from pathlib import Path
 from typing import Any
-import warnings
 
 from modelstore.metadata import metadata
 from modelstore.models.model_manager import ModelManager

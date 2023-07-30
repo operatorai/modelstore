@@ -12,22 +12,17 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import mock
 
+import mock
 import pytest
 from google.cloud import storage
 from google.cloud.storage.blob import Blob
 
 from modelstore.metadata import metadata
 from modelstore.storage.gcloud import GoogleCloudStorage
-
 # pylint: disable=unused-import
-from tests.storage.test_utils import (
-    TEST_FILE_CONTENTS,
-    TEST_FILE_NAME,
-    remote_file_path,
-    push_temp_file,
-)
+from tests.storage.test_utils import (TEST_FILE_CONTENTS, TEST_FILE_NAME,
+                                      push_temp_file, remote_file_path)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
