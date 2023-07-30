@@ -4,7 +4,10 @@
 
 **🆕  New functionality**
 
-Delete model states that are unused [#251](https://github.com/operatorai/modelstore/pull/251). Thank you, [Tom in the MLOps Community](https://mlops-community.slack.com/archives/C0227QJCDS8/p1687793712448619?thread_ts=1687777412.934619&cid=C0227QJCDS8).
+With thanks to [Tom in the MLOps Community](https://mlops-community.slack.com/archives/C0227QJCDS8/p1687777412934619) for the feedback:
+
+* List all the states that have been set for a specific model with `get_model_states(self, domain: str, model_id: str)` [#255](https://github.com/operatorai/modelstore/pull/255).
+* Delete model states that are unused [#251](https://github.com/operatorai/modelstore/pull/251) with `delete_model_state(self, state_name: str, skip_prompt: bool = False)`.
 
 ## modelstore 0.0.79 ([June 2023](https://github.com/operatorai/modelstore/pull/243))
 
