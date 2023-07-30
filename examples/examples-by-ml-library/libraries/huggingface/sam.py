@@ -12,17 +12,16 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from typing import Tuple
-from transformers import (
-    SamModel,
-    SamProcessor
-)
+from transformers import SamModel, SamProcessor
 from modelstore.model_store import ModelStore
 
 
 _DOMAIN_NAME = "example-sam-model"
 
 
-def _load_sam_model(source: str = "facebook/sam-vit-base") -> Tuple[SamModel, SamProcessor]:
+def _load_sam_model(
+    source: str = "facebook/sam-vit-base",
+) -> Tuple[SamModel, SamProcessor]:
     print(f"Loading a segment anything model from:{source}.")
     model = SamModel.from_pretrained(source)
     processor = SamProcessor.from_pretrained(source)
@@ -47,7 +46,7 @@ def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
     print(f'⤵️  Loading the transformers "{model_domain}" domain model={model_id}')
     model, processor, config = modelstore.load(model_domain, model_id)
-    
+
     print(f"Loaded model={type(model)}")
     print(f"Loaded processor={type(processor)}")
     print(f"Loaded config={type(config)}")

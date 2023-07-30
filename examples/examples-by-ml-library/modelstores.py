@@ -91,6 +91,7 @@ MODELSTORES = {
     MinIOStorage.NAME: create_minio_model_store,
 }
 
+
 def create_model_store(backend) -> ModelStore:
     """Returns a modelstore instance with the required storage type"""
     return MODELSTORES[backend]()

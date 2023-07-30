@@ -33,7 +33,9 @@ class Labels:
     """Labels contains fields that are captured about
     the training dataset's labels when the model is saved"""
 
-    shape: Optional[List[int]] = field(default=None, metadata=config(exclude=exclude_field))
+    shape: Optional[List[int]] = field(
+        default=None, metadata=config(exclude=exclude_field)
+    )
     values: Optional[dict] = field(default=None, metadata=config(exclude=exclude_field))
 
     @classmethod

@@ -114,7 +114,9 @@ def test_get_params(tr_manager, tr_config):
 
 def test_save_transformers(tr_config, tr_model, tr_tokenizer, tmp_path):
     exp = os.path.join(tmp_path, "transformers")
-    file_path = _save_transformers(tmp_path, entities=[tr_config, tr_model, tr_tokenizer])
+    file_path = _save_transformers(
+        tmp_path, entities=[tr_config, tr_model, tr_tokenizer]
+    )
     assert exp == file_path
 
     # Validate config

@@ -29,7 +29,9 @@ class Features:
     """Features contains fields that are captured about
     the training dataset's features when the model is saved"""
 
-    shape: Optional[List[int]] = field(default=None, metadata=config(exclude=exclude_field))
+    shape: Optional[List[int]] = field(
+        default=None, metadata=config(exclude=exclude_field)
+    )
 
     @classmethod
     def generate(cls, values: Any = None) -> "Features":

@@ -208,10 +208,10 @@ class ModelStore:
         There are some values that are reserved, see modelstore/storage/states/model_states.py
         """
         return self.storage.create_model_state(state_name)
-    
+
     def delete_model_state(self, state_name: str, skip_prompt: bool = False):
-        """ Deletes a model state altogether; all models that were
-        in this state will have this state removed. """
+        """Deletes a model state altogether; all models that were
+        in this state will have this state removed."""
         self.storage.delete_model_state(state_name, skip_prompt)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
@@ -226,7 +226,7 @@ class ModelStore:
         This will not error if the model was never set to that state to begin
         with, but it will if that state does not exist"""
         return self.storage.unset_model_state(domain, model_id, state_name)
-    
+
     def get_model_states(self, domain: str, model_id: str) -> List[str]:
         """Retrieves the states that have been set for a given model"""
         return self.storage.get_model_states(domain, model_id)

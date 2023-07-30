@@ -32,7 +32,7 @@ from tests.storage.test_utils import (
 
 
 def is_not_mac() -> bool:
-    return platform.system() != 'Darwin'
+    return platform.system() != "Darwin"
 
 
 @pytest.fixture
@@ -60,6 +60,7 @@ def test_validate(storage):
 def test_push_and_pull(storage, tmp_path):
     # pylint: disable=import-outside-toplevel
     import pydoop.hdfs as hdfs
+
     prefix = push_temp_file(storage)
     files = hdfs.ls(prefix)
     assert len(files) == 1
@@ -98,6 +99,7 @@ def test_remove(storage, file_exists, should_call_delete):
 def test_read_json_objects_ignores_non_json(storage):
     # pylint: disable=import-outside-toplevel
     import pydoop.hdfs as hdfs
+
     # Create files with different suffixes
     prefix = remote_path()
     _ = [hdfs.rm(f) for f in hdfs.ls(prefix)]

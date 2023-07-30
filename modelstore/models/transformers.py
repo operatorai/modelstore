@@ -51,21 +51,23 @@ class TransformersManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         if "config" in kwargs:
             from transformers import PretrainedConfig
+
             if not isinstance(kwargs.get("config"), PretrainedConfig):
                 logger.debug("unknown config type: %s", type(processor))
                 return False
         if "tokenizer" in kwargs:
             from transformers import PreTrainedTokenizerBase
+
             if not isinstance(kwargs.get("tokenizer"), PreTrainedTokenizerBase):
                 logger.debug("unknown tokenizer type: %s", type(processor))
                 return False
         if "processor" in kwargs:
             from transformers import ProcessorMixin
             from transformers.image_processing_utils import BaseImageProcessor
+
             processor = kwargs.get("processor")
-            is_processor = (
-                isinstance(processor, ProcessorMixin)
-                or isinstance(processor, BaseImageProcessor)
+            is_processor = isinstance(processor, ProcessorMixin) or isinstance(
+                processor, BaseImageProcessor
             )
             if not is_processor:
                 logger.debug("unknown processor type: %s", type(processor))
@@ -74,13 +76,15 @@ class TransformersManager(ModelManager):
         # The model must be either a PyTorch or TF pretrained model
         try:
             from transformers import TFPreTrainedModel
+
             if isinstance(kwargs.get("model"), TFPreTrainedModel):
                 return True
         except RuntimeError:
             # Cannot import tensorflow things
             pass
-        
+
         from transformers import PreTrainedModel
+
         return isinstance(kwargs.get("model"), PreTrainedModel)
 
     def _get_functions(self, **kwargs) -> list:
@@ -97,7 +101,6 @@ class TransformersManager(ModelManager):
                 ],
             ),
         ]
-            
 
     def get_params(self, **kwargs) -> dict:
         """
@@ -118,6 +121,7 @@ class TransformersManager(ModelManager):
         tokenizer = None
         if "tokenizer.json" in model_files:
             from transformers import AutoTokenizer
+
             tokenizer = AutoTokenizer.from_pretrained(model_dir)
             logger.debug("Loaded: %s...", type(tokenizer))
 
@@ -125,12 +129,14 @@ class TransformersManager(ModelManager):
         config = None
         if "config.json" in model_files:
             from transformers import AutoConfig
+
             config = AutoConfig.from_pretrained(model_dir)
             logger.debug("Loaded: %s...", type(config))
 
         processor = None
         if "preprocessor_config.json" in model_files:
             from transformers import AutoProcessor
+
             processor = AutoProcessor.from_pretrained(model_dir)
             logger.debug("Loaded: %s...", type(processor))
 

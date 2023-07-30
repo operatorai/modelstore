@@ -254,18 +254,20 @@ class BlobStorage(CloudStorage):
             logger.debug("Model state '%s' does not exist", state_name)
             raise ValueError(f"State '{state_name}' does not exist")
         if not skip_prompt:
-            message = f"Delete model state '{state_name}' and remove it from all models?"
+            message = (
+                f"Delete model state '{state_name}' and remove it from all models?"
+            )
             if not click.confirm(message):
                 logger.info("Aborting; not deleting model")
                 return
-            
+
         # Remove all models from that state
         domains = self.list_domains()
         for domain in domains:
             model_id = self.list_models(domain, state_name)
             self.unset_model_state(domain, model_id, state_name)
-        
-        # Delete the model state itself
+
+        # Delete the model state itself
         state_path = get_model_state_path(self.root_prefix, state_name)
         if self._remove(state_path):
             logger.info("Deleted model state: %s", state_name)
@@ -339,7 +341,7 @@ class BlobStorage(CloudStorage):
         """Retrieves the states that have been set for a given model"""
         # Assert the domain exists
         _ = self.get_domain(domain)
-        
+
         model_states = []
         state_names = self.list_model_states()
         for state_name in state_names:
