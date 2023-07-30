@@ -47,7 +47,7 @@ class FileSystemStorage(BlobStorage):
             root_prefix_env_key="MODEL_STORE_ROOT_PREFIX",
         )
         if self.root_prefix == "":
-            raise Exception(
+            raise ValueError(
                 "Error: cannot create a file system model store without a root directory"
             )
         if MODELSTORE_ROOT_PREFIX in self.root_prefix:
@@ -64,7 +64,7 @@ class FileSystemStorage(BlobStorage):
         # Check that the directory exists & we can write to it
         parent_dir = os.path.split(self.root_prefix)[0]
         if not os.path.exists(parent_dir):
-            raise Exception(
+            raise FileNotFoundError(
                 f"Error: Parent directory to root dir '{parent_dir}' does not exist"
             )
 
@@ -74,7 +74,7 @@ class FileSystemStorage(BlobStorage):
             logger.debug("creating root directory %s", self.root_prefix)
             os.mkdir(self.root_prefix)
         if not os.path.isdir(self.root_prefix):
-            raise Exception("Error: root_dir needs to be a directory")
+            raise NotADirectoryError("Error: root_dir needs to be a directory")
 
         try:
             # Check we can write to it

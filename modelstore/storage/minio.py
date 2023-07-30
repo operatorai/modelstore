@@ -123,14 +123,11 @@ class MinIOStorage(BlobStorage):
 
     def _remove(self, prefix: str) -> bool:
         """Removes a file from the destination path"""
-        objects = [
-            obj
-            for obj in self.client.list_objects(
-                self.bucket_name,
-                prefix,
-                recursive=False,
-            )
-        ]
+        objects = list(self.client.list_objects(
+            self.bucket_name,
+            prefix,
+            recursive=False,
+        ))
         if len(objects) == 0:
             logger.debug("Remote file does not exist: %s", prefix)
             return False

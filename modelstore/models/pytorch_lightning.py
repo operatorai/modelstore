@@ -72,7 +72,7 @@ class PyTorchLightningManager(ModelManager):
     @classmethod
     def _find_class(cls, class_name: str):
         modules = sys.modules.copy()
-        for module_name in modules:
+        for module_name in modules.items():
             try:
                 classes = inspect.getmembers(modules[module_name], inspect.isclass)
                 classes = [c for c in classes if c[0] == class_name]
