@@ -15,7 +15,6 @@ import json
 import os
 from functools import partial
 
-import pandas as pd
 import pytest
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
