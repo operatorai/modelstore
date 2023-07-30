@@ -215,7 +215,9 @@ class ModelManager(ABC):
             # Upload the model archive and any additional extras
             storage_meta_data = self.storage.upload(domain, model_id, archive_path)
             meta_data = metadata.Summary.generate(
-                code_meta_data=metadata.Code.generate(deps_list=self.get_dependencies()),
+                code_meta_data=metadata.Code.generate(
+                    deps_list=self.get_dependencies()
+                ),
                 model_meta_data=model_meta_data,
                 storage_meta_data=storage_meta_data,
                 extra_metadata=kwargs.get("extra_metadata"),

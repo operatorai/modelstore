@@ -29,7 +29,6 @@ from modelstore.storage.hdfs import HDFS_EXISTS, HdfsStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.minio import MINIO_EXISTS, MinIOStorage
 from modelstore.storage.storage import CloudStorage
-from modelstore.utils.log import logger
 from modelstore.utils.exceptions import (
     ModelExistsException,
     DomainNotFoundException,
