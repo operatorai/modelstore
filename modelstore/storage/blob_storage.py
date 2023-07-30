@@ -335,11 +335,8 @@ class BlobStorage(CloudStorage):
                 "Successfully unset %s=%s from state=%s", domain, model_id, state_name
             )
 
-    def get_model_states(self, domain: str, model_id: str, state_name: str) -> List[dict]:
+    def get_model_states(self, domain: str, model_id: str) -> List[str]:
         """Retrieves the states that have been set for a given model"""
-        if not self.state_exists(state_name):
-            logger.debug("Model state '%s' does not exist", state_name)
-            raise ValueError(f"State '{state_name}' does not exist")
         # Assert the domain exists
         _ = self.get_domain(domain)
         
@@ -355,8 +352,8 @@ class BlobStorage(CloudStorage):
                     model_id,
                     state_name,
                 )
-                state = self._pull_and_load(model_state_path)
-                model_states.append(state)
+                _ = self._pull_and_load(model_state_path)
+                model_states.append(state_name)
             except FilePullFailedException:
                 logger.debug("Model %s does not have state %s", model_id, state_name)
                 continue
