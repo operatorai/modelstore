@@ -21,11 +21,15 @@ from mock import patch
 from modelstore.model_store import ModelStore
 from modelstore.models.managers import _LIBRARIES
 from modelstore.storage.local import FileSystemStorage
-from modelstore.utils.exceptions import (DomainNotFoundException,
-                                         ModelNotFoundException)
+from modelstore.utils.exceptions import DomainNotFoundException, ModelNotFoundException
+
 # pylint: disable=unused-import
-from tests.test_utils import (iter_only_sklearn, libraries_without_sklearn,
-                              model_file, validate_library_attributes)
+from tests.test_utils import (
+    iter_only_sklearn,
+    libraries_without_sklearn,
+    model_file,
+    validate_library_attributes,
+)
 
 # pylint: disable=missing-function-docstring
 

@@ -21,8 +21,7 @@ import modelstore
 from modelstore.metadata.code.code import Code
 from modelstore.metadata.model.model import Dataset, Model, ModelType
 from modelstore.metadata.storage.storage import Storage
-from modelstore.metadata.utils.utils import (exclude_field,
-                                             validate_json_serializable)
+from modelstore.metadata.utils.utils import exclude_field, validate_json_serializable
 
 
 @dataclass_json

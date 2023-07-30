@@ -25,8 +25,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from modelstore.metadata import metadata
 from modelstore.models.common import save_joblib
-from modelstore.models.sklearn import (MODEL_JOBLIB, SKLearnManager,
-                                       _feature_importances)
+from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager, _feature_importances
+
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

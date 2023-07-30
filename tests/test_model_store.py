@@ -18,9 +18,12 @@ import pytest
 
 from modelstore.model_store import ModelStore
 from modelstore.storage.states.model_states import ReservedModelStates
-from modelstore.utils.exceptions import (DomainNotFoundException,
-                                         ModelExistsException,
-                                         ModelNotFoundException)
+from modelstore.utils.exceptions import (
+    DomainNotFoundException,
+    ModelExistsException,
+    ModelNotFoundException,
+)
+
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 # pylint: disable=unused-import

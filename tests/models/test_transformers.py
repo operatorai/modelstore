@@ -15,16 +15,23 @@ import json
 import os
 
 import pytest
-from transformers import (AutoConfig, AutoModelForSequenceClassification,
-                          AutoTokenizer, DistilBertForSequenceClassification,
-                          DistilBertModel, DistilBertTokenizerFast,
-                          PreTrainedTokenizerFast)
+from transformers import (
+    AutoConfig,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    DistilBertForSequenceClassification,
+    DistilBertModel,
+    DistilBertTokenizerFast,
+    PreTrainedTokenizerFast,
+)
 from transformers.file_utils import CONFIG_NAME
 
 from modelstore.metadata import metadata
-from modelstore.models.transformers import (MODEL_DIRECTORY,
-                                            TransformersManager,
-                                            _save_transformers)
+from modelstore.models.transformers import (
+    MODEL_DIRECTORY,
+    TransformersManager,
+    _save_transformers,
+)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name

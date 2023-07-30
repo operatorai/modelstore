@@ -24,6 +24,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 from modelstore.metadata import metadata
 from modelstore.models import onnx
+
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

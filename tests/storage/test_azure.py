@@ -16,16 +16,26 @@ import os
 
 import mock
 import pytest
-from azure.storage.blob import (BlobClient, BlobProperties, BlobServiceClient,
-                                ContainerClient, StorageStreamDownloader)
+from azure.storage.blob import (
+    BlobClient,
+    BlobProperties,
+    BlobServiceClient,
+    ContainerClient,
+    StorageStreamDownloader,
+)
 
 from modelstore.metadata import metadata
 from modelstore.storage.azure import AzureBlobStorage
+
 # pylint: disable=unused-import
-from tests.storage.test_utils import (TEST_FILE_CONTENTS, TEST_FILE_LIST,
-                                      file_contains_expected_contents,
-                                      push_temp_file, remote_file_path,
-                                      remote_path)
+from tests.storage.test_utils import (
+    TEST_FILE_CONTENTS,
+    TEST_FILE_LIST,
+    file_contains_expected_contents,
+    push_temp_file,
+    remote_file_path,
+    remote_path,
+)
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access

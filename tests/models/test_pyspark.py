@@ -24,6 +24,7 @@ from pyspark.sql import SQLContext
 
 from modelstore.metadata import metadata
 from modelstore.models import pyspark
+
 # pylint: disable=unused-import
 from tests.models.utils import classification_data, classification_df
 

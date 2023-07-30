@@ -20,6 +20,7 @@ import pytest
 
 from modelstore.metadata import metadata
 from modelstore.models import catboost
+
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

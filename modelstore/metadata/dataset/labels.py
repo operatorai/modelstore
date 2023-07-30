@@ -18,9 +18,11 @@ import numpy as np
 from dataclasses_json import dataclass_json
 from dataclasses_json.cfg import config
 
-from modelstore.metadata.dataset.types import (is_numpy_array,
-                                               is_pandas_dataframe,
-                                               is_pandas_series)
+from modelstore.metadata.dataset.types import (
+    is_numpy_array,
+    is_pandas_dataframe,
+    is_pandas_series,
+)
 from modelstore.metadata.utils.utils import exclude_field
 from modelstore.utils.log import logger
 

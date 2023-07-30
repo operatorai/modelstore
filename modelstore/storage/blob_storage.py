@@ -21,21 +21,28 @@ from typing import List, Optional
 import click
 
 from modelstore.metadata import metadata
-from modelstore.storage.states.model_states import (ReservedModelStates,
-                                                    is_reserved_state,
-                                                    is_valid_state_name)
+from modelstore.storage.states.model_states import (
+    ReservedModelStates,
+    is_reserved_state,
+    is_valid_state_name,
+)
 from modelstore.storage.storage import CloudStorage
 from modelstore.storage.util import environment
-from modelstore.storage.util.paths import (get_archive_path, get_domain_path,
-                                           get_domains_path,
-                                           get_model_state_path,
-                                           get_model_states_path,
-                                           get_model_version_path,
-                                           get_model_versions_path)
-from modelstore.utils.exceptions import (DomainNotFoundException,
-                                         FilePullFailedException,
-                                         ModelDeletedException,
-                                         ModelNotFoundException)
+from modelstore.storage.util.paths import (
+    get_archive_path,
+    get_domain_path,
+    get_domains_path,
+    get_model_state_path,
+    get_model_states_path,
+    get_model_version_path,
+    get_model_versions_path,
+)
+from modelstore.utils.exceptions import (
+    DomainNotFoundException,
+    FilePullFailedException,
+    ModelDeletedException,
+    ModelNotFoundException,
+)
 from modelstore.utils.log import logger
 
 

@@ -12,8 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from transformers import (AutoConfig, AutoModelForSequenceClassification,
-                          AutoTokenizer)
+from transformers import AutoConfig, AutoModelForSequenceClassification, AutoTokenizer
 
 from modelstore.model_store import ModelStore
 

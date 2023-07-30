@@ -20,9 +20,13 @@ import tensorflow as tf
 
 from modelstore.metadata import metadata
 from modelstore.metadata.dataset.dataset import Features, Labels
-from modelstore.models.tensorflow import (MODEL_DIRECTORY, TensorflowManager,
-                                          _save_model, _save_weights,
-                                          save_json)
+from modelstore.models.tensorflow import (
+    MODEL_DIRECTORY,
+    TensorflowManager,
+    _save_model,
+    _save_weights,
+    save_json,
+)
 
 # pylint: disable=protected-access
 # pylint: disable=redefined-outer-name
