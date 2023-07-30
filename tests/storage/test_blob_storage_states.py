@@ -61,7 +61,7 @@ def test_create_model_state(mock_blob_storage):
     )
 
 
-def test_create_model_state_exists(mock_blob_storage):
+def test_model_state_exists(mock_blob_storage):
     state_name = "production"
 
     # Create a model state
@@ -160,3 +160,36 @@ def test_set_and_unset_reserved_model_state(mock_blob_storage):
     # The model has been removed from the state
     items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 0
+
+
+def test_delete_model_state(mock_blob_storage):
+    state_name = "staging"
+    model_id = "model-1"
+    domain_name = "domain-1"
+
+    # Create a model state & assert it exists
+    mock_blob_storage.create_model_state(state_name)
+    assert mock_blob_storage.state_exists(state_name)
+
+    # Create a model in a domain, set the model to that state
+    meta_data = mock_meta_data(domain_name, model_id, inc_time=0)
+    mock_blob_storage.set_meta_data(domain_name, model_id, meta_data)
+    mock_blob_storage.set_model_state(domain_name, model_id, state_name)
+
+    # Assert that the model has the given state
+    items = mock_blob_storage.list_models(domain_name, state_name)
+    assert len(items) == 1
+    assert items[0] == model_id
+
+    # Delete the model state
+    mock_blob_storage.delete_model_state(state_name, skip_prompt=True)
+
+    # Model has been removed from the state
+    try:
+        items = mock_blob_storage.list_models(domain_name, state_name)
+        pytest.fail("listing models on a state that does not exist")
+    except ValueError:
+        pass
+
+    # The state no longer exists
+    assert not mock_blob_storage.state_exists(state_name)

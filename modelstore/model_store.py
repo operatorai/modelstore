@@ -220,6 +220,11 @@ class ModelStore:
         This will not error if the model was never set to that state to begin
         with, but it will if that state does not exist"""
         return self.storage.unset_model_state(domain, model_id, state_name)
+    
+    def delete_model_state(self, state_name: str, skip_prompt: bool = False):
+        """ Deletes a model state altogether; all models that were
+        in this state will have this state removed. """
+        self.storage.delete_model_state(state_name, skip_prompt)
 
     """
     MODELS: a model archive is created and stored when using upload(). Each model

@@ -33,7 +33,7 @@ For more details, please refer to [the documentation](https://modelstore.readthe
 
 ## modelstore is being built in the open
 
-💬. Come and find us in the [MLOps Community Slack](https://go.mlops.community/slack)'s `#oss-modelstore` channel.
+💬 Come and find us in the [MLOps Community Slack](https://go.mlops.community/slack)'s `#oss-modelstore` channel.
 
 ## Installation
 
@@ -80,6 +80,7 @@ Is there a machine learning framework that is missing?
 * [Evidently.AI AMA with Neal Lathia](https://www.evidentlyai.com/blog/ama-neal-lathia), January 2023
 * [MLOps Model Stores: Definition, Functionality, Tools Review](https://neptune.ai/blog/mlops-model-stores), January 2023
 * [Monzo's machine learning stack](https://monzo.com/blog/2022/04/26/monzos-machine-learning-stack), April 2022
+* [Data Talks Club Minis: Model Store](https://www.youtube.com/watch?v=85BWnKmOZl8), July 2021
 * [Model arterfacts: the war stories](https://nlathia.github.io/2020/09/Model-artifacts-war-stories.html), September 2020
 
 ## Example Usage
@@ -115,14 +116,6 @@ print(json.dumps(meta_data, indent=4))
 # Load the model back!
 clf = model_store.load(domain=model_domain, model_id=meta["model"]["model_id"])
 ```
-
-## Find out more
-
-💭  Give us feedback by completing this survey: https://forms.gle/XShU3zrZcnLRWsk36
-
-[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/nlathia/)
-
-Watch an interview and demo, recorded with Alexey from the [Data Talks Club](https://datatalks.club/) in July 2021, is based on `modelstore==0.0.6`, [on YouTube](https://www.youtube.com/watch?v=85BWnKmOZl8 "DTC's minis: Model Store"). _Note_ the talk below is based on an older version of `modelstore` and the API has been simplified since then.
 
 ## License
 
