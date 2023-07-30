@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Optional
+from typing import Optional, List
 
 from modelstore.metadata import metadata
 from modelstore.metadata.code.dependencies import module_exists
@@ -98,6 +98,11 @@ class CloudStorage(ABC):
     def create_model_state(self, state_name: str):
         """Creates a state label that can be used to tag models"""
         raise NotImplementedError()
+    
+    @abstractmethod
+    def delete_model_state(self, state_name: str, skip_prompt: bool):
+        """Deletes a model state"""
+        raise NotImplementedError()
 
     @abstractmethod
     def set_model_state(self, domain: str, model_id: str, state_name: str):
@@ -114,8 +119,8 @@ class CloudStorage(ABC):
     ):
         """Removes the given model ID from the set that are in the state_name path"""
         raise NotImplementedError()
-    
+
     @abstractmethod
-    def delete_model_state(self, state_name: str, skip_prompt: bool):
-        """Deletes a model state"""
+    def get_model_states(self, domain: str, model_id: str) -> List[str]:
+        """Retrieves the states that have been set for a given model"""
         raise NotImplementedError()

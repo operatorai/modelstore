@@ -107,16 +107,25 @@ def test_set_and_unset_model_state(mock_blob_storage):
     # Set the model to that state
     mock_blob_storage.set_model_state(domain_id, model_id, state_name)
 
-    # Listing versions
+    # Listing models in a given state
     items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 1
     assert items[0] == model_id
+
+    # List states for a given model
+    items = mock_blob_storage.get_model_states(domain_id, model_id)
+    assert len(items) == 1
+    assert items[0] == state_name
 
     # Unset the state
     mock_blob_storage.unset_model_state(domain_id, model_id, state_name)
 
     # Model has been removed from the state
     items = mock_blob_storage.list_models(domain_id, state_name)
+    assert len(items) == 0
+
+    # List states for a given model
+    items = mock_blob_storage.get_model_states(domain_id, model_id)
     assert len(items) == 0
 
 
@@ -139,6 +148,10 @@ def test_set_and_unset_reserved_model_state(mock_blob_storage):
     items = mock_blob_storage.list_models(domain_id, state_name)
     assert len(items) == 1
     assert items[0] == model_id
+
+    # List states for a given model does not return reserved states
+    items = mock_blob_storage.get_model_states(domain_id, model_id)
+    assert len(items) == 0
 
     # Unset the state
     mock_blob_storage.unset_model_state(domain_id, model_id, state_name)

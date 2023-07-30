@@ -13,7 +13,7 @@
 #    limitations under the License.
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 import json
 import os
@@ -189,7 +189,7 @@ class BlobStorage(CloudStorage):
         except FilePullFailedException as exc:
             raise DomainNotFoundException(domain) from exc
 
-    def list_models(self, domain: str, state_name: Optional[str] = None) -> list:
+    def list_models(self, domain: str, state_name: Optional[str] = None) -> List[str]:
         if state_name and not self.state_exists(state_name):
             raise ValueError(f"State: '{state_name}' does not exist")
 
@@ -213,7 +213,7 @@ class BlobStorage(CloudStorage):
             logger.debug("Error checking state: %s", str(exc))
             return False
 
-    def list_model_states(self) -> list:
+    def list_model_states(self) -> List[str]:
         """Lists the model states that have been created"""
         model_states_path = get_model_states_path(self.root_prefix)
         model_states = self._read_json_objects(model_states_path)
@@ -241,6 +241,35 @@ class BlobStorage(CloudStorage):
                 out.write(json.dumps(state_data))
             state_path = get_model_state_path(self.root_prefix, state_name)
             self._push(file_path, state_path)
+
+    def delete_model_state(self, state_name: str, skip_prompt: bool):
+        if is_reserved_state(state_name):
+            # Reserved model states (e.g. 'deleted') cannot be deleted by the user
+            # because they are used by modelstore
+            raise ValueError(f"State '{state_name}' is reserved and cannot be deleted")
+        if not self.state_exists(state_name):
+            # Non-reserved states need to be created manually by modelstore users
+            # before model states can be modified, to avoid creating states
+            # with typos and other similar mistakes
+            logger.debug("Model state '%s' does not exist", state_name)
+            raise ValueError(f"State '{state_name}' does not exist")
+        if not skip_prompt:
+            message = f"Delete model state '{state_name}' and remove it from all models?"
+            if not click.confirm(message):
+                logger.info("Aborting; not deleting model")
+                return
+            
+        # Remove all models from that state
+        domains = self.list_domains()
+        for domain in domains:
+            model_id = self.list_models(domain, state_name)
+            self.unset_model_state(domain, model_id, state_name)
+        
+        # Delete the model state itself
+        state_path = get_model_state_path(self.root_prefix, state_name)
+        if self._remove(state_path):
+            logger.info("Deleted model state: %s", state_name)
+        logger.info("Deleting model state failed: %s", state_name)
 
     def set_model_state(self, domain: str, model_id: str, state_name: str):
         """Adds the given model ID to the set that are in the state_name path"""
@@ -306,34 +335,29 @@ class BlobStorage(CloudStorage):
                 "Successfully unset %s=%s from state=%s", domain, model_id, state_name
             )
 
-    def delete_model_state(self, state_name: str, skip_prompt: bool):
-        if is_reserved_state(state_name):
-            # Reserved model states (e.g. 'deleted') cannot be deleted by the user
-            # because they are used by modelstore
-            raise ValueError(f"State '{state_name}' is reserved and cannot be deleted")
-        if not self.state_exists(state_name):
-            # Non-reserved states need to be created manually by modelstore users
-            # before model states can be modified, to avoid creating states
-            # with typos and other similar mistakes
-            logger.debug("Model state '%s' does not exist", state_name)
-            raise ValueError(f"State '{state_name}' does not exist")
-        if not skip_prompt:
-            message = f"Delete model state '{state_name}' and remove it from all models?"
-            if not click.confirm(message):
-                logger.info("Aborting; not deleting model")
-                return
-            
-        # Remove all models from that state
-        domains = self.list_domains()
-        for domain in domains:
-            model_id = self.list_models(domain, state_name)
-            self.unset_model_state(domain, model_id, state_name)
+    def get_model_states(self, domain: str, model_id: str) -> List[str]:
+        """Retrieves the states that have been set for a given model"""
+        # Assert the domain exists
+        _ = self.get_domain(domain)
         
-        # Delete the model state itself
-        state_path = get_model_state_path(self.root_prefix, state_name)
-        if self._remove(state_path):
-            logger.info("Deleted model state: %s", state_name)
-        logger.info("Deleting model state failed: %s", state_name)
+        model_states = []
+        state_names = self.list_model_states()
+        for state_name in state_names:
+            logger.debug("Searching for %s in state %s", model_id, state_name)
+            try:
+                # Check whether the model state path exists
+                model_state_path = get_model_version_path(
+                    self.root_prefix,
+                    domain,
+                    model_id,
+                    state_name,
+                )
+                _ = self._pull_and_load(model_state_path)
+                model_states.append(state_name)
+            except FilePullFailedException:
+                logger.debug("Model %s does not have state %s", model_id, state_name)
+                continue
+        return model_states
 
     def set_meta_data(self, domain: str, model_id: str, meta_data: metadata.Summary):
         logger.debug("Setting meta-data for %s=%s", domain, model_id)
