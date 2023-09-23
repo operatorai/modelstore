@@ -26,4 +26,7 @@ setup(
     license="Please refer to the readme",
     python_requires=">=3.6",
     install_requires=requirements,
+    entry_points={
+        'console_scripts': ['modelstore=modelstore.__main__:cli']
+    },
 )
