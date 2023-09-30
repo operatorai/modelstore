@@ -13,8 +13,9 @@
 #    limitations under the License.
 import os
 import tarfile
+import tempfile
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import pytest
 from mock import patch
@@ -38,8 +39,8 @@ class MockCloudStorage(FileSystemStorage):
     def upload(
         self,
         domain: str,
-        local_path: str,
-        extras: Optional[Union[str, list]] = None,
+        model_id: str,
+        local_path: str
     ):
         self.called = True
 
@@ -181,7 +182,7 @@ def test_upload(mock_manager):
 
 @patch("modelstore.models.model_manager.get_python_version")
 def test_load_from_different_python(mock_python_version, mock_manager):
-    mock_python_version.return_value = f"python:2.7.13"
+    mock_python_version.return_value = "python:2.7.13"
     meta_data = metadata.Summary.generate(
         code_meta_data=metadata.Code.generate(deps_list=[]),
         model_meta_data=None,
@@ -192,25 +193,24 @@ def test_load_from_different_python(mock_python_version, mock_manager):
 
 
 def test_create_archive(mock_manager, mock_file):
-    target = os.path.join(os.getcwd(), "artifacts.tar.gz")
-    if os.path.exists(target):
-        os.remove(target)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        mock_manager._create_archive(
+            tmp_dir,
+            model="model",
+            config="config",
+            extra_files=mock_file,
+        )
+        exp = sorted(
+            [
+                "model-info.json",
+                "model.joblib",
+                "config.json",
+                os.path.join("extras", "extra-file.csv"),
+            ]
+        )
 
-    mock_manager._create_archive(
-        model="model",
-        config="config",
-        extra_files=mock_file,
-    )
-    exp = sorted(
-        [
-            "model-info.json",
-            "model.joblib",
-            "config.json",
-            os.path.join("extras", "extra-file.csv"),
-        ]
-    )
-    with tarfile.open(target) as tar:
-        files = sorted([f.name for f in tar.getmembers()])
-    assert len(files) == len(exp)
-    assert files == exp
-    os.remove(target)
+        target = os.path.join(tmp_dir, "artifacts.tar.gz")
+        with tarfile.open(target) as tar:
+            files = sorted([f.name for f in tar.getmembers()])
+        assert len(files) == len(exp)
+        assert files == exp

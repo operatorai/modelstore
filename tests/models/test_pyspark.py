@@ -12,7 +12,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import platform
 
 import numpy as np
 import pytest
@@ -72,6 +71,7 @@ def test_model_data(spark_manager, spark_model):
 
 
 def test_required_kwargs(spark_manager):
+    # pylint: disable=protected-access
     assert spark_manager._required_kwargs() == ["model"]
 
 
@@ -82,6 +82,7 @@ def test_matches_with(spark_manager, spark_model):
 
 
 def test_get_functions(spark_manager, spark_model):
+    # pylint: disable=protected-access
     assert len(spark_manager._get_functions(model=spark_model)) == 1
 
 
@@ -98,12 +99,12 @@ def test_save_model(spark_model, tmp_path):
     ]
     assert exp == res
     exists_fn = os.path.exists
-    if platform.system() == "Darwin":
-        # Running hadoop locally, so need to check
-        # for the files in hdfs
-        import pydoop.hdfs as hdfs
+    # if platform.system() == "Darwin":
+    #     # Running hadoop locally, so need to check
+    #     # for the files in hdfs
+    #     import pydoop.hdfs as hdfs
 
-        exists_fn = hdfs.path.exists
+    #     exists_fn = hdfs.path.exists
     assert all(exists_fn(x) for x in exp)
 
 
