@@ -71,6 +71,7 @@ def test_model_data(spark_manager, spark_model):
 
 
 def test_required_kwargs(spark_manager):
+    # pylint: disable=protected-access
     assert spark_manager._required_kwargs() == ["model"]
 
 
@@ -81,6 +82,7 @@ def test_matches_with(spark_manager, spark_model):
 
 
 def test_get_functions(spark_manager, spark_model):
+    # pylint: disable=protected-access
     assert len(spark_manager._get_functions(model=spark_model)) == 1
 
 

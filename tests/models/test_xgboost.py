@@ -18,7 +18,6 @@ import pytest
 import xgboost as xgb
 
 from modelstore.metadata import metadata
-from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models import xgboost
 
 # pylint: disable=unused-import
