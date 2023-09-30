@@ -15,6 +15,10 @@ With thanks to [Tom in the MLOps Community](https://mlops-community.slack.com/ar
 
 * Model store cleans up temporary files that it generates, even if downloads or uploads are cancelled mid flight [#258](https://github.com/operatorai/modelstore/pull/258).
 
+And thanks to [Michael in the MLOps Community](https://mlops-community.slack.com/archives/C0227QJCDS8/p1695397710224629) for the feedback:
+
+* Model store no longer creates its `artifacts.tar.gz` in the `os.getcwd()`, which was preventing modelstore from being used for parallel uploads [#266](https://github.com/operatorai/modelstore/pull/266).
+
 ## modelstore 0.0.79 ([June 2023](https://github.com/operatorai/modelstore/pull/243))
 
 **🆕  New functionality**
