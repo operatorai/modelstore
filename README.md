@@ -59,7 +59,7 @@ pip install modelstore
 * [Keras](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/keras_example.py)
 * [LightGBM](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/lightgbm_example.py)
 * [Mxnet](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/mxnet_example.py)
-* [Onnx](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/onnx_example.py)
+* [Onnx](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/onnx_sklearn_example.py)
 * [Prophet](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/prophet_example.py)
 * [PyTorch](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/pytorch_example.py)
 * [PyTorch Lightning](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/pytorch_lightning_example.py)
