@@ -12,7 +12,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import platform
 
 import numpy as np
 import pytest
@@ -98,12 +97,12 @@ def test_save_model(spark_model, tmp_path):
     ]
     assert exp == res
     exists_fn = os.path.exists
-    if platform.system() == "Darwin":
-        # Running hadoop locally, so need to check
-        # for the files in hdfs
-        import pydoop.hdfs as hdfs
+    # if platform.system() == "Darwin":
+    #     # Running hadoop locally, so need to check
+    #     # for the files in hdfs
+    #     import pydoop.hdfs as hdfs
 
-        exists_fn = hdfs.path.exists
+    #     exists_fn = hdfs.path.exists
     assert all(exists_fn(x) for x in exp)
 
 
