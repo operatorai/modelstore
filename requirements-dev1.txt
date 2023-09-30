@@ -7,7 +7,7 @@ azure-storage-blob>=12.11.0
 boto3>=1.21.41
 google-cloud-storage>=2.3.0
 minio>=7.1.12
-#pydoop<=2.0.0; sys_platform == 'darwin'
+# pydoop<=2.0.0; sys_platform == 'darwin'
 pystan>=2.19.1.1 # required to be installed before prophet
 
 # Machine Learning
@@ -18,7 +18,7 @@ gensim>=4.1.2
 Keras-Preprocessing>=1.1.2
 lightgbm>=3.3.2
 mxnet>=1.8.0.post0
-onnx==1.12.0 # onnx 1.13.0 depends on protobuf<4 and >=3.20.2, which breaks everything else
+onnx>=1.14.1 # onnx 1.13.0 depends on protobuf<4 and >=3.20.2, which breaks everything else
 onnxruntime>=1.11.0,<1.16.0 # https://github.com/microsoft/onnxruntime/issues/17631
 prophet>=1.0.1
 pyspark>=3.3.1
