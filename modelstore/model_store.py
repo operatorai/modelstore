@@ -262,14 +262,13 @@ class ModelStore:
             raise ValueError(f"model_id='{model_id}' contains invalid characters")
 
         # Figure out which library the kwargs match with
-        # We do this _before_ checking whether the model exists to raise
+        # We do this _before_ checking whether the model exists to
         # catch if the kwargs aren't quite right before potentially modifying
         # model state, below
         # pylint: disable=no-member
         managers = matching_managers(self._libraries, **kwargs)
-        if len(managers) == 1:
-            manager = managers[0]
-        else:
+        manager = managers[0]
+        if len(managers) > 1:
             # There are cases where we can match on more than one
             # manager (e.g., a model and an explainer)
             manager = MultipleModelsManager(managers, self.storage)

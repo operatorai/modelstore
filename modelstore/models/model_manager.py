@@ -12,10 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
-import shutil
 import tarfile
-import tempfile
 import warnings
+import tempfile
 from abc import ABC, ABCMeta, abstractmethod
 from typing import Any, Optional
 
@@ -150,36 +149,28 @@ class ModelManager(ABC):
         extra_paths = extras if isinstance(extras, list) else [extras]
         return set(f for f in extra_paths if os.path.isfile(f))
 
-    def _create_archive(self, **kwargs) -> str:
+    def _create_archive(self, tmp_dir: str, **kwargs) -> str:
         """
         Creates the `artifacts.tar.gz` archive which contains
         all of the files of the model
         """
         self._validate_kwargs(**kwargs)
-        archive_name = "artifacts.tar.gz"
-        archive_path = os.path.join(os.getcwd(), archive_name)
-        if os.path.exists(archive_path):
-            raise FileExistsError(f"modelstore cannot create an: {archive_name} file.")
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            result = os.path.join(tmp_dir, archive_name)
-            with tarfile.open(result, "w:gz") as tar:
-                # Add all of the model files to the top-level
-                # of the archive
-                for file_path in self._collect_files(tmp_dir, **kwargs):
-                    file_name = os.path.split(file_path)[1]
-                    tar.add(name=file_path, arcname=file_name)
+        archive_path = os.path.join(tmp_dir, "artifacts.tar.gz")
+        with tarfile.open(archive_path, "w:gz") as tar:
+            # Add all of the model files to the top-level
+            # of the archive
+            for file_path in self._collect_files(tmp_dir, **kwargs):
+                file_name = os.path.split(file_path)[1]
+                tar.add(name=file_path, arcname=file_name)
 
-                # Add any extra files to a sub-directory of
-                # the archive
-                for file_path in self._collect_extras(**kwargs):
-                    file_name = os.path.split(file_path)[1]
-                    tar.add(
-                        name=file_path,
-                        arcname=os.path.join("extras", file_name),
-                    )
-
-            # Move the archive to the current working directory
-            shutil.move(result, archive_path)
+            # Add any extra files to a sub-directory of
+            # the archive
+            for file_path in self._collect_extras(**kwargs):
+                file_name = os.path.split(file_path)[1]
+                tar.add(
+                    name=file_path,
+                    arcname=os.path.join("extras", file_name),
+                )
         return archive_path
 
     def upload(
@@ -207,13 +198,19 @@ class ModelManager(ABC):
             data=self.model_data(**kwargs),
         )
 
-        try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             # Create the model archive and return
             # meta-data about its location
-            archive_path = self._create_archive(**kwargs)
+            archive_path = self._create_archive(tmp_dir, **kwargs)
 
             # Upload the model archive and any additional extras
-            storage_meta_data = self.storage.upload(domain, model_id, archive_path)
+            storage_meta_data = self.storage.upload(
+                domain,
+                model_id,
+                archive_path,
+            )
+
+            # Save the combined meta-data to storage
             meta_data = metadata.Summary.generate(
                 code_meta_data=metadata.Code.generate(
                     deps_list=self.get_dependencies()
@@ -222,13 +219,7 @@ class ModelManager(ABC):
                 storage_meta_data=storage_meta_data,
                 extra_metadata=kwargs.get("extra_metadata"),
             )
-
-            # Save the combined meta-data to storage
             self.storage.set_meta_data(domain, model_id, meta_data)
-        finally:
-            # Clean up on exceptions (including KeyboardInterrupt)
-            if os.path.exists(archive_path):
-                os.remove(archive_path)
         return meta_data
 
 
