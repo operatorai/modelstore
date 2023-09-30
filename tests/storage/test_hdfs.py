@@ -32,16 +32,12 @@ from tests.storage.test_utils import (
 # pylint: disable=missing-function-docstring
 
 
-def is_not_mac() -> bool:
-    return platform.system() != "Darwin"
-
-
 @pytest.fixture
 def storage(tmp_path):
     return HdfsStorage(root_prefix=str(tmp_path), create_directory=True)
 
 
-@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.skip(reason="no hadoop installed")
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     for key in HdfsStorage.BUILD_FROM_ENVIRONMENT.get("required", []):
@@ -52,12 +48,12 @@ def test_create_from_environment_variables(monkeypatch):
         pytest.fail("Failed to initialise storage from env variables")
 
 
-@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.skip(reason="no hadoop installed")
 def test_validate(storage):
     assert storage.validate()
 
 
-@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.skip(reason="no hadoop installed")
 def test_push_and_pull(storage, tmp_path):
     # pylint: disable=import-outside-toplevel
     import pydoop.hdfs as hdfs
@@ -73,7 +69,7 @@ def test_push_and_pull(storage, tmp_path):
     hdfs.rm(files[0])
 
 
-@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.skip(reason="no hadoop installed")
 @pytest.mark.parametrize(
     "file_exists,should_call_delete",
     [
@@ -96,7 +92,7 @@ def test_remove(storage, file_exists, should_call_delete):
     assert not os.path.exists(prefix)
 
 
-@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.skip(reason="no hadoop installed")
 def test_read_json_objects_ignores_non_json(storage):
     # pylint: disable=import-outside-toplevel
     import pydoop.hdfs as hdfs
@@ -112,7 +108,7 @@ def test_read_json_objects_ignores_non_json(storage):
     _ = [hdfs.rm(f) for f in hdfs.ls(prefix)]
 
 
-@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.skip(reason="no hadoop installed")
 def test_storage_location(storage):
     prefix = remote_path()
     # Asserts that the location meta data is correctly formatted
@@ -124,7 +120,7 @@ def test_storage_location(storage):
     assert storage._storage_location(prefix) == expected
 
 
-@pytest.mark.skipif(is_not_mac(), reason="no hadoop in ci")
+@pytest.mark.skip(reason="no hadoop installed")
 @pytest.mark.parametrize(
     "meta_data,should_raise,result",
     [
