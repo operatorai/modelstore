@@ -113,10 +113,6 @@ def test_save_booster_config(xgb_booster, tmp_path):
 
 
 def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
-    # Some fields in xgboost get_params change when loading
-    # or are nans; we cannot compare them in this test
-    ignore_params = ["missing", "tree_method"]
-
     # Get the model predictions
     X_train, _ = classification_data
     y_pred = xgb_model.predict(X_train)
@@ -125,8 +121,7 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
     model_path = os.path.join(tmp_path, xgboost.MODEL_FILE)
     xgb_model.save_model(model_path)
     xgb_model_params = xgb_model.get_params()
-    for param in ignore_params:
-        xgb_model_params.pop(param)
+    
 
     #  Load the model
     loaded_model = xgb_manager.load(
@@ -158,9 +153,19 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
 
     # They should also have the same params
     loaded_model_params = loaded_model.get_params()
+    assert_same_xgboost_params(xgb_model_params, loaded_model_params)
+
+
+def assert_same_xgboost_params(a_params: dict, b_params: dict):
+    # Some fields in xgboost get_params change when loading
+    # or are nans; we cannot compare them in this test
+    ignore_params = ["missing", "tree_method", "use_label_encoder", "n_jobs"]
     for param in ignore_params:
-        loaded_model_params.pop(param)
-    assert xgb_model_params == loaded_model_params
+        if param in a_params:
+            a_params.pop(param)
+        if param in b_params:
+            b_params.pop(param)
+    assert a_params == b_params
 
 
 def test_load_booster(tmp_path, xgb_manager, xgb_booster, classification_data):
