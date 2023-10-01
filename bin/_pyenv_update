@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+echo -e "\n 💬  Updating..."
+
+pip install --upgrade pip setuptools wheel
+for i in ./requirements*txt; do
+    echo -e "\n\n 💬  Updating requirements in: $i"
+    pip install --upgrade -r $i
+done
+
+pip install -e $REPO_ROOT
+echo -e "\n ✅  Done."

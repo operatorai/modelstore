@@ -1,6 +1,6 @@
 VIRTUALENV_NAME=$(shell pwd | rev | cut -d '/' -f 1 | rev)-dev
 
-.PHONY: library test install uninstall release-test release-prod clean
+.PHONY: library test install uninstall release-test release-prod clean update
 
 uninstall:
 	@./bin/_pyenv_uninstall $(VIRTUALENV_NAME)
@@ -8,6 +8,9 @@ uninstall:
 install: uninstall
 	#@./bin/_brew_install
 	@./bin/_pyenv_install $(VIRTUALENV_NAME)
+
+update:
+	@./bin/_pyenv_update
 
 build : test
 	@./bin/_build_library
