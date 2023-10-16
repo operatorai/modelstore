@@ -1,7 +1,7 @@
 VIRTUALENV_NAME=modelstore.$(shell pwd | rev | cut -d '/' -f 1 | rev)
 REPO_ROOT=$(shell cd ../../ && pwd)
 
-.PHONY: name pyenv pyenv-local pyenv-prod pyenv-test pyenv-uninstall refresh
+.PHONY: name pyenv pyenv-local pyenv-prod pyenv-test pyenv-uninstall refresh gcloud
 
 name:
 	@echo $(VIRTUALENV_NAME)
@@ -9,8 +9,12 @@ name:
 pyenv-uninstall:
 	@$(REPO_ROOT)/bin/_pyenv_uninstall $(VIRTUALENV_NAME)
 
+gcloud:
+	@gcloud components update
+	@gcloud auth application-default login
+
 pyenv: pyenv-uninstall
-	#@$(REPO_ROOT)/bin/_setup_brew
+	# @$(REPO_ROOT)/bin/_setup_brew
 	@$(REPO_ROOT)/bin/_pyenv_install $(VIRTUALENV_NAME)
 	pip install -r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt
 
