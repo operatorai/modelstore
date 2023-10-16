@@ -21,12 +21,7 @@ from typing import List, Optional
 from modelstore.ids import model_ids
 from modelstore.models.managers import get_manager, iter_libraries, matching_managers
 from modelstore.models.multiple_models import MultipleModelsManager
-from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
-from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
-from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
-from modelstore.storage.hdfs import HDFS_EXISTS, HdfsStorage
 from modelstore.storage.local import FileSystemStorage
-from modelstore.storage.minio import MINIO_EXISTS, MinIOStorage
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.storage import CloudStorage
 from modelstore.utils.exceptions import (
@@ -58,6 +53,9 @@ class ModelStore:
         bucket.
 
         This currently assumes that the s3 bucket already exists."""
+        # pylint: disable=import-outside-toplevel
+        from modelstore.storage.aws import BOTO_EXISTS, AWSStorage
+
         if not BOTO_EXISTS:
             raise ModuleNotFoundError("boto3 is not installed!")
         return ModelStore(
@@ -73,6 +71,9 @@ class ModelStore:
         """Creates a ModelStore instance that stores models to an
         Azure blob container. This assumes that the container
         already exists."""
+        # pylint: disable=import-outside-toplevel
+        from modelstore.storage.azure import AZURE_EXISTS, AzureBlobStorage
+
         if not AZURE_EXISTS:
             raise ModuleNotFoundError("azure-storage-blob is not installed!")
         return ModelStore(
@@ -91,6 +92,9 @@ class ModelStore:
         """Creates a ModelStore instance that stores models to a
         Google Cloud Bucket. This assumes that the Cloud bucket
         already exists."""
+        # pylint: disable=import-outside-toplevel
+        from modelstore.storage.gcloud import GCLOUD_EXISTS, GoogleCloudStorage
+
         if not GCLOUD_EXISTS:
             raise ModuleNotFoundError("google.cloud is not installed!")
         return ModelStore(
@@ -111,6 +115,9 @@ class ModelStore:
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models using a MinIO client.
         This assumes that the bucket already exists."""
+        # pylint: disable=import-outside-toplevel
+        from modelstore.storage.minio import MINIO_EXISTS, MinIOStorage
+
         if not MINIO_EXISTS:
             raise ModuleNotFoundError("minio is not installed!")
         return ModelStore(
@@ -130,6 +137,9 @@ class ModelStore:
     ) -> "ModelStore":
         """Creates a ModelStore instance that stores models to
         the local HDFS system."""
+        # pylint: disable=import-outside-toplevel
+        from modelstore.storage.hdfs import HDFS_EXISTS, HdfsStorage
+
         if not HDFS_EXISTS:
             raise ModuleNotFoundError("pydoop is not installed!")
         return ModelStore(storage=HdfsStorage(root_prefix, create_directory))
