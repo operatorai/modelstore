@@ -32,11 +32,11 @@ from libraries.util.domains import BREAST_CANCER_DOMAIN
 def _train_example_model() -> onnx.ModelProto:
     X_train, X_test, y_train, y_test = load_classification_dataset()
 
-    print(f"🔍  Training a light gbm classifier")
+    print("🔍  Training a light gbm classifier")
     clf = LGBMClassifier(random_state=12)
     clf.fit(X_train, y_train)
 
-    print(f"🔍  Converting the model to onnx")
+    print("🔍  Converting the model to onnx")
     update_registered_converter(
         LGBMClassifier,
         "LightGbmLGBMClassifier",
@@ -52,7 +52,7 @@ def _train_example_model() -> onnx.ModelProto:
         target_opset={"": 12, "ai.onnx.ml": 2},
     )
 
-    print(f"🔍  Loading the onnx model as an inference session")
+    print("🔍  Loading the onnx model as an inference session")
     sess = InferenceSession(model.SerializeToString())
     y_pred = sess.run(None, {"X": X_test.astype(np.float32)})[0]
 
