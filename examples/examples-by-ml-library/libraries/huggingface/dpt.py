@@ -13,9 +13,13 @@
 #    limitations under the License.
 from typing import Tuple
 
+from transformers import (
+    DPTForDepthEstimation,
+    DPTImageProcessor,
+    DPTPreTrainedModel
+)
+
 from modelstore.model_store import ModelStore
-from transformers import (DPTForDepthEstimation, DPTImageProcessor,
-                          DPTPreTrainedModel)
 
 _DOMAIN_NAME = "example-dpt-model"
 

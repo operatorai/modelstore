@@ -22,7 +22,7 @@ from transformers import (
     DistilBertForSequenceClassification,
     DistilBertModel,
     DistilBertTokenizerFast,
-    PreTrainedTokenizerFast,
+    PreTrainedTokenizerFast
 )
 from transformers.file_utils import CONFIG_NAME
 
@@ -30,7 +30,7 @@ from modelstore.metadata import metadata
 from modelstore.models.transformers import (
     MODEL_DIRECTORY,
     TransformersManager,
-    _save_transformers,
+    _save_transformers
 )
 
 # pylint: disable=protected-access

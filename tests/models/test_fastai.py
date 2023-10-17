@@ -17,7 +17,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 from fastai.callback.schedule import fit_one_cycle
-
 # pylint: disable=unused-import
 from fastai.learner import load_learner
 from fastai.tabular.data import TabularDataLoaders
@@ -28,13 +27,13 @@ from modelstore.models.fastai import (
     LEARNER_FILE,
     FastAIManager,
     _export_model,
-    _save_model,
+    _save_model
 )
 from tests.models.utils import (
     classification_data,
     classification_df,
     classification_row,
-    is_macos,
+    is_macos
 )
 
 # Not using the * import because it triggers fastcore tests (missing fixture errors)

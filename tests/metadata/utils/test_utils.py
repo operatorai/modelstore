@@ -17,7 +17,7 @@ import pytest
 from modelstore.metadata.utils.utils import (
     exclude_field,
     remove_nones,
-    validate_json_serializable,
+    validate_json_serializable
 )
 
 # pylint: disable=missing-function-docstring

@@ -25,7 +25,7 @@ from modelstore.metadata.dataset.dataset import Features, Labels
 from modelstore.models.pytorch_lightning import (
     MODEL_CHECKPOINT,
     PyTorchLightningManager,
-    _save_lightning_model,
+    _save_lightning_model
 )
 
 # pylint: disable=protected-access

@@ -19,7 +19,11 @@ from dataclasses import asdict, dataclass
 from typing import List, Optional
 
 from modelstore.ids import model_ids
-from modelstore.models.managers import get_manager, iter_libraries, matching_managers
+from modelstore.models.managers import (
+    get_manager,
+    iter_libraries,
+    matching_managers
+)
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.states.model_states import ReservedModelStates
@@ -28,7 +32,7 @@ from modelstore.utils.exceptions import (
     DomainNotFoundException,
     ModelDeletedException,
     ModelExistsException,
-    ModelNotFoundException,
+    ModelNotFoundException
 )
 
 

@@ -16,7 +16,7 @@ import pytest
 from modelstore.storage.states.model_states import (
     ReservedModelStates,
     is_reserved_state,
-    is_valid_state_name,
+    is_valid_state_name
 )
 
 # pylint: disable=missing-function-docstring

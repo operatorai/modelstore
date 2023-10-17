@@ -13,6 +13,7 @@
 #    limitations under the License.
 
 import torch
+
 from modelstore.model_store import ModelStore
 
 _YOLO_DOMAIN = "yolov5"

@@ -20,7 +20,6 @@ import pytest
 from modelstore.metadata import metadata
 from modelstore.storage.local import FileSystemStorage
 from modelstore.utils.exceptions import DomainNotFoundException
-
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
     TEST_FILE_NAME,
@@ -28,7 +27,7 @@ from tests.storage.test_utils import (
     push_temp_file,
     push_temp_files,
     remote_file_path,
-    remote_path,
+    remote_path
 )
 
 # pylint: disable=protected-access

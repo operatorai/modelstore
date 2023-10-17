@@ -16,8 +16,9 @@ import random
 from datetime import datetime, timedelta
 
 import pandas as pd
-from modelstore.model_store import ModelStore
 from prophet import Prophet
+
+from modelstore.model_store import ModelStore
 
 _DOMAIN_NAME = "example-prophet-forecast"
 

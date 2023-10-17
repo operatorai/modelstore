@@ -19,7 +19,6 @@ import pytest
 
 from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.storage.util.paths import get_model_state_path
-
 # pylint: disable=unused-import
 from tests.storage.test_blob_storage import mock_blob_storage, mock_meta_data
 

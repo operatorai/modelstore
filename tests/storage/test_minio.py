@@ -21,7 +21,6 @@ from urllib3.response import HTTPResponse
 
 from modelstore.metadata import metadata
 from modelstore.storage.minio import MinIOStorage
-
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
@@ -30,7 +29,7 @@ from tests.storage.test_utils import (
     push_temp_file,
     push_temp_files,
     remote_file_path,
-    remote_path,
+    remote_path
 )
 
 # pylint: disable=redefined-outer-name

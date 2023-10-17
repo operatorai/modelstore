@@ -14,15 +14,14 @@
 from modelstore.metadata.dataset.types import (
     is_numpy_array,
     is_pandas_dataframe,
-    is_pandas_series,
+    is_pandas_series
 )
-
 # pylint: disable=unused-import
 from tests.metadata.dataset.fixtures import (
     np_1d_array,
     np_2d_array,
     pd_dataframe,
-    pd_series,
+    pd_series
 )
 
 # pylint: disable=redefined-outer-name

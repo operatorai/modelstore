@@ -21,12 +21,11 @@ from azure.storage.blob import (
     BlobProperties,
     BlobServiceClient,
     ContainerClient,
-    StorageStreamDownloader,
+    StorageStreamDownloader
 )
 
 from modelstore.metadata import metadata
 from modelstore.storage.azure import AzureBlobStorage
-
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
@@ -34,7 +33,7 @@ from tests.storage.test_utils import (
     file_contains_expected_contents,
     push_temp_file,
     remote_file_path,
-    remote_path,
+    remote_path
 )
 
 # pylint: disable=redefined-outer-name

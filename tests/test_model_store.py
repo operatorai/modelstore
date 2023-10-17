@@ -21,9 +21,8 @@ from modelstore.storage.states.model_states import ReservedModelStates
 from modelstore.utils.exceptions import (
     DomainNotFoundException,
     ModelExistsException,
-    ModelNotFoundException,
+    ModelNotFoundException
 )
-
 # pylint: disable=missing-function-docstring
 # pylint: disable=redefined-outer-name
 # pylint: disable=unused-import

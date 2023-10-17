@@ -25,7 +25,7 @@ from modelstore.models.tensorflow import (
     TensorflowManager,
     _save_model,
     _save_weights,
-    save_json,
+    save_json
 )
 
 # pylint: disable=protected-access
