@@ -1,6 +1,8 @@
 # Demo requirements
 # Versions unpinned to make it easier to test everything with
 # the latest version
+black
+isort
 click
 
 # Storage requirements
@@ -25,7 +27,7 @@ annoy
 catboost
 fastai
 gensim
-lightgbm
+lightgbm<4.0.0 # ImportError: cannot import name 'FEATURE_IMPORTANCE_TYPE_MAPPER' from 'lightgbm.basic'
 mxnet
 onnx
 onnxruntime
