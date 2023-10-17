@@ -14,43 +14,31 @@
 
 import numpy as np
 import onnx
-from libraries.util.datasets import load_classification_dataset
-from libraries.util.domains import BREAST_CANCER_DOMAIN
 from lightgbm import LGBMClassifier
-from onnxmltools.convert.lightgbm.operator_converters.LightGbm import convert_lightgbm
+from modelstore.model_store import ModelStore
+from onnxmltools.convert import convert_lightgbm
 from onnxruntime import InferenceSession
-from skl2onnx import convert_sklearn, update_registered_converter
 from skl2onnx.common.data_types import FloatTensorType
-from skl2onnx.common.shape_calculator import calculate_linear_classifier_output_shapes
 from sklearn.metrics import mean_squared_error
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_classification_dataset
+from libraries.util.domains import BREAST_CANCER_DOMAIN
 
 
 def _train_example_model() -> onnx.ModelProto:
     X_train, X_test, y_train, y_test = load_classification_dataset()
 
-    print(f"🔍  Training a light gbm classifier")
+    print("🔍  Training a light gbm classifier")
     clf = LGBMClassifier(random_state=12)
     clf.fit(X_train, y_train)
 
-    print(f"🔍  Converting the model to onnx")
-    update_registered_converter(
-        LGBMClassifier,
-        "LightGbmLGBMClassifier",
-        calculate_linear_classifier_output_shapes,
-        convert_lightgbm,
-        options={"nocl": [True, False], "zipmap": [True, False, "columns"]},
-    )
-
-    model = convert_sklearn(
+    print("🔍  Converting the model to onnx")
+    model = convert_lightgbm(
         clf,
-        "lightgbm",
-        [("X", FloatTensorType([None, X_train.shape[1]]))],
-        target_opset={"": 12, "ai.onnx.ml": 2},
+        initial_types=[("X", FloatTensorType([None, X_train.shape[1]]))],
     )
 
-    print(f"🔍  Loading the onnx model as an inference session")
+    print("🔍  Loading the onnx model as an inference session")
     sess = InferenceSession(model.SerializeToString())
     y_pred = sess.run(None, {"X": X_test.astype(np.float32)})[0]
 

@@ -17,13 +17,13 @@ import tempfile
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 
 
 # pylint: disable=missing-class-docstring

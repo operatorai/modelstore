@@ -12,12 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 from tensorflow import keras
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> keras.Model:

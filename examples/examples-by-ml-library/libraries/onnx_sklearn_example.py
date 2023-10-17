@@ -14,14 +14,14 @@
 
 import numpy as np
 import onnx
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 from onnxruntime import InferenceSession
 from skl2onnx import to_onnx
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> onnx.ModelProto:

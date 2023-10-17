@@ -12,9 +12,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from transformers import GPT2Tokenizer, TFGPT2LMHeadModel
-
 from modelstore.model_store import ModelStore
+from transformers import GPT2Tokenizer, TFGPT2LMHeadModel
 
 _DOMAIN_NAME = "example-gpt2-model"
 

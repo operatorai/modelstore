@@ -13,9 +13,8 @@
 #    limitations under the License.
 from typing import Tuple
 
-from transformers import SamModel, SamProcessor
-
 from modelstore.model_store import ModelStore
+from transformers import SamModel, SamProcessor
 
 _DOMAIN_NAME = "example-sam-model"
 

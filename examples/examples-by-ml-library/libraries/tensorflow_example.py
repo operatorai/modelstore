@@ -13,11 +13,11 @@
 #    limitations under the License.
 
 import tensorflow as tf
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> tf.keras.models.Sequential:

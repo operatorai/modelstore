@@ -13,10 +13,10 @@
 #    limitations under the License.
 
 from fastai.tabular.all import *
+from modelstore.model_store import ModelStore
+
 from libraries.util.datasets import load_regression_dataframe
 from libraries.util.domains import DIABETES_DOMAIN
-
-from modelstore.model_store import ModelStore
 
 
 def _train_example_model() -> TabularLearner:

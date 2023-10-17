@@ -17,13 +17,13 @@ import tempfile
 from typing import Tuple
 
 import numpy
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model(tmp_dir: str) -> Tuple[Pipeline, str]:

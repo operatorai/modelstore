@@ -13,12 +13,12 @@
 #    limitations under the License.
 
 import torch
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 from sklearn.metrics import mean_squared_error
 from torch import nn
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 
 
 # pylint: disable=missing-class-docstring

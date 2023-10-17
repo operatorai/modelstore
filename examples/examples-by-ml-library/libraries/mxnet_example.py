@@ -14,12 +14,12 @@
 
 import mxnet as mx
 import numpy as np
-from libraries.util.datasets import load_regression_dataset
-from libraries.util.domains import DIABETES_DOMAIN
+from modelstore.model_store import ModelStore
 from mxnet.gluon import nn
 from sklearn.metrics import mean_squared_error
 
-from modelstore.model_store import ModelStore
+from libraries.util.datasets import load_regression_dataset
+from libraries.util.domains import DIABETES_DOMAIN
 
 
 def _train_example_model() -> nn.HybridSequential:

@@ -13,7 +13,8 @@
 #    limitations under the License.
 import pandas as pd
 import torch
-from sklearn.datasets import fetch_20newsgroups, load_breast_cancer, load_diabetes
+from sklearn.datasets import (fetch_20newsgroups, load_breast_cancer,
+                              load_diabetes)
 from sklearn.model_selection import train_test_split
 
 
