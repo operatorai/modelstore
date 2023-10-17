@@ -120,7 +120,7 @@ class TransformersManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         # Infer whether a tokenizer was saved
         tokenizer = None
-        if "tokenizer.json" in model_files:
+        if any(x in model_files for x in ["tokenizer.json", "tokenizer_config.json"]):
             from transformers import AutoTokenizer
 
             tokenizer = AutoTokenizer.from_pretrained(model_dir)

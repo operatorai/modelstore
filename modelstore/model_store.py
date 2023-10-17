@@ -302,6 +302,7 @@ class ModelStore:
 
     def load(self, domain: str, model_id: str):
         """Loads a model into memory"""
+        # @TODO: this meta data is read twice: here & download()
         meta_data = self.storage.get_meta_data(domain, model_id)
         model_type = meta_data.model_type()
         if model_type.library == MultipleModelsManager.NAME:
