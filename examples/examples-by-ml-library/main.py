@@ -99,7 +99,7 @@ def main(modelstore_in, ml_framework):
     if sys.platform == "darwin" and ml_framework == "fastai":
         print(f"⏩  Skipping {ml_framework} on darwin.")
         return
-    if ml_framework == "yolov5" and modelstore_in == "azure":
+    if ml_framework == "yolov5" and modelstore_in == "azure-container":
         # Upload time out bug
         print(f"⏩  Skipping {ml_framework} in {modelstore_in}.")
         return
