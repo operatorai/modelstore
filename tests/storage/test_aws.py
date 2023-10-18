@@ -20,7 +20,6 @@ from moto import mock_s3
 
 from modelstore.metadata import metadata
 from modelstore.storage.aws import AWSStorage
-
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
@@ -29,7 +28,7 @@ from tests.storage.test_utils import (
     push_temp_file,
     push_temp_files,
     remote_file_path,
-    remote_path,
+    remote_path
 )
 
 # pylint: disable=redefined-outer-name

@@ -23,7 +23,7 @@ from modelstore.models.pytorch import (
     MODEL_PT,
     PyTorchManager,
     _save_model,
-    _save_state_dict,
+    _save_state_dict
 )
 
 # pylint: disable=protected-access

@@ -26,9 +26,8 @@ from modelstore.models.lightgbm import (
     LightGbmManager,
     _model_file_path,
     dump_model,
-    save_model,
+    save_model
 )
-
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

@@ -13,6 +13,7 @@
 #    limitations under the License.
 import json
 import os
+from subprocess import CalledProcessError
 from typing import Optional
 
 from modelstore.metadata import metadata
@@ -25,7 +26,7 @@ try:
     import pydoop.hdfs as hdfs
 
     HDFS_EXISTS = True
-except ImportError:
+except (ImportError, CalledProcessError):
     HDFS_EXISTS = False
 
 

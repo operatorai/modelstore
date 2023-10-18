@@ -37,9 +37,15 @@ from libraries import (
     tensorflow_example,
     xgboost_booster_example,
     xgboost_example,
-    yolo_example,
+    yolo_example
 )
-from libraries.huggingface import distilbert, dpt, gpt2_pytorch, gpt2_tensorflow, sam
+from libraries.huggingface import (
+    distilbert,
+    dpt,
+    gpt2_pytorch,
+    gpt2_tensorflow,
+    sam
+)
 from modelstores import MODELSTORES, create_model_store
 
 EXAMPLES = {
@@ -92,6 +98,10 @@ EXAMPLES = {
 def main(modelstore_in, ml_framework):
     if sys.platform == "darwin" and ml_framework == "fastai":
         print(f"⏩  Skipping {ml_framework} on darwin.")
+        return
+    if ml_framework == "yolov5" and modelstore_in == "azure-container":
+        # Upload time out bug
+        print(f"⏩  Skipping {ml_framework} in {modelstore_in}.")
         return
     print(
         f"\n🆕  Running {ml_framework} modelstore example with {modelstore_in} backend."

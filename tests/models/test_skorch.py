@@ -22,7 +22,6 @@ from torch import nn
 from modelstore.metadata import metadata
 from modelstore.models.common import save_joblib
 from modelstore.models.skorch import MODEL_JOBLIB, SkorchManager
-
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 

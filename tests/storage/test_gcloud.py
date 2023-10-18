@@ -20,13 +20,12 @@ from google.cloud.storage.blob import Blob
 
 from modelstore.metadata import metadata
 from modelstore.storage.gcloud import GoogleCloudStorage
-
 # pylint: disable=unused-import
 from tests.storage.test_utils import (
     TEST_FILE_CONTENTS,
     TEST_FILE_NAME,
     push_temp_file,
-    remote_file_path,
+    remote_file_path
 )
 
 # pylint: disable=redefined-outer-name

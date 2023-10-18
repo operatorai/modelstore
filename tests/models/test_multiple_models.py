@@ -23,7 +23,6 @@ from modelstore.models.common import save_joblib
 from modelstore.models.multiple_models import MultipleModelsManager
 from modelstore.models.shap import EXPLAINER_FILE, ShapManager
 from modelstore.models.sklearn import MODEL_JOBLIB, SKLearnManager
-
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 
@@ -67,7 +66,7 @@ def test_model_info_with_explainer(
             metadata.ModelType(
                 SKLearnManager.NAME, "RandomForestRegressor", models=None
             ),
-            metadata.ModelType(ShapManager.NAME, "Tree", models=None),
+            metadata.ModelType(ShapManager.NAME, "TreeExplainer", models=None),
         ],
     )
     res = multiple_model_manager.model_info(

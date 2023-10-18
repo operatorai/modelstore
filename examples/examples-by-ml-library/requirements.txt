@@ -1,6 +1,8 @@
 # Demo requirements
 # Versions unpinned to make it easier to test everything with
 # the latest version
+black
+isort
 click
 
 # Storage requirements
@@ -12,19 +14,20 @@ pydoop
 minio
 
 # Data / dependencies for ML libraries
-numba==0.56.4
-numpy==1.23.5
-python-Levenshtein==0.12.2
+numpy==1.23.5 # numba 0.58.0 requires numpy<1.26,>=1.21; numpy>1.23.5 currently breaks mxnet
+numba>=0.55.1
+Cython>=0.29.28
+python-Levenshtein>=0.12.2
 
 # Prophet
-pystan==2.19.1.1 # required to be installed before prophet
+pystan>=2.19.1.1 # required to be installed before prophet
 
 # Machine learning libraries
 annoy
 catboost
 fastai
 gensim
-lightgbm
+lightgbm<4.0.0 # ImportError: cannot import name 'FEATURE_IMPORTANCE_TYPE_MAPPER' from 'lightgbm.basic'
 mxnet
 onnx
 onnxruntime

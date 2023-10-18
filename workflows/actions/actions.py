@@ -14,7 +14,6 @@
 from typing import Any, List
 
 from modelstore import ModelStore
-
 # pylint: disable=import-error
 from workflows.actions import cli, models, storage
 

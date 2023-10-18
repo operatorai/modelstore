@@ -21,7 +21,6 @@ from sklearn.ensemble import RandomForestClassifier
 
 from modelstore.metadata import metadata
 from modelstore.models import shap
-
 # pylint: disable=unused-import
 from tests.models.utils import classification_data
 
@@ -44,7 +43,7 @@ def shap_manager():
 
 
 def test_model_info(shap_manager, shap_explainer):
-    exp = metadata.ModelType("shap", "Tree", None)
+    exp = metadata.ModelType("shap", "TreeExplainer", None)
     res = shap_manager.model_info(explainer=shap_explainer)
     assert exp == res
 

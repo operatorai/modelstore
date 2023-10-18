@@ -48,7 +48,10 @@ class PySparkManager(ModelManager):
         # pylint: disable=import-outside-toplevel
         from pyspark.ml import Model as mlModel
         from pyspark.ml import Pipeline
-        from pyspark.ml.classification import Model, _JavaProbabilisticClassifier
+        from pyspark.ml.classification import (
+            Model,
+            _JavaProbabilisticClassifier
+        )
 
         # Warning: for Apache Spark prior to 2.0.0, save isn't
         # available yet for the Pipeline API.
