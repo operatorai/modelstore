@@ -43,7 +43,7 @@ def shap_manager():
 
 
 def test_model_info(shap_manager, shap_explainer):
-    exp = metadata.ModelType("shap", "Tree", None)
+    exp = metadata.ModelType("shap", "TreeExplainer", None)
     res = shap_manager.model_info(explainer=shap_explainer)
     assert exp == res
 
