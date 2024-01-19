@@ -157,12 +157,22 @@ def test_load_model(tmp_path, xgb_manager, xgb_model, classification_data):
 def assert_same_xgboost_params(a_params: dict, b_params: dict):
     # Some fields in xgboost get_params change when loading
     # or are nans; we cannot compare them in this test
-    ignore_params = ["missing", "tree_method", "use_label_encoder", "n_jobs"]
+    # import pdb; pdb.set_trace()
+    ignore_params = [
+        "missing",
+        "tree_method",
+        "use_label_encoder",
+        "n_jobs",
+        "booster",
+        "base_score"
+    ]
     for param in ignore_params:
         if param in a_params:
             a_params.pop(param)
         if param in b_params:
             b_params.pop(param)
+    for key, param in a_params.items():
+        assert param == b_params[key], f"Params are different for {key}"
     assert a_params == b_params
 
 

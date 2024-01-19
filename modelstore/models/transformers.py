@@ -142,6 +142,7 @@ class TransformersManager(ModelManager):
             logger.debug("Loaded: %s...", type(processor))
 
         # Infer whether we're loading a PyTorch or Tensorflow model
+        # @TODO: this does not appear to hold with more recent versions of transformers
         is_pytorch = "pytorch_model.bin" in model_files
         logger.debug("Loading transformers model with pytorch=%s", is_pytorch)
 

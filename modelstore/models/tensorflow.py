@@ -41,9 +41,11 @@ class TensorflowManager(ModelManager):
         return [
             "h5py",
             "numpy",
-            "scipy",
             "tensorflow",
         ]
+    
+    def optional_dependencies(self) -> list:
+        return super().optional_dependencies() + ["scipy"]
 
     def _required_kwargs(self):
         return ["model"]
