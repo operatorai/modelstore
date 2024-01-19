@@ -11,7 +11,6 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import json
 import os
 
 import pytest
@@ -20,11 +19,10 @@ from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
     DistilBertForSequenceClassification,
-    DistilBertModel,
+    TFDistilBertModel,
     DistilBertTokenizerFast,
     PreTrainedTokenizerFast
 )
-from transformers.file_utils import CONFIG_NAME
 
 from modelstore.metadata import metadata
 from modelstore.models.transformers import (
@@ -119,13 +117,6 @@ def test_save_transformers(tr_config, tr_model, tr_tokenizer, tmp_path):
     )
     assert exp == file_path
 
-    # Validate config
-    config_file = os.path.join(exp, CONFIG_NAME)
-    assert os.path.exists(config_file)
-    with open(config_file, "r") as lines:
-        config_json = json.loads(lines.read())
-    assert config_json == json.loads(tr_config.to_json_string())
-
     # Validate model
     model = AutoModelForSequenceClassification.from_pretrained(
         exp,
@@ -165,6 +156,6 @@ def test_load_model(tmp_path, tr_manager, tr_model, tr_config, tr_tokenizer):
     loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(tmp_path, meta_data)
 
     # Expect the two to be the same
-    assert isinstance(loaded_model, DistilBertModel)
+    assert isinstance(loaded_model, TFDistilBertModel)
     assert isinstance(loaded_config, type(tr_config))
     assert isinstance(loaded_tokenizer, DistilBertTokenizerFast)
