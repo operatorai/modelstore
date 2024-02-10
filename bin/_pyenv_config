@@ -7,3 +7,6 @@ export VIRTUALENV_NAME="$1-${PYTHON_VERSION//./-}"
 export REPO_ROOT=$(cd $(dirname $0)/.. && pwd)
 
 echo -e "\n 💬  Using a venv called: ${VIRTUALENV_NAME}"
+
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"

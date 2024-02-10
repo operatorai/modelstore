@@ -20,12 +20,12 @@ echo -e "\n 💬  Setting local: $VIRTUALENV_NAME"
 pyenv local $VIRTUALENV_NAME
 
 echo -e "\n 💬  Upgrading pip"
-pip3 install --upgrade pip setuptools wheel
+pip install --upgrade pip setuptools wheel
 
 for i in ./requirements*txt; do
     echo -e "\n\n 💬  Installing requirements in: $i"
-    pip3 install -r $i
+    pip install -r $i
 done
 
-pip3 install -e $REPO_ROOT
+pip install -e $REPO_ROOT
 echo -e "\n ✅  Done."
