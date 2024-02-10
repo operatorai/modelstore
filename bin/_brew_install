@@ -30,8 +30,8 @@ install libomp
 
 # To use pyspark models on mac
 # To use hdfs storage on mac
-echo -e "\n 💬  Installing java and hadoop..."
-install java
-install hadoop
+# echo -e "\n 💬  Installing java and hadoop..."
+# install java
+# install hadoop
 
 echo "\n ✅  Done."
