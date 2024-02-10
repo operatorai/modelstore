@@ -19,11 +19,13 @@ env PYTHON_CONFIGURE_OPTS="--enable-framework CC=clang" \
 echo -e "\n 💬  Setting local: $VIRTUALENV_NAME"
 pyenv local $VIRTUALENV_NAME
 
-pip install --upgrade pip setuptools wheel
+echo -e "\n 💬  Upgrading pip"
+pip3 install --upgrade pip setuptools wheel
+
 for i in ./requirements*txt; do
     echo -e "\n\n 💬  Installing requirements in: $i"
-    pip install -r $i
+    pip3 install -r $i
 done
 
-pip install -e $REPO_ROOT
+pip3 install -e $REPO_ROOT
 echo -e "\n ✅  Done."

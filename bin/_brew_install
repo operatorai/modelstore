@@ -16,6 +16,9 @@ echo -e "\n 💬  Installing pyenv & pyenv-virtualenv..."
 install pyenv
 install pyenv-virtualenv
 
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
+
 # To get pystan to install correctly (required by prophet)
 # https://stackoverflow.com/questions/52814868/pystan-compileerror-command-gcc-failed-with-exit-status-1-macos
 echo -e "\n 💬  Installing gcc..."
