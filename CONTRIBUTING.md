@@ -23,29 +23,31 @@ To contribute to `modelstore`'s code base, we recommend taking the following jou
 
 ## 👨🏽‍💻 Get familiar with the code base
 
+### Pre-requisitings
+
+This library has been developed on Mac OS. To get started:
+
+```bash
+❯ make setup
+```
+
+Will update `brew`, install `pyenv` and other things an required by ML libraries (e.g `libomp`, required by `xgboost`).
+
 ### Setup a virtual environment
 
-This library has been developed using [pyenv](https://github.com/pyenv/pyenv)
-and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv), using the
-requirements that are in `requirements.txt` and `requirements-dev.txt`.
+This library has been developed using [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv), using the requirements that are in `requirements.txt` and `requirements-dev.txt`.
 
-This project has two requirements files:
+This project has two types of requirements files:
 * `requirements.txt` contains any dependencies that `modelstore` users must have in order to use `modelstore`. This should be as lightweight as possible. We do not require users to install every single machine learning library - just the ones that they want to use.
-* `requirements-dev.txt` contains all of the dependencies that `modelstore` developers must have. This file does contain all of the machine learning frameworks that are supported by `modelstore` - they must be installed to enable running all of the unit tests. 
+* `requirements-dev[X].txt` contains all of the dependencies that `modelstore` developers must have. These files contain all of the machine learning frameworks that are supported by `modelstore` - they must be installed to enable running all of the unit tests. 
 
-You can create a virtual environment using your favourite approach and
-install all of those dependencies, or once you have set up `pyenv`, use this
- `Makefile` command that does the rest for you:
+Once you have set up `pyenv` and `pyenv-virtualenv` installed, use this `Makefile` command that does the rest for you:
 
 ```bash
 ❯ make install
 ```
 
-Will update `brew` and install `libomp` (required by `xgboost`).
-
-It will then create a Python virtual environment, using `pyenv-virtualenv`,
-and install all of the dependencies in the requirements files. If you want
-to use a different version of Python, update the [bin/_config](bin/config) file.
+This will create a Python virtual environment, using `pyenv-virtualenv`, and install all of the dependencies in the requirements files. If you want to use a different version of Python, update the [bin/_config](bin/config) file.
 
 Notes:
 * I've seen trouble with installing `prophet` and have sometimes had to install it manually
@@ -73,7 +75,6 @@ For details, head over to the [README.md](examples/README.md) in the `examples` 
 ## 🐛 Contribute fixes for bugs or issues
 
 All of `modelstore`'s bugs are publicly tracked via [Github issues](https://github.com/operatorai/modelstore/issues). 
-
 
 ## 💡 Contribute new feature ideas
 

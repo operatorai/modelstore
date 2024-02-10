@@ -1,25 +1,37 @@
 #!/bin/bash
 set -e
 
-echo "\n ⏱  Running brew update and installing libomp"
+function install {
+    if brew ls --versions "$1" >/dev/null; then
+        HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade "$1"
+    else
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install "$1"
+    fi
+}
+
+echo -e "\n 💬  Running brew update..."
 brew update
+
+echo -e "\n 💬  Installing pyenv & pyenv-virtualenv..."
+install pyenv
+install pyenv-virtualenv
 
 # To get pystan to install correctly (required by prophet)
 # https://stackoverflow.com/questions/52814868/pystan-compileerror-command-gcc-failed-with-exit-status-1-macos
-brew install gcc
+echo -e "\n 💬  Installing gcc..."
+install gcc
 export CC=gcc-11
 export CXX=g++-11
 
 # To use xgboost models on mac
 # https://xgboost.readthedocs.io/en/latest/build.html#building-on-osx
-# Note: it looks like there's trouble with libomp 12
-# https://github.com/dmlc/xgboost/issues/7039
-brew install rajivshah3/libomp-tap/libomp@11.1.0
+echo -e "\n 💬  Installing libomp..."
+install libomp
 
 # To use pyspark models on mac
-brew install java
-
 # To use hdfs storage on mac
-brew install hadoop
+# echo -e "\n 💬  Installing java and hadoop..."
+# install java
+# install hadoop
 
 echo "\n ✅  Done."
