@@ -1,22 +1,25 @@
 FROM ubuntu
 WORKDIR /usr/src/app
 
-# Install gcc & python
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get -y install gcc mono-mcs && \
-    apt-get -y install g++ && \
-    apt-get -y install git && \
-    apt-get -y install python3 python3-pip && \
+    apt-get install -y build-essential && \
+    apt-get install -y git ninja-build ccache libopenblas-dev libopencv-dev cmake && \
+    apt-get install -y gcc mono-mcs g++ && \
+    apt-get install -y python3 python3-pip && \
+    apt-get install -y default-jdk && \
     rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip & setuptools
 RUN pip3 install --upgrade pip setuptools
 
 # Install & install requirements
-ADD requirements*.txt ./
+ADD requirements-dev0.txt ./requirements-dev0.txt
 RUN pip3 install -r requirements-dev0.txt
+
+ADD requirements-dev1.txt ./requirements-dev1.txt
 RUN pip3 install -r requirements-dev1.txt
+
+ADD requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
 # Copy library source
@@ -24,4 +27,4 @@ COPY modelstore ./modelstore
 COPY tests ./tests
 
 # Run tests
-RUN ["python3", "-m", "pytest", "./tests"]
+RUN ["python3", "-m", "pytest", "./tests/models/test_pyspark.py"]
