@@ -14,8 +14,6 @@
 import logging
 import sys
 
-logger = get_logger()
-
 def get_logger():
     """Builds the modelstore logger"""
     log = logging.getLogger(name="modelstore")
@@ -25,6 +23,10 @@ def get_logger():
     log.setLevel(logging.INFO)
     log.addHandler(handler)
     return log
+
+
+logger = get_logger()
+
 
 def debug_mode(on: bool):
     global logger
