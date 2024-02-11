@@ -8,10 +8,6 @@ boto3
 google-cloud-storage
 minio
 
-# ML Dependencies
-# pydoop<=2.0.0; sys_platform == 'darwin'
-pystan>=2.19.1.1 # required to be installed before prophet
-
 # Machine Learning
 annoy
 catboost
