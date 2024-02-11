@@ -2,35 +2,35 @@
 protobuf>=3.19.5 # https://github.com/protocolbuffers/protobuf/issues/10051
 
 # Storage
-azure-core>=1.23.1
-azure-storage-blob>=12.11.0
-boto3>=1.21.41
-google-cloud-storage>=2.3.0
-minio>=7.1.12
+azure-core
+azure-storage-blob
+boto3
+google-cloud-storage
+minio
 
 # ML Dependencies
 # pydoop<=2.0.0; sys_platform == 'darwin'
 pystan>=2.19.1.1 # required to be installed before prophet
 
 # Machine Learning
-annoy>=1.17.3
-catboost>=1.2.2
-fastai>=2.7.14  # Note: 1.0.61 has different import paths!
-gensim>=4.3.2
-Keras-Preprocessing>=1.1.2
-lightgbm>=4.3.0
+annoy
+catboost
+fastai  # Note: 1.0.61 has different import paths!
+gensim
+Keras-Preprocessing
+lightgbm
 mxnet # Note: retired as of 09/2023 https://attic.apache.org/projects/mxnet.html
-onnx>=1.15.0
-onnxruntime>1.17.0 #>=1.11.0,<1.16.0 # https://github.com/microsoft/onnxruntime/issues/17631
-prophet>=1.1.5
-pyspark>=3.5.0
-pytorch-lightning>=2.2.0
-scikit-learn>=1.3.2
-shap>=0.44.1
-skl2onnx>=1.16.0
-skorch>=0.15.0
-tensorflow>=2.13.0
-torch>=2.2.0
-torchvision>=0.17.0
-transformers>=4.37.2
-xgboost>=2.0.3
+onnx
+onnxruntime
+prophet
+pyspark
+pytorch-lightning
+scikit-learn
+shap
+skl2onnx
+skorch
+tensorflow
+torch
+torchvision
+transformers
+xgboost
