@@ -13,11 +13,14 @@
 #    limitations under the License.
 import os
 import warnings
-
-import mxnet as mx
 import numpy as np
 import pytest
-from mxnet.gluon import nn
+
+try:    
+    import mxnet as mx
+    from mxnet.gluon import nn
+except:
+    pass
 
 from modelstore.metadata import metadata
 from modelstore.models import mxnet
@@ -48,36 +51,43 @@ def mxnet_manager():
     return mxnet.MxnetManager()
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_model_info(mxnet_manager, mxnet_model):
     exp = metadata.ModelType("mxnet", "HybridSequential", None)
     res = mxnet_manager.model_info(model=mxnet_model)
     assert exp == res
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_model_data(mxnet_manager, mxnet_model):
     res = mxnet_manager.model_data(model=mxnet_model)
     assert res is None
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_required_kwargs(mxnet_manager):
     assert mxnet_manager._required_kwargs() == ["model", "epoch"]
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_matches_with(mxnet_manager, mxnet_model):
     assert mxnet_manager.matches_with(model=mxnet_model)
     assert not mxnet_manager.matches_with(model="a-string-value")
     assert not mxnet_manager.matches_with(wrong_kwarg_keyword=mxnet_model)
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_get_functions(mxnet_manager, mxnet_model):
     assert len(mxnet_manager._get_functions(model=mxnet_model, epoch=3)) == 1
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_get_params(mxnet_manager, mxnet_model):
     res = mxnet_manager.get_params(model=mxnet_model, epoch=3)
     assert {"epoch": 3} == res
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_save_model(tmp_path, mxnet_model):
     x = random_x()
     y_pred = mxnet_model(x).asnumpy()
@@ -97,6 +107,7 @@ def test_save_model(tmp_path, mxnet_model):
     assert np.allclose(y_pred, y_loaded_pred)
 
 
+@pytest.mark.skip(reason="mxnet project retired")
 def test_load_model(tmp_path, mxnet_manager, mxnet_model):
     # Get the current predictions
     x = random_x()
@@ -110,8 +121,8 @@ def test_load_model(tmp_path, mxnet_manager, mxnet_model):
         tmp_path,
         metadata.Summary(
             model=metadata.Model(
-                domain=None,
-                model_id=None,
+                domain="",
+                model_id="",
                 model_type=None,
                 parameters={"epoch": 0},
                 data={},

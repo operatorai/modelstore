@@ -16,7 +16,7 @@ from tempfile import TemporaryDirectory
 
 import boto3
 import pytest
-from moto import mock_s3
+from moto import mock_aws
 
 from modelstore.metadata import metadata
 from modelstore.storage.aws import AWSStorage
@@ -40,7 +40,7 @@ _MOCK_BUCKET_NAME = "existing-bucket"
 
 @pytest.fixture(autouse=True)
 def moto_boto():
-    with mock_s3():
+    with mock_aws():
         conn = boto3.resource("s3")
         conn.create_bucket(Bucket=_MOCK_BUCKET_NAME)
         yield conn
@@ -181,7 +181,7 @@ def test_storage_location():
     [
         (
             metadata.Storage(
-                type=None,
+                type="",
                 path=None,
                 bucket=_MOCK_BUCKET_NAME,
                 container=None,
@@ -192,7 +192,7 @@ def test_storage_location():
         ),
         (
             metadata.Storage(
-                type=None,
+                type="",
                 path=None,
                 bucket="a-different-bucket",
                 container=None,

@@ -95,6 +95,8 @@ def get_manager(name: str, storage: CloudStorage = None) -> ModelManager:
         manager = TensorflowManager(storage)
     else:
         manager = _LIBRARIES[name](storage)
-    if all(module_exists(x) for x in manager.required_dependencies()):
-        return manager
-    raise ValueError(f"could not create manager for {name}: dependencies not installed")
+    for x in manager.required_dependencies():
+        if not module_exists(x):
+            raise ValueError(f"could not create manager for {name}: {x} not installed")
+    return manager
+    

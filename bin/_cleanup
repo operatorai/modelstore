@@ -1,10 +1,10 @@
 #!/bin/bash
-echo "\n 🧼  Removing pycache files"
+echo -e "\n 🧼  Removing pycache files"
 find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
 
-echo "\n 🧼  Removing build directories"
+echo -e "\n 🧼  Removing build directories"
 rm -rf *.egg-info
 rm -rf build
 rm -rf dist
 
-echo "\n 🎉  Done."
+echo -e "\n 🎉  Done."
