@@ -48,7 +48,7 @@ def test_from_file_system_existing_root(tmp_path: PosixPath, should_create: bool
         root_directory=str(tmp_path), create_directory=should_create
     )
     assert isinstance(store.storage, FileSystemStorage)
-    validate_library_attributes(store, allowed=_LIBRARIES, not_allowed=[])
+    validate_library_attributes(store, allowed=_LIBRARIES , not_allowed=[])
 
 
 @pytest.mark.parametrize(

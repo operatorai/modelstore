@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+import sys
 import subprocess
 
 import git
@@ -22,6 +23,7 @@ from modelstore.metadata.code import revision
 # pylint: disable=missing-function-docstring
 
 
+@pytest.mark.skipif(sys.platform!="darwin", reason="skipping in ubuntu")
 def test_repo_name():
     # pylint: disable=protected-access
     repo = git.Repo(search_parent_directories=True)

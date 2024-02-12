@@ -55,8 +55,7 @@ Notes:
 
 ### Run the tests
 
-We're using `pytest` for the tests. You can type `pytest`, or use
-this `Makefile` command:
+This project has _a lot_ of dependencies. To run the tests, I'm using Docker:
 
 ```bash
 ❯ make test

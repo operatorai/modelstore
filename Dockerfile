@@ -27,4 +27,4 @@ COPY modelstore ./modelstore
 COPY tests ./tests
 
 # Run tests
-RUN ["python3", "-m", "pytest", "./tests/models/test_pyspark.py"]
+ENTRYPOINT ["python3", "-m", "pytest", "--exitfirst", "./tests"]
