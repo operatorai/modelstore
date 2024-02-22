@@ -14,6 +14,7 @@
 import json
 import os
 from typing import Optional
+import multiprocessing
 
 from modelstore.metadata import metadata
 from modelstore.storage.blob_storage import BlobStorage
@@ -136,21 +137,28 @@ class AWSStorage(BlobStorage):
 
     def _read_json_objects(self, prefix: str) -> list:
         logger.debug("Listing files in: %s/%s", self.bucket_name, prefix)
-        results = []
+
+        # Find the files we want to download
+        object_paths = []
         objects = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
         for version in objects.get("Contents", []):
             object_path = version["Key"]
             if not object_path.endswith(".json"):
+                # Ignore files that aren't JSON
                 logger.debug("Skipping non-json file: %s", object_path)
                 continue
             if os.path.split(object_path)[0] != prefix:
                 # We don't want to read files in a sub-prefix
                 logger.debug("Skipping file in sub-prefix: %s", object_path)
                 continue
+            object_paths.append([self.bucket_name, object_path])
 
-            obj = self._read_json_object(object_path)
-            if obj is not None:
-                results.append(obj)
+        # Read the files, in parallel
+        num_processes = multiprocessing.cpu_count()-1
+        logger.debug("Using %s processes to download", num_processes)
+        with multiprocessing.Pool(num_processes) as pool:
+            procs = pool.map_async(_s3_multiprocess_read, object_paths)
+            results = [r for r in procs.get() if r is not None]
         return sorted_by_created(results)
 
     def _read_json_object(self, prefix: str) -> dict:
@@ -161,3 +169,16 @@ class AWSStorage(BlobStorage):
             return json.loads(body)
         except json.JSONDecodeError:
             return None
+
+
+def _s3_multiprocess_read(location: str) -> dict:
+    bucket = location[0]
+    prefix = location[1]
+    logger.debug("Reading: %s/%s", bucket, prefix)
+    client = boto3.client("s3") # Cannot share a boto3 client across processes
+    obj = client.get_object(Bucket=bucket, Key=prefix)
+    try:
+        body = obj["Body"].read()
+        return json.loads(body)
+    except json.JSONDecodeError:
+        return None
