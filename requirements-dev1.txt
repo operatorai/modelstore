@@ -11,6 +11,7 @@ minio
 # Machine Learning
 annoy
 catboost
+causalml
 fastai  # Note: 1.0.61 has different import paths!
 gensim
 Keras-Preprocessing
@@ -25,7 +26,6 @@ scikit-learn
 shap
 skl2onnx
 skorch
-tensorflow
 torch
 torchvision
 transformers
