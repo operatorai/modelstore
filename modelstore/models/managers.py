@@ -16,6 +16,7 @@ from typing import Iterator, List
 from modelstore.metadata.code.dependencies import module_exists
 from modelstore.models.annoy import AnnoyManager
 from modelstore.models.catboost import CatBoostManager
+from modelstore.models.causalml import CausalMLManager
 from modelstore.models.fastai import FastAIManager
 from modelstore.models.gensim import GensimManager
 from modelstore.models.lightgbm import LightGbmManager
@@ -42,6 +43,7 @@ _LIBRARIES = {
     for m in [
         AnnoyManager,
         CatBoostManager,
+        CausalMLManager,
         FastAIManager,
         ModelFileManager,
         GensimManager,
@@ -99,4 +101,3 @@ def get_manager(name: str, storage: CloudStorage = None) -> ModelManager:
         if not module_exists(x):
             raise ValueError(f"could not create manager for {name}: {x} not installed")
     return manager
-    
