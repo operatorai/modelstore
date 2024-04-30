@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import pandas as pd
+import numpy as np
 import torch
 from sklearn.datasets import (
     fetch_20newsgroups,
@@ -48,6 +49,23 @@ def load_regression_dataframe():
     df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
     df["y"] = diabetes.target
     return df
+
+
+def load_causal_regression_dataset():
+    X_train, X_test, y_train, y_test = load_regression_dataset()
+
+    # Dummy treatment vector to simulate experiment
+    treatment_vector_train = np.zeros(X_train.shape[0])
+    treatment_vector_test = np.zeros(X_test.shape[0])
+
+    # Simulating a 50% treatment / control split
+    treatment_mask_train = int(X_train.shape[0] * 0.5)
+    treatment_mask_test = int(X_test.shape[0] * 0.5)
+
+    treatment_vector_train[:treatment_mask_train] = 1
+    treatment_vector_test[:treatment_mask_test] = 1
+
+    return X_train, X_test, y_train, y_test, treatment_vector_train, treatment_vector_test
 
 
 def load_classification_dataset():
