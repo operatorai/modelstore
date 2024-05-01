@@ -5,4 +5,4 @@ joblib>=1.0.0
 requests>=2.23.0
 tqdm>=4.54.1
 click>=7.0
-numpy 
+numpy==1.23.1
