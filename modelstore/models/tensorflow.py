@@ -14,6 +14,7 @@
 import os
 from functools import partial
 from typing import Any
+from packaging import version
 
 from modelstore.metadata import metadata
 from modelstore.models.common import save_json
@@ -23,6 +24,9 @@ from modelstore.storage.storage import CloudStorage
 MODEL_CONFIG = "model_config.json"
 MODEL_CHECKPOINT = "checkpoint"
 MODEL_DIRECTORY = "model"
+MODEL_DIRECTORY_KERAS = "model.keras"
+
+TF_VERSION_CHECK = "2.16.0"
 
 
 class TensorflowManager(ModelManager):
@@ -96,6 +100,16 @@ class TensorflowManager(ModelManager):
 
 
 def _model_file_path(parent_dir: str) -> str:
+    # pylint: disable=import-outside-toplevel
+    import tensorflow as tf
+
+    # Tensorflow >= 2.16.0 requires keras >= 3.0.0
+    # This requires us to save models with the .keras file extension
+    # https://www.tensorflow.org/tutorials/keras/save_and_load#save_the_entire_model
+    # Here we check the version of tensorflow and support both old and new behaviours
+    tf_version = tf.__version__
+    if version.parse(tf_version) >= version.parse(TF_VERSION_CHECK):
+        return os.path.join(parent_dir, MODEL_DIRECTORY_KERAS)
     return os.path.join(parent_dir, MODEL_DIRECTORY)
 
 
@@ -109,5 +123,5 @@ def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:
     model_path = _model_file_path(tmp_dir)
     os.makedirs(model_path)
-    model.save(model_path, save_format='tf')
+    model.save(model_path)
     return model_path
