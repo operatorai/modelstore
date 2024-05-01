@@ -14,7 +14,7 @@ pydoop
 minio
 
 # Data / dependencies for ML libraries
-numpy==1.23.5 # numba 0.58.0 requires numpy<1.26,>=1.21; numpy>1.23.5 currently breaks mxnet
+numpy==1.23.5
 numba>=0.55.1
 Cython>=0.29.28
 python-Levenshtein>=0.12.2
@@ -28,7 +28,6 @@ catboost
 fastai
 gensim
 lightgbm<4.0.0 # ImportError: cannot import name 'FEATURE_IMPORTANCE_TYPE_MAPPER' from 'lightgbm.basic'
-mxnet
 onnx
 onnxruntime
 onnxmltools
