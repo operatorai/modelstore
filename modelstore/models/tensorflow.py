@@ -109,5 +109,5 @@ def _save_weights(tmp_dir: str, model: "keras.Model") -> str:
 def _save_model(tmp_dir: str, model: "keras.Model") -> str:
     model_path = _model_file_path(tmp_dir)
     os.makedirs(model_path)
-    model.save(model_path)
+    model.save(model_path, save_format='tf')
     return model_path
