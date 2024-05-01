@@ -30,7 +30,8 @@ def _train_example_model() -> XGBTRegressor:
         "n_estimators": 250,
         "max_depth": 4,
         "learning_rate": 0.01,
-        "n_jobs": 1
+        "n_jobs": 1,
+        "verbose": -1
     }
 
     # Train causal regressor
