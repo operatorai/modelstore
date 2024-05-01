@@ -17,7 +17,7 @@ import click
 from libraries import (
     annoy_example,
     catboost_example,
-causalml_example,
+    causalml_example,
     fastai_example,
     gensim_example,
     keras_example,
