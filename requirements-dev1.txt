@@ -27,6 +27,7 @@ shap
 skl2onnx
 skorch
 tensorflow
+tf-keras
 torch
 torchvision
 transformers
