@@ -35,6 +35,7 @@ prophet
 pyspark
 pytorch-lightning
 scikit-learn
+scipy==1.10.1 # More recent versions were not compatible with Gensim releases https://github.com/piskvorky/gensim/issues/3525
 shap
 skl2onnx
 skorch
