@@ -15,7 +15,6 @@ fastai  # Note: 1.0.61 has different import paths!
 gensim
 Keras-Preprocessing
 lightgbm
-mxnet # Note: retired as of 09/2023 https://attic.apache.org/projects/mxnet.html
 onnx
 onnxruntime
 prophet
@@ -25,6 +24,7 @@ scikit-learn
 shap
 skl2onnx
 skorch
+tf-keras
 tensorflow
 torch
 torchvision

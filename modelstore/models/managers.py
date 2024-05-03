@@ -22,7 +22,6 @@ from modelstore.models.lightgbm import LightGbmManager
 from modelstore.models.missing_manager import MissingDepManager
 from modelstore.models.model_file import ModelFileManager
 from modelstore.models.model_manager import ModelManager
-from modelstore.models.mxnet import MxnetManager
 from modelstore.models.onnx import OnnxManager
 from modelstore.models.prophet import ProphetManager
 from modelstore.models.pyspark import PySparkManager
@@ -46,7 +45,6 @@ _LIBRARIES = {
         ModelFileManager,
         GensimManager,
         LightGbmManager,
-        MxnetManager,
         OnnxManager,
         ProphetManager,
         PySparkManager,

@@ -11,11 +11,12 @@ twine>=4.0.2
 
 # Data / dependencies for ML libraries
 numba>=0.58.1
-numpy==1.23.5 # numpy>1.23.5 currently breaks mxnet
+numpy==1.23.5
 Cython>=3.0.8
 python-Levenshtein>=0.24.0
 pandas>=1.3.5; python_version < '3.8'
 pandas>=1.4.1; python_version > '3.7'
+scipy==1.10.1 # More recent versions were not compatible with Gensim releases https://github.com/piskvorky/gensim/issues/3525
 
 # ML Dependencies
 # pydoop<=2.0.0; sys_platform == 'darwin'
