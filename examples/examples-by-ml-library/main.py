@@ -17,6 +17,7 @@ import click
 from libraries import (
     annoy_example,
     catboost_example,
+    causalml_example,
     fastai_example,
     gensim_example,
     keras_example,
@@ -50,6 +51,7 @@ from modelstores import MODELSTORES, create_model_store
 EXAMPLES = {
     "annoy": annoy_example,
     "catboost": catboost_example,
+    "causalml": causalml_example,
     "dpt": dpt,
     "fastai": fastai_example,
     "file": raw_file_example,
