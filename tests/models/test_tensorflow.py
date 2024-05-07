@@ -25,7 +25,8 @@ from modelstore.models.tensorflow import (
     TensorflowManager,
     _save_model,
     _save_weights,
-    save_json
+    save_json,
+    _is_tensorflow_using_keras3_api,
 )
 
 # pylint: disable=protected-access
@@ -105,6 +106,7 @@ def test_get_params(tf_manager, tf_model):
     assert exp == res
 
 
+@pytest.mark.skipif(_is_tensorflow_using_keras3_api(), reason="Testing behaviour for Keras < 3.0")
 def test_save_model(tmp_path, tf_model):
     exp = os.path.join(tmp_path, "model")
     model_path = _save_model(tmp_path, tf_model)
@@ -114,6 +116,7 @@ def test_save_model(tmp_path, tf_model):
     assert_models_equal(tf_model, loaded_model)
 
 
+@pytest.mark.skipif(_is_tensorflow_using_keras3_api(), reason="Testing behaviour for Keras < 3.0")
 def test_save_weights(tf_model, tmp_path):
     exp = os.path.join(tmp_path, "checkpoint")
     file_path = _save_weights(tmp_path, model=tf_model)
@@ -131,6 +134,33 @@ def test_save_weights(tf_model, tmp_path):
     assert_models_equal(tf_model, loaded_model)
 
 
+@pytest.mark.skipif(not _is_tensorflow_using_keras3_api(), reason="Testing behaviour for Keras >= 3.0")
+def test_save_model_keras_3_api(tmp_path, tf_model):
+    exp = f"{os.path.join(tmp_path, 'model')}.keras"
+    model_path = _save_model(tmp_path, tf_model)
+    assert exp == model_path
+    loaded_model = tf.keras.models.load_model(model_path)
+    assert_models_equal(tf_model, loaded_model)
+
+
+@pytest.mark.skipif(not _is_tensorflow_using_keras3_api(), reason="Testing behaviour for Keras >= 3.0")
+def test_save_weights_keras_3_api(tf_model, tmp_path):
+    exp = f"{os.path.join(tmp_path, 'checkpoint')}.weights.h5"
+    file_path = _save_weights(tmp_path, model=tf_model)
+    assert file_path == exp
+    assert os.path.isfile(file_path)
+
+    loaded_model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Dense(5, activation="relu", input_shape=(10,)),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(1),
+        ]
+    )
+    loaded_model.load_weights(file_path)
+    assert_models_equal(tf_model, loaded_model)
+
+
 def test_model_json(tf_model, tmp_path):
     exp = os.path.join(tmp_path, "model_config.json")
     file_path = save_json(tmp_path, "model_config.json", tf_model.to_json())
@@ -144,6 +174,9 @@ def test_model_json(tf_model, tmp_path):
 def test_load_model(tmp_path, tf_manager, tf_model):
     # Save the model to a tmp directory
     model_path = os.path.join(tmp_path, MODEL_DIRECTORY)
+    if _is_tensorflow_using_keras3_api():
+        model_path = f"{model_path}.keras"
+
     tf_model.save(model_path)
 
     #  Load the model

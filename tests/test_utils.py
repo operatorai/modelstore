@@ -46,8 +46,6 @@ def validate_library_attributes(store: ModelStore, allowed: list, not_allowed: l
     for library in allowed:
         assert hasattr(store, library)
         mgr = store.__getattribute__(library)
-        if library == "mxnet":
-            continue
         assert issubclass(type(mgr), ModelManager)
         assert not isinstance(mgr, MissingDepManager)
 
