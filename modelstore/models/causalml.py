@@ -40,7 +40,7 @@ class CausalMLManager(ModelManager):
 
     def optional_dependencies(self) -> list:
         deps = super().optional_dependencies()
-        return deps + ["causalml"]
+        return deps + ["Cython", "joblib"]
 
     def _required_kwargs(self):
         return ["model"]
@@ -58,7 +58,7 @@ class CausalMLManager(ModelManager):
 
     def _get_functions(self, **kwargs) -> list:
         if not self.matches_with(**kwargs):
-            raise TypeError("This model is not a causalML model!")
+            raise TypeError("This model is not a Causal ML model!")
 
         return [partial(save_joblib, model=kwargs["model"], file_name=MODEL_FILE)]
 
