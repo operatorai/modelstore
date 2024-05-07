@@ -13,13 +13,12 @@ RUN apt-get update && \
 RUN pip3 install --upgrade pip setuptools
 
 # Install & install requirements
-ADD requirements-dev0.txt ./requirements-dev0.txt
+COPY requirements-dev0.txt ./requirements-dev0.txt
+COPY requirements-dev1.txt ./requirements-dev1.txt
+COPY requirements.txt ./requirements.txt
+
 RUN pip3 install -r requirements-dev0.txt
-
-ADD requirements-dev1.txt ./requirements-dev1.txt
 RUN pip3 install -r requirements-dev1.txt
-
-ADD requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
 
 # Copy library source
