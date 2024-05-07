@@ -57,12 +57,6 @@ Notes:
 
 This project has _a lot_ of dependencies. To run the tests, I'm using Docker:
 
-Once to create a base image with all of the dependencies:
-```bash
-❯ make test
-```
-
-And another to run the tests:
 ```bash
 ❯ make test
 ```
