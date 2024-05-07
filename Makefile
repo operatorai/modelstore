@@ -17,8 +17,12 @@ update:
 	@./bin/_pyenv_update
 
 .PHONY: build
-build : test
+build: test
 	@./bin/_build_library
+
+.PHONY: base
+base:
+	@docker build . -f bin/Dockerfile -t modelstore-base
 
 .PHONY: test
 test:

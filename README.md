@@ -54,6 +54,7 @@ pip install modelstore
 
 * [Annoy](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/annoy_example.py)
 * [Catboost](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/catboost_example.py)
+* [CausalML](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/causalml_example.py)
 * [Fast.AI](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/fastai_example.py)
 * [Gensim](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/gensim_example.py)
 * [Keras](https://github.com/operatorai/modelstore/blob/main/examples/examples-by-ml-library/libraries/keras_example.py)
