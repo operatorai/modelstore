@@ -25,7 +25,8 @@ scikit-learn
 shap
 skl2onnx
 skorch
-tensorflow
+tensorflow; sys_platform != 'darwin'
+tensorflow-macos; sys_platform == 'darwin'
 tf-keras
 torch
 torchvision
