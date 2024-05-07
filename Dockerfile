@@ -8,9 +8,10 @@ RUN apt-get update && \
     apt-get install -y gcc mono-mcs g++ && \
     apt-get install -y python3 python3-pip && \
     apt-get install -y default-jdk && \
+    apt-get install -y libhdf5-dev \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --upgrade pip setuptools
+RUN pip3 install --upgrade pip setuptools wheel
 
 # Install & install requirements
 COPY requirements-dev0.txt ./requirements-dev0.txt
