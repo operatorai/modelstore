@@ -96,7 +96,7 @@ EXAMPLES = {
     ),
 )
 def main(modelstore_in, ml_framework):
-    if sys.platform == "darwin" and ml_framework == "fastai":
+    if sys.platform == "darwin" and ml_framework in ["fastai", "pyspark"]:
         print(f"⏩  Skipping {ml_framework} on darwin.")
         return
     if ml_framework == "yolov5" and modelstore_in == "azure-container":

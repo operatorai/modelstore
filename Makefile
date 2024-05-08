@@ -17,7 +17,7 @@ update:
 	@./bin/_pyenv_update
 
 .PHONY: build
-build : test
+build:
 	@./bin/_build_library
 
 .PHONY: test

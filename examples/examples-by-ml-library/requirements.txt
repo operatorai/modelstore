@@ -10,7 +10,6 @@ azure-core
 azure-storage-blob
 boto3
 google-cloud-storage
-pydoop
 minio
 
 # Data / dependencies for ML libraries
@@ -25,6 +24,7 @@ pystan>=2.19.1.1 # required to be installed before prophet
 # Machine learning libraries
 annoy
 catboost
+causalml
 fastai
 gensim
 lightgbm<4.0.0 # ImportError: cannot import name 'FEATURE_IMPORTANCE_TYPE_MAPPER' from 'lightgbm.basic'
@@ -39,7 +39,8 @@ scipy==1.10.1 # More recent versions were not compatible with Gensim releases ht
 shap
 skl2onnx
 skorch
-tensorflow
+tensorflow; sys_platform != 'darwin'
+tensorflow-macos; sys_platform == 'darwin'
 tf-keras
 transformers
 torch

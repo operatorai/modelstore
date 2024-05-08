@@ -1,5 +1,15 @@
 # Change log
 
+## modelstore 0.0.81 ([May 2024](https://github.com/operatorai/modelstore/pull/270))
+
+**🆕  New functionality**
+
+* Added support for [CausalML](https://causalml.readthedocs.io/en/latest/about.html) models and the Keras 3.0 api [#282](https://github.com/operatorai/modelstore/pull/282), [#283](https://github.com/operatorai/modelstore/pull/283) (thanks [imfaruqi](https://github.com/imfaruqi))
+
+**🐛  Bug fixes & general updates**
+
+* Removed support for mxnet, which has now [been retired](https://mxnet.apache.org/versions/1.9.1/) [#283](https://github.com/operatorai/modelstore/pull/283) (thanks [imfaruqi](https://github.com/imfaruqi))
+
 ## modelstore 0.0.80 ([October 2023](https://github.com/operatorai/modelstore/pull/270))
 
 **🆕  New functionality**

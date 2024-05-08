@@ -64,14 +64,6 @@ def create_gcloud_model_store() -> ModelStore:
     )
 
 
-# def create_hdfs_model_store() -> ModelStore:
-#     """A model store in HDFS storage"""
-#     return ModelStore.from_hdfs(
-#         root_prefix=os.environ["MODEL_STORE_HDFS_ROOT_PREFIX"],
-#         create_directory=True,
-#     )
-
-
 def create_minio_model_store() -> ModelStore:
     """A model store that uses an s3 bucket with a MinIO client"""
     return ModelStore.from_minio(
@@ -87,7 +79,6 @@ MODELSTORES = {
     AzureBlobStorage.NAME: create_azure_model_store,
     FileSystemStorage.NAME: create_file_system_model_store,
     GoogleCloudStorage.NAME: create_gcloud_model_store,
-    # HdfsStorage.NAME: create_hdfs_model_store,
     MinIOStorage.NAME: create_minio_model_store,
 }
 
