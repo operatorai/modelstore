@@ -10,7 +10,6 @@ azure-core
 azure-storage-blob
 boto3
 google-cloud-storage
-pydoop
 minio
 
 # Data / dependencies for ML libraries
@@ -39,7 +38,8 @@ scipy==1.10.1 # More recent versions were not compatible with Gensim releases ht
 shap
 skl2onnx
 skorch
-tensorflow
+tensorflow; sys_platform != 'darwin'
+tensorflow-macos; sys_platform == 'darwin'
 tf-keras
 transformers
 torch
