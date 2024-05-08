@@ -24,6 +24,7 @@ pystan>=2.19.1.1 # required to be installed before prophet
 # Machine learning libraries
 annoy
 catboost
+causalml
 fastai
 gensim
 lightgbm<4.0.0 # ImportError: cannot import name 'FEATURE_IMPORTANCE_TYPE_MAPPER' from 'lightgbm.basic'
