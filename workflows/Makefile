@@ -1,21 +1,20 @@
-VIRTUALENV_NAME=modelstore.$(shell pwd | rev | cut -d '/' -f 1 | rev)
 REPO_ROOT=$(shell cd ../ && pwd)
 
-.PHONY: setup pyenv pyenv-uninstall refresh
+.PHONY: setup install uninstall refresh
 
-pyenv: pyenv-uninstall
-	@$(REPO_ROOT)/bin/_pyenv_install $(VIRTUALENV_NAME)
-	find requirements/ -name "*.txt" -type f -exec pip install -r '{}' ';'
+install: uninstall
+	@$(REPO_ROOT)/bin/_uv_install
+	find requirements/ -name "*.txt" -type f -exec uv pip install -r '{}' ';'
+
+uninstall:
+	@$(REPO_ROOT)/bin/_uv_uninstall
 
 refresh:
 	@echo "\n 🔵  Refreshing installation of modelstore"
-	pip install --upgrade pip setuptools wheel	
-	pip uninstall -y modelstore
-	pip install --no-cache-dir -e $(REPO_ROOT)
-
-pyenv-uninstall:
-	@$(REPO_ROOT)/bin/_pyenv_uninstall $(VIRTUALENV_NAME)
+	uv pip install --upgrade pip setuptools wheel
+	uv pip uninstall -y modelstore
+	uv pip install --no-cache-dir -e $(REPO_ROOT)
 
 setup:
-	pip install --upgrade pip setuptools wheel	
+	pip install --upgrade pip setuptools wheel
 	pip install -r requirements.txt
