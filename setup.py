@@ -18,13 +18,14 @@ setup(
     author="Neal Lathia",
     classifiers=[
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "License :: OSI Approved :: Apache Software License",
     ],
     license="Please refer to the readme",
-    python_requires=">=3.6",
+    python_requires=">=3.10",
     install_requires=requirements,
     entry_points={
         'console_scripts': ['modelstore=modelstore.__main__:cli']
