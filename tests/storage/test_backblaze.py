@@ -60,26 +60,23 @@ def get_file_contents(moto_boto, prefix):
 
 
 def _create_storage():
-    storage = BackblazeStorage(
+    client = boto3.client("s3", region_name="us-east-1")
+    return BackblazeStorage(
         bucket_name=_MOCK_BUCKET_NAME,
         key_id="testing",
         application_key="testing",
         region="us-east-1",
+        _client=client,
     )
-    # Override endpoint so boto3 uses the default AWS endpoint
-    # that moto intercepts
-    storage.endpoint = None
-    return storage
 
 
 def test_create_from_environment_variables(monkeypatch):
     monkeypatch.setenv("MODEL_STORE_B2_BUCKET", _MOCK_BUCKET_NAME)
     monkeypatch.setenv("B2_APPLICATION_KEY_ID", "testing")
     monkeypatch.setenv("B2_APPLICATION_KEY", "testing")
-    # pylint: disable=bare-except
     try:
         _ = BackblazeStorage()
-    except:
+    except Exception:
         pytest.fail("Failed to initialise storage from env variables")
 
 
@@ -104,13 +101,14 @@ def test_create_fails_with_missing_environment_variables(monkeypatch):
     ],
 )
 def test_validate(bucket_name, validate_should_pass):
+    client = boto3.client("s3", region_name="us-east-1")
     storage = BackblazeStorage(
         bucket_name=bucket_name,
         key_id="testing",
         application_key="testing",
         region="us-east-1",
+        _client=client,
     )
-    storage.endpoint = None
     assert storage.validate() == validate_should_pass
 
 
