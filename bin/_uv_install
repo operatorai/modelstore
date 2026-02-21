@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+REPO_ROOT=$(cd $(dirname $0)/.. && pwd)
+
+echo -e "\n 💬  Installing..."
+
+echo -e "\n 💬  Creating virtual environment..."
+uv venv
+
+echo -e "\n 💬  Upgrading pip, setuptools, wheel..."
+uv pip install --upgrade pip setuptools wheel
+
+for i in "$REPO_ROOT"/requirements*txt; do
+    echo -e "\n\n 💬  Installing requirements in: $i"
+    uv pip install -r "$i"
+done
+
+uv pip install -e "$REPO_ROOT"
+echo -e "\n ✅  Done."

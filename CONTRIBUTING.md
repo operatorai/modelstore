@@ -31,23 +31,27 @@ This library has been developed on Mac OS. To get started:
 ❯ make setup
 ```
 
-Will update `brew`, install `pyenv` and other things an required by ML libraries (e.g `libomp`, required by `xgboost`).
+Will update `brew`, install `uv` and other things required by ML libraries (e.g `libomp`, required by `xgboost`).
 
 ### Setup a virtual environment
 
-This library has been developed using [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv), using the requirements that are in `requirements.txt` and `requirements-dev.txt`.
+This library uses [uv](https://github.com/astral-sh/uv) for managing virtual environments, using the requirements that are in `requirements.txt` and `requirements-dev.txt`.
 
 This project has two types of requirements files:
 * `requirements.txt` contains any dependencies that `modelstore` users must have in order to use `modelstore`. This should be as lightweight as possible. We do not require users to install every single machine learning library - just the ones that they want to use.
-* `requirements-dev[X].txt` contains all of the dependencies that `modelstore` developers must have. These files contain all of the machine learning frameworks that are supported by `modelstore` - they must be installed to enable running all of the unit tests. 
+* `requirements-dev[X].txt` contains all of the dependencies that `modelstore` developers must have. These files contain all of the machine learning frameworks that are supported by `modelstore` - they must be installed to enable running all of the unit tests.
 
-Once you have set up `pyenv` and `pyenv-virtualenv` installed, use this `Makefile` command that does the rest for you:
+Once you have `uv` installed, use this `Makefile` command that does the rest for you:
 
 ```bash
 ❯ make install
 ```
 
-This will create a Python virtual environment, using `pyenv-virtualenv`, and install all of the dependencies in the requirements files. If you want to use a different version of Python, update the [bin/_config](bin/config) file.
+This will create a `.venv` virtual environment in the project root and install all of the dependencies in the requirements files. The Python version is specified in `.python-version`. Activate the environment with:
+
+```bash
+❯ source .venv/bin/activate
+```
 
 Notes:
 * I've seen trouble with installing `prophet` and have sometimes had to install it manually

@@ -12,9 +12,8 @@ function install {
 echo -e "\n 💬  Running brew update..."
 brew update
 
-echo -e "\n 💬  Installing pyenv & pyenv-virtualenv..."
-install pyenv
-install pyenv-virtualenv
+echo -e "\n 💬  Installing uv..."
+install uv
 
 # To get pystan to install correctly (required by prophet)
 # https://stackoverflow.com/questions/52814868/pystan-compileerror-command-gcc-failed-with-exit-status-1-macos
