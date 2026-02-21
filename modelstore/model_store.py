@@ -136,6 +136,36 @@ class ModelStore:
         )
 
     @classmethod
+    def from_backblaze(
+        cls,
+        bucket_name: Optional[str] = None,
+        key_id: Optional[str] = None,
+        application_key: Optional[str] = None,
+        endpoint: Optional[str] = None,
+        region: Optional[str] = None,
+        root_prefix: Optional[str] = None,
+    ) -> "ModelStore":
+        """Creates a ModelStore instance that stores models to a
+        Backblaze B2 bucket using the S3-compatible API.
+
+        This assumes that the B2 bucket already exists."""
+        # pylint: disable=import-outside-toplevel
+        from modelstore.storage.backblaze import BOTO_EXISTS, BackblazeStorage
+
+        if not BOTO_EXISTS:
+            raise ModuleNotFoundError("boto3 is not installed!")
+        return ModelStore(
+            storage=BackblazeStorage(
+                bucket_name=bucket_name,
+                key_id=key_id,
+                application_key=application_key,
+                endpoint=endpoint,
+                region=region,
+                root_prefix=root_prefix,
+            )
+        )
+
+    @classmethod
     def from_hdfs(
         cls, root_prefix: Optional[str] = None, create_directory: bool = False
     ) -> "ModelStore":

@@ -20,6 +20,7 @@ import click
 from modelstore import ModelStore
 from modelstore.storage.aws import AWSStorage
 from modelstore.storage.azure import AzureBlobStorage
+from modelstore.storage.backblaze import BackblazeStorage
 from modelstore.storage.gcloud import GoogleCloudStorage
 from modelstore.storage.local import FileSystemStorage
 from modelstore.storage.minio import MinIOStorage
@@ -27,6 +28,7 @@ from modelstore.storage.minio import MinIOStorage
 STORAGE_TYPES = {
     AWSStorage.NAME: AWSStorage,
     AzureBlobStorage.NAME: AzureBlobStorage,
+    BackblazeStorage.NAME: BackblazeStorage,
     GoogleCloudStorage.NAME: GoogleCloudStorage,
     FileSystemStorage.NAME: FileSystemStorage,
     MinIOStorage.NAME: MinIOStorage,
@@ -35,6 +37,7 @@ STORAGE_TYPES = {
 MODEL_STORE_TYPES = {
     AWSStorage.NAME: ModelStore.from_aws_s3,
     AzureBlobStorage.NAME: ModelStore.from_azure,
+    BackblazeStorage.NAME: ModelStore.from_backblaze,
     GoogleCloudStorage.NAME: ModelStore.from_gcloud,
     FileSystemStorage.NAME: ModelStore.from_file_system,
     MinIOStorage.NAME: ModelStore.from_minio,
