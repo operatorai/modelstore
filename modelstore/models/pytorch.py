@@ -114,7 +114,7 @@ class PyTorchManager(ModelManager):
         import torch
 
         file_path = _get_model_path(model_path)
-        return torch.load(file_path)
+        return torch.load(file_path, weights_only=False)
 
 
 def _get_model_path(parent_dir: str) -> str:

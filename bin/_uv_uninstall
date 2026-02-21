@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+REPO_ROOT=$(cd $(dirname $0)/.. && pwd)
+
+echo -e "\n 💬  Uninstalling..."
+
+if [[ -d "$REPO_ROOT/.venv" ]]; then
+    echo -e "\n ⏱  Removing: $REPO_ROOT/.venv"
+    rm -rf "$REPO_ROOT/.venv"
+    echo -e "\n ✅  Done."
+else
+    echo -e "\n ✅  Nothing to do."
+fi

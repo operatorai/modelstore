@@ -13,6 +13,7 @@
 #    limitations under the License.
 import sys
 
+import isort
 import pytest
 
 from modelstore.metadata.code import dependencies
@@ -27,7 +28,7 @@ def test_get_version():
     if "isort" in sys.modules:
         # Force import
         del sys.modules["isort"]
-    assert dependencies._get_version("isort") == "5.11.3"
+    assert dependencies._get_version("isort") == isort.__version__
 
 
 def test_get_dependency_versions():

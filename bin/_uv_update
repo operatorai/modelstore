@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+REPO_ROOT=$(cd $(dirname $0)/.. && pwd)
+
+echo -e "\n 💬  Updating..."
+
+uv pip install --upgrade pip setuptools wheel
+for i in "$REPO_ROOT"/requirements*txt; do
+    echo -e "\n\n 💬  Updating requirements in: $i"
+    uv pip install --upgrade -r "$i"
+done
+
+uv pip install -e "$REPO_ROOT"
+echo -e "\n ✅  Done."

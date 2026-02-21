@@ -1,8 +1,6 @@
-VIRTUALENV_NAME=$(shell pwd | rev | cut -d '/' -f 1 | rev)-dev
-
 .PHONY: uninstall
 uninstall:
-	@./bin/_pyenv_uninstall $(VIRTUALENV_NAME)
+	@./bin/_uv_uninstall
 
 .PHONY: setup
 setup:
@@ -10,11 +8,11 @@ setup:
 
 .PHONY: install
 install: uninstall
-	@./bin/_pyenv_install $(VIRTUALENV_NAME)
+	@./bin/_uv_install
 
 .PHONY: update
 update:
-	@./bin/_pyenv_update
+	@./bin/_uv_update
 
 .PHONY: build
 build:

@@ -13,6 +13,7 @@ annoy
 catboost
 causalml
 fastai  # Note: 1.0.61 has different import paths!
+ipython  # Required by fastprogress (fastai dependency)
 gensim
 Keras-Preprocessing
 lightgbm

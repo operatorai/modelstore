@@ -114,7 +114,7 @@ def test_save_model(pytorch_model, tmp_path):
     file_path = _save_model(tmp_path, pytorch_model)
     assert exp == file_path
 
-    model = torch.load(file_path)
+    model = torch.load(file_path, weights_only=False)
     assert_models_equal(pytorch_model, model)
 
 
@@ -123,7 +123,7 @@ def test_save_state_dict(pytorch_model, pytorch_optim, tmp_path):
     file_path = _save_state_dict(tmp_path, pytorch_model, pytorch_optim)
     assert file_path == exp
 
-    state_dict = torch.load(file_path)
+    state_dict = torch.load(file_path, weights_only=False)
     model = ExampleNet()
 
     model.load_state_dict(state_dict["model_state_dict"])
@@ -135,7 +135,7 @@ def test_save_state_dict_without_optimizer(pytorch_model, tmp_path):
     file_path = _save_state_dict(tmp_path, pytorch_model)
     assert file_path == exp
 
-    state_dict = torch.load(file_path)
+    state_dict = torch.load(file_path, weights_only=False)
     model = ExampleNet()
 
     model.load_state_dict(state_dict["model_state_dict"])
