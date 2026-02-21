@@ -10,7 +10,7 @@ do
 	for backend in "${backends[@]}"
 	do
 		echo -e "\n 🔵  Running the $framework example in a $backend modelstore."
-		python main.py --modelstore-in $backend --ml-framework $framework
+		uv run python main.py --modelstore-in $backend --ml-framework $framework
 		echo -e "\n ✅  Finished running the $framework example in $backend."
 	done
 done

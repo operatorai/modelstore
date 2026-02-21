@@ -14,7 +14,7 @@ minio
 
 # Data / dependencies for ML libraries
 numpy==1.23.5
-numba>=0.55.1
+numba>=0.55.1,<0.61.0 # llvmlite >=0.44 dropped macOS x86_64 wheels
 Cython>=0.29.28
 python-Levenshtein>=0.12.2
 
@@ -26,6 +26,7 @@ annoy
 catboost
 causalml
 fastai
+ipython
 gensim
 lightgbm<4.0.0 # ImportError: cannot import name 'FEATURE_IMPORTANCE_TYPE_MAPPER' from 'lightgbm.basic'
 onnx
@@ -39,8 +40,7 @@ scipy==1.10.1 # More recent versions were not compatible with Gensim releases ht
 shap
 skl2onnx
 skorch
-tensorflow; sys_platform != 'darwin'
-tensorflow-macos; sys_platform == 'darwin'
+tensorflow
 tf-keras
 transformers
 torch
