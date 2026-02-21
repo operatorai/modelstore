@@ -11,7 +11,7 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
 # pylint: disable=unused-import
 from modelstore.model_store import ModelStore
