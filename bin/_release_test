@@ -1,15 +1,15 @@
 #!/bin/bash
 set -e
 
-echo "\n ⏱  Uploading library to testpypi..."
+echo -e "\n ⏱  Uploading library to testpypi..."
 
-pip install --upgrade twine
+uv pip install --upgrade twine
 
-twine check dist/*
+uv run twine check dist/*
 
-twine upload \
+uv run twine upload \
 	--username $TWINE_TEST_USERNAME \
 	--password $TWINE_TEST_PWD \
-	--repository testpypi dist/*
+	--repository testpypi dist/* --verbose
 
-echo "\n 🚢  Done."
+echo -e "\n 🚢  Done."
