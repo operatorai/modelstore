@@ -65,6 +65,7 @@ class BackblazeStorage(BlobStorage):
         endpoint: Optional[str] = None,
         region: Optional[str] = None,
         root_prefix: Optional[str] = None,
+        _client=None,
     ):
         super().__init__(["boto3"], root_prefix, "MODEL_STORE_B2_ROOT_PREFIX")
         self.bucket_name = environment.get_value(
@@ -86,7 +87,7 @@ class BackblazeStorage(BlobStorage):
         )
         if self.endpoint is None:
             self.endpoint = f"https://s3.{self.region}.backblazeb2.com"
-        self.__client = None
+        self.__client = _client
 
     @staticmethod
     def _boto_config():
@@ -115,22 +116,10 @@ class BackblazeStorage(BlobStorage):
             logger.error("Unable to create B2 s3 client!")
             raise
 
-    def _get_resource(self):
-        """Returns a boto s3 resource configured for B2"""
-        return boto3.resource(
-            "s3",
-            region_name=self.region,
-            endpoint_url=self.endpoint,
-            aws_access_key_id=self.key_id,
-            aws_secret_access_key=self.application_key,
-            config=self._boto_config(),
-        )
-
     def validate(self) -> bool:
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
         try:
-            resource = self._get_resource()
-            resource.meta.client.head_bucket(Bucket=self.bucket_name)
+            self.client.head_bucket(Bucket=self.bucket_name)
             return True
         except ClientError:
             logger.error("Unable to access bucket: %s", self.bucket_name)
@@ -184,19 +173,20 @@ class BackblazeStorage(BlobStorage):
     def _read_json_objects(self, prefix: str) -> list:
         logger.debug("Listing files in: %s/%s", self.bucket_name, prefix)
         results = []
-        objects = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
-        for version in objects.get("Contents", []):
-            object_path = version["Key"]
-            if not object_path.endswith(".json"):
-                logger.debug("Skipping non-json file: %s", object_path)
-                continue
-            if os.path.split(object_path)[0] != prefix:
-                logger.debug("Skipping file in sub-prefix: %s", object_path)
-                continue
+        paginator = self.client.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=self.bucket_name, Prefix=prefix):
+            for version in page.get("Contents", []):
+                object_path = version["Key"]
+                if not object_path.endswith(".json"):
+                    logger.debug("Skipping non-json file: %s", object_path)
+                    continue
+                if os.path.split(object_path)[0] != prefix:
+                    logger.debug("Skipping file in sub-prefix: %s", object_path)
+                    continue
 
-            obj = self._read_json_object(object_path)
-            if obj is not None:
-                results.append(obj)
+                obj = self._read_json_object(object_path)
+                if obj is not None:
+                    results.append(obj)
         return sorted_by_created(results)
 
     def _read_json_object(self, prefix: str) -> dict:

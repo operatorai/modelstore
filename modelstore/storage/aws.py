@@ -81,8 +81,7 @@ class AWSStorage(BlobStorage):
     def validate(self) -> bool:
         logger.debug("Querying for buckets with prefix=%s...", self.bucket_name)
         try:
-            resource = boto3.resource("s3")
-            resource.meta.client.head_bucket(Bucket=self.bucket_name)
+            self.client.head_bucket(Bucket=self.bucket_name)
             return True
         except ClientError:
             logger.error("Unable to access bucket: %s", self.bucket_name)
@@ -137,20 +136,21 @@ class AWSStorage(BlobStorage):
     def _read_json_objects(self, prefix: str) -> list:
         logger.debug("Listing files in: %s/%s", self.bucket_name, prefix)
         results = []
-        objects = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
-        for version in objects.get("Contents", []):
-            object_path = version["Key"]
-            if not object_path.endswith(".json"):
-                logger.debug("Skipping non-json file: %s", object_path)
-                continue
-            if os.path.split(object_path)[0] != prefix:
-                # We don't want to read files in a sub-prefix
-                logger.debug("Skipping file in sub-prefix: %s", object_path)
-                continue
+        paginator = self.client.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=self.bucket_name, Prefix=prefix):
+            for version in page.get("Contents", []):
+                object_path = version["Key"]
+                if not object_path.endswith(".json"):
+                    logger.debug("Skipping non-json file: %s", object_path)
+                    continue
+                if os.path.split(object_path)[0] != prefix:
+                    # We don't want to read files in a sub-prefix
+                    logger.debug("Skipping file in sub-prefix: %s", object_path)
+                    continue
 
-            obj = self._read_json_object(object_path)
-            if obj is not None:
-                results.append(obj)
+                obj = self._read_json_object(object_path)
+                if obj is not None:
+                    results.append(obj)
         return sorted_by_created(results)
 
     def _read_json_object(self, prefix: str) -> dict:

@@ -55,10 +55,9 @@ def get_file_contents(moto_boto, prefix):
 def test_create_from_environment_variables(monkeypatch):
     # Does not fail when environment variables exist
     monkeypatch.setenv("MODEL_STORE_AWS_BUCKET", _MOCK_BUCKET_NAME)
-    # pylint: disable=bare-except
     try:
         _ = AWSStorage()
-    except:
+    except Exception:
         pytest.fail("Failed to initialise storage from env variables")
 
 
