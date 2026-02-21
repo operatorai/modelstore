@@ -2,13 +2,13 @@
 
 This directory contains examples of training models and storing them into a model store over different types of storage.
 
-The Python script in `examples-by-ml-model` iterates over all of the supported ML frameworks and all of the supported storage types. For each pair, it trains a model, uploads it to storage, and then downloads/loads it back. 
+The Python script in `examples-by-ml-model` iterates over all of the supported ML frameworks and all of the supported storage types. For each pair, it trains a model, uploads it to storage, and then downloads/loads it back.
 
 The bash script `cli-examples` has exaples of how to run `python -m modelstore` commands.
 
 ## Pre-requisites
 
-As with the main library, these scripts have been developed using [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv).
+As with the main library, these scripts have been developed using [uv](https://github.com/astral-sh/uv).
 
 ## Set up - examples by ML model
 
@@ -24,7 +24,7 @@ And then you can use this `Makefile` command that creates a new virtual environm
 and installs all of the requirements:
 
 ```bash
-❯ make pyenv
+❯ make install
 ```
 
 ## Running all of the examples

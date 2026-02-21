@@ -1,37 +1,33 @@
-VIRTUALENV_NAME=modelstore.$(shell pwd | rev | cut -d '/' -f 1 | rev)
 REPO_ROOT=$(shell cd ../../ && pwd)
 
-.PHONY: name pyenv pyenv-local pyenv-prod pyenv-test pyenv-uninstall refresh gcloud
+.PHONY: uninstall install install-local install-test install-prod refresh gcloud
 
-name:
-	@echo $(VIRTUALENV_NAME)
-
-pyenv-uninstall:
-	@$(REPO_ROOT)/bin/_pyenv_uninstall $(VIRTUALENV_NAME)
+uninstall:
+	@if [ -d ".venv" ]; then rm -rf .venv; echo " ✅  Removed .venv"; else echo " ✅  Nothing to do."; fi
 
 gcloud:
 	@gcloud components update
 	@gcloud auth application-default login
 
-pyenv: pyenv-uninstall
-	# @$(REPO_ROOT)/bin/_setup_brew
-	@$(REPO_ROOT)/bin/_pyenv_install $(VIRTUALENV_NAME)
-	pip install -r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt
+install: uninstall
+	@uv venv
+	@uv pip install --upgrade pip setuptools wheel
+	@uv pip install -r requirements.txt
 
-pyenv-local: pyenv
-	pip uninstall -y modelstore
-	pip install -e $(REPO_ROOT)
+install-local: install
+	@uv pip uninstall modelstore
+	@uv pip install -e $(REPO_ROOT)
 
-pyenv-test: pyenv
-	pip uninstall -y modelstore
-	pip install --no-cache-dir -i https://test.pypi.org/simple/ modelstore
+install-test: install
+	@uv pip uninstall modelstore
+	@uv pip install --no-cache-dir --extra-index-url https://test.pypi.org/simple/ --index-strategy unsafe-best-match modelstore==0.0.82
 
-pyenv-prod: pyenv
-	pip uninstall -y modelstore
-	pip install --no-cache-dir --upgrade modelstore
+install-prod: install
+	@uv pip uninstall modelstore
+	@uv pip install --no-cache-dir --upgrade modelstore
 
 refresh:
 	@echo "\n 🔵  Refreshing installation of modelstore"
-	pip install --upgrade pip setuptools wheel	
-	pip uninstall -y modelstore
-	pip install --no-cache-dir -e $(REPO_ROOT)
+	@uv pip install --upgrade pip setuptools wheel
+	@uv pip uninstall modelstore
+	@uv pip install --no-cache-dir -e $(REPO_ROOT)
