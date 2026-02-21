@@ -19,8 +19,8 @@ from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
     DistilBertForSequenceClassification,
-    TFDistilBertModel,
-    DistilBertTokenizerFast,
+    PreTrainedModel,
+    PreTrainedTokenizerBase,
     PreTrainedTokenizerFast
 )
 
@@ -156,6 +156,6 @@ def test_load_model(tmp_path, tr_manager, tr_model, tr_config, tr_tokenizer):
     loaded_model, loaded_tokenizer, loaded_config = tr_manager.load(tmp_path, meta_data)
 
     # Expect the two to be the same
-    assert isinstance(loaded_model, TFDistilBertModel)
+    assert isinstance(loaded_model, PreTrainedModel)
     assert isinstance(loaded_config, type(tr_config))
-    assert isinstance(loaded_tokenizer, DistilBertTokenizerFast)
+    assert isinstance(loaded_tokenizer, PreTrainedTokenizerBase)

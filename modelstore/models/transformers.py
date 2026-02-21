@@ -80,7 +80,7 @@ class TransformersManager(ModelManager):
 
             if isinstance(kwargs.get("model"), TFPreTrainedModel):
                 return True
-        except RuntimeError:
+        except (RuntimeError, ImportError):
             # Cannot import tensorflow things
             pass
 
@@ -143,7 +143,7 @@ class TransformersManager(ModelManager):
 
         # Infer whether we're loading a PyTorch or Tensorflow model
         # @TODO: this does not appear to hold with more recent versions of transformers
-        is_pytorch = "pytorch_model.bin" in model_files
+        is_pytorch = "pytorch_model.bin" in model_files or "model.safetensors" in model_files
         logger.debug("Loading transformers model with pytorch=%s", is_pytorch)
 
         if is_pytorch:
