@@ -15,7 +15,7 @@ from typing import Any, List
 
 from modelstore import ModelStore
 # pylint: disable=import-error
-from workflows.actions import cli, models, storage
+from actions import cli, models, storage
 
 MODEL_DOMAIN = "diabetes-boosting-demo"
 
