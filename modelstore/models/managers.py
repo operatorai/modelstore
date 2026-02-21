@@ -31,6 +31,7 @@ from modelstore.models.pytorch_lightning import PyTorchLightningManager
 from modelstore.models.shap import ShapManager
 from modelstore.models.sklearn import SKLearnManager
 from modelstore.models.skorch import SkorchManager
+from modelstore.models.statsmodels import StatsModelsManager
 from modelstore.models.tensorflow import TensorflowManager
 from modelstore.models.transformers import TransformersManager
 from modelstore.models.xgboost import XGBoostManager
@@ -55,6 +56,7 @@ _LIBRARIES = {
         ShapManager,
         SKLearnManager,
         SkorchManager,
+        StatsModelsManager,
         TensorflowManager,
         TransformersManager,
         XGBoostManager,
