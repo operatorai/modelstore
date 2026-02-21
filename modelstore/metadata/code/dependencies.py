@@ -14,7 +14,7 @@
 import importlib
 import sys
 
-import pkg_resources
+from importlib.metadata import version
 
 from modelstore.utils.log import logger
 
@@ -37,7 +37,7 @@ def _get_version(modname: str) -> str:
     except AttributeError:
         try:
             #  Annoy does not have a __version__
-            return pkg_resources.get_distribution(modname).version
+            return version(modname)
         except Exception:
             logger.debug("Unable to get %s's version", modname)
             return None

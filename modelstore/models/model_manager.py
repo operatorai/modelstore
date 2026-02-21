@@ -225,7 +225,7 @@ class ModelManager(ABC):
 
 def _format_numpy(model_params: dict) -> dict:
     for key, value in model_params.items():
-        if isinstance(value, (np.float_, np.float16, np.float32, np.float64)):
+        if isinstance(value, (np.float16, np.float32, np.float64, np.float96)):
             model_params[key] = float(value)
         if isinstance(value, np.ndarray):
             model_params[key] = value.tolist()
