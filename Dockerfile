@@ -11,16 +11,16 @@ RUN apt-get update && \
     apt-get install -y libhdf5-dev && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --upgrade pip setuptools wheel
+RUN pip3 install --break-system-packages --upgrade pip setuptools wheel
 
 # Install & install requirements
 COPY requirements-dev0.txt ./requirements-dev0.txt
 COPY requirements-dev1.txt ./requirements-dev1.txt
 COPY requirements.txt ./requirements.txt
 
-RUN pip3 install -r requirements-dev0.txt
-RUN pip3 install -r requirements-dev1.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install --break-system-packages -r requirements-dev0.txt
+RUN pip3 install --break-system-packages -r requirements-dev1.txt
+RUN pip3 install --break-system-packages -r requirements.txt
 
 # Copy library source
 COPY modelstore ./modelstore
