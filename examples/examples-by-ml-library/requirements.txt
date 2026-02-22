@@ -42,4 +42,5 @@ tf-keras
 transformers<4.50.0 # TFGPT2LMHeadModel was removed in 4.50
 torch
 torchvision
+ultralytics
 xgboost
