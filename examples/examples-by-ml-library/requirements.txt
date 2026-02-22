@@ -18,10 +18,7 @@ numba>=0.55.1,<0.61.0 # llvmlite >=0.44 dropped macOS x86_64 wheels
 Cython>=0.29.28
 python-Levenshtein>=0.12.2
 
-# Prophet
-pystan>=2.19.1.1 # required to be installed before prophet
-
-# Machine learning libraries
+# # Machine learning libraries
 annoy
 catboost
 causalml

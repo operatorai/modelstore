@@ -13,6 +13,15 @@
 #    limitations under the License.
 import os
 
+try:
+    # causalml uses lazy submodule loading; modelstore's causalml manager accesses
+    # causalml.inference.meta.base and causalml.propensity as attributes without
+    # importing them first, causing AttributeError. Prime them here.
+    import causalml.inference.meta.base  # noqa: F401
+    import causalml.propensity  # noqa: F401
+except ImportError:
+    pass
+
 from modelstore import ModelStore
 from modelstore.storage.aws import AWSStorage
 from modelstore.storage.azure import AzureBlobStorage
@@ -49,6 +58,7 @@ def create_file_system_model_store() -> ModelStore:
         "MODEL_STORE_ROOT_PREFIX",
         os.path.expanduser("~"),
     )
+    os.makedirs(root_dir, exist_ok=True)
     print(f"🏦  Creating store in: {root_dir}")
     return ModelStore.from_file_system(root_directory=root_dir)
 
