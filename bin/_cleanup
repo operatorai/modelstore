@@ -7,4 +7,7 @@ rm -rf *.egg-info
 rm -rf build
 rm -rf dist
 
+echo -e "\n 🧼  Removing docker things"
+docker system prune --all 
+
 echo -e "\n 🎉  Done."
