@@ -10,8 +10,10 @@
 **🐛  Bug fixes & general updates**
 
 * Updated AWS and Backblaze storage backends [#292](https://github.com/operatorai/modelstore/pull/292)
+* Removed deprecated `pkg_resources` from the project dependencies [#288](https://github.com/operatorai/modelstore/pull/288), (thanks [divineod](https://github.com/divineod))
 * Fixed `pkg_resources` migration issues: `PackageNotFoundError` import and platform-specific `np.float96` removal [#291](https://github.com/operatorai/modelstore/pull/291)
 * Migrated from `pyenv` to `uv` for Python environment management [#290](https://github.com/operatorai/modelstore/pull/290)
+* Stopped supporting Python versions that are past their EOL
 
 ## modelstore 0.0.81 ([May 2024](https://github.com/operatorai/modelstore/pull/270))
 
