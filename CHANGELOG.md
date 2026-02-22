@@ -5,7 +5,7 @@
 **🆕  New functionality**
 
 * Added support for [statsmodels](https://www.statsmodels.org/) [#293](https://github.com/operatorai/modelstore/pull/293)
-* Added support for [Backblaze B2](https://www.backblaze.com/cloud-storage) storage backend via `ModelStore.from_backblaze()` [#289](https://github.com/operatorai/modelstore/pull/289)
+* Added support for [Backblaze B2](https://www.backblaze.com/cloud-storage) storage backend via `ModelStore.from_backblaze()` [#289](https://github.com/operatorai/modelstore/pull/289), (thanks [jeronimodeleon](https://github.com/jeronimodeleon))
 
 **🐛  Bug fixes & general updates**
 
