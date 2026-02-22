@@ -166,17 +166,21 @@ class TransformersManager(ModelManager):
                 logger.debug("Loading with AutoModel...")
                 model = AutoModel.from_pretrained(model_dir)
         else:
-            from transformers import TFAutoModel, TFGPT2LMHeadModel
+            from transformers import TFAutoModel
 
             # In examples-by-ml-library/libraries/huggingface/gpt2*.py, we want
             # to load a GPT2 model with a language model head. If we just
             # load the model with TFAutoModel, then it won't have this.
             # This is a hack to get around that, like we did in the XGBoost
             # manager, and currently does not generalise beyond this case
-            model_types = {
-                "TFGPT2LMHeadModel": TFGPT2LMHeadModel,
-                # @TODO add other model types
-            }
+            # Note: TFGPT2LMHeadModel was removed in transformers 4.50
+            model_types = {}
+            try:
+                from transformers import TFGPT2LMHeadModel
+
+                model_types["TFGPT2LMHeadModel"] = TFGPT2LMHeadModel
+            except ImportError:
+                pass
             model_type = meta_data.model_type().type
             if model_type in model_types:
                 logger.debug("Loading with %s...", model_type)

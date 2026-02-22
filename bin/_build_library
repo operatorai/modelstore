@@ -1,13 +1,11 @@
 #!/bin/bash
 set -e
 
-VIRTUALENV_NAME=$(pyenv local)
+echo -e "\n ⏱  Building library..."
 
-echo "\n ⏱  Building library: $VIRTUALENV_NAME"
+rm -rf dist build modelstore.egg-info
+uv pip install --upgrade pip setuptools wheel
 
-rm -rf dist build modelstore.egg_info
-pip install --upgrade pip setuptools wheel
+uv run python setup.py sdist bdist_wheel
 
-python setup.py sdist bdist_wheel
-
-echo "\n ✅  Done: results are in the dist/ directory."
+echo -e "\n ✅  Done: results are in the dist/ directory."

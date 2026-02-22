@@ -62,7 +62,13 @@ def train_and_upload(modelstore: ModelStore) -> dict:
 def load_and_test(modelstore: ModelStore, model_domain: str, model_id: str):
     # Load the model back into memory!
     print(f'⤵️  Loading the skorch "{model_domain}" domain model={model_id}')
-    model = modelstore.load(model_domain, model_id)
+    loaded = modelstore.load(model_domain, model_id)
+
+    # When multiple files are saved, modelstore returns a dict
+    if isinstance(loaded, dict):
+        model = loaded["skorch"]
+    else:
+        model = loaded
 
     # Run some example predictions
     _, X_test, _, y_test = load_regression_dataset(as_numpy=True)

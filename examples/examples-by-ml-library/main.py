@@ -11,72 +11,41 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+import importlib
 import sys
 
 import click
-from libraries import (
-    annoy_example,
-    catboost_example,
-    causalml_example,
-    fastai_example,
-    gensim_example,
-    keras_example,
-    lightgbm_example,
-    onnx_lightgbm_example,
-    onnx_sklearn_example,
-    prophet_example,
-    pyspark_example,
-    pytorch_example,
-    pytorch_lightning_example,
-    raw_file_example,
-    shap_example,
-    sklearn_example,
-    sklearn_with_explainer_example,
-    sklearn_with_extras_example,
-    skorch_example,
-    tensorflow_example,
-    xgboost_booster_example,
-    xgboost_example,
-    yolo_example
-)
-from libraries.huggingface import (
-    distilbert,
-    dpt,
-    gpt2_pytorch,
-    gpt2_tensorflow,
-    sam
-)
 from modelstores import MODELSTORES, create_model_store
 
 EXAMPLES = {
-    "annoy": annoy_example,
-    "catboost": catboost_example,
-    "causalml": causalml_example,
-    "dpt": dpt,
-    "fastai": fastai_example,
-    "file": raw_file_example,
-    "gensim": gensim_example,
-    "hf-distilbert": distilbert,
-    "hf-gpt2-pt": gpt2_pytorch,
-    "hf-gpt2-tf": gpt2_tensorflow,
-    "keras": keras_example,
-    "lightgbm": lightgbm_example,
-    "onnx-sklearn": onnx_sklearn_example,
-    "onnx-lightgbm": onnx_lightgbm_example,
-    "prophet": prophet_example,
-    "pyspark": pyspark_example,
-    "pytorch": pytorch_example,
-    "pytorch-lightning": pytorch_lightning_example,
-    "segment-anything": sam,
-    "shap": shap_example,
-    "sklearn": sklearn_example,
-    "sklearn-with-explainer": sklearn_with_explainer_example,
-    "sklearn-with-extras": sklearn_with_extras_example,
-    "skorch": skorch_example,
-    "tensorflow": tensorflow_example,
-    "xgboost": xgboost_example,
-    "xgboost-booster": xgboost_booster_example,
-    "yolov5": yolo_example,
+    "annoy": "libraries.annoy_example",
+    "catboost": "libraries.catboost_example",
+    "causalml": "libraries.causalml_example",
+    "dpt": "libraries.huggingface.dpt",
+    "fastai": "libraries.fastai_example",
+    "file": "libraries.raw_file_example",
+    "gensim": "libraries.gensim_example",
+    "hf-distilbert": "libraries.huggingface.distilbert",
+    "hf-gpt2-pt": "libraries.huggingface.gpt2_pytorch",
+    "hf-gpt2-tf": "libraries.huggingface.gpt2_tensorflow",
+    "keras": "libraries.keras_example",
+    "lightgbm": "libraries.lightgbm_example",
+    "onnx-sklearn": "libraries.onnx_sklearn_example",
+    "onnx-lightgbm": "libraries.onnx_lightgbm_example",
+    "prophet": "libraries.prophet_example",
+    "pyspark": "libraries.pyspark_example",
+    "pytorch": "libraries.pytorch_example",
+    "pytorch-lightning": "libraries.pytorch_lightning_example",
+    "segment-anything": "libraries.huggingface.sam",
+    "shap": "libraries.shap_example",
+    "sklearn": "libraries.sklearn_example",
+    "sklearn-with-explainer": "libraries.sklearn_with_explainer_example",
+    "sklearn-with-extras": "libraries.sklearn_with_extras_example",
+    "skorch": "libraries.skorch_example",
+    "tensorflow": "libraries.tensorflow_example",
+    "xgboost": "libraries.xgboost_example",
+    "xgboost-booster": "libraries.xgboost_booster_example",
+    "yolov5": "libraries.yolo_example",
 }
 
 
@@ -109,7 +78,7 @@ def main(modelstore_in, ml_framework):
 
     # Create a model store instance
     modelstore = create_model_store(modelstore_in)
-    example = EXAMPLES[ml_framework]
+    example = importlib.import_module(EXAMPLES[ml_framework])
 
     # Demo how we train and upload a model
     meta_data = example.train_and_upload(modelstore)
