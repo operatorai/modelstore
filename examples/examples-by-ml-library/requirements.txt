@@ -39,7 +39,7 @@ skl2onnx
 skorch
 tensorflow
 tf-keras
-transformers
+transformers<4.50.0 # TFGPT2LMHeadModel was removed in 4.50
 torch
 torchvision
 xgboost
