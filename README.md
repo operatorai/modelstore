@@ -80,7 +80,7 @@ Is there a machine learning framework that is missing?
 
 * [35 Hidden Python Libraries That Are Absolute Gems](https://www.blog.dailydoseofds.com/p/35-gem-py-libs), March 2023
 * [Evidently.AI AMA with Neal Lathia](https://www.evidentlyai.com/blog/ama-neal-lathia), January 2023
-* [MLOps Model Stores: Definition, Functionality, Tools Review](https://neptune.ai/blog/mlops-model-stores), January 2023
+* [MLOps Model Stores: Definition, Functionality, Tools Review](https://web.archive.org/web/20231208122806/https://neptune.ai/blog/mlops-model-stores), January 2023
 * [Monzo's machine learning stack](https://monzo.com/blog/2022/04/26/monzos-machine-learning-stack), April 2022
 * [Data Talks Club Minis: Model Store](https://www.youtube.com/watch?v=85BWnKmOZl8), July 2021
 * [Model arterfacts: the war stories](https://nlathia.github.io/2020/09/Model-artifacts-war-stories.html), September 2020
