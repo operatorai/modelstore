@@ -27,7 +27,6 @@ EXAMPLES = {
     "gensim": "libraries.gensim_example",
     "hf-distilbert": "libraries.huggingface.distilbert",
     "hf-gpt2-pt": "libraries.huggingface.gpt2_pytorch",
-    "hf-gpt2-tf": "libraries.huggingface.gpt2_tensorflow",
     "keras": "libraries.keras_example",
     "lightgbm": "libraries.lightgbm_example",
     "onnx-sklearn": "libraries.onnx_sklearn_example",
