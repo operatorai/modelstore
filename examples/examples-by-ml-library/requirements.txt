@@ -39,7 +39,7 @@ skl2onnx
 skorch
 tensorflow
 tf-keras
-transformers<4.50.0 # TFGPT2LMHeadModel was removed in 4.50
+transformers>=5.10.0 # Fixes all open Dependabot alerts; v5 dropped TensorFlow support
 torch
 torchvision
 ultralytics
